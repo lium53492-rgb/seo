@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-
-const storyUrl =
-  "https://www.novelai.ai/story/9b61e7e9-772c-44ad-b318-5f76db9c993a/episode/bd7eaf4e-a4d7-411f-a71b-f2fb4216b410?progression=guided&scenarioId=scenario-1&preventRepeatChoices=1";
+import { TrackedStoryLink } from "./components/TrackedStoryLink";
 
 const pageTitle = "2000s Marriage Life Simulator";
 const pageDescription =
@@ -70,9 +68,9 @@ export default function Home() {
             quiet marriage story unfolds around you.
           </p>
           <div className="actions">
-            <a className="primaryAction" href={storyUrl}>
+            <TrackedStoryLink className="primaryAction" location="hero">
               Play This Story
-            </a>
+            </TrackedStoryLink>
             <a className="secondaryAction" href="#story-preview">
               Read Preview
             </a>
@@ -173,11 +171,10 @@ export default function Home() {
           Open the story on NovelAI and begin with guided choices that move the
           relationship forward.
         </p>
-        <a className="primaryAction" href={storyUrl}>
+        <TrackedStoryLink className="primaryAction" location="final_cta">
           Play on NovelAI
-        </a>
+        </TrackedStoryLink>
       </section>
     </main>
   );
 }
-
