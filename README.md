@@ -20,5 +20,10 @@ npm run build
 
 Deploy this repository as a Next.js project on Vercel.
 
-Set `NEXT_PUBLIC_SITE_URL` to the production domain once the Vercel project URL or custom domain is ready.
+Current production domain:
 
+```text
+https://seo-pi-fawn.vercel.app
+```
+
+If a custom domain is added later, set `NEXT_PUBLIC_SITE_URL` to that domain in Vercel and update the fallback URLs in the app metadata files.
