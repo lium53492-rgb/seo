@@ -1,0 +1,32 @@
+day,url,page_type,main_keyword,secondary_keywords,priority,notes
+1,/voice-roleplay,product,voice roleplay,"AI voice roleplay, voice character chat, AI roleplay voice",P0,New feature page
+2,/ai-interactive-story-game,product,ai interactive story game,"AI story game, interactive AI story, AI text adventure",P0,Core product positioning
+3,/ai-roleplay-game,product,ai roleplay game,"AI RPG, roleplay AI, character roleplay game",P0,Core category page
+4,/ai-character-chat,product,ai character chat,"AI chat characters, character AI alternative, roleplay chatbot",P0,High-intent product page
+5,/ai-text-adventure,product,ai text adventure,"text adventure AI, AI dungeon alternative, interactive fiction AI",P1,Game-oriented search intent
+6,/ai-story-creator,product,ai story creator,"AI story generator, create interactive story, story maker AI",P1,Creator intent
+7,/roleplay/romance,scenario,romance roleplay,"AI romance roleplay, romantic character chat, love story roleplay",P1,Scenario page
+8,/roleplay/fantasy,scenario,fantasy roleplay,"AI fantasy roleplay, fantasy story game, magic roleplay",P1,Scenario page
+9,/roleplay/school-life,scenario,school life roleplay,"school roleplay game, AI school story, slice of life roleplay",P2,Scenario page
+10,/story-game/life-simulator,scenario,life simulator story game,"AI life simulator, life story game, interactive life sim",P1,Simulation angle
+11,/story-game/dark-fantasy,scenario,dark fantasy story game,"dark fantasy roleplay, AI dark fantasy, fantasy text RPG",P2,Genre page
+12,/story-game/multiplayer-world,scenario,multiplayer interactive story,"multiplayer story game, shared world roleplay, collaborative storytelling",P2,World/community angle
+13,/guides/what-is-ai-roleplay,explainer,what is AI roleplay,"AI roleplay meaning, how AI roleplay works",P1,Educational support page
+14,/guides/how-to-play-ai-text-rpg,explainer,how to play AI text RPG,"AI text RPG guide, text roleplaying game AI",P1,Educational support page
+15,/guides/ai-character-memory,explainer,AI character memory,"character memory AI, roleplay memory, persistent character chat",P2,Feature explainer
+16,/updates/voice-roleplay-launch,update,voice roleplay launch,"NovelAI voice roleplay, voice roleplay feature",P1,Product update
+17,/roleplay/adventure,scenario,adventure roleplay,"AI adventure roleplay, adventure story game",P2,Genre page
+18,/roleplay/mystery,scenario,mystery roleplay,"AI mystery story, detective roleplay AI",P2,Genre page
+19,/story-game/interactive-fiction,scenario,interactive fiction AI,"AI interactive fiction, AI fiction game",P1,Category page
+20,/roleplay/companion,scenario,AI companion roleplay,"AI companion chat, roleplay companion, virtual character chat",P1,Companion intent
+21,/guides/ai-roleplay-prompts,explainer,AI roleplay prompts,"roleplay prompt ideas, character roleplay prompts",P2,Top-of-funnel guide
+22,/guides/create-ai-character,explainer,create AI character,"AI character creator, make roleplay character",P1,Creator intent
+23,/story-game/mobile,product,AI story game mobile,"mobile AI story game, AI roleplay app",P1,Mobile intent
+24,/roleplay/anime-style,scenario,anime roleplay AI,"anime character chat, anime roleplay game",P2,Avoid specific IP names
+25,/story-game/world-building,scenario,AI world building,"AI worldbuilding, create story world AI",P2,Creator/world mode
+26,/guides/ai-roleplay-vs-chatbot,explainer,AI roleplay vs chatbot,"roleplay AI vs chatbot, character AI game",P2,Comparison intent
+27,/roleplay/sci-fi,scenario,sci fi roleplay,"AI sci fi roleplay, science fiction story game",P2,Genre page
+28,/story-game/branching-stories,scenario,branching story game,"choice based story AI, branching narrative AI",P1,Mechanic intent
+29,/guides/best-ai-roleplay-ideas,explainer,AI roleplay ideas,"roleplay ideas, character chat ideas",P2,Idea list
+30,/roleplay/voice-companion,scenario,voice companion AI,"AI voice companion, voice character chat",P1,Voice long-tail
+
