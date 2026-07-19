@@ -76,3 +76,15 @@ Friday:
 - Improve 2 existing pages based on data.
 - Update titles, descriptions, internal links, or FAQs where needed.
 
+## Current Implementation Notes
+
+The live SEO site is a Next.js App Router project deployed on Vercel.
+
+Use:
+
+- Next.js native metadata for titles, descriptions, canonicals, and Open Graph.
+- `next-seo` for structured data JSON-LD, such as `FAQJsonLd`.
+- Vercel Analytics for page views and Play CTA click events.
+- Internal `/go/story/{slug}` routes for redirect logging and click tracking.
+
+See `docs/seo/engineering-workflow.md` for the engineering production system.

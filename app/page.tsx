@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { FAQJsonLd } from "next-seo";
 import { TrackedStoryLink } from "./components/TrackedStoryLink";
 
 const pageTitle = "2000s Marriage Life Simulator";
@@ -37,26 +38,10 @@ const faqs = [
   },
 ];
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: faqs.map((faq) => ({
-    "@type": "Question",
-    name: faq.question,
-    acceptedAnswer: {
-      "@type": "Answer",
-      text: faq.answer,
-    },
-  })),
-};
-
 export default function Home() {
   return (
     <main>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <FAQJsonLd questions={faqs} />
 
       <section className="hero">
         <div className="heroCopy">

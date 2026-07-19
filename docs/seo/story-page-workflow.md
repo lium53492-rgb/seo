@@ -31,6 +31,8 @@ Each story SEO page needs:
 - FAQ structured data.
 - Sitemap inclusion.
 
+Use `next-seo` for structured data components such as `FAQJsonLd`. Keep ordinary metadata in Next.js native `metadata` or `generateMetadata`.
+
 ## Avoid Doorway Pages
 
 The page must not be a thin redirect page. It needs useful standalone content:
@@ -64,7 +66,7 @@ For each new story:
 3. Pick one English low-competition keyword.
 4. Create a landing page focused on that keyword.
 5. Point CTA buttons to the exact story URL.
-6. Build and verify locally.
-7. Deploy to Vercel.
-8. Submit sitemap or request indexing.
-
+6. Add `next-seo` structured data where it matches visible page content.
+7. Build and verify locally.
+8. Deploy to Vercel.
+9. Submit sitemap or request indexing.
