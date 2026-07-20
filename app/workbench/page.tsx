@@ -48,8 +48,13 @@ export default async function WorkbenchPage() {
   }
 
   const top = report.opportunities[0];
+  const topUsesResearchProxy = top?.metricBasis === "research_proxy";
+  const evidence = report.evidence ?? [];
   const canRun =
     process.env.NODE_ENV !== "production" || Boolean(process.env.WORKBENCH_PASSWORD);
+  const automationMode =
+    process.env.CODEX_RESEARCH_MODE?.trim() === "true" ||
+    report.opportunities.some((opportunity) => opportunity.source === "codex_research");
 
   return (
     <main className="wb-shell">
@@ -90,7 +95,7 @@ export default async function WorkbenchPage() {
             <p className="wb-kicker">DAILY COMMAND CENTER</p>
             <h1>今天该做什么，一眼就够。</h1>
           </div>
-          <RunPipelineButton enabled={canRun} />
+          <RunPipelineButton enabled={canRun} automationMode={automationMode} />
         </header>
 
         <section className={`wb-hero ${top ? "" : "wb-hero-empty"}`} id="overview">
@@ -113,7 +118,7 @@ export default async function WorkbenchPage() {
             <p>
               {top
                 ? top.reason
-                : "生产模式不会使用演示关键词或演示流量补位。完成 Semrush、Search Console 和 AI Gateway 授权后再运行。"}
+                : "生产模式不会用演示关键词补位。Codex 免费研究机器人或 Search Console 返回真实信号后再生成任务。"}
             </p>
             <div className="wb-hero-actions">
               {top ? (
@@ -133,15 +138,18 @@ export default async function WorkbenchPage() {
               <i style={{ width: `${top?.score ?? 0}%` }} />
             </div>
             <dl>
-              <div><dt>月搜索量</dt><dd>{top ? top.volume.toLocaleString() : "—"}</dd></div>
-              <div><dt>关键词难度</dt><dd>{top?.difficulty ?? "—"}</dd></div>
+              <div>
+                <dt>{topUsesResearchProxy ? "需求代理分" : "月搜索量"}</dt>
+                <dd>{top ? (topUsesResearchProxy ? `${top.demandScore ?? 0}/100` : top.volume.toLocaleString()) : "—"}</dd>
+              </div>
+              <div><dt>{topUsesResearchProxy ? "竞争代理分" : "关键词难度"}</dt><dd>{top?.difficulty ?? "—"}</dd></div>
               <div><dt>产品匹配</dt><dd>{top?.productFit ?? "—"}</dd></div>
             </dl>
           </div>
         </section>
 
         <section className="wb-stat-grid" aria-label="关键指标">
-          <article><p>真实候选词</p><strong>{report.summary.candidatesAnalyzed}</strong><span>本次 API 返回并完成评分</span></article>
+          <article><p>真实候选词</p><strong>{report.summary.candidatesAnalyzed}</strong><span>公开研究或 API 返回并完成评分</span></article>
           <article><p>可执行机会</p><strong>{report.summary.publishableOpportunities}</strong><span>机会分 ≥ 62</span></article>
           <article><p>搜索曝光</p><strong>{report.summary.totalImpressions.toLocaleString()}</strong><span>Search Console 观测窗口</span></article>
           <article><p>自然点击率</p><strong>{(report.summary.averageCtr * 100).toFixed(1)}%</strong><span>{report.summary.totalClicks} 次点击</span></article>
@@ -149,19 +157,23 @@ export default async function WorkbenchPage() {
 
         <section className="wb-section" id="opportunities">
           <div className="wb-section-heading">
-            <div><p className="wb-kicker">OPPORTUNITY RADAR</p><h2>只展示 API 返回的真实关键词。</h2></div>
-            <span className="wb-data-note">评分包含产品匹配、需求、趋势、难度、转化和风险</span>
+            <div><p className="wb-kicker">OPPORTUNITY RADAR</p><h2>只展示有来源的真实关键词信号。</h2></div>
+            <span className="wb-data-note">代理指标不会冒充月搜索量或 Semrush KD</span>
           </div>
           {report.opportunities.length ? (
             <div className="wb-table-wrap">
               <table>
-                <thead><tr><th>关键词</th><th>意图</th><th>Volume</th><th>KD</th><th>产品匹配</th><th>机会分</th><th>动作</th></tr></thead>
+                <thead><tr><th>关键词</th><th>意图</th><th>需求</th><th>竞争</th><th>产品匹配</th><th>机会分</th><th>动作</th></tr></thead>
                 <tbody>
                   {report.opportunities.slice(0, 6).map((opportunity, index) => (
                     <tr key={opportunity.keyword}>
                       <td><span className="wb-rank">{String(index + 1).padStart(2, "0")}</span><strong>{opportunity.keyword}</strong><small>{opportunity.source}</small></td>
                       <td>{opportunity.intent}</td>
-                      <td>{opportunity.volume.toLocaleString()}</td>
+                      <td>
+                        {opportunity.metricBasis === "research_proxy"
+                          ? `${opportunity.demandScore ?? 0}/100`
+                          : opportunity.volume.toLocaleString()}
+                      </td>
                       <td><span className={`wb-kd ${opportunity.difficulty <= 30 ? "easy" : opportunity.difficulty <= 50 ? "medium" : "hard"}`}>{opportunity.difficulty}</span></td>
                       <td>{opportunity.productFit}</td>
                       <td><strong className="wb-score-inline">{opportunity.score}</strong></td>
@@ -172,9 +184,27 @@ export default async function WorkbenchPage() {
               </table>
             </div>
           ) : (
-            <div className="wb-empty-state">尚无真实关键词结果。连接 Semrush 后运行工作流。</div>
+            <div className="wb-empty-state">尚无真实关键词结果。等待每日 Codex 免费研究机器人运行。</div>
           )}
         </section>
+
+        {evidence.length ? (
+          <section className="wb-section" id="evidence">
+            <div className="wb-section-heading">
+              <div><p className="wb-kicker">RESEARCH EVIDENCE</p><h2>每个代理分都能回到公开来源。</h2></div>
+              <span className="wb-data-note">采集时间与支持的关键词一并保留</span>
+            </div>
+            <div className="wb-evidence-grid">
+              {evidence.slice(0, 8).map((item) => (
+                <a href={item.url} key={`${item.url}-${item.title}`} target="_blank" rel="noreferrer">
+                  <span>{item.source}</span>
+                  <strong>{item.title}</strong>
+                  <small>支持：{item.supports.join("、")}</small>
+                </a>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         <div className="wb-two-column">
           <section className="wb-section wb-action-list">
@@ -247,7 +277,7 @@ export default async function WorkbenchPage() {
               </aside>
             </div>
           ) : (
-            <div className="wb-empty-state">真实关键词与 AI Gateway 均验证成功后，工作流会在这里生成完整草稿。</div>
+            <div className="wb-empty-state">每日研究选出真实机会后，Codex 会在这里生成可审核草稿。</div>
           )}
         </section>
 

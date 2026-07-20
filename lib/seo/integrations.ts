@@ -24,6 +24,7 @@ export function integrationStatuses(
       process.env.VERCEL_OIDC_TOKEN ||
       process.env.VERCEL,
   );
+  const hasCodexResearch = process.env.CODEX_RESEARCH_MODE === "true";
 
   const statuses: IntegrationStatus[] = [
     {
@@ -32,7 +33,15 @@ export function integrationStatuses(
       state: process.env.SEMRUSH_API_KEY ? "configured" : "missing",
       detail: process.env.SEMRUSH_API_KEY
         ? "凭据已配置；运行时会验证相关词、搜索量、KD、意图和趋势"
-        : "等待 SEMRUSH_API_KEY；不会用演示关键词代替真实结果",
+        : "可选增强项；未购买时由 Codex 免费研究代理指标替代",
+    },
+    {
+      id: "codex_research",
+      name: "Codex Research",
+      state: hasCodexResearch ? "configured" : "missing",
+      detail: hasCodexResearch
+        ? "每日检索公开网页并保存需求、竞争代理分与证据链接"
+        : "等待启用每日免费研究自动化",
     },
     {
       id: "search_console",

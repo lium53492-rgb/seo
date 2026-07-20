@@ -1,0 +1,369 @@
+{
+  "id": "seo-2026-07-20",
+  "date": "2026-07-20",
+  "generatedAt": "2026-07-20T09:36:54.6991191Z",
+  "mode": "partial",
+  "headline": "今日优先动作：创建“multiplayer voice roleplay”",
+  "summary": {
+    "candidatesAnalyzed": 9,
+    "publishableOpportunities": 9,
+    "totalClicks": 0,
+    "totalImpressions": 0,
+    "averageCtr": 0
+  },
+  "opportunities": [
+    {
+      "keyword": "multiplayer voice roleplay",
+      "seed": "voice roleplay",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "demandScore": 78,
+      "volume": 0,
+      "difficulty": 36,
+      "cpc": 0,
+      "intent": "commercial",
+      "trend": [],
+      "productFit": 98,
+      "originality": 88,
+      "conversionIntent": 91,
+      "ipRisk": 0,
+      "cannibalizationRisk": 8,
+      "score": 81,
+      "action": "create_page",
+      "reason": "与语C产品高度匹配，多来源需求信号较强，接近开始体验的意图；综合机会分 81。"
+    },
+    {
+      "keyword": "choose a role ai story",
+      "seed": "ai story game",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "demandScore": 65,
+      "volume": 0,
+      "difficulty": 30,
+      "cpc": 0,
+      "intent": "commercial",
+      "trend": [],
+      "productFit": 99,
+      "originality": 95,
+      "conversionIntent": 84,
+      "ipRisk": 0,
+      "cannibalizationRisk": 8,
+      "score": 80,
+      "action": "create_page",
+      "reason": "与语C产品高度匹配，多来源需求信号较强，公开结果竞争代理较低；综合机会分 80。"
+    },
+    {
+      "keyword": "story driven voice roleplay",
+      "seed": "voice roleplay",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "demandScore": 72,
+      "volume": 0,
+      "difficulty": 38,
+      "cpc": 0,
+      "intent": "commercial",
+      "trend": [],
+      "productFit": 99,
+      "originality": 92,
+      "conversionIntent": 86,
+      "ipRisk": 0,
+      "cannibalizationRisk": 12,
+      "score": 79,
+      "action": "create_page",
+      "reason": "与语C产品高度匹配，多来源需求信号较强，接近开始体验的意图；综合机会分 79。"
+    },
+    {
+      "keyword": "ai roleplay with friends",
+      "seed": "ai roleplay game",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "demandScore": 74,
+      "volume": 0,
+      "difficulty": 43,
+      "cpc": 0,
+      "intent": "commercial",
+      "trend": [],
+      "productFit": 95,
+      "originality": 87,
+      "conversionIntent": 90,
+      "ipRisk": 0,
+      "cannibalizationRisk": 10,
+      "score": 78,
+      "action": "create_page",
+      "reason": "与语C产品高度匹配，多来源需求信号较强，接近开始体验的意图；综合机会分 78。"
+    },
+    {
+      "keyword": "voice roleplay game with characters",
+      "seed": "ai roleplay game",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "demandScore": 70,
+      "volume": 0,
+      "difficulty": 42,
+      "cpc": 0,
+      "intent": "commercial",
+      "trend": [],
+      "productFit": 97,
+      "originality": 86,
+      "conversionIntent": 88,
+      "ipRisk": 0,
+      "cannibalizationRisk": 15,
+      "score": 77,
+      "action": "create_page",
+      "reason": "与语C产品高度匹配，多来源需求信号较强，接近开始体验的意图；综合机会分 77。"
+    },
+    {
+      "keyword": "group ai voice roleplay",
+      "seed": "voice roleplay",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "demandScore": 69,
+      "volume": 0,
+      "difficulty": 45,
+      "cpc": 0,
+      "intent": "commercial",
+      "trend": [],
+      "productFit": 94,
+      "originality": 89,
+      "conversionIntent": 87,
+      "ipRisk": 0,
+      "cannibalizationRisk": 14,
+      "score": 76,
+      "action": "create_page",
+      "reason": "与语C产品高度匹配，多来源需求信号较强，接近开始体验的意图；综合机会分 76。"
+    },
+    {
+      "keyword": "original character voice roleplay",
+      "seed": "voice roleplay",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "demandScore": 67,
+      "volume": 0,
+      "difficulty": 37,
+      "cpc": 0,
+      "intent": "commercial",
+      "trend": [],
+      "productFit": 91,
+      "originality": 94,
+      "conversionIntent": 81,
+      "ipRisk": 0,
+      "cannibalizationRisk": 11,
+      "score": 76,
+      "action": "create_page",
+      "reason": "与语C产品高度匹配，多来源需求信号较强，接近开始体验的意图；综合机会分 76。"
+    },
+    {
+      "keyword": "ai interactive story with voice",
+      "seed": "ai story game",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "demandScore": 76,
+      "volume": 0,
+      "difficulty": 54,
+      "cpc": 0,
+      "intent": "commercial",
+      "trend": [],
+      "productFit": 96,
+      "originality": 83,
+      "conversionIntent": 88,
+      "ipRisk": 0,
+      "cannibalizationRisk": 16,
+      "score": 75,
+      "action": "create_page",
+      "reason": "与语C产品高度匹配，多来源需求信号较强，接近开始体验的意图；综合机会分 75。"
+    },
+    {
+      "keyword": "multiplayer ai story game",
+      "seed": "ai story game",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "demandScore": 75,
+      "volume": 0,
+      "difficulty": 50,
+      "cpc": 0,
+      "intent": "commercial",
+      "trend": [],
+      "productFit": 90,
+      "originality": 82,
+      "conversionIntent": 89,
+      "ipRisk": 0,
+      "cannibalizationRisk": 19,
+      "score": 73,
+      "action": "create_page",
+      "reason": "与语C产品高度匹配，多来源需求信号较强，接近开始体验的意图；综合机会分 73。"
+    }
+  ],
+  "performance": [],
+  "actions": [
+    {
+      "priority": "P0",
+      "action": "为“multiplayer voice roleplay”准备事实受控的英文页面",
+      "why": "与语C产品高度匹配，多来源需求信号较强，接近开始体验的意图；综合机会分 81。",
+      "expectedImpact": "把免费公开研究中最可信的机会转成可审核页面任务。"
+    },
+    {
+      "priority": "P1",
+      "action": "人工核对证据链接与搜索意图",
+      "why": "免费模式使用代理指标，不提供供应商月搜索量或 KD。",
+      "expectedImpact": "避免把代理分误读为精确市场规模。"
+    },
+    {
+      "priority": "P2",
+      "action": "确认剧情、角色、语音能力与原创素材后再发布",
+      "why": "研究信号不能替代第一手产品证据。",
+      "expectedImpact": "降低低价值内容和虚假产品承诺风险。"
+    }
+  ],
+  "brief": {
+    "keyword": "multiplayer voice roleplay",
+    "slug": "/multiplayer-voice-roleplay",
+    "pageType": "scenario",
+    "searchIntent": "commercial",
+    "title": "Multiplayer Voice Roleplay | Play an AI Voice Story",
+    "description": "Explore multiplayer voice roleplay through a story-led voice roleplay experience with selectable characters.",
+    "h1": "Multiplayer Voice Roleplay",
+    "primaryCta": "Choose a role and start",
+    "sections": [
+      "剧情开场与搜索意图",
+      "可选择角色和各自目标",
+      "语音互动如何推动剧情",
+      "真实试玩证据与原创素材",
+      "相关剧情与下一步入口"
+    ],
+    "evidenceRequired": [
+      "至少 1 个真实可玩的公开剧情",
+      "至少 3 个可选择角色或角色视角",
+      "产品团队确认的语音能力",
+      "原创视觉、语音或试玩素材"
+    ],
+    "qualityGate": [
+      "一个明确搜索意图和一个 H1",
+      "代理指标明确标注且保留证据链接",
+      "不使用未经授权的第三方 IP",
+      "通过移动端、链接和索引检查"
+    ]
+  },
+  "draft": null,
+  "integrations": [
+    {
+      "id": "semrush",
+      "name": "Semrush",
+      "state": "missing",
+      "detail": "可选增强项；免费模式不依赖 Semrush"
+    },
+    {
+      "id": "codex_research",
+      "name": "Codex Research",
+      "state": "connected",
+      "detail": "已验证 7 条公开证据并评分 9 个候选词",
+      "lastCheckedAt": "2026-07-20T09:48:45.028Z"
+    },
+    {
+      "id": "search_console",
+      "name": "Google Search Console",
+      "state": "missing",
+      "detail": "尚未授权；免费研究仍可运行"
+    },
+    {
+      "id": "ai_gateway",
+      "name": "Codex Content",
+      "state": "configured",
+      "detail": "研究完成；内容草稿可由 Codex 审核后生成"
+    },
+    {
+      "id": "github",
+      "name": "GitHub Reports",
+      "state": "connected",
+      "detail": "日报由 Codex 自动化提交到 data/reports"
+    },
+    {
+      "id": "product_analytics",
+      "name": "Product Analytics",
+      "state": "missing",
+      "detail": "尚未接入产品事件；当前优化目标止于 SEO 点击"
+    }
+  ],
+  "evidence": [
+    {
+      "title": "Plotto — multiplayer co-op stories with voice, image and text",
+      "url": "https://www.plotto.ai/",
+      "source": "Plotto",
+      "collectedAt": "2026-07-20T09:36:54.6991191Z",
+      "supports": [
+        "multiplayer voice roleplay",
+        "ai roleplay with friends",
+        "ai interactive story with voice",
+        "multiplayer ai story game"
+      ]
+    },
+    {
+      "title": "Reverie — multi-character group calls with distinct voices",
+      "url": "https://reverie.im/en/ai-voice-call",
+      "source": "Reverie",
+      "collectedAt": "2026-07-20T09:36:54.6991191Z",
+      "supports": [
+        "multiplayer voice roleplay",
+        "group ai voice roleplay",
+        "voice roleplay game with characters"
+      ]
+    },
+    {
+      "title": "Roleloom — original characters, scenes, identity and continuing roleplay",
+      "url": "https://www.roleloom.com/",
+      "source": "Roleloom",
+      "collectedAt": "2026-07-20T09:36:54.6991191Z",
+      "supports": [
+        "story driven voice roleplay",
+        "choose a role ai story",
+        "original character voice roleplay"
+      ]
+    },
+    {
+      "title": "Chatopia — choose a story, play as a character and change the outcome",
+      "url": "https://www.chatopia.live/",
+      "source": "Chatopia",
+      "collectedAt": "2026-07-20T09:36:54.6991191Z",
+      "supports": [
+        "story driven voice roleplay",
+        "choose a role ai story",
+        "voice roleplay game with characters"
+      ]
+    },
+    {
+      "title": "Wimo — interactive worlds, characters, scenes and voice",
+      "url": "https://wimo.cc/en",
+      "source": "Wimo",
+      "collectedAt": "2026-07-20T09:36:54.6991191Z",
+      "supports": [
+        "ai interactive story with voice",
+        "story driven voice roleplay"
+      ]
+    },
+    {
+      "title": "Castmates — voiced characters with backstories and story memory",
+      "url": "https://get-castmates.com/",
+      "source": "Castmates",
+      "collectedAt": "2026-07-20T09:36:54.6991191Z",
+      "supports": [
+        "original character voice roleplay",
+        "voice roleplay game with characters"
+      ]
+    },
+    {
+      "title": "Community discussion asking for roleplay with multiple live characters",
+      "url": "https://www.reddit.com/r/ChatbotRefugees/comments/1sx2782/looking_for_rp_options_with_multiple_characters/",
+      "source": "Reddit / ChatbotRefugees",
+      "collectedAt": "2026-07-20T09:36:54.6991191Z",
+      "supports": [
+        "ai roleplay with friends",
+        "group ai voice roleplay",
+        "multiplayer ai story game"
+      ]
+    }
+  ],
+  "caveats": [
+    "免费研究模式不提供月搜索量、CPC 或 Semrush KD；需求分和竞争分均为 0–100 代理指标。",
+    "代理分依据公开搜索结果的重复出现、近期性、用户讨论和头部结果强度计算，结果会随网页变化。",
+    "所有发布建议都必须经过人工产品事实与版权审核。"
+  ]
+}

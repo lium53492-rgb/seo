@@ -1,5 +1,7 @@
 import "server-only";
 
+import { readdir, readFile } from "node:fs/promises";
+import { resolve } from "node:path";
 import type { DailySeoReport } from "./types";
 
 type GithubContent = {
@@ -43,7 +45,26 @@ async function fetchStoredReport(path: string) {
   return JSON.parse(json) as DailySeoReport;
 }
 
+async function readBundledLatestReport() {
+  const reportsDirectory = resolve(process.cwd(), "data/reports");
+  try {
+    const latest = (await readdir(reportsDirectory))
+      .filter((name) => /^\d{4}-\d{2}-\d{2}\.json$/.test(name))
+      .sort((left, right) => right.localeCompare(left))[0];
+    if (!latest) return null;
+    return JSON.parse(
+      await readFile(resolve(reportsDirectory, latest), "utf8"),
+    ) as DailySeoReport;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw error;
+  }
+}
+
 export async function readLatestReport() {
+  const bundled = await readBundledLatestReport();
+  if (bundled) return bundled;
+
   const { token, repository, branch } = githubConfig();
   const response = await fetch(
     `https://api.github.com/repos/${repository}/contents/data/reports?ref=${encodeURIComponent(branch)}`,

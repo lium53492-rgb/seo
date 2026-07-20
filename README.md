@@ -22,34 +22,40 @@ Open `/workbench` to inspect the latest persisted production report. With no
 external credentials or report configured, the UI shows a disconnected state
 with zero metrics; it never substitutes demo values.
 
-The pipeline is split into:
+The default zero-extra-data-cost pipeline is:
 
 ```text
-Semrush + Search Console
--> normalized keyword and page data
+Codex public-web research
+-> source URLs + transparent demand/competition proxy scores
 -> opportunity scoring
 -> recommended action
--> fact-constrained AI page draft and quality gate
+-> fact-constrained page brief
 -> GitHub JSON report
+-> Vercel workbench refresh
 ```
 
-Production runs are scheduled for 09:15 Asia/Shanghai (`01:15 UTC`) through
-Vercel Cron. The cron route and workbench actions are protected independently
-with `CRON_SECRET` and `WORKBENCH_PASSWORD`. Without a workbench password, the
-disconnected dashboard remains public and read-only while the run API stays
-disabled. Strict production runs fail when Semrush, Search Console, or AI
-Gateway cannot be verified.
+The Codex desktop automation runs every day at 09:15 Asia/Shanghai. It researches
+the public web, writes `data/research/YYYY-MM-DD.json`, builds
+`data/reports/YYYY-MM-DD.json`, validates the project, and pushes only those two
+daily files. The workbench labels these values as proxy scores; they are not
+monthly search volume, CPC, Google data, or Semrush KD. See
+`docs/seo/free-research-robot.md` for the evidence and scoring protocol.
+
+Semrush, Search Console, AI Gateway, and the protected server-run workflow remain
+optional upgrades. Without a workbench password, the public dashboard is
+read-only while the run API stays disabled.
 
 Copy `.env.example` to `.env.local` and configure only the integrations you have. Never commit `.env.local`.
 
-### Minimum production variables
+### Free research mode variables
 
 - `NEXT_PUBLIC_SITE_URL`
+- `CODEX_RESEARCH_MODE=true`
+
+### Optional provider-backed variables
+
 - `WORKBENCH_PASSWORD`
 - `CRON_SECRET`
-
-### Live data variables
-
 - `SEMRUSH_API_KEY`
 - `GSC_SITE_URL`
 - `GOOGLE_SERVICE_ACCOUNT_EMAIL`

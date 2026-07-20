@@ -122,6 +122,7 @@ export function createDisconnectedReport(): DailySeoReport {
     brief: null,
     draft: null,
     integrations: integrationStatuses(),
+    evidence: [],
     caveats: ["当前没有读取到已持久化的真实日报；页面不会回退到演示数据。"],
   };
 }
@@ -264,6 +265,7 @@ export async function runDailySeoPipeline(
     brief,
     draft,
     integrations: integrationStatuses(overrides),
+    evidence: [],
     caveats,
   };
 }

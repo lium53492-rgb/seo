@@ -130,6 +130,7 @@ export async function fetchSemrushCandidates(): Promise<RawCandidate[]> {
     keyword,
     seed,
     source: "semrush" as const,
+    metricBasis: "provider_metrics" as const,
     volume: Number(data.search_volume || 0),
     difficulty: Number(data.keyword_difficulty ?? 50),
     cpc: Number(data.cpc || 0) / 100,

@@ -16,7 +16,9 @@ export type RecommendedAction =
 export type KeywordCandidate = {
   keyword: string;
   seed: string;
-  source: "demo" | "semrush" | "search_console";
+  source: "demo" | "semrush" | "search_console" | "codex_research";
+  metricBasis?: "provider_metrics" | "research_proxy";
+  demandScore?: number;
   volume: number;
   difficulty: number;
   cpc: number;
@@ -46,6 +48,7 @@ export type PagePerformance = {
 export type IntegrationStatus = {
   id:
     | "semrush"
+    | "codex_research"
     | "search_console"
     | "ai_gateway"
     | "github"
@@ -148,5 +151,12 @@ export type DailySeoReport = {
   brief: PageBrief | null;
   draft: GeneratedPageDraft | null;
   integrations: IntegrationStatus[];
+  evidence?: Array<{
+    title: string;
+    url: string;
+    source: string;
+    collectedAt: string;
+    supports: string[];
+  }>;
   caveats: string[];
 };

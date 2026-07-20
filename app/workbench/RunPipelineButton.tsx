@@ -24,8 +24,23 @@ type RunState =
   | { state: "done"; report: DailySeoReport; storage?: StorageResult }
   | { state: "error"; message: string; issues: string[] };
 
-export function RunPipelineButton({ enabled }: { enabled: boolean }) {
+export function RunPipelineButton({
+  enabled,
+  automationMode = false,
+}: {
+  enabled: boolean;
+  automationMode?: boolean;
+}) {
   const [run, setRun] = useState<RunState>({ state: "idle" });
+
+  if (automationMode) {
+    return (
+      <div className="wb-automation-status" role="status">
+        <strong>Codex 免费机器人已启用</strong>
+        <span>每日 09:15 自动研究并更新</span>
+      </div>
+    );
+  }
 
   async function startRun() {
     setRun({ state: "running" });

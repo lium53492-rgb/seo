@@ -34,7 +34,19 @@ function chooseAction(candidate: ScorableCandidate, score: number): RecommendedA
 function describeReason(candidate: ScorableCandidate, score: number) {
   const reasons: string[] = [];
   if (candidate.productFit >= 90) reasons.push("与语C产品高度匹配");
-  if (candidate.difficulty <= 30) reasons.push("竞争难度相对较低");
+  if (candidate.difficulty <= 30) {
+    reasons.push(
+      candidate.metricBasis === "research_proxy"
+        ? "公开结果竞争代理较低"
+        : "竞争难度相对较低",
+    );
+  }
+  if (
+    candidate.metricBasis === "research_proxy" &&
+    (candidate.demandScore ?? 0) >= 65
+  ) {
+    reasons.push("多来源需求信号较强");
+  }
   if (trendScore(candidate.trend) >= 65) reasons.push("近期需求向上");
   if (candidate.conversionIntent >= 85) reasons.push("接近开始游戏的商业意图");
   if (candidate.cannibalizationRisk >= 30) reasons.push("需处理关键词蚕食");
@@ -43,12 +55,16 @@ function describeReason(candidate: ScorableCandidate, score: number) {
 }
 
 export function scoreCandidate(candidate: ScorableCandidate): KeywordCandidate {
+  const demand =
+    candidate.metricBasis === "research_proxy"
+      ? clamp(candidate.demandScore ?? 0)
+      : demandScore(candidate.volume);
   const score = Math.round(
     clamp(
       candidate.productFit * 0.28 +
         candidate.originality * 0.14 +
         candidate.conversionIntent * 0.16 +
-        demandScore(candidate.volume) * 0.14 +
+        demand * 0.14 +
         (100 - candidate.difficulty) * 0.17 +
         trendScore(candidate.trend) * 0.11 -
         candidate.ipRisk * 0.18 -

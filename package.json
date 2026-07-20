@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "research:build": "node scripts/build-free-research-report.mjs"
   },
   "dependencies": {
     "@streamdown/cjk": "^1.0.3",

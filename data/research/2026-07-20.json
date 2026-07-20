@@ -1,0 +1,192 @@
+{
+  "date": "2026-07-20",
+  "generatedAt": "2026-07-20T09:36:54.6991191Z",
+  "candidates": [
+    {
+      "keyword": "multiplayer voice roleplay",
+      "seed": "voice roleplay",
+      "demandScore": 78,
+      "difficulty": 36,
+      "intent": "commercial",
+      "productFit": 98,
+      "originality": 88,
+      "conversionIntent": 91,
+      "ipRisk": 0,
+      "cannibalizationRisk": 8
+    },
+    {
+      "keyword": "story driven voice roleplay",
+      "seed": "voice roleplay",
+      "demandScore": 72,
+      "difficulty": 38,
+      "intent": "commercial",
+      "productFit": 99,
+      "originality": 92,
+      "conversionIntent": 86,
+      "ipRisk": 0,
+      "cannibalizationRisk": 12
+    },
+    {
+      "keyword": "ai roleplay with friends",
+      "seed": "ai roleplay game",
+      "demandScore": 74,
+      "difficulty": 43,
+      "intent": "commercial",
+      "productFit": 95,
+      "originality": 87,
+      "conversionIntent": 90,
+      "ipRisk": 0,
+      "cannibalizationRisk": 10
+    },
+    {
+      "keyword": "choose a role ai story",
+      "seed": "ai story game",
+      "demandScore": 65,
+      "difficulty": 30,
+      "intent": "commercial",
+      "productFit": 99,
+      "originality": 95,
+      "conversionIntent": 84,
+      "ipRisk": 0,
+      "cannibalizationRisk": 8
+    },
+    {
+      "keyword": "group ai voice roleplay",
+      "seed": "voice roleplay",
+      "demandScore": 69,
+      "difficulty": 45,
+      "intent": "commercial",
+      "productFit": 94,
+      "originality": 89,
+      "conversionIntent": 87,
+      "ipRisk": 0,
+      "cannibalizationRisk": 14
+    },
+    {
+      "keyword": "ai interactive story with voice",
+      "seed": "ai story game",
+      "demandScore": 76,
+      "difficulty": 54,
+      "intent": "commercial",
+      "productFit": 96,
+      "originality": 83,
+      "conversionIntent": 88,
+      "ipRisk": 0,
+      "cannibalizationRisk": 16
+    },
+    {
+      "keyword": "original character voice roleplay",
+      "seed": "voice roleplay",
+      "demandScore": 67,
+      "difficulty": 37,
+      "intent": "commercial",
+      "productFit": 91,
+      "originality": 94,
+      "conversionIntent": 81,
+      "ipRisk": 0,
+      "cannibalizationRisk": 11
+    },
+    {
+      "keyword": "multiplayer ai story game",
+      "seed": "ai story game",
+      "demandScore": 75,
+      "difficulty": 50,
+      "intent": "commercial",
+      "productFit": 90,
+      "originality": 82,
+      "conversionIntent": 89,
+      "ipRisk": 0,
+      "cannibalizationRisk": 19
+    },
+    {
+      "keyword": "voice roleplay game with characters",
+      "seed": "ai roleplay game",
+      "demandScore": 70,
+      "difficulty": 42,
+      "intent": "commercial",
+      "productFit": 97,
+      "originality": 86,
+      "conversionIntent": 88,
+      "ipRisk": 0,
+      "cannibalizationRisk": 15
+    }
+  ],
+  "evidence": [
+    {
+      "title": "Plotto — multiplayer co-op stories with voice, image and text",
+      "url": "https://www.plotto.ai/",
+      "source": "Plotto",
+      "collectedAt": "2026-07-20T09:36:54.6991191Z",
+      "supports": [
+        "multiplayer voice roleplay",
+        "ai roleplay with friends",
+        "ai interactive story with voice",
+        "multiplayer ai story game"
+      ]
+    },
+    {
+      "title": "Reverie — multi-character group calls with distinct voices",
+      "url": "https://reverie.im/en/ai-voice-call",
+      "source": "Reverie",
+      "collectedAt": "2026-07-20T09:36:54.6991191Z",
+      "supports": [
+        "multiplayer voice roleplay",
+        "group ai voice roleplay",
+        "voice roleplay game with characters"
+      ]
+    },
+    {
+      "title": "Roleloom — original characters, scenes, identity and continuing roleplay",
+      "url": "https://www.roleloom.com/",
+      "source": "Roleloom",
+      "collectedAt": "2026-07-20T09:36:54.6991191Z",
+      "supports": [
+        "story driven voice roleplay",
+        "choose a role ai story",
+        "original character voice roleplay"
+      ]
+    },
+    {
+      "title": "Chatopia — choose a story, play as a character and change the outcome",
+      "url": "https://www.chatopia.live/",
+      "source": "Chatopia",
+      "collectedAt": "2026-07-20T09:36:54.6991191Z",
+      "supports": [
+        "story driven voice roleplay",
+        "choose a role ai story",
+        "voice roleplay game with characters"
+      ]
+    },
+    {
+      "title": "Wimo — interactive worlds, characters, scenes and voice",
+      "url": "https://wimo.cc/en",
+      "source": "Wimo",
+      "collectedAt": "2026-07-20T09:36:54.6991191Z",
+      "supports": [
+        "ai interactive story with voice",
+        "story driven voice roleplay"
+      ]
+    },
+    {
+      "title": "Castmates — voiced characters with backstories and story memory",
+      "url": "https://get-castmates.com/",
+      "source": "Castmates",
+      "collectedAt": "2026-07-20T09:36:54.6991191Z",
+      "supports": [
+        "original character voice roleplay",
+        "voice roleplay game with characters"
+      ]
+    },
+    {
+      "title": "Community discussion asking for roleplay with multiple live characters",
+      "url": "https://www.reddit.com/r/ChatbotRefugees/comments/1sx2782/looking_for_rp_options_with_multiple_characters/",
+      "source": "Reddit / ChatbotRefugees",
+      "collectedAt": "2026-07-20T09:36:54.6991191Z",
+      "supports": [
+        "ai roleplay with friends",
+        "group ai voice roleplay",
+        "multiplayer ai story game"
+      ]
+    }
+  ]
+}
