@@ -141,13 +141,13 @@ export default async function WorkbenchGuidePage() {
           <div className="wb-guide-auth-grid">
             <article>
               <p className="wb-kicker">GOOGLE SEARCH CONSOLE</p>
-              <h3>可选增强：连接真实搜索曝光与点击</h3>
+              <h3>免费读取真实搜索曝光与点击</h3>
               <ol>
-                <li>打开上方 Google 授权入口，添加网址前缀属性 <code>https://seo-pi-fawn.vercel.app/</code>。</li>
-                <li>选择 HTML 文件验证；仓库已经包含对应验证文件，点击“验证”。</li>
-                <li>在 Google Cloud 启用 Search Console API，并创建服务账号与 JSON 密钥。</li>
-                <li>把服务账号邮箱添加为该 Search Console 属性用户，再将邮箱和私钥放入 Vercel 环境变量。</li>
-                <li>下一次日报出现真实 query × page 行后，状态会自动变为“已验证”。</li>
+                <li>网址前缀属性 <code>https://seo-pi-fawn.vercel.app/</code> 已完成验证。</li>
+                <li>在运行 Codex 的这台电脑上保持 Google Search Console 登录。</li>
+                <li>每日任务会打开最近 28 天 Performance 页面，只读取 Google 明确显示的 query × page 指标。</li>
+                <li>若新站为 0 或登录失效，日报会写空值和原因，不会用代理分补位。</li>
+                <li>服务账号 API 是将来的可选增强，不再阻塞研究、页面生成或发布。</li>
               </ol>
             </article>
             <article>
