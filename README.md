@@ -18,7 +18,9 @@ npm run build
 
 ## Workbench
 
-Open `/workbench` locally to inspect the daily opportunity report. With no external credentials configured, the UI runs in an explicitly labeled demo mode.
+Open `/workbench` to inspect the latest persisted production report. With no
+external credentials or report configured, the UI shows a disconnected state
+with zero metrics; it never substitutes demo values.
 
 The pipeline is split into:
 
@@ -27,11 +29,16 @@ Semrush + Search Console
 -> normalized keyword and page data
 -> opportunity scoring
 -> recommended action
--> page brief and quality gate
+-> fact-constrained AI page draft and quality gate
 -> GitHub JSON report
 ```
 
-Production runs are scheduled for 09:15 Asia/Shanghai (`01:15 UTC`) through Vercel Cron. The cron route and workbench actions are protected independently with `CRON_SECRET` and `WORKBENCH_PASSWORD`. Without a workbench password, the demo dashboard remains public and read-only while the run API stays disabled.
+Production runs are scheduled for 09:15 Asia/Shanghai (`01:15 UTC`) through
+Vercel Cron. The cron route and workbench actions are protected independently
+with `CRON_SECRET` and `WORKBENCH_PASSWORD`. Without a workbench password, the
+disconnected dashboard remains public and read-only while the run API stays
+disabled. Strict production runs fail when Semrush, Search Console, or AI
+Gateway cannot be verified.
 
 Copy `.env.example` to `.env.local` and configure only the integrations you have. Never commit `.env.local`.
 
@@ -49,6 +56,10 @@ Copy `.env.example` to `.env.local` and configure only the integrations you have
 - `GOOGLE_PRIVATE_KEY`
 - `GITHUB_REPORTS_TOKEN`
 - `GITHUB_REPORTS_REPO`
+
+AI generation uses Vercel AI Gateway OIDC automatically in production. Set
+`SEO_CONTENT_MODEL` to an available Gateway language model; a static provider
+key is not required on Vercel.
 
 The Google service account must be added as a user on the Search Console property. The GitHub token should be fine-grained and limited to Contents access on this repository.
 

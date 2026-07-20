@@ -1,4 +1,4 @@
-export type DataMode = "demo" | "live" | "partial";
+export type DataMode = "disconnected" | "live" | "partial";
 
 export type SearchIntent =
   | "commercial"
@@ -44,10 +44,16 @@ export type PagePerformance = {
 };
 
 export type IntegrationStatus = {
-  id: "semrush" | "search_console" | "github" | "product_analytics";
+  id:
+    | "semrush"
+    | "search_console"
+    | "ai_gateway"
+    | "github"
+    | "product_analytics";
   name: string;
-  state: "connected" | "demo" | "missing";
+  state: "connected" | "configured" | "missing" | "error";
   detail: string;
+  lastCheckedAt?: string;
 };
 
 export type PageBrief = {
@@ -71,6 +77,58 @@ export type DailyAction = {
   expectedImpact: string;
 };
 
+export type ProductFact = {
+  id: string;
+  statement: string;
+  source: string;
+};
+
+export type DraftQualityCheck = {
+  id: string;
+  label: string;
+  passed: boolean;
+  detail: string;
+};
+
+export type GeneratedPageDraft = {
+  keyword: string;
+  slug: string;
+  language: "en";
+  model: string;
+  generatedAt: string;
+  status: "ready_for_review" | "blocked";
+  reviewRequired: true;
+  title: string;
+  metaDescription: string;
+  h1: string;
+  heroMarkdown: string;
+  primaryCta: string;
+  sections: Array<{
+    heading: string;
+    bodyMarkdown: string;
+  }>;
+  faqs: Array<{
+    question: string;
+    answerMarkdown: string;
+  }>;
+  factIdsUsed: string[];
+  internalLinks: Array<{
+    anchor: string;
+    href: string;
+  }>;
+  assetBriefs: string[];
+  quality: {
+    passed: boolean;
+    wordCount: number;
+    checks: DraftQualityCheck[];
+  };
+  usage: {
+    inputTokens: number;
+    outputTokens: number;
+    totalTokens: number;
+  };
+};
+
 export type DailySeoReport = {
   id: string;
   date: string;
@@ -87,7 +145,8 @@ export type DailySeoReport = {
   opportunities: KeywordCandidate[];
   performance: PagePerformance[];
   actions: DailyAction[];
-  brief: PageBrief;
+  brief: PageBrief | null;
+  draft: GeneratedPageDraft | null;
   integrations: IntegrationStatus[];
   caveats: string[];
 };

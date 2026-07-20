@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 function challenge() {
-  return new NextResponse("SEO workbench authentication required", {
+  return new NextResponse(null, {
     status: 401,
     headers: { "WWW-Authenticate": 'Basic realm="SEO Growth Workbench"' },
   });
@@ -10,8 +10,11 @@ function challenge() {
 export function proxy(request: NextRequest) {
   const password = process.env.WORKBENCH_PASSWORD;
   if (!password) {
-    if (request.nextUrl.pathname.startsWith("/api/workbench")) {
-      return new NextResponse("WORKBENCH_PASSWORD is required to run the workflow", {
+    if (
+      process.env.NODE_ENV === "production" &&
+      request.nextUrl.pathname.startsWith("/api/workbench")
+    ) {
+      return new NextResponse(null, {
         status: 503,
       });
     }

@@ -1,42 +1,60 @@
 "use client";
 
 import { useState } from "react";
+import { MessageResponse } from "@/components/ai-elements/message";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import type { DailySeoReport } from "@/lib/seo/types";
+
+type StorageResult = {
+  persisted: boolean;
+  path?: string;
+  repository?: string;
+  reason?: string;
+};
 
 type RunState =
   | { state: "idle" }
   | { state: "running" }
-  | { state: "done"; message: string }
-  | { state: "error"; message: string };
+  | { state: "done"; report: DailySeoReport; storage?: StorageResult }
+  | { state: "error"; message: string; issues: string[] };
 
-type RunPipelineButtonProps = {
-  enabled: boolean;
-};
-
-export function RunPipelineButton({ enabled }: RunPipelineButtonProps) {
+export function RunPipelineButton({ enabled }: { enabled: boolean }) {
   const [run, setRun] = useState<RunState>({ state: "idle" });
 
   async function startRun() {
     setRun({ state: "running" });
     try {
       const response = await fetch("/api/workbench/run", { method: "POST" });
-      const body = (await response.json()) as {
-        report?: { mode: string; opportunities: Array<{ keyword: string }> };
-        storage?: { persisted: boolean; path?: string };
+      const payload = await response.text();
+      const body = (payload ? JSON.parse(payload) : {}) as {
+        report?: DailySeoReport;
+        storage?: StorageResult;
         error?: string;
+        issues?: string[];
       };
-      if (!response.ok || !body.report) throw new Error(body.error || "运行失败");
-      const keyword = body.report.opportunities[0]?.keyword ?? "今日任务";
-      setRun({
-        state: "done",
-        message: `已生成 ${body.report.mode} 报告：${keyword}${body.storage?.persisted ? "，并已保存" : "（尚未配置持久化）"}`,
-      });
+      if (!response.ok || !body.report) {
+        throw Object.assign(new Error(body.error || `运行失败（HTTP ${response.status}）`), {
+          issues: body.issues ?? [],
+        });
+      }
+      setRun({ state: "done", report: body.report, storage: body.storage });
     } catch (error) {
+      const failure = error as Error & { issues?: string[] };
       setRun({
         state: "error",
-        message: error instanceof Error ? error.message : "运行失败",
+        message: failure.message || "运行失败",
+        issues: failure.issues ?? [],
       });
     }
   }
+
+  const draft = run.state === "done" ? run.report.draft : null;
 
   return (
     <div className="wb-run-control">
@@ -47,15 +65,63 @@ export function RunPipelineButton({ enabled }: RunPipelineButtonProps) {
         onClick={startRun}
       >
         {!enabled
-          ? "接入权限后可运行"
+          ? "接入工作台密码后可运行"
           : run.state === "running"
-            ? "正在采集与评分…"
-            : "运行今日工作流"}
+            ? "正在读取真实数据并生成内容…"
+            : "运行今日生产工作流"}
       </button>
-      {!enabled ? <p className="wb-readonly-note">当前为公开只读 Demo</p> : null}
-      {run.state !== "idle" && run.state !== "running" ? (
-        <p className={`wb-run-message wb-run-${run.state}`}>{run.message}</p>
+      {!enabled ? <p className="wb-readonly-note">当前为公开只读状态</p> : null}
+      {run.state === "error" ? (
+        <div className="wb-run-error-card">
+          <strong>生产运行被阻止</strong>
+          <span>{run.message}</span>
+          {run.issues.map((issue) => <small key={issue}>{issue}</small>)}
+        </div>
       ) : null}
+      <Dialog
+        open={run.state === "done"}
+        onOpenChange={(open) => {
+          if (!open) setRun({ state: "idle" });
+        }}
+      >
+        {run.state === "done" ? (
+          <DialogContent className="wb-run-dialog max-h-[90vh] overflow-y-auto p-0 sm:max-w-5xl">
+            <DialogHeader>
+              <p className="wb-kicker">PRODUCTION RUN COMPLETE</p>
+              <DialogTitle>{run.report.mode === "live" ? "真实数据链路已完成" : "部分真实数据已完成"}</DialogTitle>
+              <DialogDescription className="wb-run-result-meta">
+                {run.report.summary.candidatesAnalyzed} 个关键词 · {run.report.summary.totalImpressions} 次曝光 ·
+                {run.storage?.persisted ? ` 已保存到 ${run.storage.repository}/${run.storage.path}` : " 尚未持久化"}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="wb-run-result-inner">
+              {draft ? (
+                <div className="wb-run-draft">
+                  <div>
+                    <span className={`wb-mode-badge ${draft.status === "ready_for_review" ? "live" : "blocked"}`}>
+                      {draft.status === "ready_for_review" ? "READY FOR REVIEW" : "BLOCKED"}
+                    </span>
+                    <MessageResponse className="wb-ai-title">{draft.title}</MessageResponse>
+                    <MessageResponse>{draft.heroMarkdown}</MessageResponse>
+                    <MessageResponse className="wb-run-cta-copy">{draft.primaryCta}</MessageResponse>
+                  </div>
+                  <aside className="wb-quality-panel">
+                    <p>MODEL</p><strong>{draft.model}</strong>
+                    <p>WORDS</p><strong>{draft.quality.wordCount}</strong>
+                    {draft.quality.checks.map((check) => (
+                      <span className={check.passed ? "passed" : "failed"} key={check.id}>
+                        {check.passed ? "✓" : "×"} {check.label}
+                      </span>
+                    ))}
+                  </aside>
+                </div>
+              ) : (
+                <p>没有生成内容草稿；检查 AI Gateway 连接状态。</p>
+              )}
+            </div>
+          </DialogContent>
+        ) : null}
+      </Dialog>
     </div>
   );
 }

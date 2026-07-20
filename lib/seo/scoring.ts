@@ -64,16 +64,24 @@ export function scoreCandidate(candidate: ScorableCandidate): KeywordCandidate {
   };
 }
 
-export function intentFromSemrush(value: string | undefined): SearchIntent {
-  const first = value?.split(",")[0]?.trim();
-  return (
-    {
-      "0": "commercial",
-      "1": "informational",
-      "2": "navigational",
-      "3": "transactional",
-    } as const
-  )[first as "0" | "1" | "2" | "3"] ?? "mixed";
+export function intentFromSemrush(
+  value: string | string[] | undefined,
+): SearchIntent {
+  const intents = (Array.isArray(value) ? value : value?.split(",") ?? [])
+    .map((item) => item.trim().toUpperCase())
+    .filter(Boolean);
+  if (intents.length > 1) return "mixed";
+  const intentMap = {
+    COMMERCIAL: "commercial",
+    INFORMATIONAL: "informational",
+    NAVIGATIONAL: "navigational",
+    TRANSACTIONAL: "transactional",
+    "0": "commercial",
+    "1": "informational",
+    "2": "navigational",
+    "3": "transactional",
+  } as const;
+  return intentMap[intents[0] as keyof typeof intentMap] ?? "mixed";
 }
 
 export function scoreCandidates(candidates: ScorableCandidate[]) {

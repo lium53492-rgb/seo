@@ -11,11 +11,10 @@ function safeEqual(left: string, right: string) {
   );
 }
 
-export function isWorkbenchAuthorized(request: Request) {
+export function isBasicAuthHeaderAuthorized(header: string | null) {
   const password = process.env.WORKBENCH_PASSWORD;
   if (!password) return process.env.NODE_ENV !== "production";
 
-  const header = request.headers.get("authorization");
   if (!header?.startsWith("Basic ")) return false;
   try {
     const decoded = Buffer.from(header.slice(6), "base64").toString("utf8");
@@ -25,4 +24,8 @@ export function isWorkbenchAuthorized(request: Request) {
   } catch {
     return false;
   }
+}
+
+export function isWorkbenchAuthorized(request: Request) {
+  return isBasicAuthHeaderAuthorized(request.headers.get("authorization"));
 }
