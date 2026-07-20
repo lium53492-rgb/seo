@@ -86,3 +86,8 @@ After both checks pass, commit only these daily artifacts:
 Push to `origin/main`. The connected Vercel project deploys the commit, the page
 route renders the new JSON as an indexable page, and the sitemap plus homepage
 internal links include it automatically.
+
+The zero-additional-API-cost scheduler is a local Codex automation. The computer
+and Codex app must be online around the scheduled run. If a run is missed, start
+the automation once from the Codex Automations screen. GitHub and Vercel continue
+serving already published pages without the local computer.

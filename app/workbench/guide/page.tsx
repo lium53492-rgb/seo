@@ -101,6 +101,10 @@ export default async function WorkbenchGuidePage() {
               <li key={title}><span>{String(index + 1).padStart(2, "0")}</span><div><h3>{title}</h3><p>{detail}</p></div></li>
             ))}
           </ol>
+          <div className="wb-guide-note">
+            <strong>零额外 API 成本的运行条件：</strong>
+            每日研究与写作使用这台电脑上的 Codex 自动任务，因此 09:15 前后需要保持电脑和 Codex 应用在线。错过时可在 Codex 的自动化页面点一次“立即运行”；提交之后的 GitHub 构建、Vercel 上线和页面访问不依赖电脑在线。
+          </div>
         </section>
 
         <section className="wb-section" id="decisions">
