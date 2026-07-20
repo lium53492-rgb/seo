@@ -1,6 +1,6 @@
-# NovelAI Story SEO
+# NovelAI SEO Growth Workbench
 
-Independent SEO landing pages for specific NovelAI stories.
+A Next.js SEO landing site plus a daily research-to-action workbench for NovelAI voice roleplay and interactive stories.
 
 ## First Page
 
@@ -15,6 +15,42 @@ npm install
 npm run dev
 npm run build
 ```
+
+## Workbench
+
+Open `/workbench` locally to inspect the daily opportunity report. With no external credentials configured, the UI runs in an explicitly labeled demo mode.
+
+The pipeline is split into:
+
+```text
+Semrush + Search Console
+-> normalized keyword and page data
+-> opportunity scoring
+-> recommended action
+-> page brief and quality gate
+-> GitHub JSON report
+```
+
+Production runs are scheduled for 09:15 Asia/Shanghai (`01:15 UTC`) through Vercel Cron. The cron route and workbench actions are protected independently with `CRON_SECRET` and `WORKBENCH_PASSWORD`. Without a workbench password, the demo dashboard remains public and read-only while the run API stays disabled.
+
+Copy `.env.example` to `.env.local` and configure only the integrations you have. Never commit `.env.local`.
+
+### Minimum production variables
+
+- `NEXT_PUBLIC_SITE_URL`
+- `WORKBENCH_PASSWORD`
+- `CRON_SECRET`
+
+### Live data variables
+
+- `SEMRUSH_API_KEY`
+- `GSC_SITE_URL`
+- `GOOGLE_SERVICE_ACCOUNT_EMAIL`
+- `GOOGLE_PRIVATE_KEY`
+- `GITHUB_REPORTS_TOKEN`
+- `GITHUB_REPORTS_REPO`
+
+The Google service account must be added as a user on the Search Console property. The GitHub token should be fine-grained and limited to Contents access on this repository.
 
 ## Deployment
 
