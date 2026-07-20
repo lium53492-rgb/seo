@@ -54,9 +54,11 @@ export type IntegrationStatus = {
     | "github"
     | "product_analytics";
   name: string;
-  state: "connected" | "configured" | "missing" | "error";
+  state: "connected" | "configured" | "replaced" | "missing" | "error";
   detail: string;
   lastCheckedAt?: string;
+  href?: string;
+  actionLabel?: string;
 };
 
 export type PageBrief = {

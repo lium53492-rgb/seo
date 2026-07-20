@@ -22,6 +22,9 @@ Open `/workbench` to inspect the latest persisted production report. With no
 external credentials or report configured, the UI shows a disconnected state
 with zero metrics; it never substitutes demo values.
 
+Open `/workbench/guide` for the Chinese operating manual, the daily review
+checklist, the data-to-design decision rules, and direct authorization links.
+
 The default zero-extra-data-cost pipeline is:
 
 ```text
@@ -37,9 +40,16 @@ Codex public-web research
 The Codex desktop automation runs every day at 09:15 Asia/Shanghai. It researches
 the public web, writes `data/research/YYYY-MM-DD.json`, builds
 `data/reports/YYYY-MM-DD.json`, validates the project, and pushes only those two
-daily files. The workbench labels these values as proxy scores; they are not
+daily files. The highest-scoring supported keyword also receives a human-review
+English page draft. The builder blocks unsupported product claims and unapproved
+fact IDs. The workbench labels research values as proxy scores; they are not
 monthly search volume, CPC, Google data, or Semrush KD. See
 `docs/seo/free-research-robot.md` for the evidence and scoring protocol.
+
+Semrush is replaced by the free Codex research path. Vercel Web Analytics pageview
+instrumentation is installed; enable the project-level switch in Vercel to begin
+collection. Google Search Console remains free but requires a verified property
+and service-account authorization before daily query/page metrics can be read.
 
 Semrush, Search Console, AI Gateway, and the protected server-run workflow remain
 optional upgrades. Without a workbench password, the public dashboard is

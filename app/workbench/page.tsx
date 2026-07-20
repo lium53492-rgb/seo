@@ -5,7 +5,7 @@ import { MessageResponse } from "@/components/ai-elements/message";
 import { isBasicAuthHeaderAuthorized } from "@/lib/seo/auth";
 import { createDisconnectedReport } from "@/lib/seo/pipeline";
 import { readLatestReport } from "@/lib/seo/report-store";
-import type { RecommendedAction } from "@/lib/seo/types";
+import type { IntegrationStatus, RecommendedAction } from "@/lib/seo/types";
 import { RunPipelineButton } from "./RunPipelineButton";
 
 export const dynamic = "force-dynamic";
@@ -22,9 +22,10 @@ const actionLabels: Record<RecommendedAction, string> = {
   observe: "继续观察",
 };
 
-const integrationLabels = {
+const integrationLabels: Record<IntegrationStatus["state"], string> = {
   connected: "已验证",
   configured: "已配置",
+  replaced: "免费替代",
   missing: "待接入",
   error: "连接失败",
 };
@@ -73,6 +74,7 @@ export default async function WorkbenchPage() {
           <a href="#generated"><span>✦</span>内容草稿</a>
           <a href="#performance"><span>⌁</span>搜索表现</a>
           <a href="#integrations"><span>⊘</span>数据连接</a>
+          <a href="/workbench/guide"><span>?</span>使用指南</a>
         </nav>
         <div className="wb-sidebar-note">
           <span className={`wb-dot ${report.mode}`} />
@@ -95,7 +97,10 @@ export default async function WorkbenchPage() {
             <p className="wb-kicker">DAILY COMMAND CENTER</p>
             <h1>今天该做什么，一眼就够。</h1>
           </div>
-          <RunPipelineButton enabled={canRun} automationMode={automationMode} />
+          <div className="wb-top-actions">
+            <a className="wb-guide-link" href="/workbench/guide">打开使用指南</a>
+            <RunPipelineButton enabled={canRun} automationMode={automationMode} />
+          </div>
         </header>
 
         <section className={`wb-hero ${top ? "" : "wb-hero-empty"}`} id="overview">
@@ -304,7 +309,15 @@ export default async function WorkbenchPage() {
             {report.integrations.map((integration) => (
               <article key={integration.id}>
                 <span className={`wb-integration-icon ${integration.state}`}>{integration.name.slice(0, 1)}</span>
-                <div><h3>{integration.name}</h3><p>{integration.detail}</p></div>
+                <div className="wb-integration-copy">
+                  <h3>{integration.name}</h3>
+                  <p>{integration.detail}</p>
+                  {integration.href && integration.actionLabel ? (
+                    <a href={integration.href} target="_blank" rel="noreferrer">
+                      {integration.actionLabel} ↗
+                    </a>
+                  ) : null}
+                </div>
                 <strong className={integration.state}>{integrationLabels[integration.state]}</strong>
               </article>
             ))}

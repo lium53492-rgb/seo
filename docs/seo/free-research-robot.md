@@ -16,6 +16,9 @@ This protocol replaces paid keyword-provider data with transparent research prox
 - `difficulty` (0–100): strength of dedicated pages already ranking, brand concentration, exact-match coverage, and depth of competing content.
 - These are directional proxies. They are not monthly search volume, CPC, or Semrush KD.
 - Set `volume` and `cpc` indirectly through the builder; never invent them in the research input.
+- A product-fit score above 70 requires direct support from `lib/seo/product-facts.ts`.
+  If a keyword implies an unapproved capability such as friends, groups, or
+  multiplayer play, cap `productFit` at 49 until the product team adds that fact.
 
 ## Research input
 
@@ -27,7 +30,7 @@ Create `data/research/YYYY-MM-DD.json` with:
   "generatedAt": "ISO-8601 timestamp",
   "candidates": [
     {
-      "keyword": "multiplayer voice roleplay",
+      "keyword": "choose a role ai story",
       "seed": "voice roleplay",
       "demandScore": 70,
       "difficulty": 35,
@@ -45,13 +48,19 @@ Create `data/research/YYYY-MM-DD.json` with:
       "url": "https://example.com/page",
       "source": "Example",
       "collectedAt": "ISO-8601 timestamp",
-      "supports": ["multiplayer voice roleplay"]
+      "supports": ["choose a role ai story"]
     }
   ]
 }
 ```
 
 Use 5–12 candidates. Every candidate must be supported by at least one evidence item. Do not add a draft unless the page content has also passed the product-fact constraints in `lib/seo/product-facts.ts`.
+
+When a draft is included, its keyword must match the highest-scoring opportunity,
+all `factIdsUsed` values must be approved, and it must stay in
+`ready_for_review` until a human confirms the destination story, available roles,
+original assets, and copyright status. The builder blocks unsupported claims such
+as multiplayer, real-time operation, platform availability, privacy, or latency.
 
 ## Build and publish
 

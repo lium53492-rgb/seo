@@ -43,6 +43,76 @@ const clamp = (value, min = 0, max = 100) =>
 const slugify = (value) =>
   value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 const titleCase = (value) => value.replace(/\b\w/g, (letter) => letter.toUpperCase());
+const approvedFactIds = new Set([
+  "voice-roleplay-format",
+  "existing-story",
+  "role-selection",
+  "interactive-fiction-history",
+]);
+
+function validateDraft(rawDraft, topKeyword) {
+  if (!rawDraft) return null;
+  if (String(rawDraft.keyword || "").trim().toLowerCase() !== topKeyword) {
+    throw new Error("Draft keyword must match the highest-scoring opportunity");
+  }
+  if (rawDraft.language !== "en" || rawDraft.reviewRequired !== true) {
+    throw new Error("Draft must be English and require human review");
+  }
+  const factIds = Array.isArray(rawDraft.factIdsUsed) ? rawDraft.factIdsUsed : [];
+  if (!factIds.length || factIds.some((id) => !approvedFactIds.has(id))) {
+    throw new Error("Draft uses an unapproved or missing product fact ID");
+  }
+  const sections = Array.isArray(rawDraft.sections) ? rawDraft.sections : [];
+  const faqs = Array.isArray(rawDraft.faqs) ? rawDraft.faqs : [];
+  if (sections.length < 3 || faqs.length < 2) {
+    throw new Error("Draft needs at least 3 sections and 2 FAQs");
+  }
+  const publishableText = [
+    rawDraft.title,
+    rawDraft.metaDescription,
+    rawDraft.h1,
+    rawDraft.heroMarkdown,
+    ...sections.flatMap((section) => [section.heading, section.bodyMarkdown]),
+    ...faqs.flatMap((faq) => [faq.question, faq.answerMarkdown]),
+  ].join(" ");
+  const forbiddenClaims = [
+    /\bmultiplayer\b/i,
+    /\bwith friends\b/i,
+    /\breal[- ]time\b/i,
+    /\bunlimited\b/i,
+    /\bprivate\b/i,
+    /\bavailable on (?:ios|android|steam|web)\b/i,
+    /\b(?:zero|low) latency\b/i,
+  ];
+  const failedClaim = forbiddenClaims.find((pattern) => pattern.test(publishableText));
+  if (failedClaim) {
+    throw new Error(`Draft contains an unsupported product claim: ${failedClaim}`);
+  }
+  const wordCount = (publishableText.match(/[A-Za-z0-9][A-Za-z0-9'’-]*/g) ?? []).length;
+  const checks = Array.isArray(rawDraft.quality?.checks) ? rawDraft.quality.checks : [];
+  const lengthCheck = {
+    id: "minimum-depth",
+    label: "页面内容达到最低深度",
+    passed: wordCount >= 350,
+    detail: `可发布正文与 FAQ 共 ${wordCount} 个英文词。`,
+  };
+  const normalizedChecks = [
+    ...checks.filter((check) => check.id !== lengthCheck.id),
+    lengthCheck,
+  ];
+  return {
+    ...rawDraft,
+    status: normalizedChecks.every((check) => check.passed)
+      ? "ready_for_review"
+      : "blocked",
+    reviewRequired: true,
+    quality: {
+      passed: normalizedChecks.every((check) => check.passed),
+      wordCount,
+      checks: normalizedChecks,
+    },
+  };
+}
 
 function chooseAction(candidate, score) {
   if (candidate.cannibalizationRisk >= 60) return "consolidate";
@@ -103,6 +173,7 @@ const opportunities = input.candidates
   .sort((left, right) => right.score - left.score)
   .slice(0, 12);
 const top = opportunities[0];
+const draft = validateDraft(input.draft, top.keyword);
 const phrase = titleCase(top.keyword);
 const pageType = /how|what|ideas|guide/.test(top.keyword)
   ? "guide"
@@ -171,7 +242,7 @@ const report = {
     ],
     evidenceRequired: [
       "至少 1 个真实可玩的公开剧情",
-      "至少 3 个可选择角色或角色视角",
+      "产品团队确认的全部可选角色或角色视角",
       "产品团队确认的语音能力",
       "原创视觉、语音或试玩素材",
     ],
@@ -182,14 +253,14 @@ const report = {
       "通过移动端、链接和索引检查",
     ],
   },
-  draft: input.draft || null,
+  draft,
   integrations: [
-    { id: "semrush", name: "Semrush", state: "missing", detail: "可选增强项；免费模式不依赖 Semrush" },
+    { id: "semrush", name: "Semrush", state: "replaced", detail: "已由 Codex 公开网页研究替代；无需购买也能每天更新" },
     { id: "codex_research", name: "Codex Research", state: "connected", detail: `已验证 ${input.evidence.length} 条公开证据并评分 ${input.candidates.length} 个候选词`, lastCheckedAt: checkedAt },
-    { id: "search_console", name: "Google Search Console", state: performance.length ? "connected" : "missing", detail: performance.length ? `已合并 ${performance.length} 行真实搜索表现` : "尚未授权；免费研究仍可运行" },
-    { id: "ai_gateway", name: "Codex Content", state: input.draft ? "connected" : "configured", detail: input.draft ? "本次日报包含事实受控草稿" : "研究完成；内容草稿可由 Codex 审核后生成" },
-    { id: "github", name: "GitHub Reports", state: "connected", detail: "日报由 Codex 自动化提交到 data/reports" },
-    { id: "product_analytics", name: "Product Analytics", state: "missing", detail: "尚未接入产品事件；当前优化目标止于 SEO 点击" },
+    { id: "search_console", name: "Google Search Console", state: performance.length ? "connected" : "missing", detail: performance.length ? `已合并 ${performance.length} 行真实搜索表现` : "站点入口已准备，等待 Google 账号授权", href: "https://search.google.com/search-console", actionLabel: performance.length ? "打开 Search Console" : "去 Google 授权" },
+    { id: "ai_gateway", name: "Codex Content", state: draft ? "connected" : "configured", detail: draft ? "本次日报包含通过事实约束检查的英文草稿" : "研究完成；内容草稿可由 Codex 审核后生成" },
+    { id: "github", name: "GitHub Reports", state: "connected", detail: "日报由 Codex 自动化提交到 data/reports", href: "https://github.com/lium53492-rgb/seo/tree/main/data/reports", actionLabel: "查看日报文件" },
+    { id: "product_analytics", name: "Product Analytics", state: "configured", detail: "Vercel 页面访问采集代码已接入；等待控制台启用，Hobby 免费版不含自定义事件", href: "https://vercel.com/elser1/seo/analytics", actionLabel: "启用免费统计" },
   ],
   evidence: input.evidence.map((item) => {
     const url = new URL(item.url);

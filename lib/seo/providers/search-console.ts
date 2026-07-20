@@ -58,7 +58,7 @@ function recommendation(clicks: number, impressions: number, ctr: number, positi
 }
 
 export async function fetchSearchConsolePerformance(): Promise<PagePerformance[]> {
-  const siteUrl = process.env.GSC_SITE_URL;
+  const siteUrl = process.env.GSC_SITE_URL?.trim();
   if (!siteUrl) return [];
   const token = process.env.GSC_ACCESS_TOKEN || (await serviceAccountAccessToken());
   if (!token) return [];
