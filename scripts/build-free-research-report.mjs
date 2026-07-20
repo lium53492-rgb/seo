@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
 const inputPath = process.argv[2];
@@ -49,6 +49,48 @@ const approvedFactIds = new Set([
   "role-selection",
   "interactive-fiction-history",
 ]);
+const unsupportedCapability = /\b(multiplayer|with friends|group roleplay|real[- ]?time|unlimited)\b/i;
+
+function meaningfulWords(value) {
+  const stopWords = new Set([
+    "a", "an", "and", "are", "as", "at", "be", "by", "for", "from", "how",
+    "in", "inside", "is", "it", "of", "on", "or", "story", "that", "the", "this",
+    "to", "voice", "what", "when", "with", "you", "your",
+  ]);
+  return new Set(
+    String(value || "")
+      .toLowerCase()
+      .match(/[a-z0-9][a-z0-9'-]*/g)
+      ?.filter((word) => word.length > 2 && !stopWords.has(word)) ?? [],
+  );
+}
+
+function pageText(page) {
+  return [
+    page.h1,
+    page.heroMarkdown,
+    ...(Array.isArray(page.sections)
+      ? page.sections.flatMap((section) => [section.heading, section.bodyMarkdown])
+      : []),
+  ].join(" ");
+}
+
+function similarity(left, right) {
+  const leftWords = meaningfulWords(left);
+  const rightWords = meaningfulWords(right);
+  if (!leftWords.size || !rightWords.size) return 0;
+  const intersection = [...leftWords].filter((word) => rightWords.has(word)).length;
+  const union = new Set([...leftWords, ...rightWords]).size;
+  return intersection / union;
+}
+
+function existingPages() {
+  const directory = resolve("data/pages");
+  if (!existsSync(directory)) return [];
+  return readdirSync(directory)
+    .filter((name) => name.endsWith(".json"))
+    .map((name) => JSON.parse(readFileSync(resolve(directory, name), "utf8")));
+}
 
 function validateDraft(rawDraft, topKeyword) {
   if (!rawDraft) return null;
@@ -59,7 +101,7 @@ function validateDraft(rawDraft, topKeyword) {
     throw new Error("Draft must be English and require human review");
   }
   const factIds = Array.isArray(rawDraft.factIdsUsed) ? rawDraft.factIdsUsed : [];
-  if (!factIds.length || factIds.some((id) => !approvedFactIds.has(id))) {
+  if (factIds.length < 2 || factIds.some((id) => !approvedFactIds.has(id))) {
     throw new Error("Draft uses an unapproved or missing product fact ID");
   }
   const sections = Array.isArray(rawDraft.sections) ? rawDraft.sections : [];
@@ -142,6 +184,11 @@ function scoreCandidate(raw) {
     ...(raw.existingUrl ? { existingUrl: String(raw.existingUrl) } : {}),
   };
   if (!candidate.keyword || !candidate.seed) throw new Error("Every candidate needs keyword and seed");
+  if (unsupportedCapability.test(candidate.keyword) && candidate.productFit > 49) {
+    throw new Error(
+      `Unsupported capability keyword must have productFit <= 49: ${candidate.keyword}`,
+    );
+  }
 
   const score = Math.round(clamp(
     candidate.productFit * 0.28 +
@@ -189,8 +236,74 @@ const totals = performance.reduce(
   { clicks: 0, impressions: 0 },
 );
 const checkedAt = new Date().toISOString();
+const reportId = `seo-${date}`;
+const pageSlug = slugify(top.keyword);
+let publication = {
+  status: "blocked",
+  reason: "今日草稿未通过自动发布闸门。",
+};
+
+if (draft?.quality?.passed && top.action === "create_page") {
+  const pages = existingPages();
+  const sameSlug = pages.find((page) => page.slug === pageSlug);
+  if (sameSlug && input.publicationMode !== "update") {
+    throw new Error(
+      `Page /${pageSlug} already exists. Research a new opportunity or set publicationMode to update.`,
+    );
+  }
+
+  const draftSimilarity = pages
+    .filter((page) => page.slug !== pageSlug)
+    .map((page) => ({ slug: page.slug, score: similarity(pageText(page), pageText(draft)) }))
+    .sort((left, right) => right.score - left.score)[0];
+  if (draftSimilarity?.score >= 0.72) {
+    throw new Error(
+      `Draft is too similar to /${draftSimilarity.slug} (${Math.round(draftSimilarity.score * 100)}%).`,
+    );
+  }
+
+  const page = {
+    schemaVersion: 1,
+    status: "published",
+    slug: pageSlug,
+    path: `/${pageSlug}`,
+    keyword: top.keyword,
+    publishedAt: sameSlug?.publishedAt || checkedAt,
+    updatedAt: checkedAt,
+    generatedFromReport: reportId,
+    title: draft.title,
+    metaDescription: draft.metaDescription,
+    h1: draft.h1,
+    heroMarkdown: draft.heroMarkdown,
+    primaryCta: draft.primaryCta,
+    sections: draft.sections,
+    faqs: draft.faqs,
+    factIdsUsed: draft.factIdsUsed,
+    internalLinks: draft.internalLinks || [],
+    assetBriefs: draft.assetBriefs || [],
+    quality: draft.quality,
+    research: {
+      opportunityScore: top.score,
+      demandProxy: top.demandScore || 0,
+      competitionProxy: top.difficulty,
+      evidenceCount: input.evidence.length,
+    },
+  };
+  const pagePath = resolve(`data/pages/${pageSlug}.json`);
+  mkdirSync(dirname(pagePath), { recursive: true });
+  writeFileSync(pagePath, `${JSON.stringify(page, null, 2)}\n`, "utf8");
+  publication = {
+    status: "published",
+    slug: pageSlug,
+    path: `/${pageSlug}`,
+    publishedAt: page.publishedAt,
+    reason: sameSlug
+      ? "页面通过全部闸门并完成更新。"
+      : "页面通过来源、事实、版权、深度与重复度闸门并进入公开构建。",
+  };
+}
 const report = {
-  id: `seo-${date}`,
+  id: reportId,
   date,
   generatedAt: input.generatedAt || checkedAt,
   mode: "partial",
@@ -204,6 +317,7 @@ const report = {
   },
   opportunities,
   performance,
+  publication,
   actions: [
     {
       priority: "P0",
@@ -219,9 +333,9 @@ const report = {
     },
     {
       priority: "P2",
-      action: "确认剧情、角色、语音能力与原创素材后再发布",
-      why: "研究信号不能替代第一手产品证据。",
-      expectedImpact: "降低低价值内容和虚假产品承诺风险。",
+      action: publication.status === "published" ? `构建并上线 ${publication.path}` : "修复发布闸门后再上线",
+      why: publication.reason,
+      expectedImpact: "让研究结论真正变成可索引、可追踪的公开页面。",
     },
   ],
   brief: {
@@ -275,7 +389,7 @@ const report = {
   caveats: [
     "免费研究模式不提供月搜索量、CPC 或 Semrush KD；需求分和竞争分均为 0–100 代理指标。",
     "代理分依据公开搜索结果的重复出现、近期性、用户讨论和头部结果强度计算，结果会随网页变化。",
-    "所有发布建议都必须经过人工产品事实与版权审核。",
+    "自动发布只允许使用产品事实白名单；任何新功能、定价、平台或第三方 IP 都必须先加入人工批准的事实清单。",
   ],
 };
 

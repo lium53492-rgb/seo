@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { FAQJsonLd } from "next-seo";
 import { TrackedStoryLink } from "./components/TrackedStoryLink";
+import { listPublishedPages } from "@/lib/seo/page-store";
 
 const pageTitle = "2000s Marriage Life Simulator";
 const pageDescription =
@@ -38,7 +39,8 @@ const faqs = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const publishedPages = await listPublishedPages();
   return (
     <main>
       <FAQJsonLd questions={faqs} />
@@ -149,6 +151,22 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      {publishedPages.length ? (
+        <section className="publishedBand">
+          <p className="eyebrow">Voice Roleplay Guides</p>
+          <h2>Explore more ways to enter an AI story.</h2>
+          <div className="publishedLinks">
+            {publishedPages.slice(0, 6).map((page) => (
+              <a href={page.path} key={page.slug}>
+                <small>{page.keyword}</small>
+                <strong>{page.h1}</strong>
+                <span>Read the guide →</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="finalCta">
         <h2>Start the 2000s Marriage Life Simulator</h2>

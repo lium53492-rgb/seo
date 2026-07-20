@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "status": "published",
+  "slug": "choose-a-role-ai-story",
+  "path": "/choose-a-role-ai-story",
+  "keyword": "choose a role ai story",
+  "publishedAt": "2026-07-20T12:14:29.024Z",
+  "updatedAt": "2026-07-20T12:20:04.113Z",
+  "generatedFromReport": "seo-2026-07-20",
+  "title": "Choose a Role in an AI Story | Story-Led Voice Roleplay",
+  "metaDescription": "Choose an available character and step into an existing story plot through an AI voice roleplay experience built for in-character play.",
+  "h1": "Choose a Role in an AI Story",
+  "heroMarkdown": "A story is already waiting. Choose one of its available characters, step into that role, and use your voice to play from inside the plot. This is AI voice roleplay shaped around a story—not an empty chat box asking you to invent everything before the experience can begin.",
+  "primaryCta": "Choose a role and start",
+  "sections": [
+    {
+      "heading": "Start with a story, not a blank screen",
+      "bodyMarkdown": "Every playable experience begins with an existing story plot. The setting, situation, and available roles give you a clear dramatic starting point, so your first decision is about who you want to become inside the story. That story-first structure makes the experience easier to enter: you can focus on the character's point of view and respond to what is happening instead of spending the opening moments building a world from nothing."
+    },
+    {
+      "heading": "Choose the character you want to perform",
+      "bodyMarkdown": "A role changes how a scene feels. You choose from the story characters that are available in the experience, then approach the plot through that character's place in it. The same opening situation can carry different tension, curiosity, or responsibility depending on the role you select. The experience presents its available roles inside the featured story, so you can make the choice from the characters that actually belong to that plot."
+    },
+    {
+      "heading": "Play the scene through voice roleplay",
+      "bodyMarkdown": "The experience is built around AI voice cosplay and roleplay. Once you enter the story as your selected character, voice becomes the way you perform inside the scene. What matters here is not a promise about a particular voice technology; it is the creative format: acting from within a prepared plot, responding in character, and treating the story as a place to perform rather than a prompt to read passively."
+    },
+    {
+      "heading": "Built by a team with interactive-fiction roots",
+      "bodyMarkdown": "The team behind the product has previously built AI interactive-fiction and simulator experiences. That background informs a story-led approach in which context, character choice, and participation belong together. You can follow the story link on this page to open a real playable experience rather than relying on a generic feature list. The roles themselves stay grounded in the selected story instead of borrowed entertainment characters or worlds."
+    },
+    {
+      "heading": "What to expect before you begin",
+      "bodyMarkdown": "First, open the featured story and understand its opening situation. Next, review the characters that are available and choose the role you want to perform. Then enter the story as that character and continue through the voice roleplay experience. The story link on this page leads to a playable interactive-fiction experience, giving you a concrete place to begin while the broader voice-roleplay product continues to develop."
+    }
+  ],
+  "faqs": [
+    {
+      "question": "What does it mean to choose a role in an AI story?",
+      "answerMarkdown": "It means selecting one of the characters available in an existing story plot and entering the experience from that character's point of view. The role gives you a defined place inside the scene before the voice roleplay begins."
+    },
+    {
+      "question": "Do I have to write the whole story first?",
+      "answerMarkdown": "No. Each playable experience starts from an existing story plot rather than an empty chat box. You begin by understanding the situation and choosing an available character to perform."
+    },
+    {
+      "question": "Is this a voice roleplay experience?",
+      "answerMarkdown": "Yes. The product is being built as an AI voice cosplay and roleplay experience centered on acting inside a story. This page focuses on the creative format and does not make an unverified claim about a particular voice technology or performance."
+    },
+    {
+      "question": "Can I use a famous character or fictional universe?",
+      "answerMarkdown": "This page is designed around original story material. It should not use unlicensed entertainment characters, worlds, trademarks, or other recognizable third-party intellectual property."
+    }
+  ],
+  "factIdsUsed": [
+    "voice-roleplay-format",
+    "existing-story",
+    "role-selection",
+    "interactive-fiction-history"
+  ],
+  "internalLinks": [
+    {
+      "anchor": "Explore the current story experience",
+      "href": "/"
+    }
+  ],
+  "assetBriefs": [
+    "Capture an original desktop-and-mobile view of a confirmed story opening; do not show third-party entertainment IP.",
+    "Create a role-selection visual using only characters that the product team confirms are actually available in the featured story.",
+    "Record a short product demo only after the exact voice flow and destination story have passed product review."
+  ],
+  "quality": {
+    "passed": true,
+    "wordCount": 633,
+    "checks": [
+      {
+        "id": "approved-facts",
+        "label": "只使用已批准产品事实",
+        "passed": true,
+        "detail": "草稿引用的四项事实均来自产品团队 brief。"
+      },
+      {
+        "id": "no-third-party-ip",
+        "label": "不使用第三方 IP",
+        "passed": true,
+        "detail": "正文只描述原创故事与角色。"
+      },
+      {
+        "id": "no-invented-claims",
+        "label": "无虚构能力或数据",
+        "passed": true,
+        "detail": "未声称多人、实时、免费、平台、定价或技术指标。"
+      },
+      {
+        "id": "human-review",
+        "label": "发布前人工审核",
+        "passed": true,
+        "detail": "真实剧情、角色、素材与目标链接仍需产品团队确认。"
+      },
+      {
+        "id": "minimum-depth",
+        "label": "页面内容达到最低深度",
+        "passed": true,
+        "detail": "可发布正文与 FAQ 共 633 个英文词。"
+      }
+    ]
+  },
+  "research": {
+    "opportunityScore": 80,
+    "demandProxy": 65,
+    "competitionProxy": 30,
+    "evidenceCount": 7
+  }
+}

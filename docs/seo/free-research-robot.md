@@ -56,11 +56,11 @@ Create `data/research/YYYY-MM-DD.json` with:
 
 Use 5–12 candidates. Every candidate must be supported by at least one evidence item. Do not add a draft unless the page content has also passed the product-fact constraints in `lib/seo/product-facts.ts`.
 
-When a draft is included, its keyword must match the highest-scoring opportunity,
-all `factIdsUsed` values must be approved, and it must stay in
-`ready_for_review` until a human confirms the destination story, available roles,
-original assets, and copyright status. The builder blocks unsupported claims such
-as multiplayer, real-time operation, platform availability, privacy, or latency.
+When a draft is included, its keyword must match the highest-scoring opportunity
+and all `factIdsUsed` values must be approved. The builder blocks unsupported
+claims such as multiplayer, real-time operation, platform availability, privacy,
+or latency. Before researching a new keyword, inspect `data/pages` and do not
+choose a keyword that already has a page.
 
 ## Build and publish
 
@@ -71,4 +71,18 @@ npm run research:build -- data/research/YYYY-MM-DD.json
 npm run check
 ```
 
-The builder validates the research, calculates the opportunity score, and writes `data/reports/YYYY-MM-DD.json`. Commit only the two daily JSON files unless the application itself needs a separately reviewed change.
+The builder validates the research, calculates the opportunity score, checks the
+draft against the fact and copyright allowlists, compares it with existing pages,
+and writes both `data/reports/YYYY-MM-DD.json` and a public
+`data/pages/<slug>.json`. A duplicate slug is rejected unless the input explicitly
+sets `publicationMode` to `update`.
+
+After both checks pass, commit only these daily artifacts:
+
+- `data/research/YYYY-MM-DD.json`
+- `data/reports/YYYY-MM-DD.json`
+- `data/pages/<slug>.json`
+
+Push to `origin/main`. The connected Vercel project deploys the commit, the page
+route renders the new JSON as an indexable page, and the sitemap plus homepage
+internal links include it automatically.

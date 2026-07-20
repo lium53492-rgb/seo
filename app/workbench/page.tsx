@@ -128,7 +128,14 @@ export default async function WorkbenchPage() {
             <div className="wb-hero-actions">
               {top ? (
                 <>
-                  <a className="wb-primary-link" href="#generated">查看生成草稿</a>
+                  <a
+                    className="wb-primary-link"
+                    href={report.publication?.status === "published" && report.publication.path
+                      ? report.publication.path
+                      : "#generated"}
+                  >
+                    {report.publication?.status === "published" ? "打开已上线页面" : "查看生成草稿"}
+                  </a>
                   <a className="wb-secondary-link" href="#opportunities">比较候选词</a>
                 </>
               ) : (
@@ -250,8 +257,8 @@ export default async function WorkbenchPage() {
           <div className="wb-section-heading">
             <div><p className="wb-kicker">FACT-CONSTRAINED CONTENT</p><h2>真实可生产的英文页面草稿</h2></div>
             {report.draft ? (
-              <span className={`wb-mode-badge ${report.draft.status === "ready_for_review" ? "live" : "blocked"}`}>
-                {report.draft.status === "ready_for_review" ? "READY FOR REVIEW" : "BLOCKED"}
+              <span className={`wb-mode-badge ${report.publication?.status === "published" ? "live" : report.draft.status === "ready_for_review" ? "draft" : "blocked"}`}>
+                {report.publication?.status === "published" ? "PUBLISHED" : report.draft.status === "ready_for_review" ? "READY" : "BLOCKED"}
               </span>
             ) : null}
           </div>
@@ -266,8 +273,8 @@ export default async function WorkbenchPage() {
                     <MessageResponse>{section.bodyMarkdown}</MessageResponse>
                   </div>
                 ))}
-                <a className="wb-primary-link" href={`/workbench/preview/${encodeURIComponent(report.draft.slug.replace(/^\//, ""))}`}>
-                  打开完整内容预览
+                <a className="wb-primary-link" href={report.publication?.status === "published" && report.publication.path ? report.publication.path : `/workbench/preview/${encodeURIComponent(report.draft.slug.replace(/^\//, ""))}`}>
+                  {report.publication?.status === "published" ? "打开线上页面" : "打开完整内容预览"}
                 </a>
               </article>
               <aside className="wb-quality-panel">

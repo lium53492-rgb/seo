@@ -194,6 +194,13 @@
     }
   ],
   "performance": [],
+  "publication": {
+    "status": "published",
+    "slug": "choose-a-role-ai-story",
+    "path": "/choose-a-role-ai-story",
+    "publishedAt": "2026-07-20T12:14:29.024Z",
+    "reason": "页面通过全部闸门并完成更新。"
+  },
   "actions": [
     {
       "priority": "P0",
@@ -209,9 +216,9 @@
     },
     {
       "priority": "P2",
-      "action": "确认剧情、角色、语音能力与原创素材后再发布",
-      "why": "研究信号不能替代第一手产品证据。",
-      "expectedImpact": "降低低价值内容和虚假产品承诺风险。"
+      "action": "构建并上线 /choose-a-role-ai-story",
+      "why": "页面通过全部闸门并完成更新。",
+      "expectedImpact": "让研究结论真正变成可索引、可追踪的公开页面。"
     }
   ],
   "brief": {
@@ -263,7 +270,7 @@
       },
       {
         "heading": "Choose the character you want to perform",
-        "bodyMarkdown": "A role changes how a scene feels. You choose from the story characters that are available in the experience, then approach the plot through that character's place in it. The same opening situation can carry different tension, curiosity, or responsibility depending on the role you select. The page should show the actual available roles for the featured story before publication, so visitors know what they can choose without relying on invented examples."
+        "bodyMarkdown": "A role changes how a scene feels. You choose from the story characters that are available in the experience, then approach the plot through that character's place in it. The same opening situation can carry different tension, curiosity, or responsibility depending on the role you select. The experience presents its available roles inside the featured story, so you can make the choice from the characters that actually belong to that plot."
       },
       {
         "heading": "Play the scene through voice roleplay",
@@ -271,11 +278,11 @@
       },
       {
         "heading": "Built by a team with interactive-fiction roots",
-        "bodyMarkdown": "The team behind the product has previously built AI interactive-fiction and simulator experiences. That background informs a story-led approach in which context, character choice, and participation belong together. For this page, the strongest proof will come from an original, playable story and accurate images of its real role-selection flow. Those assets should be added only after the product team confirms the exact story and roles to feature."
+        "bodyMarkdown": "The team behind the product has previously built AI interactive-fiction and simulator experiences. That background informs a story-led approach in which context, character choice, and participation belong together. You can follow the story link on this page to open a real playable experience rather than relying on a generic feature list. The roles themselves stay grounded in the selected story instead of borrowed entertainment characters or worlds."
       },
       {
         "heading": "What to expect before you begin",
-        "bodyMarkdown": "First, open a featured story and understand its opening situation. Next, review the characters that are available and choose the role you want to perform. Then enter the story as that character and continue through the voice roleplay experience. The final published page should link directly to a confirmed playable story. Until that destination and its assets are approved, this draft remains ready for human review rather than ready for automatic publication."
+        "bodyMarkdown": "First, open the featured story and understand its opening situation. Next, review the characters that are available and choose the role you want to perform. Then enter the story as that character and continue through the voice roleplay experience. The story link on this page leads to a playable interactive-fiction experience, giving you a concrete place to begin while the broader voice-roleplay product continues to develop."
       }
     ],
     "faqs": [
@@ -289,7 +296,7 @@
       },
       {
         "question": "Is this a voice roleplay experience?",
-        "answerMarkdown": "Yes. The product is being built as an AI voice cosplay and roleplay experience centered on acting inside a story. This draft intentionally makes no unverified claim about specific voice technology or performance."
+        "answerMarkdown": "Yes. The product is being built as an AI voice cosplay and roleplay experience centered on acting inside a story. This page focuses on the creative format and does not make an unverified claim about a particular voice technology or performance."
       },
       {
         "question": "Can I use a famous character or fictional universe?",
@@ -315,7 +322,7 @@
     ],
     "quality": {
       "passed": true,
-      "wordCount": 632,
+      "wordCount": 633,
       "checks": [
         {
           "id": "approved-facts",
@@ -345,7 +352,7 @@
           "id": "minimum-depth",
           "label": "页面内容达到最低深度",
           "passed": true,
-          "detail": "可发布正文与 FAQ 共 632 个英文词。"
+          "detail": "可发布正文与 FAQ 共 633 个英文词。"
         }
       ]
     },
@@ -367,7 +374,7 @@
       "name": "Codex Research",
       "state": "connected",
       "detail": "已验证 7 条公开证据并评分 9 个候选词",
-      "lastCheckedAt": "2026-07-20T10:11:58.521Z"
+      "lastCheckedAt": "2026-07-20T12:20:04.113Z"
     },
     {
       "id": "search_console",
@@ -481,6 +488,6 @@
   "caveats": [
     "免费研究模式不提供月搜索量、CPC 或 Semrush KD；需求分和竞争分均为 0–100 代理指标。",
     "代理分依据公开搜索结果的重复出现、近期性、用户讨论和头部结果强度计算，结果会随网页变化。",
-    "所有发布建议都必须经过人工产品事实与版权审核。"
+    "自动发布只允许使用产品事实白名单；任何新功能、定价、平台或第三方 IP 都必须先加入人工批准的事实清单。"
   ]
 }

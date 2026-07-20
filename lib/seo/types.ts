@@ -134,6 +134,42 @@ export type GeneratedPageDraft = {
   };
 };
 
+export type PublishedSeoPage = {
+  schemaVersion: 1;
+  status: "published";
+  slug: string;
+  path: string;
+  keyword: string;
+  publishedAt: string;
+  updatedAt: string;
+  generatedFromReport: string;
+  title: string;
+  metaDescription: string;
+  h1: string;
+  heroMarkdown: string;
+  primaryCta: string;
+  sections: GeneratedPageDraft["sections"];
+  faqs: GeneratedPageDraft["faqs"];
+  factIdsUsed: string[];
+  internalLinks: GeneratedPageDraft["internalLinks"];
+  assetBriefs: string[];
+  quality: GeneratedPageDraft["quality"];
+  research: {
+    opportunityScore: number;
+    demandProxy: number;
+    competitionProxy: number;
+    evidenceCount: number;
+  };
+};
+
+export type ReportPublication = {
+  status: "published" | "blocked" | "not_requested";
+  path?: string;
+  slug?: string;
+  reason: string;
+  publishedAt?: string;
+};
+
 export type DailySeoReport = {
   id: string;
   date: string;
@@ -152,6 +188,7 @@ export type DailySeoReport = {
   actions: DailyAction[];
   brief: PageBrief | null;
   draft: GeneratedPageDraft | null;
+  publication?: ReportPublication;
   integrations: IntegrationStatus[];
   evidence?: Array<{
     title: string;

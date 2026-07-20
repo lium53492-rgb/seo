@@ -36,8 +36,8 @@ export function RunPipelineButton({
   if (automationMode) {
     return (
       <div className="wb-automation-status" role="status">
-        <strong>Codex 免费机器人已启用</strong>
-        <span>每日 09:15 自动研究并更新</span>
+        <strong>免费全自动发布已启用</strong>
+        <span>每日 09:15 研究 → 质检 → GitHub → Vercel</span>
       </div>
     );
   }

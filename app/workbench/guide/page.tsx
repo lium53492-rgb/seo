@@ -20,10 +20,11 @@ const stateLabels: Record<IntegrationStatus["state"], string> = {
 
 const dailySteps = [
   ["09:15 自动研究", "Codex 搜索公开网页，保留证据链接，并生成需求与竞争代理分。"],
-  ["机会排序", "工作台综合产品匹配、原创性、转化意图、需求信号、竞争和风险。"],
-  ["生成 Brief 与草稿", "第一名关键词自动变成页面结构和事实受控英文草稿。"],
-  ["人工确认", "你只需确认真实剧情、可选角色、原创素材和最终跳转链接。"],
-  ["发布与观测", "日报进入 GitHub；页面上线后由 Search Console 与 Vercel Analytics 回传结果。"],
+  ["选择未覆盖机会", "系统先排除已经发布、产品不匹配、第三方 IP 和内容重复度过高的候选词。"],
+  ["生成页面", "第一名关键词自动变成 Brief、事实受控英文内容和完整页面数据。"],
+  ["自动质量闸门", "来源、事实、版权、正文深度、重复度和内部链接全部通过才允许提交。"],
+  ["GitHub 与 Vercel 上线", "Codex 提交日报和页面；Vercel 自动构建，sitemap 与首页内链同步更新。"],
+  ["真实数据反馈", "Search Console 与 Vercel Analytics 的真实表现会影响后续选词、标题和页面更新。"],
 ];
 
 const decisionRows = [
@@ -68,10 +69,14 @@ export default async function WorkbenchGuidePage() {
         <header className="wb-guide-hero">
           <p className="wb-kicker">OPERATING MANUAL</p>
           <h1>你只看结果，工作台负责把研究变成行动。</h1>
-          <p>每天打开一次、审核一个机会、确认真实素材。其他研究、评分、写作、归档和持续观测都由自动流程完成。</p>
+          <p>每天自动完成研究、评分、写作、质检、提交和上线。你打开工作台时只看当天机会、证据、线上页面和真实表现。</p>
           <div className="wb-hero-actions">
             <a className="wb-primary-link" href="/workbench">打开今日任务</a>
-            <a className="wb-secondary-link" href="#connections">完成剩余授权</a>
+            {report.publication?.status === "published" && report.publication.path ? (
+              <a className="wb-secondary-link" href={report.publication.path}>打开最新线上页面</a>
+            ) : (
+              <a className="wb-secondary-link" href="#connections">查看可选数据增强</a>
+            )}
           </div>
         </header>
 
@@ -80,9 +85,9 @@ export default async function WorkbenchGuidePage() {
             <div><p className="wb-kicker">30-SECOND START</p><h2>每天只做三件事</h2></div>
           </div>
           <div className="wb-guide-cards">
-            <article><span>01</span><h3>看今日最高优先级</h3><p>先看机会分、产品匹配和证据来源，不需要逐个研究关键词。</p></article>
-            <article><span>02</span><h3>打开完整内容预览</h3><p>确认页面没有虚构功能，剧情、角色和素材都能由产品团队证明。</p></article>
-            <article><span>03</span><h3>决定发布或退回</h3><p>通过后交给发布流程；不通过就补充产品事实，第二天重新评分。</p></article>
+            <article><span>01</span><h3>看今天为什么选它</h3><p>先看机会分、产品匹配、竞争代理分和来源，不需要逐个研究关键词。</p></article>
+            <article><span>02</span><h3>打开线上页面</h3><p>状态为 PUBLISHED 时可直接检查搜索页面、内容、CTA、移动端和内链。</p></article>
+            <article><span>03</span><h3>只处理异常</h3><p>只有闸门失败或产品事实变化时才需要你介入；其他日期保持零操作。</p></article>
           </div>
         </section>
 
@@ -132,7 +137,7 @@ export default async function WorkbenchGuidePage() {
           <div className="wb-guide-auth-grid">
             <article>
               <p className="wb-kicker">GOOGLE SEARCH CONSOLE</p>
-              <h3>连接真实搜索曝光与点击</h3>
+              <h3>可选增强：连接真实搜索曝光与点击</h3>
               <ol>
                 <li>打开上方 Google 授权入口，添加网址前缀属性 <code>https://seo-pi-fawn.vercel.app/</code>。</li>
                 <li>选择 HTML 文件验证；仓库已经包含对应验证文件，点击“验证”。</li>
@@ -156,15 +161,16 @@ export default async function WorkbenchGuidePage() {
         </section>
 
         <section className="wb-section" id="publish">
-          <div className="wb-section-heading"><div><p className="wb-kicker">HUMAN GATE</p><h2>发布前的五项确认</h2></div></div>
+          <div className="wb-section-heading"><div><p className="wb-kicker">AUTOMATED QUALITY GATE</p><h2>没通过这六项，系统不会上线</h2></div></div>
           <div className="wb-publish-checklist">
-            <span>□ 页面描述的剧情确实存在且可以打开</span>
-            <span>□ 所有角色名称和可选状态与产品一致</span>
-            <span>□ 截图、语音和视觉素材均为原创或已授权</span>
-            <span>□ CTA 指向确认过的真实产品入口</span>
-            <span>□ 页面没有声称未确认的多人、实时、平台、价格或技术指标</span>
+            <span>✓ 至少 5 条公开证据，且来自至少 3 个独立域名</span>
+            <span>✓ 每个候选词都有可回溯的 evidence.supports</span>
+            <span>✓ 页面只使用产品事实白名单中的事实 ID</span>
+            <span>✓ 不出现多人、实时、平台、价格、延迟或第三方 IP 等未批准说法</span>
+            <span>✓ 正文深度达标，FAQ、标题、描述和 CTA 完整</span>
+            <span>✓ 与已有页面不重复，同一关键词不会再次创建页面</span>
           </div>
-          <p className="wb-guide-footnote">通过这五项后才发布。工作台的 READY FOR REVIEW 表示“可以审核”，不表示“已自动上线”。</p>
+          <p className="wb-guide-footnote">全部通过后，脚本才会写入 data/pages 并把日报标为 PUBLISHED；随后 GitHub 推送触发 Vercel 构建。新产品能力仍需先由你加入事实白名单。</p>
         </section>
       </div>
     </main>
