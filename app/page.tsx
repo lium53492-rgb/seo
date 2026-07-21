@@ -46,9 +46,16 @@ export default async function Home() {
       <FAQJsonLd questions={faqs} />
 
       <section className="hero">
+        <nav className="homeNav" aria-label="Primary navigation">
+          <a className="wordmark" href="/" aria-label="Interactive AI Story home">
+            <span className="wordmarkMark" aria-hidden="true">S</span>
+            <span>STORY / VOICE</span>
+          </a>
+          <a className="navGuide" href="#story-preview">How it works <span aria-hidden="true">↘</span></a>
+        </nav>
         <div className="heroCopy">
-          <p className="eyebrow">Story-led roleplay</p>
-          <h1>Story-Led AI Voice Roleplay</h1>
+          <p className="eyebrow">An interactive story format</p>
+          <h1>Enter a story.<br /><em>Choose your role.</em></h1>
           <p className="lede">
             Begin with an existing plot, choose an available character, and
             perform from inside the scene instead of starting with an empty chat box.
@@ -63,23 +70,20 @@ export default async function Home() {
           </div>
         </div>
 
-        <div className="poster" aria-label="Abstract illustration of a story and role selection">
-          <div className="posterWindow">
-            <span />
-            <span />
-            <span />
+        <div className="poster" aria-label="An abstract story scene and character choice interface">
+          <div className="posterChrome">
+            <span className="posterStatus"><i /> Scene loaded</span>
+            <span>01 / 03</span>
           </div>
-          <div className="posterRoom">
-            <div className="calendar">STORY</div>
-            <div className="tv" />
-            <div className="table">
-              <div className="teacup" />
-              <div className="book" />
-            </div>
-            <div className="couple">
-              <div className="person leftPerson" />
-              <div className="person rightPerson" />
-            </div>
+          <div className="sceneGlow" />
+          <div className="sceneFrame">
+            <p>THE OPENING SCENE</p>
+            <strong>The room is waiting.<br />Who will you be?</strong>
+          </div>
+          <div className="characterRail" aria-hidden="true">
+            <div className="characterChoice active"><b>01</b><span>YOUR ROLE</span></div>
+            <div className="characterChoice"><b>02</b><span>THE SETTING</span></div>
+            <div className="characterChoice"><b>03</b><span>THE SCENE</span></div>
           </div>
         </div>
       </section>
