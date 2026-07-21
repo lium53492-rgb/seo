@@ -8,6 +8,7 @@ type FeedbackEntry = {
   createdAt: string;
   message: string;
   source: "workbench";
+  kind: "content_guidance";
 };
 
 type GithubContent = { content?: string; encoding?: string; sha?: string };
@@ -58,6 +59,7 @@ export async function persistWorkbenchFeedback(message: string) {
     createdAt: new Date().toISOString(),
     message: trimmed,
     source: "workbench",
+    kind: "content_guidance",
   };
   const date = shanghaiDate();
   const relativePath = `data/seo-feedback/inbox/${date}.json`;

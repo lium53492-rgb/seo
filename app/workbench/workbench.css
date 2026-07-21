@@ -235,6 +235,19 @@
 .wb-feedback-form label { color: var(--wb-ink); font-size: .76rem; font-weight: 800; }
 .wb-feedback-form textarea { min-height: 130px; resize: vertical; padding: 12px; border: 1px solid #cfd3cb; border-radius: 8px; background: #f5f4ef; color: var(--wb-ink); font: inherit; font-size: .76rem; line-height: 1.55; }
 .wb-feedback-form textarea:focus { outline: 2px solid rgba(27,107,75,.35); border-color: var(--wb-green); }
+.wb-report-intro { max-width: 760px; margin: -4px 0 28px; color: var(--wb-muted); font-size: .8rem; line-height: 1.65; }
+.wb-report-archive { display: grid; gap: 14px; }
+.wb-report-card { padding: 22px; border: 1px solid #dfe2da; border-radius: 11px; background: #f8f7f2; }
+.wb-report-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.wb-report-card h2 { margin: 0; font-size: clamp(1.15rem, 2.4vw, 1.75rem); letter-spacing: -.035em; }
+.wb-report-card > p { margin: 16px 0; color: var(--wb-muted); font-size: .75rem; line-height: 1.6; }
+.wb-report-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin: 20px 0 0; border: 1px solid var(--wb-line); border-radius: 8px; overflow: hidden; background: var(--wb-line); }
+.wb-report-metrics div { min-width: 0; padding: 12px; background: #f0efe9; }
+.wb-report-metrics dt { color: var(--wb-muted); font-size: .6rem; }
+.wb-report-metrics dd { margin: 5px 0 0; color: var(--wb-ink); font-size: 1rem; font-weight: 900; }
+.wb-report-links { display: flex; flex-wrap: wrap; gap: 8px; }
+.wb-report-links a { display: inline-flex; min-height: 32px; align-items: center; padding: 0 10px; border: 1px solid #ccd1c8; border-radius: 6px; color: var(--wb-green); font-size: .65rem; font-weight: 850; text-decoration: none; }
+.wb-report-links a:hover { border-color: var(--wb-green); background: #eef5ea; }
 .wb-draft-list { display: grid; gap: 28px; }
 .wb-draft-list .wb-generated-grid + .wb-generated-grid { padding-top: 28px; border-top: 1px solid #e2e4dd; }
 
@@ -291,6 +304,7 @@
   .wb-performance-grid, .wb-integration-grid, .wb-signal-grid { grid-template-columns: 1fr; }
   .wb-guide-cards, .wb-guide-auth-grid, .wb-publish-checklist { grid-template-columns: 1fr; }
   .wb-generated-grid, .wb-run-draft, .wb-preview-content, .wb-preview-audit, .wb-evidence-grid, .wb-publication-list { grid-template-columns: 1fr; }
+  .wb-report-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .wb-cluster-flow { align-items: stretch; flex-direction: column; }
   .wb-cluster-flow i { text-align: center; transform: rotate(90deg); }
   .wb-preview-shell { padding: 8px; }

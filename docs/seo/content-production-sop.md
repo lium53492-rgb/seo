@@ -32,7 +32,7 @@ AI may prepare the source summary, outline, first draft, schema suggestions and 
 - remove unsupported promises, third-party IP, copied phrasing, and internal-process language;
 - approve the CTA and decide whether the page is ready to publish.
 
-User feedback is an editorial input for the next daily run. Preserve it verbatim with a date, then translate it into an explicit brief requirement rather than silently changing copy.
+User feedback and workbench content guidance are editorial inputs for the next daily run. Preserve each verbatim with a date, then translate it into an explicit brief requirement rather than silently changing copy. Guidance submitted from the workbench is marked `kind: "content_guidance"` and must be evaluated before keyword selection, not after the draft is written.
 For feedback received through the workbench inbox, process only entries without
 `consumedAt`, record the adoption or rejection in the daily report and automation
 memory, then mark the entry with `consumedAt`. This keeps the feedback loop durable

@@ -78,7 +78,8 @@ export default async function WorkbenchPage() {
           <a href="#signals"><span>↗</span>趋势与热点</a>
           <a href="#opportunities"><span>◎</span>机会雷达</a>
           <a href="#cluster"><span>⌘</span>内容集群</a>
-          <a href="#feedback"><span>✦</span>反馈队列</a>
+          <a href="#feedback"><span>✦</span>内容指导</a>
+          <a href="/workbench/reports"><span>▤</span>日报归档</a>
           <a href="#performance"><span>◌</span>搜索表现</a>
           <a href="/workbench/guide"><span>?</span>使用指南</a>
         </nav>
@@ -91,7 +92,7 @@ export default async function WorkbenchPage() {
       <div className="wb-main">
         <header className="wb-topbar">
           <div><p className="wb-kicker">DAILY COMMAND CENTER</p><h1>把研究、内容和反馈放进同一份可追溯日报。</h1></div>
-          <div className="wb-top-actions"><a className="wb-guide-link" href="/workbench/guide">打开使用指南</a><RunPipelineButton enabled={canRefresh} /></div>
+          <div className="wb-top-actions"><a className="wb-guide-link" href="/workbench/reports">查看日报</a><a className="wb-guide-link" href="/workbench/guide">打开使用指南</a><RunPipelineButton enabled={canRefresh} /></div>
         </header>
 
         <section className={`wb-hero ${top ? "" : "wb-hero-empty"}`} id="overview">
@@ -142,7 +143,7 @@ export default async function WorkbenchPage() {
 
         <div className="wb-two-column">
           <section className="wb-section wb-action-list"><div className="wb-section-heading compact"><div><p className="wb-kicker">ACTION QUEUE</p><h2>今天的行动</h2></div></div>{report.actions.map((action) => <article key={action.priority}><span>{action.priority}</span><div><h3>{action.action}</h3><p>{action.why}</p><small>{action.expectedImpact}</small></div></article>)}</section>
-          <section className="wb-section" id="feedback"><div className="wb-section-heading compact"><div><p className="wb-kicker">FEEDBACK TO TOMORROW</p><h2>把今天的经验送进下一次生产。</h2></div></div><FeedbackForm enabled={feedbackEnabled} /></section>
+          <section className="wb-section" id="feedback"><div className="wb-section-heading compact"><div><p className="wb-kicker">CONTENT GUIDANCE → NEXT RUN</p><h2>把你的方向直接带进下一次生产。</h2></div></div><FeedbackForm enabled={feedbackEnabled} /></section>
         </div>
 
         <section className="wb-section wb-generated" id="generated"><div className="wb-section-heading"><div><p className="wb-kicker">FACT-CONSTRAINED CONTENT</p><h2>当日草稿与质量闸门</h2></div><span className="wb-data-note">最多两篇；每篇独立通过证据、事实、IP、重复度与链接检查。</span></div>{drafts.length ? <div className="wb-draft-list">{drafts.map((item) => {
