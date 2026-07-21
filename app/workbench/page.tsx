@@ -59,7 +59,8 @@ export default async function WorkbenchPage() {
   const points = historyPoints(history);
   const publications = report.publications?.length ? report.publications : report.publication ? [report.publication] : [];
   const drafts = report.drafts?.length ? report.drafts : report.draft ? [report.draft] : [];
-  const canRefresh = process.env.NODE_ENV !== "production" || Boolean(process.env.WORKBENCH_PASSWORD);
+  const canRefresh = true;
+  const feedbackEnabled = Boolean(process.env.WORKBENCH_PASSWORD && process.env.GITHUB_REPORTS_TOKEN);
   const hotSignals = report.opportunities.slice(0, 5).map((opportunity) => ({
     ...opportunity,
     evidenceCount: evidence.filter((item) => item.supports.map((keyword) => keyword.toLowerCase()).includes(opportunity.keyword)).length,
@@ -141,7 +142,7 @@ export default async function WorkbenchPage() {
 
         <div className="wb-two-column">
           <section className="wb-section wb-action-list"><div className="wb-section-heading compact"><div><p className="wb-kicker">ACTION QUEUE</p><h2>今天的行动</h2></div></div>{report.actions.map((action) => <article key={action.priority}><span>{action.priority}</span><div><h3>{action.action}</h3><p>{action.why}</p><small>{action.expectedImpact}</small></div></article>)}</section>
-          <section className="wb-section" id="feedback"><div className="wb-section-heading compact"><div><p className="wb-kicker">FEEDBACK TO TOMORROW</p><h2>把今天的经验送进下一次生产。</h2></div></div><FeedbackForm /></section>
+          <section className="wb-section" id="feedback"><div className="wb-section-heading compact"><div><p className="wb-kicker">FEEDBACK TO TOMORROW</p><h2>把今天的经验送进下一次生产。</h2></div></div><FeedbackForm enabled={feedbackEnabled} /></section>
         </div>
 
         <section className="wb-section wb-generated" id="generated"><div className="wb-section-heading"><div><p className="wb-kicker">FACT-CONSTRAINED CONTENT</p><h2>当日草稿与质量闸门</h2></div><span className="wb-data-note">最多两篇；每篇独立通过证据、事实、IP、重复度与链接检查。</span></div>{drafts.length ? <div className="wb-draft-list">{drafts.map((item) => {

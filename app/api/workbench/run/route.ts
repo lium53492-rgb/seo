@@ -2,7 +2,9 @@ import { isWorkbenchAuthorized } from "../../../../lib/seo/auth";
 import { readLatestReport } from "../../../../lib/seo/report-store";
 
 export async function POST(request: Request) {
-  if (!isWorkbenchAuthorized(request)) {
+  // Refreshing only reads the latest verified report. Keep it usable on the
+  // public workbench when no password has been configured.
+  if (process.env.WORKBENCH_PASSWORD && !isWorkbenchAuthorized(request)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
   try {

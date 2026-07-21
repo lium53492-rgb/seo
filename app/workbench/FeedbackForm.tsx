@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export function FeedbackForm() {
+export function FeedbackForm({ enabled }: { enabled: boolean }) {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [detail, setDetail] = useState("");
@@ -26,6 +26,14 @@ export function FeedbackForm() {
       setStatus("error");
       setDetail(error instanceof Error ? error.message : "反馈保存失败");
     }
+  }
+
+  if (!enabled) {
+    return (
+      <div className="wb-readonly-note" role="status">
+        Feedback persistence needs the protected production configuration (WORKBENCH_PASSWORD and GITHUB_REPORTS_TOKEN). No feedback is being silently discarded.
+      </div>
+    );
   }
 
   return (
