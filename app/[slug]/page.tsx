@@ -67,11 +67,13 @@ export default async function PublishedSeoPage({ params }: PageProps) {
       />
 
       <nav className={styles.nav} aria-label="Primary navigation">
-        <a className={styles.brand} href="/">
+        <div className={styles.brand}>
           <span>N</span>
           NovelAI Stories
-        </a>
-        <a href="/#story-preview">Explore a playable story</a>
+        </div>
+        <TrackedNovelAiHomeLink className={styles.navAction} sourceSlug={page.slug}>
+          Explore NovelAI <span aria-hidden="true">↗</span>
+        </TrackedNovelAiHomeLink>
       </nav>
 
       <header className={styles.hero}>
@@ -94,11 +96,16 @@ export default async function PublishedSeoPage({ params }: PageProps) {
         </div>
 
         <div className={styles.stage} aria-label="Abstract original story role selection illustration">
+          <div className={styles.stageHeader}>
+            <span><i /> Story context</span>
+            <small>01 / 03</small>
+          </div>
           <div className={styles.storyCard}>
             <span>01</span>
             <strong>Enter the story</strong>
             <small>An existing plot gives the scene a clear beginning.</small>
           </div>
+          <p className={styles.sceneNote}>A scene is already in motion.<br />Choose where you enter.</p>
           <div className={`${styles.roleCard} ${styles.roleOne}`}><span>A</span><strong>Choose a role</strong></div>
           <div className={`${styles.roleCard} ${styles.roleTwo}`}><span>B</span><strong>Perform the scene</strong></div>
           <div className={styles.voiceLine} aria-hidden="true">
