@@ -1,10 +1,4 @@
-import {
-  PipelinePrerequisiteError,
-  runDailySeoPipeline,
-} from "../../../../lib/seo/pipeline";
-import { persistReport } from "../../../../lib/seo/report-store";
-
-export const maxDuration = 300;
+import { readLatestReport } from "../../../../lib/seo/report-store";
 
 export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET;
@@ -12,32 +6,14 @@ export async function GET(request: Request) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
   try {
-    const report = await runDailySeoPipeline({
-      live: true,
-      generateContent: true,
-      strict: true,
-    });
-    const storage = await persistReport(report);
-    console.log(
-      JSON.stringify({
-        event: "daily_seo_pipeline_complete",
-        reportId: report.id,
-        mode: report.mode,
-        topKeyword: report.opportunities[0]?.keyword,
-        persisted: storage.persisted,
-      }),
-    );
-    return Response.json({ ok: true, reportId: report.id, mode: report.mode, storage });
-  } catch (error) {
-    console.error("daily_seo_pipeline_failed", error);
-    if (error instanceof PipelinePrerequisiteError) {
-      return Response.json(
-        { error: error.message, issues: error.issues },
-        { status: 424 },
-      );
+    const report = await readLatestReport();
+    if (!report) {
+      return Response.json({ error: "No verified local SEO report is available." }, { status: 404 });
     }
+    return Response.json({ ok: true, reportId: report.id, mode: report.mode, generatedAt: report.generatedAt });
+  } catch (error) {
     return Response.json(
-      { error: error instanceof Error ? error.message : "Pipeline failed" },
+      { error: error instanceof Error ? error.message : "Report read failed" },
       { status: 500 },
     );
   }

@@ -1,34 +1,22 @@
 import { isWorkbenchAuthorized } from "../../../../lib/seo/auth";
-import {
-  PipelinePrerequisiteError,
-  runDailySeoPipeline,
-} from "../../../../lib/seo/pipeline";
-import { persistReport } from "../../../../lib/seo/report-store";
-
-export const maxDuration = 300;
+import { readLatestReport } from "../../../../lib/seo/report-store";
 
 export async function POST(request: Request) {
   if (!isWorkbenchAuthorized(request)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
   try {
-    const report = await runDailySeoPipeline({
-      live: true,
-      generateContent: true,
-      strict: true,
-    });
-    const storage = await persistReport(report);
-    return Response.json({ ok: true, report, storage });
-  } catch (error) {
-    console.error("workbench_run_failed", error);
-    if (error instanceof PipelinePrerequisiteError) {
+    const report = await readLatestReport();
+    if (!report) {
       return Response.json(
-        { error: error.message, issues: error.issues },
-        { status: 424 },
+        { error: "尚无已验证日报；请等待本地免费研究自动化完成。" },
+        { status: 404 },
       );
     }
+    return Response.json({ ok: true, reportId: report.id, generatedAt: report.generatedAt });
+  } catch (error) {
     return Response.json(
-      { error: error instanceof Error ? error.message : "Pipeline failed" },
+      { error: error instanceof Error ? error.message : "日报读取失败" },
       { status: 500 },
     );
   }

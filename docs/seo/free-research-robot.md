@@ -56,8 +56,8 @@ Create `data/research/YYYY-MM-DD.json` with:
 
 Use 5–12 candidates. Every candidate must be supported by at least one evidence item. Do not add a draft unless the page content has also passed the product-fact constraints in `lib/seo/product-facts.ts`.
 
-When a draft is included, its keyword must match the highest-scoring opportunity
-and all `factIdsUsed` values must be approved. The builder blocks unsupported
+When a draft is included, its keyword must match a researched, new publishable
+opportunity and all `factIdsUsed` values must be approved. The builder blocks unsupported
 claims such as multiplayer, real-time operation, platform availability, privacy,
 or latency. Before researching a new keyword, inspect `data/pages` and do not
 choose a keyword that already has a page.
@@ -76,6 +76,21 @@ draft against the fact and copyright allowlists, compares it with existing pages
 and writes both `data/reports/YYYY-MM-DD.json` and a public
 `data/pages/<slug>.json`. A duplicate slug is rejected unless the input explicitly
 sets `publicationMode` to `update`.
+
+## Temporary two-page cluster cadence
+
+When the temporary cluster cadence is active, keep one research input and one
+report per Shanghai day. The morning run writes the first draft. The 16:15 run
+reads that same input, appends a second draft to `drafts` with `slot: "afternoon"`,
+then rebuilds the same report. Do not create a second report file or overwrite the
+morning draft. The builder permits at most two drafts and records both in
+`report.publications`.
+
+The afternoon page must use a different covered intent, pass all normal gates,
+and link to at least one existing relevant first-party route when one exists.
+The homepage remains the cluster hub; outgoing page links create the first layer
+of the internal-link network. The temporary cadence ends after the agreed week;
+then return to one draft per daily report.
 
 After both checks pass, commit only these daily artifacts:
 

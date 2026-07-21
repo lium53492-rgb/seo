@@ -166,6 +166,7 @@ export type ReportPublication = {
   status: "published" | "blocked" | "not_requested";
   path?: string;
   slug?: string;
+  slot?: "morning" | "afternoon";
   reason: string;
   publishedAt?: string;
 };
@@ -188,7 +189,11 @@ export type DailySeoReport = {
   actions: DailyAction[];
   brief: PageBrief | null;
   draft: GeneratedPageDraft | null;
+  /** The morning draft is retained in `draft` for backwards compatibility. */
+  drafts?: GeneratedPageDraft[];
   publication?: ReportPublication;
+  /** One daily report can record both the morning and temporary afternoon page. */
+  publications?: ReportPublication[];
   integrations: IntegrationStatus[];
   evidence?: Array<{
     title: string;

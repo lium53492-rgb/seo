@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="NovelAI Story Guide">
+  <rect width="64" height="64" rx="14" fill="#172a24"/>
+  <path d="M18 16h21c4 0 7 3 7 7v25H25c-4 0-7-3-7-7V16Z" fill="#c9f36a"/>
+  <path d="M25 48V23c0-4 3-7 7-7h14" fill="none" stroke="#172a24" stroke-linecap="round" stroke-width="5"/>
+  <path d="M33 27h8M33 35h8" stroke="#172a24" stroke-linecap="round" stroke-width="4"/>
+</svg>

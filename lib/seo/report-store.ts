@@ -61,26 +61,50 @@ async function readBundledLatestReport() {
   }
 }
 
+export async function readReportHistory(limit = 14) {
+  const reportsDirectory = resolve(process.cwd(), "data/reports");
+  try {
+    const names = (await readdir(reportsDirectory))
+      .filter((name) => /^\d{4}-\d{2}-\d{2}\.json$/.test(name))
+      .sort((left, right) => right.localeCompare(left))
+      .slice(0, limit)
+      .reverse();
+    return Promise.all(
+      names.map(async (name) =>
+        JSON.parse(await readFile(resolve(reportsDirectory, name), "utf8")) as DailySeoReport,
+      ),
+    );
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return [];
+    throw error;
+  }
+}
+
 export async function readLatestReport() {
   const bundled = await readBundledLatestReport();
-  const { token, repository, branch } = githubConfig();
-  const response = await fetch(
-    `https://api.github.com/repos/${repository}/contents/data/reports?ref=${encodeURIComponent(branch)}`,
-    { headers: headers(token), cache: "no-store" },
-  );
-  if (response.status === 404) return bundled;
-  if (!response.ok) {
+  try {
+    const { token, repository, branch } = githubConfig();
+    const response = await fetch(
+      `https://api.github.com/repos/${repository}/contents/data/reports?ref=${encodeURIComponent(branch)}`,
+      { headers: headers(token), cache: "no-store" },
+    );
+    if (response.status === 404) return bundled;
+    if (!response.ok) {
+      if (bundled) return bundled;
+      throw new Error(`GitHub report list failed: ${response.status}`);
+    }
+    const items = (await response.json()) as GithubContent[];
+    const latest = items
+      .filter((item) => item.type === "file" && /^\d{4}-\d{2}-\d{2}\.json$/.test(item.name ?? ""))
+      .sort((left, right) => (right.name ?? "").localeCompare(left.name ?? ""))[0];
+    const remote = latest?.path ? await fetchStoredReport(latest.path) : null;
+    if (!remote) return bundled;
+    if (!bundled) return remote;
+    return remote.date >= bundled.date ? remote : bundled;
+  } catch (error) {
     if (bundled) return bundled;
-    throw new Error(`GitHub report list failed: ${response.status}`);
+    throw error;
   }
-  const items = (await response.json()) as GithubContent[];
-  const latest = items
-    .filter((item) => item.type === "file" && /^\d{4}-\d{2}-\d{2}\.json$/.test(item.name ?? ""))
-    .sort((left, right) => (right.name ?? "").localeCompare(left.name ?? ""))[0];
-  const remote = latest?.path ? await fetchStoredReport(latest.path) : null;
-  if (!remote) return bundled;
-  if (!bundled) return remote;
-  return remote.date >= bundled.date ? remote : bundled;
 }
 
 export async function persistReport(report: DailySeoReport) {

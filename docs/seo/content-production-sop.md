@@ -33,6 +33,10 @@ AI may prepare the source summary, outline, first draft, schema suggestions and 
 - approve the CTA and decide whether the page is ready to publish.
 
 User feedback is an editorial input for the next daily run. Preserve it verbatim with a date, then translate it into an explicit brief requirement rather than silently changing copy.
+For feedback received through the workbench inbox, process only entries without
+`consumedAt`, record the adoption or rejection in the daily report and automation
+memory, then mark the entry with `consumedAt`. This keeps the feedback loop durable
+without replaying a suggestion indefinitely.
 
 ## 4. Make important content crawlable and usable
 
