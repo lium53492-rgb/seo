@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { TrackedStoryLink } from "@/app/components/TrackedStoryLink";
+import { TrackedNovelAiHomeLink } from "@/app/components/TrackedNovelAiHomeLink";
 import { listPublishedPages, readPublishedPage } from "@/lib/seo/page-store";
 import styles from "./page.module.css";
 
@@ -80,13 +80,12 @@ export default async function PublishedSeoPage({ params }: PageProps) {
           <h1>{page.h1}</h1>
           <p className={styles.lede}>{page.heroMarkdown}</p>
           <div className={styles.actions}>
-            <TrackedStoryLink
+            <TrackedNovelAiHomeLink
               className={styles.primaryAction}
-              location="seo_page"
               sourceSlug={page.slug}
             >
-              {page.primaryCta}
-            </TrackedStoryLink>
+              Explore NovelAI
+            </TrackedNovelAiHomeLink>
             <a className={styles.secondaryAction} href="#how-it-works">
               See how it works
             </a>
@@ -144,16 +143,14 @@ export default async function PublishedSeoPage({ params }: PageProps) {
         <p className={styles.eyebrow}>Ready for a story?</p>
         <h2>Choose a character and enter the scene.</h2>
         <p>
-          Start with a playable interactive story while the voice-roleplay
-          experience continues to grow.
+          Continue on the official NovelAI homepage.
         </p>
-        <TrackedStoryLink
+        <TrackedNovelAiHomeLink
           className={styles.primaryAction}
-          location="seo_page"
           sourceSlug={page.slug}
         >
-          Explore the story
-        </TrackedStoryLink>
+          Visit NovelAI
+        </TrackedNovelAiHomeLink>
       </footer>
     </main>
   );
