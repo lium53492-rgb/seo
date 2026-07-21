@@ -131,7 +131,8 @@
       "supports": ["ai roleplay story", "ai story game"]
     }
   ],
-  "draft": {
+  "drafts": [
+    {
     "keyword": "ai voice roleplay story",
     "language": "en",
     "reviewRequired": true,
@@ -225,5 +226,106 @@
         }
       ]
     }
-  }
+    },
+    {
+      "slot": "afternoon",
+      "keyword": "story based ai roleplay",
+      "language": "en",
+      "reviewRequired": true,
+      "factIdsUsed": [
+        "voice-roleplay-format",
+        "existing-story",
+        "role-selection",
+        "interactive-fiction-history"
+      ],
+      "title": "Story Based AI Roleplay | Begin with a Premise",
+      "metaDescription": "Learn how story based AI roleplay starts with an existing premise, then lets you choose an available character and perform inside the scene.",
+      "h1": "Story Based AI Roleplay",
+      "heroMarkdown": "Story based AI roleplay starts with a premise already in motion. Instead of opening on a blank chat box, you enter an existing plot, understand its immediate situation, and choose an available character whose point of view you want to perform. That gives the first line a context: there is a place, a moment, and a role to inhabit.",
+      "primaryCta": "Choose a role and start",
+      "sections": [
+        {
+          "heading": "Start with a premise that gives the scene direction",
+          "bodyMarkdown": "A premise is the useful difference between an open-ended prompt and a scene you can enter. It establishes enough of a fictional situation for a character to have something at stake: a question to answer, an arrival to react to, or a choice that cannot be postponed. The product is an AI voice cosplay and roleplay experience built around acting inside a story. Its story-led format lets the plot supply the opening context, so the player can spend less time constructing a setup and more time considering how the chosen role would meet the moment."
+        },
+        {
+          "heading": "Use character choice to find a point of view",
+          "bodyMarkdown": "The same premise can feel very different from different places inside it. Each playable experience starts from an existing story plot, then presents the characters that are available for that story. Choosing a character is a way to decide what the scene means to you: one role may arrive with a question, another may carry responsibility, and another may notice a detail the others have missed. The choice is grounded in the plot that is already there rather than in a generic profile detached from the scene."
+        },
+        {
+          "heading": "Treat the opening as a performance cue",
+          "bodyMarkdown": "Once you have a premise and a role, begin with the immediate circumstances instead of trying to write an entire history. Notice what has just happened, what your character might want, and what they could say from that point of view. Voice roleplay makes that first response a chance to perform from inside the fiction. A prepared situation does not dictate every line; it provides a shared starting beat that makes an in-character response easier to locate."
+        },
+        {
+          "heading": "Why story context matters in a roleplay format",
+          "bodyMarkdown": "Story context connects acting, character choice, and participation. The team has previously built AI interactive-fiction and simulator experiences, which informs this approach to a plot-led entry. Start by reading the premise, then compare the available roles and select the perspective that draws you in. The result is an original story experience centered on the scene at hand, without borrowing familiar entertainment characters, worlds, or trademarks."
+        },
+        {
+          "heading": "A simple way to begin a story based roleplay",
+          "bodyMarkdown": "Open the story and identify the opening situation. Review the characters available in that plot, choose the one you want to perform, and enter the scene with that role's perspective in mind. If you want a broader introduction to the format, read the AI voice roleplay story overview first. Then return to the premise and let the setting, situation, and character choice give your first response a clear starting point."
+        }
+      ],
+      "faqs": [
+        {
+          "question": "What is story based AI roleplay?",
+          "answerMarkdown": "It is a story-led AI voice cosplay and roleplay format where an existing plot gives you a situation to enter before you choose an available character to perform."
+        },
+        {
+          "question": "Do I need to invent the premise myself?",
+          "answerMarkdown": "No. Each playable experience starts from an existing story plot rather than an empty chat box. The premise provides a setting and situation before you select a role."
+        },
+        {
+          "question": "How does character choice relate to the story?",
+          "answerMarkdown": "You choose from the characters available in the featured plot. That selection gives you a point of view for approaching the opening situation and performing inside the scene."
+        },
+        {
+          "question": "Does the page rely on familiar fictional franchises?",
+          "answerMarkdown": "No. The page describes original story material and avoids unlicensed entertainment characters, worlds, and trademarks."
+        }
+      ],
+      "internalLinks": [
+        {
+          "anchor": "Explore the current story experience",
+          "href": "/"
+        },
+        {
+          "anchor": "AI voice roleplay story overview",
+          "href": "/ai-voice-roleplay-story"
+        }
+      ],
+      "assetBriefs": [
+        "Use an original scene-setting visual that shows a generic premise without third-party characters or worlds.",
+        "Show role selection only with characters confirmed for the featured story.",
+        "Use original copy and visuals that connect the premise, character choice, and scene entry."
+      ],
+      "quality": {
+        "checks": [
+          {
+            "id": "approved-facts",
+            "label": "Uses approved product facts",
+            "passed": true,
+            "detail": "All product descriptions are limited to the approved product-fact allowlist."
+          },
+          {
+            "id": "no-third-party-ip",
+            "label": "Avoids third-party IP",
+            "passed": true,
+            "detail": "The page uses only original story and character descriptions."
+          },
+          {
+            "id": "no-invented-claims",
+            "label": "Avoids unsupported claims",
+            "passed": true,
+            "detail": "The page does not claim player counts, pricing, availability, latency, privacy, or unapproved capabilities."
+          },
+          {
+            "id": "human-review",
+            "label": "Requires human review",
+            "passed": true,
+            "detail": "Story-specific assets and destination flow require human review."
+          }
+        ]
+      }
+    }
+  ]
 }

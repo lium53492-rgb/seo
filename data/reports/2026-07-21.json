@@ -3,7 +3,7 @@
   "date": "2026-07-21",
   "generatedAt": "2026-07-21T10:28:55+08:00",
   "mode": "partial",
-  "headline": "今日优先动作：创建“ai voice roleplay story”",
+  "headline": "Today's priority: create — ai voice roleplay story",
   "summary": {
     "candidatesAnalyzed": 6,
     "publishableOpportunities": 6,
@@ -30,7 +30,7 @@
       "cannibalizationRisk": 18,
       "score": 76,
       "action": "create_page",
-      "reason": "与语C产品高度匹配，多来源需求信号较强，接近开始体验的意图；综合机会分 76。"
+      "reason": "strong approved-product fit; repeated public demand signals; close to a start intent; opportunity score 76."
     },
     {
       "keyword": "story based ai roleplay",
@@ -50,7 +50,7 @@
       "cannibalizationRisk": 23,
       "score": 72,
       "action": "create_page",
-      "reason": "与语C产品高度匹配，多来源需求信号较强；综合机会分 72。"
+      "reason": "strong approved-product fit; repeated public demand signals; opportunity score 72."
     },
     {
       "keyword": "interactive voice story",
@@ -70,7 +70,7 @@
       "cannibalizationRisk": 20,
       "score": 70,
       "action": "create_page",
-      "reason": "与语C产品高度匹配，公开结果竞争代理较低；综合机会分 70。"
+      "reason": "strong approved-product fit; lower competition proxy; opportunity score 70."
     },
     {
       "keyword": "ai roleplay story",
@@ -90,7 +90,7 @@
       "cannibalizationRisk": 34,
       "score": 68,
       "action": "create_page",
-      "reason": "与语C产品高度匹配，多来源需求信号较强，接近开始体验的意图；综合机会分 68。"
+      "reason": "strong approved-product fit; repeated public demand signals; close to a start intent; opportunity score 68."
     },
     {
       "keyword": "ai character roleplay story",
@@ -110,7 +110,7 @@
       "cannibalizationRisk": 43,
       "score": 67,
       "action": "create_page",
-      "reason": "与语C产品高度匹配，多来源需求信号较强，接近开始体验的意图；综合机会分 67。"
+      "reason": "strong approved-product fit; repeated public demand signals; close to a start intent; opportunity score 67."
     },
     {
       "keyword": "ai story game",
@@ -130,7 +130,7 @@
       "cannibalizationRisk": 30,
       "score": 65,
       "action": "create_page",
-      "reason": "与语C产品高度匹配，多来源需求信号较强，接近开始体验的意图；综合机会分 65。"
+      "reason": "strong approved-product fit; repeated public demand signals; close to a start intent; opportunity score 65."
     }
   ],
   "performance": [],
@@ -138,27 +138,46 @@
     "status": "published",
     "slug": "ai-voice-roleplay-story",
     "path": "/ai-voice-roleplay-story",
+    "slot": "morning",
     "publishedAt": "2026-07-21T02:30:20.989Z",
-    "reason": "页面通过来源、事实、版权、深度与重复度闸门并进入公开构建。"
+    "reason": "The same daily report was rebuilt without creating a new slug."
   },
+  "publications": [
+    {
+      "status": "published",
+      "slug": "ai-voice-roleplay-story",
+      "path": "/ai-voice-roleplay-story",
+      "slot": "morning",
+      "publishedAt": "2026-07-21T02:30:20.989Z",
+      "reason": "The same daily report was rebuilt without creating a new slug."
+    },
+    {
+      "status": "published",
+      "slug": "story-based-ai-roleplay",
+      "path": "/story-based-ai-roleplay",
+      "slot": "afternoon",
+      "publishedAt": "2026-07-21T08:25:38.790Z",
+      "reason": "Source, fact, copyright, depth, similarity, and internal-link gates passed."
+    }
+  ],
   "actions": [
     {
       "priority": "P0",
-      "action": "为“ai voice roleplay story”准备事实受控的英文页面",
-      "why": "与语C产品高度匹配，多来源需求信号较强，接近开始体验的意图；综合机会分 76。",
-      "expectedImpact": "把免费公开研究中最可信的机会转成可审核页面任务。"
+      "action": "Prepare a fact-constrained English page for “ai voice roleplay story”",
+      "why": "strong approved-product fit; repeated public demand signals; close to a start intent; opportunity score 76.",
+      "expectedImpact": "Turn the strongest public research signal into a reviewable page."
     },
     {
       "priority": "P1",
-      "action": "人工核对证据链接与搜索意图",
-      "why": "免费模式使用代理指标，不提供供应商月搜索量或 KD。",
-      "expectedImpact": "避免把代理分误读为精确市场规模。"
+      "action": "Verify evidence links and search intent",
+      "why": "Demand and difficulty are transparent research proxies, not provider metrics.",
+      "expectedImpact": "Avoid treating proxy scores as exact market size."
     },
     {
       "priority": "P2",
-      "action": "构建并上线 /ai-voice-roleplay-story",
-      "why": "页面通过来源、事实、版权、深度与重复度闸门并进入公开构建。",
-      "expectedImpact": "让研究结论真正变成可索引、可追踪的公开页面。"
+      "action": "Build and publish /ai-voice-roleplay-story",
+      "why": "The same daily report was rebuilt without creating a new slug.",
+      "expectedImpact": "Keep only useful, indexable, product-true pages."
     }
   ],
   "brief": {
@@ -171,23 +190,23 @@
     "h1": "Ai Voice Roleplay Story",
     "primaryCta": "Choose a role and start",
     "sections": [
-      "剧情开场与搜索意图",
-      "可选择角色和各自目标",
-      "语音互动如何推动剧情",
-      "真实试玩证据与原创素材",
-      "相关剧情与下一步入口"
+      "Search intent and story entry",
+      "Role selection and point of view",
+      "Voice performance inside a plot",
+      "Originality and product-fact evidence",
+      "Related guides and next step"
     ],
     "evidenceRequired": [
-      "至少 1 个真实可玩的公开剧情",
-      "产品团队确认的全部可选角色或角色视角",
-      "产品团队确认的语音能力",
-      "原创视觉、语音或试玩素材"
+      "Public evidence for the intent",
+      "Approved product facts",
+      "Original, non-infringing page material",
+      "Verified internal and CTA routes"
     ],
     "qualityGate": [
-      "一个明确搜索意图和一个 H1",
-      "代理指标明确标注且保留证据链接",
-      "不使用未经授权的第三方 IP",
-      "通过移动端、链接和索引检查"
+      "One intent and one H1",
+      "Evidence-backed proxy metrics",
+      "No unlicensed third-party IP",
+      "Render, link, and index checks"
     ]
   },
   "draft": {
@@ -258,7 +277,7 @@
     ],
     "quality": {
       "passed": true,
-      "wordCount": 716,
+      "wordCount": 722,
       "checks": [
         {
           "id": "approved-facts",
@@ -286,57 +305,272 @@
         },
         {
           "id": "minimum-depth",
-          "label": "页面内容达到最低深度",
+          "label": "600-1,000 English words",
           "passed": true,
-          "detail": "可发布正文与 FAQ 共 716 个英文词。"
+          "detail": "722 words"
         }
       ]
     },
     "status": "ready_for_review"
   },
+  "drafts": [
+    {
+      "keyword": "ai voice roleplay story",
+      "language": "en",
+      "reviewRequired": true,
+      "factIdsUsed": [
+        "voice-roleplay-format",
+        "existing-story",
+        "role-selection",
+        "interactive-fiction-history"
+      ],
+      "title": "AI Voice Roleplay Story | Choose a Character and Perform",
+      "metaDescription": "Enter an AI voice roleplay story built around an existing plot, choose an available character, and perform from inside the scene.",
+      "h1": "AI Voice Roleplay Story",
+      "heroMarkdown": "An AI voice roleplay story gives you a place to begin: an existing plot, a cast of available characters, and a reason to speak from inside the scene. Instead of facing an empty chat box, you enter a story that already has a situation in motion, choose the character you want to perform, and explore what that role means in the moment.",
+      "primaryCta": "Choose a role and start",
+      "sections": [
+        {
+          "heading": "What makes a voice roleplay story feel like a story",
+          "bodyMarkdown": "A story-led roleplay starts with more than a character name. It begins with a plot that gives the scene a setting, a situation, and a direction. That shared starting point lets you focus on the dramatic question in front of the character: what do they want, what do they notice, and how do they respond? The product is an AI voice cosplay and roleplay experience built around acting inside a story. The aim is not to ask you to invent every detail before you can participate. It is to put you inside a prepared fictional situation where performance can take the lead."
+        },
+        {
+          "heading": "Choose an available character before the scene begins",
+          "bodyMarkdown": "Your role is the point of view you bring into the plot. Each playable experience starts from an existing story rather than a blank prompt, and you choose from the characters that are available in that story. A character choice can change the questions you carry into the opening: you may be the person who knows the secret, the person who needs an answer, or the person arriving just as the stakes become clear. Because the roles belong to the featured plot, the choice is grounded in the story already waiting for you."
+        },
+        {
+          "heading": "Perform from inside the plot",
+          "bodyMarkdown": "Voice roleplay is a way to approach a scene in character. You can pay attention to the setting, the other characters, and the immediate tension of the opening, then respond as the role you selected. This story-first structure makes it easier to find a starting beat: the plot has already supplied a situation, while your chosen character supplies a perspective. Treat the opening as an invitation to act, listen, and make the role your own rather than as a request to write a whole world from scratch."
+        },
+        {
+          "heading": "A story-led format shaped by interactive-fiction experience",
+          "bodyMarkdown": "The team behind this experience has previously built AI interactive-fiction and simulator projects. That background supports a format where plot, character choice, and participation belong together. The current story entrance is the most useful place to see the format in context: open the featured experience, learn its opening situation, review its available roles, and choose one that interests you. The page stays with original story material and does not depend on borrowed entertainment characters or fictional universes."
+        },
+        {
+          "heading": "How to begin an AI voice roleplay story",
+          "bodyMarkdown": "Start by opening the story and taking in its premise. Look at the available characters and select the one whose point of view you want to perform. Then enter the scene with the opening situation in mind. You do not need an elaborate backstory before you start: the existing plot and role selection provide the first pieces of context. From there, let the character's immediate circumstances guide what you say and how you take part in the story."
+        }
+      ],
+      "faqs": [
+        {
+          "question": "What is an AI voice roleplay story?",
+          "answerMarkdown": "It is a story-led AI voice cosplay and roleplay experience focused on acting inside a prepared plot. You begin with an existing story situation and choose an available character to perform as."
+        },
+        {
+          "question": "Do I need to create the story before I start?",
+          "answerMarkdown": "No. Each playable experience starts from an existing story plot instead of an empty chat box. The story gives you a situation to enter before you choose a character."
+        },
+        {
+          "question": "How do I choose a role?",
+          "answerMarkdown": "Open the featured story, review the characters available in that plot, and select the one you want to perform. Your choice gives you a point of view inside the scene."
+        },
+        {
+          "question": "Does this page use famous characters or fictional worlds?",
+          "answerMarkdown": "No. This experience is described through original story material and roles. It does not rely on unlicensed entertainment characters, worlds, or trademarks."
+        }
+      ],
+      "internalLinks": [
+        {
+          "anchor": "Explore the current story experience",
+          "href": "/"
+        }
+      ],
+      "assetBriefs": [
+        "Use an original visual of a confirmed story opening, without third-party characters or worlds.",
+        "Show role selection only with characters confirmed for the featured story.",
+        "Capture any product demonstration only after the story entry and role flow are confirmed by product review."
+      ],
+      "quality": {
+        "passed": true,
+        "wordCount": 722,
+        "checks": [
+          {
+            "id": "approved-facts",
+            "label": "Uses approved product facts",
+            "passed": true,
+            "detail": "All product descriptions are limited to the approved product-fact allowlist."
+          },
+          {
+            "id": "no-third-party-ip",
+            "label": "Avoids third-party IP",
+            "passed": true,
+            "detail": "The page uses only original story and character descriptions."
+          },
+          {
+            "id": "no-invented-claims",
+            "label": "Avoids unsupported claims",
+            "passed": true,
+            "detail": "The page does not claim player counts, pricing, availability, latency, privacy, or unapproved capabilities."
+          },
+          {
+            "id": "human-review",
+            "label": "Requires human review",
+            "passed": true,
+            "detail": "Story-specific roles, assets, and destination flow require product review."
+          },
+          {
+            "id": "minimum-depth",
+            "label": "600-1,000 English words",
+            "passed": true,
+            "detail": "722 words"
+          }
+        ]
+      },
+      "status": "ready_for_review"
+    },
+    {
+      "slot": "afternoon",
+      "keyword": "story based ai roleplay",
+      "language": "en",
+      "reviewRequired": true,
+      "factIdsUsed": [
+        "voice-roleplay-format",
+        "existing-story",
+        "role-selection",
+        "interactive-fiction-history"
+      ],
+      "title": "Story Based AI Roleplay | Begin with a Premise",
+      "metaDescription": "Learn how story based AI roleplay starts with an existing premise, then lets you choose an available character and perform inside the scene.",
+      "h1": "Story Based AI Roleplay",
+      "heroMarkdown": "Story based AI roleplay starts with a premise already in motion. Instead of opening on a blank chat box, you enter an existing plot, understand its immediate situation, and choose an available character whose point of view you want to perform. That gives the first line a context: there is a place, a moment, and a role to inhabit.",
+      "primaryCta": "Choose a role and start",
+      "sections": [
+        {
+          "heading": "Start with a premise that gives the scene direction",
+          "bodyMarkdown": "A premise is the useful difference between an open-ended prompt and a scene you can enter. It establishes enough of a fictional situation for a character to have something at stake: a question to answer, an arrival to react to, or a choice that cannot be postponed. The product is an AI voice cosplay and roleplay experience built around acting inside a story. Its story-led format lets the plot supply the opening context, so the player can spend less time constructing a setup and more time considering how the chosen role would meet the moment."
+        },
+        {
+          "heading": "Use character choice to find a point of view",
+          "bodyMarkdown": "The same premise can feel very different from different places inside it. Each playable experience starts from an existing story plot, then presents the characters that are available for that story. Choosing a character is a way to decide what the scene means to you: one role may arrive with a question, another may carry responsibility, and another may notice a detail the others have missed. The choice is grounded in the plot that is already there rather than in a generic profile detached from the scene."
+        },
+        {
+          "heading": "Treat the opening as a performance cue",
+          "bodyMarkdown": "Once you have a premise and a role, begin with the immediate circumstances instead of trying to write an entire history. Notice what has just happened, what your character might want, and what they could say from that point of view. Voice roleplay makes that first response a chance to perform from inside the fiction. A prepared situation does not dictate every line; it provides a shared starting beat that makes an in-character response easier to locate."
+        },
+        {
+          "heading": "Why story context matters in a roleplay format",
+          "bodyMarkdown": "Story context connects acting, character choice, and participation. The team has previously built AI interactive-fiction and simulator experiences, which informs this approach to a plot-led entry. Start by reading the premise, then compare the available roles and select the perspective that draws you in. The result is an original story experience centered on the scene at hand, without borrowing familiar entertainment characters, worlds, or trademarks."
+        },
+        {
+          "heading": "A simple way to begin a story based roleplay",
+          "bodyMarkdown": "Open the story and identify the opening situation. Review the characters available in that plot, choose the one you want to perform, and enter the scene with that role's perspective in mind. If you want a broader introduction to the format, read the AI voice roleplay story overview first. Then return to the premise and let the setting, situation, and character choice give your first response a clear starting point."
+        }
+      ],
+      "faqs": [
+        {
+          "question": "What is story based AI roleplay?",
+          "answerMarkdown": "It is a story-led AI voice cosplay and roleplay format where an existing plot gives you a situation to enter before you choose an available character to perform."
+        },
+        {
+          "question": "Do I need to invent the premise myself?",
+          "answerMarkdown": "No. Each playable experience starts from an existing story plot rather than an empty chat box. The premise provides a setting and situation before you select a role."
+        },
+        {
+          "question": "How does character choice relate to the story?",
+          "answerMarkdown": "You choose from the characters available in the featured plot. That selection gives you a point of view for approaching the opening situation and performing inside the scene."
+        },
+        {
+          "question": "Does the page rely on familiar fictional franchises?",
+          "answerMarkdown": "No. The page describes original story material and avoids unlicensed entertainment characters, worlds, and trademarks."
+        }
+      ],
+      "internalLinks": [
+        {
+          "anchor": "Explore the current story experience",
+          "href": "/"
+        },
+        {
+          "anchor": "AI voice roleplay story overview",
+          "href": "/ai-voice-roleplay-story"
+        }
+      ],
+      "assetBriefs": [
+        "Use an original scene-setting visual that shows a generic premise without third-party characters or worlds.",
+        "Show role selection only with characters confirmed for the featured story.",
+        "Use original copy and visuals that connect the premise, character choice, and scene entry."
+      ],
+      "quality": {
+        "passed": true,
+        "wordCount": 665,
+        "checks": [
+          {
+            "id": "approved-facts",
+            "label": "Uses approved product facts",
+            "passed": true,
+            "detail": "All product descriptions are limited to the approved product-fact allowlist."
+          },
+          {
+            "id": "no-third-party-ip",
+            "label": "Avoids third-party IP",
+            "passed": true,
+            "detail": "The page uses only original story and character descriptions."
+          },
+          {
+            "id": "no-invented-claims",
+            "label": "Avoids unsupported claims",
+            "passed": true,
+            "detail": "The page does not claim player counts, pricing, availability, latency, privacy, or unapproved capabilities."
+          },
+          {
+            "id": "human-review",
+            "label": "Requires human review",
+            "passed": true,
+            "detail": "Story-specific assets and destination flow require human review."
+          },
+          {
+            "id": "minimum-depth",
+            "label": "600-1,000 English words",
+            "passed": true,
+            "detail": "665 words"
+          }
+        ]
+      },
+      "status": "ready_for_review"
+    }
+  ],
   "integrations": [
     {
       "id": "semrush",
       "name": "Semrush",
       "state": "replaced",
-      "detail": "已由 Codex 公开网页研究替代；无需购买也能每天更新"
+      "detail": "Public-web research proxies are used; no paid keyword provider is required."
     },
     {
       "id": "codex_research",
       "name": "Codex Research",
       "state": "connected",
-      "detail": "已验证 7 条公开证据并评分 6 个候选词",
-      "lastCheckedAt": "2026-07-21T02:30:20.989Z"
+      "detail": "7 public evidence links support 6 candidates.",
+      "lastCheckedAt": "2026-07-21T08:25:38.790Z"
     },
     {
       "id": "search_console",
       "name": "Google Search Console",
       "state": "missing",
-      "detail": "站点入口已准备，等待 Google 账号授权",
+      "detail": "No visible Search Console rows were available; no metrics were inferred.",
       "href": "https://search.google.com/search-console",
-      "actionLabel": "去 Google 授权"
+      "actionLabel": "Open Search Console"
     },
     {
       "id": "ai_gateway",
       "name": "Codex Content",
       "state": "connected",
-      "detail": "本次日报包含通过事实约束检查的英文草稿"
+      "detail": "A fact-constrained draft was prepared outside the paid Gateway pipeline."
     },
     {
       "id": "github",
       "name": "GitHub Reports",
-      "state": "connected",
-      "detail": "日报由 Codex 自动化提交到 data/reports",
+      "state": "configured",
+      "detail": "Daily reports are committed from the local automation when the network is available.",
       "href": "https://github.com/lium53492-rgb/seo/tree/main/data/reports",
-      "actionLabel": "查看日报文件"
+      "actionLabel": "Open report history"
     },
     {
       "id": "product_analytics",
       "name": "Product Analytics",
       "state": "configured",
-      "detail": "Vercel 页面访问采集代码已接入；等待控制台启用，Hobby 免费版不含自定义事件",
+      "detail": "Use observed analytics and Search Console separately from research proxies.",
       "href": "https://vercel.com/elser1/seo/analytics",
-      "actionLabel": "启用免费统计"
+      "actionLabel": "Open analytics"
     }
   ],
   "evidence": [
@@ -416,8 +650,8 @@
     }
   ],
   "caveats": [
-    "免费研究模式不提供月搜索量、CPC 或 Semrush KD；需求分和竞争分均为 0–100 代理指标。",
-    "代理分依据公开搜索结果的重复出现、近期性、用户讨论和头部结果强度计算，结果会随网页变化。",
-    "自动发布只允许使用产品事实白名单；任何新功能、定价、平台或第三方 IP 都必须先加入人工批准的事实清单。"
+    "Demand and difficulty are 0-100 transparent research proxies, not monthly search volume, CPC, Semrush KD, or Google data.",
+    "Search Console data is only recorded when visible in the logged-in browser or exported directly.",
+    "A temporary afternoon page shares this report only after every normal quality, fact, IP, similarity, and internal-link gate passes."
   ]
 }
