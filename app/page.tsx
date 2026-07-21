@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { FAQJsonLd } from "next-seo";
-import { TrackedStoryLink } from "./components/TrackedStoryLink";
+import { TrackedNovelAiHomeLink } from "./components/TrackedNovelAiHomeLink";
 import { listPublishedPages } from "@/lib/seo/page-store";
 
 const pageTitle = "2000s Marriage Life Simulator";
@@ -55,9 +55,9 @@ export default async function Home() {
             quiet marriage story unfolds around you.
           </p>
           <div className="actions">
-            <TrackedStoryLink className="primaryAction" location="hero">
-              Play This Story
-            </TrackedStoryLink>
+            <TrackedNovelAiHomeLink className="primaryAction" location="homepage" sourceSlug="homepage">
+              Explore stories on NovelAI
+            </TrackedNovelAiHomeLink>
             <a className="secondaryAction" href="#story-preview">
               Read Preview
             </a>
@@ -174,9 +174,9 @@ export default async function Home() {
           Open the story on NovelAI and begin with guided choices that move the
           relationship forward.
         </p>
-        <TrackedStoryLink className="primaryAction" location="final_cta">
-          Play on NovelAI
-        </TrackedStoryLink>
+        <TrackedNovelAiHomeLink className="primaryAction" location="homepage" sourceSlug="homepage">
+          Explore on NovelAI
+        </TrackedNovelAiHomeLink>
       </section>
     </main>
   );

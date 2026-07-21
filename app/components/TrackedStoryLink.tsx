@@ -9,7 +9,7 @@ type TrackedStoryLinkProps = {
   sourceSlug?: string;
 };
 
-const href = "/go/story/2000s-marriage-life-simulator";
+const href = "https://www.novelai.ai/zh-CN/";
 
 export function TrackedStoryLink({
   children,
@@ -21,10 +21,12 @@ export function TrackedStoryLink({
     <a
       className={className}
       href={href}
+      target="_blank"
+      rel="noopener noreferrer"
       onClick={() => {
-        track("story_play_click", {
+        track("novelai_home_click", {
           story: "2000s Marriage Life Simulator",
-          slug: "2000s-marriage-life-simulator",
+          destination: "novelai_home",
           location,
           sourceSlug: sourceSlug ?? "homepage",
         });

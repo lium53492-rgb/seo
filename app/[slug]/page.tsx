@@ -84,8 +84,9 @@ export default async function PublishedSeoPage({ params }: PageProps) {
               className={styles.primaryAction}
               sourceSlug={page.slug}
             >
-              Explore NovelAI
+              Explore stories on NovelAI
             </TrackedNovelAiHomeLink>
+            <span className={styles.ctaNote}>Opens NovelAI in a new tab</span>
             <a className={styles.secondaryAction} href="#how-it-works">
               See how it works
             </a>
@@ -107,6 +108,20 @@ export default async function PublishedSeoPage({ params }: PageProps) {
       </header>
 
       <section className={styles.body} id="how-it-works">
+        <div className={styles.startPanel}>
+          <div>
+            <p className={styles.eyebrow}>Start with a scene, not a blank prompt</p>
+            <h2>See the path before you decide to leave this page.</h2>
+          </div>
+          <ol>
+            <li><span>01</span><strong>Open a story</strong><p>Begin from an existing premise instead of inventing everything first.</p></li>
+            <li><span>02</span><strong>Choose an available role</strong><p>Use a character&apos;s point of view to give the first scene direction.</p></li>
+            <li><span>03</span><strong>Enter the scene</strong><p>Carry the opening situation into the way you perform the role.</p></li>
+          </ol>
+          <TrackedNovelAiHomeLink className={styles.panelAction} sourceSlug={page.slug}>
+            Open NovelAI to explore stories
+          </TrackedNovelAiHomeLink>
+        </div>
         <div className={styles.sectionIntro}>
           <p className={styles.eyebrow}>Inside the experience</p>
           <h2>A defined story, a role you choose, and a scene you can perform.</h2>
@@ -149,7 +164,7 @@ export default async function PublishedSeoPage({ params }: PageProps) {
           className={styles.primaryAction}
           sourceSlug={page.slug}
         >
-          Visit NovelAI
+          Explore stories on NovelAI
         </TrackedNovelAiHomeLink>
       </footer>
     </main>
