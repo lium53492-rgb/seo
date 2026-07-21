@@ -10,23 +10,23 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://seo-pi-fawn.vercel.
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "2000s Marriage Life Simulator | Interactive AI Story",
+    default: "Story-Led AI Voice Roleplay | NovelAI Story Guide",
     template: "%s | NovelAI Story Guide",
   },
   description:
-    "Play a nostalgic 2000s marriage life simulator story. Explore daily choices, newlywed scenes, and slice-of-life roleplay in an interactive AI story.",
+    "Explore a story-led AI voice roleplay format that begins with an existing plot and lets you choose an available story character.",
   openGraph: {
-    title: "2000s Marriage Life Simulator",
+    title: "Story-Led AI Voice Roleplay",
     description:
-      "A nostalgic interactive AI story about newlywed life, daily choices, and warm 2000s slice-of-life roleplay.",
+      "Begin with an existing story plot, choose an available character, and perform inside the scene.",
     type: "website",
     url: "/",
   },
   twitter: {
     card: "summary_large_image",
-    title: "2000s Marriage Life Simulator",
+    title: "Story-Led AI Voice Roleplay",
     description:
-      "Start a nostalgic newlywed life simulator story with interactive choices and AI roleplay.",
+      "Enter an existing story, choose an available role, and perform inside the scene.",
   },
 };
 

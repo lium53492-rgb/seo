@@ -17,8 +17,23 @@ export function FeedbackForm({ enabled }: { enabled: boolean }) {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ message }),
       });
-      const body = (await response.json()) as { error?: string; path?: string };
-      if (!response.ok) throw new Error(body.error || `HTTP ${response.status}`);
+      const rawBody = await response.text();
+      let body: { ok?: boolean; error?: string; path?: string } = {};
+      if (rawBody) {
+        try {
+          body = JSON.parse(rawBody) as typeof body;
+        } catch {
+          throw new Error("内容指导服务返回了无法识别的结果，请稍后重试。");
+        }
+      }
+      if (!response.ok || !body.ok) {
+        throw new Error(
+          body.error ||
+            (rawBody
+              ? `暂时无法保存内容指导（HTTP ${response.status}）。`
+              : "内容指导服务暂时没有返回内容，请稍后重试。"),
+        );
+      }
       setMessage("");
       setStatus("saved");
       setDetail(`内容指导已写入 ${body.path}，下一次生产会读取并记录采用结果。`);

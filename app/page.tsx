@@ -3,9 +3,9 @@ import { FAQJsonLd } from "next-seo";
 import { TrackedNovelAiHomeLink } from "./components/TrackedNovelAiHomeLink";
 import { listPublishedPages } from "@/lib/seo/page-store";
 
-const pageTitle = "2000s Marriage Life Simulator";
+const pageTitle = "Story-Led AI Voice Roleplay";
 const pageDescription =
-  "Play a nostalgic interactive AI story about newlywed life in the 2000s. Make daily choices, roleplay tender moments, and shape a slice-of-life marriage story.";
+  "Explore a story-led AI voice roleplay format that begins with an existing plot and lets you choose an available story character.";
 
 export const metadata: Metadata = {
   title: `${pageTitle} | Interactive AI Story`,
@@ -17,25 +17,25 @@ export const metadata: Metadata = {
     title: pageTitle,
     description: pageDescription,
     url: "/",
-    type: "article",
+    type: "website",
   },
 };
 
 const faqs = [
   {
-    question: "What is the 2000s Marriage Life Simulator?",
+    question: "What is story-led AI voice roleplay?",
     answer:
-      "It is an interactive AI story about newlywed daily life, family routines, small choices, and relationship moments in a nostalgic 2000s setting.",
+      "It is an AI voice cosplay and roleplay format built around acting inside a story. You begin from an existing plot rather than an empty chat box.",
   },
   {
-    question: "Is this a game or a story?",
+    question: "Do I need to create the story first?",
     answer:
-      "It plays like both. You read the scene, choose how to respond, and continue the roleplay as the story changes around your decisions.",
+      "No. Each playable experience starts from an existing story plot, so the opening situation is already in place before you choose a role.",
   },
   {
-    question: "Who is this story for?",
+    question: "How do I choose a role?",
     answer:
-      "It is best for players who enjoy slice-of-life roleplay, domestic drama, gentle relationship stories, and interactive fiction with everyday details.",
+      "Open the story, review the characters available in that plot, and select the one you want to perform as. Your role gives you a point of view inside the scene.",
   },
 ];
 
@@ -47,31 +47,30 @@ export default async function Home() {
 
       <section className="hero">
         <div className="heroCopy">
-          <p className="eyebrow">Interactive AI Story</p>
-          <h1>2000s Marriage Life Simulator</h1>
+          <p className="eyebrow">Story-led roleplay</p>
+          <h1>Story-Led AI Voice Roleplay</h1>
           <p className="lede">
-            Step into a warm newlywed life story set in the early 2000s. Make
-            small daily choices, talk through tender moments, and see how a
-            quiet marriage story unfolds around you.
+            Begin with an existing plot, choose an available character, and
+            perform from inside the scene instead of starting with an empty chat box.
           </p>
           <div className="actions">
             <TrackedNovelAiHomeLink className="primaryAction" location="homepage" sourceSlug="homepage">
               Explore stories on NovelAI
             </TrackedNovelAiHomeLink>
             <a className="secondaryAction" href="#story-preview">
-              Read Preview
+              See how it works
             </a>
           </div>
         </div>
 
-        <div className="poster" aria-label="Illustrated preview of a 2000s newlywed apartment story">
+        <div className="poster" aria-label="Abstract illustration of a story and role selection">
           <div className="posterWindow">
             <span />
             <span />
             <span />
           </div>
           <div className="posterRoom">
-            <div className="calendar">2000s</div>
+            <div className="calendar">STORY</div>
             <div className="tv" />
             <div className="table">
               <div className="teacup" />
@@ -87,33 +86,33 @@ export default async function Home() {
 
       <section className="contentBand" id="story-preview">
         <div className="sectionIntro">
-          <p className="eyebrow">Story Premise</p>
-          <h2>A nostalgic slice-of-life roleplay about marriage, home, and choice.</h2>
+          <p className="eyebrow">A clear way in</p>
+          <h2>Start with a story and a role, not a blank prompt.</h2>
         </div>
         <div className="copyGrid">
           <article>
-            <h3>Live Through Everyday Scenes</h3>
+            <h3>Begin from an existing plot</h3>
             <p>
-              The story focuses on ordinary moments that feel personal: a shared
-              meal, a difficult conversation, a household decision, or a quiet
-              evening after a long day. Each scene gives you space to respond in
-              your own way.
+              Each playable experience begins with a story plot that supplies a
+              setting, situation, and reason to enter the scene. The first step is
+              understanding what is already happening, not inventing a world from
+              nothing.
             </p>
           </article>
           <article>
-            <h3>Shape the Relationship</h3>
+            <h3>Choose an available character</h3>
             <p>
-              Your choices can make the newlywed life feel tender, tense,
-              playful, practical, or reflective. It is not about winning a level;
-              it is about guiding the tone of a relationship.
+              You choose from the characters available in the featured story.
+              That choice gives you a point of view and helps you find a natural
+              place to begin inside the opening situation.
             </p>
           </article>
           <article>
-            <h3>Play a 2000s Domestic World</h3>
+            <h3>Perform from inside the scene</h3>
             <p>
-              The setting leans into early-2000s home life: slower communication,
-              neighborhood routines, family expectations, and small details that
-              make the story feel grounded.
+              The format is built around acting inside a story. With a plot and
+              role already in view, you can focus on the character&apos;s immediate
+              circumstances and the scene in front of them.
             </p>
           </article>
         </div>
@@ -121,21 +120,21 @@ export default async function Home() {
 
       <section className="splitBand">
         <div>
-          <p className="eyebrow">Why Play It</p>
-          <h2>For players who like gentle drama more than combat.</h2>
+          <p className="eyebrow">What this page helps explain</p>
+          <h2>A story-first format gives roleplay a concrete starting point.</h2>
           <p>
-            This AI story is a good fit if you search for interactive marriage
-            story games, newlywed roleplay, Chinese family life simulators, or
-            slice-of-life AI fiction. It gives you a specific scene to enter
-            instead of a blank chatbot box.
+            This guide explains the story, role, and scene structure behind an
+            AI voice roleplay experience. The page stays with approved facts
+            rather than borrowed characters or fictional worlds, and it keeps the
+            path into the product honest.
           </p>
         </div>
         <ul className="featureList">
-          <li>Newlywed relationship roleplay</li>
-          <li>Guided story progression</li>
-          <li>Domestic life decisions</li>
-          <li>Warm 2000s nostalgia</li>
-          <li>Choice-driven AI scenes</li>
+          <li>An existing story premise</li>
+          <li>Available story characters</li>
+          <li>A role-led point of view</li>
+          <li>A scene to perform inside</li>
+          <li>A guide without third-party IP</li>
         </ul>
       </section>
 
@@ -169,10 +168,9 @@ export default async function Home() {
       ) : null}
 
       <section className="finalCta">
-        <h2>Start the 2000s Marriage Life Simulator</h2>
+        <h2>Explore a story-led roleplay experience</h2>
         <p>
-          Open the story on NovelAI and begin with guided choices that move the
-          relationship forward.
+          Open NovelAI in a new tab to explore its current story experience.
         </p>
         <TrackedNovelAiHomeLink className="primaryAction" location="homepage" sourceSlug="homepage">
           Explore on NovelAI

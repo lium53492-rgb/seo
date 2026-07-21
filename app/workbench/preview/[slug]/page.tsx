@@ -50,7 +50,12 @@ export default async function DraftPreviewPage({
           <p className="wb-kicker">AI VOICE ROLEPLAY</p>
           <MessageResponse className="wb-preview-h1">{draft.h1}</MessageResponse>
           <MessageResponse className="wb-preview-lede">{draft.heroMarkdown}</MessageResponse>
-          <a className="wb-preview-cta" href="/go/story/2000s-marriage-life-simulator">
+          <a
+            className="wb-preview-cta"
+            href="https://www.novelai.ai/zh-CN/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <MessageResponse>{draft.primaryCta}</MessageResponse>
           </a>
         </section>

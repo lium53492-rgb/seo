@@ -25,7 +25,7 @@ export function TrackedStoryLink({
       rel="noopener noreferrer"
       onClick={() => {
         track("novelai_home_click", {
-          story: "2000s Marriage Life Simulator",
+          destinationContext: "legacy_story_link",
           destination: "novelai_home",
           location,
           sourceSlug: sourceSlug ?? "homepage",
