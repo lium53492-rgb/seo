@@ -77,20 +77,20 @@ and writes both `data/reports/YYYY-MM-DD.json` and a public
 `data/pages/<slug>.json`. A duplicate slug is rejected unless the input explicitly
 sets `publicationMode` to `update`.
 
-## Temporary two-page cluster cadence
+## One-page quality cadence
 
-When the temporary cluster cadence is active, keep one research input and one
-report per Shanghai day. The morning run writes the first draft. The 16:15 run
-reads that same input, appends a second draft to `drafts` with `slot: "afternoon"`,
-then rebuilds the same report. Do not create a second report file or overwrite the
-morning draft. The builder permits at most two drafts and records both in
-`report.publications`.
+Keep one research input, one report, and at most one new page per Shanghai day.
+The builder rejects a second draft even when it is labelled as an afternoon slot.
+This makes the daily unit a useful answer rather than an output quota.
 
-The afternoon page must use a different covered intent, pass all normal gates,
-and link to at least one existing relevant first-party route when one exists.
-The homepage remains the cluster hub; outgoing page links create the first layer
-of the internal-link network. The temporary cadence ends after the agreed week;
-then return to one draft per daily report.
+New research inputs use `policyVersion: 2` and include a `contentStrategy` object
+with: `searcherJob`, `oneSentenceAnswer`, `originalContribution`, `pagePattern`,
+`productBridge`, `contextualNextStep`, and `evidenceBoundary`. Each field must be
+specific before the builder accepts the draft. `pagePattern` must be one of
+`task_guide`, `experience_explainer`, `decision_page`, or `original_inventory`.
+When related published content
+exists, the new page must include at least one contextual first-party link, and
+the page template must render that link in the initial HTML.
 
 After both checks pass, commit only these daily artifacts:
 
@@ -99,8 +99,9 @@ After both checks pass, commit only these daily artifacts:
 - `data/pages/<slug>.json`
 
 Push to `origin/main`. The connected Vercel project deploys the commit, the page
-route renders the new JSON as an indexable page, and the sitemap plus homepage
-internal links include it automatically.
+route renders the new JSON as an indexable page, and the sitemap includes it.
+Contextual links in the published page JSON are rendered by the shared page
+template; the root route is a product redirect and is not treated as a content hub.
 
 The zero-additional-API-cost scheduler is a local Codex automation. The computer
 and Codex app must be online around the scheduled run. If a run is missed, start

@@ -7,6 +7,27 @@ if (!inputPath) throw new Error("Usage: npm run research:build -- data/research/
 const input = JSON.parse(readFileSync(resolve(inputPath), "utf8"));
 const date = String(input.date || "");
 if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error("date must be YYYY-MM-DD");
+const policyVersion = Number(input.policyVersion || 1);
+const contentStrategy = input.contentStrategy || null;
+if (policyVersion >= 2) {
+  const requiredStrategyFields = [
+    "searcherJob",
+    "oneSentenceAnswer",
+    "originalContribution",
+    "productBridge",
+    "contextualNextStep",
+    "evidenceBoundary",
+  ];
+  for (const field of requiredStrategyFields) {
+    if (typeof contentStrategy?.[field] !== "string" || contentStrategy[field].trim().length < 20) {
+      throw new Error(`Content strategy needs a specific ${field}`);
+    }
+  }
+  const allowedPagePatterns = new Set(["task_guide", "experience_explainer", "decision_page", "original_inventory"]);
+  if (!allowedPagePatterns.has(contentStrategy.pagePattern)) {
+    throw new Error("Content strategy needs an approved pagePattern");
+  }
+}
 if (!Array.isArray(input.candidates) || input.candidates.length < 5 || input.candidates.length > 12) {
   throw new Error("Research requires 5-12 candidates");
 }
@@ -145,7 +166,7 @@ function validateDraft(rawDraft, keyword) {
 const opportunities = input.candidates.map(scoreCandidate).sort((left, right) => right.score - left.score).slice(0, 12);
 const top = opportunities[0];
 const rawDrafts = Array.isArray(input.drafts) && input.drafts.length ? input.drafts : input.draft ? [input.draft] : [];
-if (rawDrafts.length > 2) throw new Error("A daily report may contain at most two publishable drafts");
+if (rawDrafts.length > 1) throw new Error("A daily report may contain at most one publishable draft");
 const preparedDrafts = rawDrafts.map((rawDraft, index) => {
   const keyword = String(rawDraft?.keyword || "").trim().toLowerCase();
   const opportunity = opportunities.find((candidate) => candidate.keyword === keyword);
@@ -177,6 +198,9 @@ for (const prepared of preparedDrafts) {
   const allowedInternalHrefs = new Set(["/", ...pages.map((page) => page.path)]);
   const invalidInternalLink = (preparedDraft.internalLinks || []).find((link) => !allowedInternalHrefs.has(link.href));
   if (invalidInternalLink) throw new Error(`Internal link target is not a published route: ${invalidInternalLink.href}`);
+  if (policyVersion >= 2 && pages.length > 0 && !(preparedDraft.internalLinks || []).some((link) => link.href !== "/")) {
+    throw new Error("The new page needs at least one contextual link to a published first-party page");
+  }
   const nearest = pages.filter((page) => page.slug !== pageSlug).map((page) => ({ slug: page.slug, score: similarity(pageText(page), pageText(preparedDraft)) })).sort((left, right) => right.score - left.score)[0];
   if (nearest?.score >= 0.72) throw new Error(`Draft is too similar to /${nearest.slug} (${Math.round(nearest.score * 100)}%).`);
   const page = {
@@ -223,6 +247,7 @@ const report = {
   },
   draft,
   drafts: preparedDrafts.map((prepared) => prepared.draft),
+  contentStrategy,
   integrations: [
     { id: "semrush", name: "Semrush", state: "replaced", detail: "Public-web research proxies are used; no paid keyword provider is required." },
     { id: "codex_research", name: "Codex Research", state: "connected", detail: `${input.evidence.length} public evidence links support ${input.candidates.length} candidates.`, lastCheckedAt: checkedAt },

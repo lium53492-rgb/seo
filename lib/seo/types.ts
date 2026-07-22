@@ -171,6 +171,16 @@ export type ReportPublication = {
   publishedAt?: string;
 };
 
+export type ContentStrategy = {
+  searcherJob: string;
+  oneSentenceAnswer: string;
+  originalContribution: string;
+  pagePattern: "task_guide" | "experience_explainer" | "decision_page" | "original_inventory";
+  productBridge: string;
+  contextualNextStep: string;
+  evidenceBoundary: string;
+};
+
 export type DailySeoReport = {
   id: string;
   date: string;
@@ -192,8 +202,9 @@ export type DailySeoReport = {
   /** The morning draft is retained in `draft` for backwards compatibility. */
   drafts?: GeneratedPageDraft[];
   publication?: ReportPublication;
-  /** One daily report can record both the morning and temporary afternoon page. */
+  /** Retained as an array for backwards compatibility with earlier reports. */
   publications?: ReportPublication[];
+  contentStrategy?: ContentStrategy | null;
   integrations: IntegrationStatus[];
   evidence?: Array<{
     title: string;

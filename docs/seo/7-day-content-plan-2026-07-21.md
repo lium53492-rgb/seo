@@ -1,5 +1,7 @@
 # Seven-day SEO content plan — 2026-07-21 to 2026-07-27
 
+> Status update (2026-07-22): the temporary 16:15 publishing exception is retired. Keep at most one new page per Shanghai day. The former afternoon rows remain research hypotheses only and must compete on searcher job, original contribution, product fit, evidence, and duplication risk before a later daily slot.
+
 ## Objective and cadence
 
 Build a small, honest topic cluster around story-led AI voice roleplay. The cluster must answer different user questions rather than publish keyword variants of the same page.

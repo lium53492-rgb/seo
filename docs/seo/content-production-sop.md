@@ -54,9 +54,13 @@ Before publishing, inspect the rendered page and the initial HTML for the key co
 
 Maintain a pattern library of publicly observed layouts and interactions: intent-to-hero alignment, proof placement, comparison structure, FAQs, and CTA sequencing. Record the source URL and what was learned. Reuse an idea or structural principle only after adapting it to our product, facts, and user intent; never copy protected copy, imagery, or proprietary IP.
 
+Use `docs/seo/content-pattern-library.md` as the current reusable library. A new brief must name its searcher job, one-sentence answer, original contribution, page pattern, product bridge, contextual next step, and evidence boundary before drafting begins. Block a page that differs from an existing page only by a close keyword variation or cannot add an original checklist, decision tool, worked example, diagnostic, or approved product explanation.
+
+When a draft includes a contextual internal link, the published template must render it as a standard crawlable `<a href="...">` with a descriptive anchor in the initial HTML. Storing `internalLinks` in a JSON artifact without rendering them does not satisfy this rule.
+
 ## 6. Measurement and iteration
 
-- Publish no more than one new page daily unless a separate exception is explicitly approved.
+- Publish no more than one new page per Shanghai day.
 - Track publication date, evidence count, intent/cluster, approved fact IDs, rendering checks, page-level Search Console metrics, and 28-day outcome.
 - Treat organic clicks as search-result clicks, not unique visitors. Do not promise a fixed traffic outcome.
 - Use report history to identify pages that need improved titles, clearer intent, stronger internal connections, or a product-fact correction. Only set `publicationMode: "update"` when actual Search Console evidence supports an update.

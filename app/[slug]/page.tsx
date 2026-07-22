@@ -34,6 +34,13 @@ export default async function PublishedSeoPage({ params }: PageProps) {
   const page = await readPublishedPage((await params).slug);
   if (!page) notFound();
 
+  const publishedPages = await listPublishedPages();
+  const relatedPages = page.internalLinks.flatMap((link) => {
+    if (link.href === "/" || link.href === page.path) return [];
+    const target = publishedPages.find((candidate) => candidate.path === link.href);
+    return target ? [{ ...link, target }] : [];
+  });
+
   const structuredData = {
     "@context": "https://schema.org",
     "@graph": [
@@ -160,6 +167,28 @@ export default async function PublishedSeoPage({ params }: PageProps) {
           ))}
         </div>
       </section>
+
+      {relatedPages.length > 0 ? (
+        <section className={styles.related} aria-labelledby="related-guides-heading">
+          <div className={styles.relatedIntro}>
+            <p className={styles.eyebrow}>Continue the story-first path</p>
+            <h2 id="related-guides-heading">One answer should lead to the next useful question.</h2>
+            <p>
+              These guides cover a different part of entering a story, choosing a role,
+              and understanding the scene before you perform it.
+            </p>
+          </div>
+          <div className={styles.relatedGrid}>
+            {relatedPages.map((link, index) => (
+              <a key={link.href} href={link.href}>
+                <small>Related guide {String(index + 1).padStart(2, "0")}</small>
+                <strong>{link.anchor}</strong>
+                <span>{link.target.metaDescription}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <footer className={styles.finalCta}>
         <p className={styles.eyebrow}>Ready for a story?</p>
