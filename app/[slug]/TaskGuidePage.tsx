@@ -11,6 +11,7 @@ export function TaskGuidePage({ page, relatedPages }: SeoPageViewProps) {
       </nav>
 
       <header className={styles.hero}>
+        <div className={styles.foldTrail} aria-hidden="true"><i /><i /><i /></div>
         <div className={styles.folio}><span>FIELD NOTE</span><strong>01</strong><small>For readers standing at the edge of a scene</small></div>
         <div className={styles.heroCopy}>
           <p className={styles.kicker}>A practical guide to finding your point of view</p>

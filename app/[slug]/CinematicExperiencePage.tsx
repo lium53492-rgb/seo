@@ -5,6 +5,9 @@ import styles from "./cinematic.module.css";
 export function CinematicExperiencePage({ page, relatedPages }: SeoPageViewProps) {
   return (
     <main className={styles.shell}>
+      <div className={styles.particleField} aria-hidden="true">
+        {Array.from({ length: 18 }, (_, index) => <i key={index} />)}
+      </div>
       <nav className={styles.nav} aria-label="Primary navigation">
         <a className={styles.brand} href="/"><span>N</span>NovelAI Stories</a>
         <TrackedNovelAiHomeLink className={styles.navAction} sourceSlug={page.slug}>
@@ -26,6 +29,7 @@ export function CinematicExperiencePage({ page, relatedPages }: SeoPageViewProps
         </div>
 
         <div className={styles.stage} aria-label="Abstract original story role selection illustration">
+          <div className={styles.playOrbit} aria-hidden="true"><span>STORY</span><span>ROLE</span><span>VOICE</span></div>
           <div className={styles.stageHeader}><span><i /> Scene in progress</span><small>01 / 03</small></div>
           <div className={styles.storyCard}><span>01</span><strong>Enter the story</strong><small>An existing plot gives the scene a clear beginning.</small></div>
           <p className={styles.sceneNote}>A scene is already in motion.<br />Choose where you enter.</p>

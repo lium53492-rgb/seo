@@ -74,3 +74,33 @@
 @media (prefers-reduced-motion: reduce) { .hero::before, .stage, .sceneNote, .voiceLine i { animation: none; } }
 @media (max-width: 900px) { .hero, .questions { grid-template-columns: 1fr; } .hero { min-height: auto; } .stage { min-height: 500px; } }
 @media (max-width: 620px) { .navAction { display: none; } .hero h1 { font-size: 3.5rem; } .stage { min-height: 430px; } .storyCard { top: 28px; left: 24px; right: 24px; } .roleCard { bottom: 92px; width: 40%; min-height: 136px; padding: 15px; } .roleOne { left: 24px; } .roleTwo { right: 24px; } .chapterList article { grid-template-columns: 1fr; gap: 12px; } .related > div { grid-template-columns: 1fr; } }
+
+/* Entertainment pass: translucent play-stage, sparse particles, and orbiting story cues. */
+.shell { position: relative; isolation: isolate; overflow: hidden; background: oklch(12% .055 292); }
+.particleField { position: absolute; z-index: 2; inset: 72px 0 auto; height: 760px; overflow: hidden; pointer-events: none; }
+.particleField i { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: var(--stage-lime); box-shadow: 0 0 20px color-mix(in oklch, var(--stage-lime), transparent 28%); animation: particleFloat 7s ease-in-out infinite alternate; }
+.particleField i:nth-child(3n) { width: 13px; height: 13px; background: var(--stage-peach); animation-duration: 10s; }
+.particleField i:nth-child(4n) { width: 5px; height: 5px; background: oklch(80% .15 288); animation-duration: 5s; }
+.particleField i:nth-child(1) { left: 5%; top: 18%; } .particleField i:nth-child(2) { left: 13%; top: 72%; } .particleField i:nth-child(3) { left: 22%; top: 8%; } .particleField i:nth-child(4) { left: 30%; top: 55%; } .particleField i:nth-child(5) { left: 40%; top: 22%; } .particleField i:nth-child(6) { left: 48%; top: 81%; } .particleField i:nth-child(7) { left: 58%; top: 12%; } .particleField i:nth-child(8) { left: 64%; top: 66%; } .particleField i:nth-child(9) { left: 72%; top: 30%; } .particleField i:nth-child(10) { left: 80%; top: 78%; } .particleField i:nth-child(11) { left: 88%; top: 16%; } .particleField i:nth-child(12) { left: 94%; top: 56%; } .particleField i:nth-child(13) { left: 9%; top: 43%; } .particleField i:nth-child(14) { left: 36%; top: 88%; } .particleField i:nth-child(15) { left: 53%; top: 44%; } .particleField i:nth-child(16) { left: 68%; top: 90%; } .particleField i:nth-child(17) { left: 84%; top: 47%; } .particleField i:nth-child(18) { left: 97%; top: 28%; }
+.nav { position: relative; z-index: 4; background: oklch(13% .045 290 / 58%); backdrop-filter: blur(20px) saturate(135%); }
+.hero { background: radial-gradient(circle at 82% 20%, oklch(66% .22 302 / 48%), transparent 28rem), radial-gradient(circle at 18% 78%, oklch(76% .19 155 / 24%), transparent 28rem), linear-gradient(145deg, oklch(11% .045 294), oklch(18% .08 270)); }
+.hero::after { content: ""; position: absolute; width: 26rem; height: 26rem; left: 42%; bottom: -14rem; border: 1px solid oklch(100% 0 0 / 24%); border-radius: 50%; box-shadow: 0 0 0 44px oklch(100% 0 0 / 4%), 0 0 0 88px oklch(100% 0 0 / 3%); animation: orbitBreathe 8s ease-in-out infinite alternate; }
+.heroCopy { padding: 28px; border: 1px solid oklch(100% 0 0 / 12%); border-radius: 40px 16px 40px 16px; background: linear-gradient(145deg, oklch(100% 0 0 / 10%), oklch(100% 0 0 / 3%)); backdrop-filter: blur(18px); }
+.stage { border-radius: 52px 22px 52px 22px; background: radial-gradient(ellipse at 52% 45%, oklch(83% .16 304 / 72%), oklch(52% .2 294 / 34%) 34%, transparent 66%), linear-gradient(145deg, oklch(22% .1 290 / 82%), oklch(17% .07 244 / 76%)); backdrop-filter: blur(24px) saturate(145%); transform: rotate(1.2deg); }
+.playOrbit { position: absolute; z-index: 1; inset: 22% 12% 18%; border: 1px dashed oklch(100% 0 0 / 35%); border-radius: 50%; animation: orbitWobble 7s ease-in-out infinite alternate; }
+.playOrbit span { position: absolute; padding: 5px 9px; border-radius: 999px; background: oklch(14% .05 290 / 72%); color: var(--stage-lime); font-size: .54rem; font-weight: 900; letter-spacing: .12em; }
+.playOrbit span:nth-child(1) { top: -12px; left: 28%; } .playOrbit span:nth-child(2) { right: -18px; top: 52%; } .playOrbit span:nth-child(3) { bottom: -12px; left: 22%; }
+.storyCard { border-radius: 24px 10px 24px 10px; background: oklch(11% .04 286 / 48%); backdrop-filter: blur(20px) saturate(150%); }
+.roleCard { overflow: hidden; border: 1px solid oklch(100% 0 0 / 36%); border-radius: 30px 12px 30px 12px; backdrop-filter: blur(16px); transition: transform 220ms cubic-bezier(.25,1,.5,1), filter 220ms cubic-bezier(.25,1,.5,1); }
+.roleCard::after { content: ""; position: absolute; top: 0; right: 0; border-style: solid; border-width: 0 32px 32px 0; border-color: transparent oklch(100% 0 0 / 38%) transparent transparent; }
+.roleCard:hover { filter: saturate(120%); transform: rotate(0) translateY(-6px) scale(1.02); }
+.chapters { background: radial-gradient(circle at 10% 4%, oklch(86% .11 146 / 30%), transparent 22rem), var(--stage-paper); }
+.chapterList article { margin: 12px 0; padding: 28px; border: 1px solid oklch(20% .035 148 / 12%); border-radius: 24px 10px 24px 10px; background: oklch(100% 0 0 / 58%); backdrop-filter: blur(12px); transition: transform 220ms cubic-bezier(.25,1,.5,1), background 220ms cubic-bezier(.25,1,.5,1); }
+.chapterList article:nth-child(even) { transform: translateX(24px); }
+.chapterList article:hover { transform: translateX(8px) rotate(-.4deg); background: oklch(100% 0 0 / 82%); }
+@keyframes particleFloat { to { translate: 12px -28px; opacity: .35; transform: scale(.7); } }
+@keyframes orbitBreathe { to { transform: scale(1.08) rotate(8deg); opacity: .6; } }
+@keyframes orbitWobble { to { transform: rotate(4deg) scale(1.025); opacity: .82; } }
+@media (prefers-reduced-motion: reduce) { .particleField i, .playOrbit, .hero::after { animation: none; } }
+@media (max-width: 900px) { .heroCopy { padding: 24px; } .stage { transform: none; } }
+@media (max-width: 620px) { .particleField { height: 980px; } .heroCopy { padding: 20px; border-radius: 28px 12px; } .chapterList article:nth-child(even) { transform: none; } .playOrbit { inset: 24% 8% 20%; } }

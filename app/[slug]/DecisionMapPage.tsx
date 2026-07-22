@@ -20,8 +20,13 @@ export function DecisionMapPage({ page, relatedPages }: SeoPageViewProps) {
           <a className={styles.routeAction} href="#route">Trace the route ↓</a>
         </div>
         <div className={styles.map} aria-label="Abstract branching story route">
+          <div className={styles.bubbleField} aria-hidden="true"><i /><i /><i /><i /><i /><i /></div>
           <div className={styles.mapLegend}><span><i /> Story context</span><span><i /> Your choice</span></div>
-          <div className={styles.routeLine} aria-hidden="true" />
+          <svg className={styles.routeRibbon} viewBox="0 0 700 560" aria-hidden="true">
+            <path d="M92 102 C 240 30, 228 260, 370 210 S 512 94, 610 150" />
+            <path d="M118 420 C 224 308, 286 520, 386 396 S 520 252, 626 416" />
+            <path d="M350 70 C 280 178, 466 270, 350 492" />
+          </svg>
           {routeStops.map((section, index) => <div key={section.heading} className={`${styles.node} ${styles[`node${index + 1}`]}`}><span>{index + 1}</span><strong>{section.heading}</strong></div>)}
           <div className={styles.destination}><span>VOICE</span><strong>You enter here</strong></div>
         </div>

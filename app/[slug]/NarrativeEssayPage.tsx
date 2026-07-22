@@ -11,6 +11,7 @@ export function NarrativeEssayPage({ page, relatedPages }: SeoPageViewProps) {
       </nav>
 
       <header className={styles.hero}>
+        <div className={styles.collage} aria-hidden="true"><i /><i /><i /><i /></div>
         <p className={styles.sectionLabel}>IDEAS / STORY CONTEXT</p>
         <h1>{page.h1}</h1>
         <div className={styles.deck}><p>{page.heroMarkdown}</p><aside><span>READING TIME</span><strong>{Math.max(4, page.sections.length + 1)} MIN</strong><small>One argument, five chapters</small></aside></div>

@@ -87,7 +87,7 @@ New research inputs use `policyVersion: 2` and include a `contentStrategy` objec
 with: `searcherJob`, `oneSentenceAnswer`, `originalContribution`, `pagePattern`,
 `productBridge`, `contextualNextStep`, and `evidenceBoundary`. Each field must be
 specific before the builder accepts the draft. `pagePattern` must be one of
-`task_guide`, `experience_explainer`, `decision_page`, or `original_inventory`.
+`task_guide`, `experience_explainer`, `decision_page`, `narrative_essay`, or `original_inventory`.
 When related published content
 exists, the new page must include at least one contextual first-party link, and
 the page template must render that link in the initial HTML.
