@@ -1,5 +1,6 @@
 import { TrackedNovelAiHomeLink } from "@/app/components/TrackedNovelAiHomeLink";
 import type { SeoPageViewProps } from "./page-family-types";
+import { StoryMotionGallery } from "./StoryMotionGallery";
 import styles from "./essay.module.css";
 
 export function NarrativeEssayPage({ page, relatedPages }: SeoPageViewProps) {
@@ -25,6 +26,8 @@ export function NarrativeEssayPage({ page, relatedPages }: SeoPageViewProps) {
       <article className={styles.essay}>
         {page.sections.map((section, index) => <section key={section.heading}><aside><span>CHAPTER</span><strong>{String(index + 1).padStart(2, "0")}</strong></aside><div><h2>{section.heading}</h2><p>{section.bodyMarkdown}</p>{index === 1 ? <blockquote>The role is not decoration. It is the point of view that makes the scene playable.</blockquote> : null}</div></section>)}
       </article>
+
+      <StoryMotionGallery />
 
       <section className={styles.questions} aria-labelledby="essay-faq-heading">
         <header><span>BACK MATTER</span><h2 id="essay-faq-heading">Questions the argument should answer</h2></header>
