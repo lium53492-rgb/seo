@@ -104,3 +104,15 @@
 @media (prefers-reduced-motion: reduce) { .particleField i, .playOrbit, .hero::after { animation: none; } }
 @media (max-width: 900px) { .heroCopy { padding: 24px; } .stage { transform: none; } }
 @media (max-width: 620px) { .particleField { height: 980px; } .heroCopy { padding: 20px; border-radius: 28px 12px; } .chapterList article:nth-child(even) { transform: none; } .playOrbit { inset: 24% 8% 20%; } }
+
+/* Scene stack: each chapter becomes the next transparent page on the playbill. */
+.chapterList { display: block; padding-bottom: 0; border-top: 0; perspective: 1200px; }
+.chapterList article { position: relative; top: auto; min-height: 220px; margin: 0; border-color: oklch(20% .035 148 / 14%); background: color-mix(in oklch, var(--stage-paper), white 48%); box-shadow: 0 18px 42px oklch(20% .035 148 / 10%); transform-origin: left center; }
+.chapterList article + article { margin-top: -28px; }
+.chapterList article:nth-child(1) { z-index: 1; }
+.chapterList article:nth-child(2) { z-index: 2; background: oklch(95% .055 92); }
+.chapterList article:nth-child(3) { z-index: 3; background: oklch(94% .045 151); }
+.chapterList article:nth-child(4) { z-index: 4; background: oklch(96% .045 55); }
+.chapterList article:nth-child(5) { z-index: 5; }
+.chapterList article:hover { transform: perspective(900px) rotateY(-1.6deg) translateY(-5px); }
+@media (max-width: 620px) { .chapterList article, .chapterList article:nth-child(n) { min-height: 0; } .chapterList article + article { margin-top: 14px; } }

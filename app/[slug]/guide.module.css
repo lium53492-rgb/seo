@@ -99,3 +99,15 @@
 @media (prefers-reduced-motion: reduce) { .foldTrail i { animation: none; } }
 @media (max-width: 900px) { .steps > article:nth-child(even), .steps > article:nth-child(odd) { transform: none; } }
 @media (max-width: 620px) { .foldTrail i { opacity: .45; } .steps > article { padding: 24px; } }
+
+/* Field-guide folios stack like turning pages while the next instruction arrives. */
+.steps { perspective: 1200px; padding-bottom: 0; }
+.steps > article { position: relative; top: auto; min-height: 260px; margin-bottom: 0; box-shadow: 0 18px 38px oklch(24% .035 65 / 10%); transform-origin: left center; }
+.steps > article + article { margin-top: -30px; }
+.steps > article:nth-child(1) { z-index: 1; }
+.steps > article:nth-child(2) { z-index: 2; background: oklch(96% .07 190 / 94%); }
+.steps > article:nth-child(3) { z-index: 3; background: oklch(96% .07 43 / 94%); }
+.steps > article:nth-child(4) { z-index: 4; background: oklch(96% .075 93 / 94%); }
+.steps > article:nth-child(5) { z-index: 5; }
+.steps > article:hover { transform: perspective(900px) rotateY(-1.8deg) translateY(-5px); }
+@media (max-width: 620px) { .steps > article, .steps > article:nth-child(n) { min-height: 0; } .steps > article + article { margin-top: 16px; } }

@@ -97,3 +97,16 @@
 @media (prefers-reduced-motion: reduce) { .routeRibbon path, .bubbleField i, .node { animation: none; } }
 @media (max-width: 940px) { .map { overflow: hidden; } }
 @media (max-width: 620px) { .map { border-radius: 32px 12px; } .node { border-radius: 18px 7px; } .routeRibbon { transform: scale(1.18); } }
+
+/* Route cards overlap as discoveries, preserving the map instead of reverting to a list. */
+.routeList { display: block; padding-bottom: 0; perspective: 1200px; }
+.routeList article { position: relative; top: auto; min-height: 230px; margin: 0; padding: 30px; border: 1px solid oklch(49% .19 274 / 18%); border-radius: 34px 11px 34px 11px; background: oklch(98% .02 240 / 88%); box-shadow: 0 18px 44px oklch(31% .13 252 / 12%); backdrop-filter: blur(18px); }
+.routeList article + article { margin-top: -28px; }
+.routeList article:nth-child(1) { z-index: 1; }
+.routeList article:nth-child(2) { z-index: 2; background: oklch(94% .07 201 / 94%); }
+.routeList article:nth-child(3) { z-index: 3; background: oklch(95% .08 55 / 94%); }
+.routeList article:nth-child(4) { z-index: 4; background: oklch(96% .06 310 / 94%); }
+.routeList article:nth-child(5) { z-index: 5; }
+.routeList::before { z-index: 1; top: 30px; bottom: 20vh; }
+.routeList article > * { position: relative; z-index: 2; }
+@media (max-width: 620px) { .routeList article, .routeList article:nth-child(n) { min-height: 0; } .routeList article + article { margin-top: 16px; } }

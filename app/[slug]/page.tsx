@@ -7,6 +7,7 @@ import { DecisionMapPage } from "./DecisionMapPage";
 import { InventoryCatalogPage } from "./InventoryCatalogPage";
 import { NarrativeEssayPage } from "./NarrativeEssayPage";
 import { TaskGuidePage } from "./TaskGuidePage";
+import { StoryCompanion } from "./StoryCompanion";
 
 type PageProps = { params: Promise<{ slug: string }> };
 
@@ -71,6 +72,7 @@ export default async function PublishedSeoPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       {view}
+      <StoryCompanion sourceSlug={page.slug} />
     </>
   );
 }

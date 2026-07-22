@@ -89,3 +89,15 @@
 @media (prefers-reduced-motion: reduce) { .collage i { animation: none; } }
 @media (max-width: 900px) { .essay > section:nth-child(even), .essay > section:nth-child(odd) { transform: none; } }
 @media (max-width: 620px) { .collage i { opacity: .45; } .deck { padding: 20px; } .essay > section { padding: 28px; border-radius: 30px 10px; } }
+
+/* The essay reads as a real stack of story pages rather than identical sections. */
+.essay { perspective: 1400px; padding-bottom: 112px; }
+.essay > section { position: relative; top: auto; min-height: 340px; margin-bottom: 0; box-shadow: 0 20px 48px oklch(23% .055 329 / 10%); transform-origin: left center; }
+.essay > section + section { margin-top: -34px; }
+.essay > section:nth-child(1) { z-index: 1; }
+.essay > section:nth-child(2) { z-index: 2; background: oklch(96% .075 342 / 94%); }
+.essay > section:nth-child(3) { z-index: 3; background: oklch(96% .065 198 / 94%); }
+.essay > section:nth-child(4) { z-index: 4; background: oklch(97% .075 82 / 94%); }
+.essay > section:nth-child(5) { z-index: 5; }
+.essay > section:hover { transform: perspective(1000px) rotateY(-1.5deg) translateY(-5px); }
+@media (max-width: 620px) { .essay { padding-bottom: 72px; } .essay > section, .essay > section:nth-child(n) { min-height: 0; } .essay > section + section { margin-top: 18px; } }
