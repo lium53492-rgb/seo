@@ -241,7 +241,8 @@
 .wb-report-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
 .wb-report-card h2 { margin: 0; font-size: clamp(1.15rem, 2.4vw, 1.75rem); letter-spacing: -.035em; }
 .wb-report-card > p { margin: 16px 0; color: var(--wb-muted); font-size: .75rem; line-height: 1.6; }
-.wb-report-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin: 20px 0 0; border: 1px solid var(--wb-line); border-radius: 8px; overflow: hidden; background: var(--wb-line); }
+.wb-report-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; margin: 20px 0 0; border: 1px solid var(--wb-line); border-radius: 8px; overflow: hidden; background: var(--wb-line); }
+.wb-funnel-rates { margin-top: 16px; }
 .wb-report-metrics div { min-width: 0; padding: 12px; background: #f0efe9; }
 .wb-report-metrics dt { color: var(--wb-muted); font-size: .6rem; }
 .wb-report-metrics dd { margin: 5px 0 0; color: var(--wb-ink); font-size: 1rem; font-weight: 900; }

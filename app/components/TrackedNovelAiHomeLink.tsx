@@ -11,8 +11,6 @@ type TrackedNovelAiHomeLinkProps = Omit<
   location?: "homepage" | "seo_page";
 };
 
-const href = "https://www.novelai.ai/zh-CN/";
-
 export function TrackedNovelAiHomeLink({
   children,
   className,
@@ -21,6 +19,7 @@ export function TrackedNovelAiHomeLink({
   onClick,
   ...anchorProps
 }: TrackedNovelAiHomeLinkProps) {
+  const href = `/go/novelai/${encodeURIComponent(sourceSlug)}?location=${encodeURIComponent(location)}`;
   return (
     <a
       {...anchorProps}

@@ -2,12 +2,17 @@
   "name": "novelai-story-seo",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "check": "tsc --noEmit",
-    "research:build": "node scripts/build-free-research-report.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "verify": "npm run test && npm run check && npm run build && npm run verify:pages",
+    "verify:pages": "node scripts/verify-built-pages.mjs",
+    "research:build": "node scripts/build-free-research-report.mjs",
+    "research:publish": "node scripts/publish-reviewed-page.mjs"
   },
   "dependencies": {
     "@streamdown/cjk": "^1.0.3",

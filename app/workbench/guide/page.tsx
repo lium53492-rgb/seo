@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { createDisconnectedReport } from "@/lib/seo/pipeline";
+import { createDisconnectedReport } from "@/lib/seo/default-report";
 import { readLatestReport } from "@/lib/seo/report-store";
 import type { IntegrationStatus } from "@/lib/seo/types";
 
@@ -19,18 +19,19 @@ const stateLabels: Record<IntegrationStatus["state"], string> = {
 };
 
 const dailySteps = [
-  ["09:15 自动研究", "Codex 搜索公开网页，保留证据链接，并生成需求与竞争代理分。"],
-  ["选择未覆盖机会", "系统先排除已经发布、产品不匹配、第三方 IP 和内容重复度过高的候选词。"],
-  ["生成页面", "第一名关键词自动变成 Brief、事实受控英文内容和完整页面数据。"],
-  ["自动质量闸门", "来源、事实、版权、正文深度、重复度和内部链接全部通过才允许提交。"],
-  ["GitHub 与 Vercel 上线", "Codex 提交日报和页面；Vercel 自动构建，sitemap 与首页内链同步更新。"],
-  ["真实数据反馈", "Search Console 与 Vercel Analytics 的真实表现会影响后续选词、标题和页面更新。"],
+  ["09:15 收集真实信号", "读取 Search Console、Vercel Analytics 和可用的产品转化数据；没有数据就记录不可用原因。"],
+  ["研究高意图候选", "结合公开网页和 SEO 工具，给试玩意图、付费意图、搜索任务具体度、产品匹配和竞争代理分别打分。"],
+  ["硬门槛筛选", "系统先排除宽泛信息词、弱试玩意图、产品不匹配、第三方 IP、内容蚕食和重复答案。"],
+  ["生成事实受控草稿", "第一名合格机会变成 Brief、英文内容和待审页面，但此时不会写入已发布目录。"],
+  ["独立编辑审稿", "人工或标明身份的 Codex 编辑器检查搜索意图、产品事实、来源和转化路径，并生成批准记录。"],
+  ["测试后发布", "审批脚本写入页面；测试、类型检查、构建、线上 H1/canonical/CTA/sitemap 全部通过后才报告上线。"],
+  ["按营收反馈", "搜索点击和落地页 UV 按页面与周期聚合；用 seo_click_id 连接 NovelAI 出站、试玩、注册、付费和营收，再反向调整下一轮选题。"],
 ];
 
 const decisionRows = [
   ["高曝光、低点击", "重写 Title、Meta 和首屏承诺", "优先让搜索结果更容易被点击"],
   ["排名 8–20", "补充独特素材、FAQ 与内部链接", "把已有相关性推入首页"],
-  ["高点击、高转化", "扩展相邻剧情和角色页面", "复制已经验证的搜索意图"],
+  ["高 UV、高试玩或付费", "扩展相邻但独立的搜索任务", "复制已经验证的用户意图，而不是复制关键词变体"],
   ["高需求、低产品匹配", "观察，不生成或发布页面", "防止为流量虚构产品能力"],
   ["关键词暗示多人/好友", "产品匹配最高只能到 49", "除非产品事实库明确确认该能力"],
 ];
@@ -69,7 +70,7 @@ export default async function WorkbenchGuidePage() {
         <header className="wb-guide-hero">
           <p className="wb-kicker">OPERATING MANUAL</p>
           <h1>你只看结果，工作台负责把研究变成行动。</h1>
-          <p>每天自动完成研究、评分、写作、质检、提交和上线。你打开工作台时只看当天机会、证据、线上页面和真实表现。</p>
+          <p>每天沿同一条链路完成研究、评分、写作、独立审稿、质检和发布。你打开工作台时可以直接看到关键词为什么值得做，以及它带来的 UV、试玩和付费是否可观测。</p>
           <div className="wb-hero-actions">
             <a className="wb-primary-link" href="/workbench">打开今日任务</a>
             {report.publication?.status === "published" && report.publication.path ? (
@@ -86,7 +87,7 @@ export default async function WorkbenchGuidePage() {
           </div>
           <div className="wb-guide-cards">
             <article><span>01</span><h3>看今天为什么选它</h3><p>先看机会分、产品匹配、竞争代理分和来源，不需要逐个研究关键词。</p></article>
-            <article><span>02</span><h3>打开线上页面</h3><p>状态为 PUBLISHED 时可直接检查搜索页面、内容、CTA、移动端和内链。</p></article>
+            <article><span>02</span><h3>看发布状态</h3><p>READY FOR REVIEW 只是待审稿；只有 PUBLISHED 才代表审批和工程闸门都已通过。</p></article>
             <article><span>03</span><h3>只处理异常</h3><p>只有闸门失败或产品事实变化时才需要你介入；其他日期保持零操作。</p></article>
           </div>
         </section>
@@ -117,7 +118,7 @@ export default async function WorkbenchGuidePage() {
               <tbody>{decisionRows.map(([signal, change, why]) => <tr key={signal}><td><strong>{signal}</strong></td><td>{change}</td><td>{why}</td></tr>)}</tbody>
             </table>
           </div>
-          <div className="wb-guide-note"><strong>读数原则：</strong>“需求分/竞争分”来自公开研究，只用于方向判断；“曝光/点击/CTR/排名”只有在 Search Console 返回数据后才是真实 Google 表现。</div>
+          <div className="wb-guide-note"><strong>读数原则：</strong>“需求分/竞争分”来自公开研究，只用于方向判断；曝光、点击、UV、试玩、付费和营收只有在对应数据源返回观测值后才显示。空数组和未连接一律不当作 0。</div>
         </section>
 
         <section className="wb-section" id="connections">
@@ -152,20 +153,21 @@ export default async function WorkbenchGuidePage() {
             </article>
             <article>
               <p className="wb-kicker">VERCEL ANALYTICS</p>
-              <h3>启用免费的页面访问统计</h3>
+              <h3>查看页面 UV，并与转化主键配合</h3>
               <ol>
                 <li>打开上方“启用免费统计”，登录 Vercel 账号。</li>
                 <li>在 SEO 项目的 Analytics 页面点击 Enable Web Analytics。</li>
                 <li>采集组件已在代码和线上部署中，无需再安装包。</li>
                 <li>等待首次真实访问后查看 Visits、Pages、Referrers 和 Countries。</li>
-                <li>Hobby 免费版不含自定义事件；页面浏览数据仍可免费使用。</li>
+                <li>Hobby 免费版页面访问数据可用于 UV；高质量出站由站内跳转路由记录。</li>
+                <li>NovelAI 端需保存 URL 中的 <code>seo_click_id</code>，并在试玩、注册、付费时回传同一个 ID。</li>
               </ol>
             </article>
           </div>
         </section>
 
         <section className="wb-section" id="publish">
-          <div className="wb-section-heading"><div><p className="wb-kicker">AUTOMATED QUALITY GATE</p><h2>没通过这六项，系统不会上线</h2></div></div>
+          <div className="wb-section-heading"><div><p className="wb-kicker">TWO-STAGE QUALITY GATE</p><h2>自动检查和独立审稿缺一不可</h2></div></div>
           <div className="wb-publish-checklist">
             <span>✓ 至少 5 条公开证据，且来自至少 3 个独立域名</span>
             <span>✓ 每个候选词都有可回溯的 evidence.supports</span>
@@ -173,8 +175,10 @@ export default async function WorkbenchGuidePage() {
             <span>✓ 不出现多人、实时、平台、价格、延迟或第三方 IP 等未批准说法</span>
             <span>✓ 正文深度达标，FAQ、标题、描述和 CTA 完整</span>
             <span>✓ 与已有页面不重复，同一关键词不会再次创建页面</span>
+            <span>✓ 试玩、付费意图和搜索任务具体度达到 policy v3 硬门槛</span>
+            <span>✓ 独立批准记录包含搜索意图、产品事实、转化路径和来源复核</span>
           </div>
-          <p className="wb-guide-footnote">全部通过后，脚本才会写入 data/pages 并把日报标为 PUBLISHED；随后 GitHub 推送触发 Vercel 构建。新产品能力仍需先由你加入事实白名单。</p>
+          <p className="wb-guide-footnote">研究脚本只生成 READY FOR REVIEW；审批脚本读取 data/reviews 中的批准记录后才写入 data/pages。随后 GitHub 推送触发 Vercel 构建。新产品能力仍需先加入唯一事实目录。</p>
         </section>
       </div>
     </main>

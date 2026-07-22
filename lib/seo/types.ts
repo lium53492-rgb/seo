@@ -13,6 +13,13 @@ export type RecommendedAction =
   | "consolidate"
   | "observe";
 
+export type FunnelStage = "problem" | "solution" | "trial" | "purchase";
+
+export type ConversionGoal =
+  | "qualified_outbound_click"
+  | "trial_start"
+  | "purchase";
+
 export type KeywordCandidate = {
   keyword: string;
   seed: string;
@@ -27,6 +34,11 @@ export type KeywordCandidate = {
   productFit: number;
   originality: number;
   conversionIntent: number;
+  trialIntent?: number;
+  revenueIntent?: number;
+  intentSpecificity?: number;
+  funnelStage?: FunnelStage;
+  conversionGoal?: ConversionGoal;
   ipRisk: number;
   cannibalizationRisk: number;
   existingUrl?: string;
@@ -135,7 +147,7 @@ export type GeneratedPageDraft = {
 };
 
 export type PublishedSeoPage = {
-  schemaVersion: 1;
+  schemaVersion: 1 | 2;
   status: "published";
   slug: string;
   path: string;
@@ -160,11 +172,17 @@ export type PublishedSeoPage = {
     demandProxy: number;
     competitionProxy: number;
     evidenceCount: number;
+    trialIntent?: number;
+    revenueIntent?: number;
+    intentSpecificity?: number;
+    funnelStage?: FunnelStage;
+    conversionGoal?: ConversionGoal;
   };
+  editorialReview?: EditorialReview;
 };
 
 export type ReportPublication = {
-  status: "published" | "blocked" | "not_requested";
+  status: "published" | "ready_for_review" | "blocked" | "not_requested";
   path?: string;
   slug?: string;
   slot?: "morning" | "afternoon";
@@ -185,11 +203,59 @@ export type ContentStrategy = {
   productBridge: string;
   contextualNextStep: string;
   evidenceBoundary: string;
+  conversionHypothesis?: string;
+  primaryConversion?: ConversionGoal;
+  measurementPlan?: string;
+};
+
+export type EditorialReview = {
+  schemaVersion: 1;
+  reportId: string;
+  slug: string;
+  decision: "approved";
+  reviewerType: "human" | "codex_editor";
+  reviewer: string;
+  reviewedAt: string;
+  notes: string;
+  checks: Array<{
+    id: string;
+    passed: true;
+    detail: string;
+  }>;
+};
+
+export type ObservedMetric = {
+  status: "observed" | "unavailable";
+  value: number | null;
+  source: "search_console" | "vercel_analytics" | "seo_redirect" | "product_analytics" | "payments";
+  detail: string;
+};
+
+export type SeoGrowthFunnel = {
+  schemaVersion: 1;
+  attributionStatus: "unavailable" | "partial" | "connected";
+  aggregationKey: "source_slug+reporting_period";
+  conversionJoinKey: "seo_click_id";
+  /** Legacy report compatibility. New reports use `conversionJoinKey`. */
+  joinKey?: "seo_click_id";
+  periodStart: string;
+  periodEnd: string;
+  metrics: {
+    organicClicks: ObservedMetric;
+    landingUv: ObservedMetric;
+    qualifiedOutboundClicks: ObservedMetric;
+    trialStarts: ObservedMetric;
+    signups: ObservedMetric;
+    paidConversions: ObservedMetric;
+    revenueMinor: ObservedMetric;
+  };
+  currency?: string;
 };
 
 export type DailySeoReport = {
   id: string;
   date: string;
+  publicationMode?: "create" | "update";
   generatedAt: string;
   mode: DataMode;
   headline: string;
@@ -211,6 +277,7 @@ export type DailySeoReport = {
   /** Retained as an array for backwards compatibility with earlier reports. */
   publications?: ReportPublication[];
   contentStrategy?: ContentStrategy | null;
+  funnel?: SeoGrowthFunnel;
   integrations: IntegrationStatus[];
   evidence?: Array<{
     title: string;

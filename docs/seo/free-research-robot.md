@@ -1,109 +1,55 @@
 # Free Codex SEO research robot
 
-This protocol replaces paid keyword-provider data with transparent research proxies. It does not scrape Google result HTML and never labels proxy scores as search volume or keyword difficulty.
+This is the active zero-additional-API-cost production protocol. It uses public evidence and clearly labelled research proxies, and it publishes only candidates with a specific trial or purchase job.
 
-## Daily research inputs
+## Preflight
 
-1. Read `lib/seo/product-facts.ts` and use only approved product facts.
-2. Search the public web for the configured seed topics, close variants, user questions, competitor pages, and recent discussions.
-3. Keep at least five accessible evidence URLs from at least three independent domains.
-4. Prefer first-party product pages, current search-result pages surfaced by the Codex web search tool, community discussions, and dated editorial coverage.
-5. Exclude unlicensed entertainment IP and sources that cannot be opened.
+1. Read `AGENTS.md`, `data/config/seo-policy.json`, `data/config/product-facts.json`, this file, the content-production SOP, pending feedback, and every unconsumed feedback item.
+2. Inspect `git status`, all current published pages, the current-day research/report/review/page/PDF paths, and the latest report.
+3. Stop rather than overwrite another task's same-day artifact or unrelated local work.
+4. Record Search Console, Vercel UV, outbound, trial, signup, payment, and revenue as observed or unavailable. Never convert unavailable data to zero.
 
-## Proxy scores
+## Candidate research
 
-- `demandScore` (0–100): repeated query/theme presence across independent sources, recency, user discussion, and action-oriented intent.
-- `difficulty` (0–100): strength of dedicated pages already ranking, brand concentration, exact-match coverage, and depth of competing content.
-- These are directional proxies. They are not monthly search volume, CPC, or Semrush KD.
-- Set `volume` and `cpc` indirectly through the builder; never invent them in the research input.
-- A product-fit score above 70 requires direct support from `lib/seo/product-facts.ts`.
-  If a keyword implies an unapproved capability such as friends, groups, or
-  multiplayer play, cap `productFit` at 49 until the product team adds that fact.
+Use 5-12 candidates and at least five accessible evidence URLs from at least three independent domains. Every candidate must have direct `evidence.supports` coverage.
 
-## Research input
+For policy version 3, every candidate needs:
 
-Create `data/research/YYYY-MM-DD.json` with:
+- `demandScore` and `difficulty`: transparent 0-100 public-web proxies unless an observed provider metric is explicitly cited;
+- `intent`: commercial, transactional, mixed, informational, or navigational;
+- `funnelStage`: problem, solution, trial, or purchase;
+- `conversionGoal`: qualified_outbound_click, trial_start, or purchase;
+- `productFit`, `trialIntent`, `revenueIntent`, `intentSpecificity`, and `originality`;
+- `ipRisk` and `cannibalizationRisk`.
 
-```json
-{
-  "date": "YYYY-MM-DD",
-  "generatedAt": "ISO-8601 timestamp",
-  "candidates": [
-    {
-      "keyword": "choose a role ai story",
-      "seed": "voice roleplay",
-      "demandScore": 70,
-      "difficulty": 35,
-      "intent": "commercial",
-      "productFit": 95,
-      "originality": 82,
-      "conversionIntent": 88,
-      "ipRisk": 0,
-      "cannibalizationRisk": 10
-    }
-  ],
-  "evidence": [
-    {
-      "title": "Source page title",
-      "url": "https://example.com/page",
-      "source": "Example",
-      "collectedAt": "ISO-8601 timestamp",
-      "supports": ["choose a role ai story"]
-    }
-  ]
-}
-```
+New pages must pass every hard gate in `data/config/seo-policy.json`. Demand cannot override a failed trial, revenue, specificity, product, IP, or cannibalization gate.
 
-Use 5–12 candidates. Every candidate must be supported by at least one evidence item. Do not add a draft unless the page content has also passed the product-fact constraints in `lib/seo/product-facts.ts`.
+## Content strategy and funnel
 
-When a draft is included, its keyword must match a researched, new publishable
-opportunity and all `factIdsUsed` values must be approved. The builder blocks unsupported
-claims such as multiplayer, real-time operation, platform availability, privacy,
-or latency. Before researching a new keyword, inspect `data/pages` and do not
-choose a keyword that already has a page.
+The research input uses `policyVersion: 3` and includes:
 
-## Build and publish
+- `searcherJob`, `oneSentenceAnswer`, and `originalContribution`;
+- one approved `pagePattern`;
+- `productBridge`, `contextualNextStep`, and `evidenceBoundary`;
+- `conversionHypothesis`, `primaryConversion`, and `measurementPlan`;
+- a schema-version 1 funnel snapshot using `source_slug+reporting_period` for search/UV aggregation and `seo_click_id` for outbound-to-revenue conversion joins.
 
-Run:
+The English draft remains 600-1,000 words, has at least four sections and three FAQs, uses only approved fact IDs, contains one real CTA, avoids prohibited claims and third-party IP, and links a relevant published first-party page when one exists.
+
+## Build, review, publish
 
 ```text
 npm run research:build -- data/research/YYYY-MM-DD.json
-npm run check
+npm run research:publish -- data/reports/YYYY-MM-DD.json data/reviews/YYYY-MM-DD.json
+npm run verify
 ```
 
-The builder validates the research, calculates the opportunity score, checks the
-draft against the fact and copyright allowlists, compares it with existing pages,
-and writes both `data/reports/YYYY-MM-DD.json` and a public
-`data/pages/<slug>.json`. A duplicate slug is rejected unless the input explicitly
-sets `publicationMode` to `update`.
+The first command writes a review-required report and cannot write `data/pages`. Before the second command, an independent editor creates a review artifact with an identified reviewer, timestamp, substantive notes, and passed checks for search intent, product truth, conversion path, and source accuracy. A Codex review must identify itself as `codex_editor`; it must never be labelled human.
 
-## One-page quality cadence
+The publisher enforces one page per report/day, writes schema-version 2 page data, attaches the approval record, and updates the report to `published`. Existing schema-version 1 pages remain readable but all new pages use version 2.
 
-Keep one research input, one report, and at most one new page per Shanghai day.
-The builder rejects a second draft even when it is labelled as an afternoon slot.
-This makes the daily unit a useful answer rather than an output quota.
+## Release verification
 
-New research inputs use `policyVersion: 2` and include a `contentStrategy` object
-with: `searcherJob`, `oneSentenceAnswer`, `originalContribution`, `pagePattern`,
-`productBridge`, `contextualNextStep`, and `evidenceBoundary`. Each field must be
-specific before the builder accepts the draft. `pagePattern` must be one of
-`task_guide`, `experience_explainer`, `decision_page`, `narrative_essay`, or `original_inventory`.
-When related published content
-exists, the new page must include at least one contextual first-party link, and
-the page template must render that link in the initial HTML.
+Commit only intended artifacts and code. Do not claim deployment until the remote push succeeds, Vercel reports READY, and the live page independently shows the expected H1, canonical, attributed `/go/novelai/` CTA, `Article`/`FAQPage` JSON-LD, and sitemap entry.
 
-After both checks pass, commit only these daily artifacts:
-
-- `data/research/YYYY-MM-DD.json`
-- `data/reports/YYYY-MM-DD.json`
-- `data/pages/<slug>.json`
-
-Push to `origin/main`. The connected Vercel project deploys the commit, the page
-route renders the new JSON as an indexable page, and the sitemap includes it.
-Contextual links in the published page JSON are rendered by the shared page
-template; the root route is a product redirect and is not treated as a content hub.
-
-The zero-additional-API-cost scheduler is a local Codex automation. The computer
-and Codex app must be online around the scheduled run. If a run is missed, start
-the automation once from the Codex Automations screen. GitHub and Vercel continue
-serving already published pages without the local computer.
+The scheduled run is local. The computer and Codex application must be online around 09:15 Asia/Shanghai. GitHub and Vercel continue serving published pages when the local computer is offline.

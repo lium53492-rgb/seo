@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { ArticleJsonLd, FAQJsonLd } from "next-seo";
 import { listPublishedPages, readPublishedPage } from "@/lib/seo/page-store";
 import { resolveSeoPageFamily } from "@/lib/seo/page-presentation";
+import { absoluteSiteUrl } from "@/lib/seo/site";
 import { CinematicExperiencePage } from "./CinematicExperiencePage";
 import { DecisionMapPage } from "./DecisionMapPage";
 import { InventoryCatalogPage } from "./InventoryCatalogPage";
@@ -46,13 +48,7 @@ export default async function PublishedSeoPage({ params }: PageProps) {
     return target ? [{ ...link, target }] : [];
   });
 
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@graph": [
-      { "@type": "Article", headline: page.h1, description: page.metaDescription, datePublished: page.publishedAt, dateModified: page.updatedAt, mainEntityOfPage: page.path },
-      { "@type": "FAQPage", mainEntity: page.faqs.map((faq) => ({ "@type": "Question", name: faq.question, acceptedAnswer: { "@type": "Answer", text: faq.answerMarkdown } })) },
-    ],
-  };
+  const canonicalUrl = absoluteSiteUrl(page.path);
 
   const family = resolveSeoPageFamily(page);
   const view = (() => {
@@ -67,9 +63,22 @@ export default async function PublishedSeoPage({ params }: PageProps) {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      <ArticleJsonLd
+        type="Article"
+        headline={page.h1}
+        description={page.metaDescription}
+        url={canonicalUrl}
+        mainEntityOfPage={canonicalUrl}
+        datePublished={page.publishedAt}
+        dateModified={page.updatedAt}
+        scriptId={`article-jsonld-${page.slug}`}
+      />
+      <FAQJsonLd
+        questions={page.faqs.map((faq) => ({
+          question: faq.question,
+          answer: faq.answerMarkdown,
+        }))}
+        scriptId={`faq-jsonld-${page.slug}`}
       />
       {view}
       <StoryCompanion sourceSlug={page.slug} />

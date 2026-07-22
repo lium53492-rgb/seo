@@ -4,11 +4,10 @@ import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://seo-pi-fawn.vercel.app";
+import { getSiteUrl } from "@/lib/seo/site";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: getSiteUrl(),
   title: {
     default: "Story-Led AI Voice Roleplay | NovelAI Story Guide",
     template: "%s | NovelAI Story Guide",
@@ -35,11 +34,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isVercel = process.env.VERCEL === "1";
+
   return (
     <html lang="en" className={cn(GeistSans.variable, GeistMono.variable)}>
       <body className={GeistSans.className}>
         {children}
-        <Analytics />
+        {isVercel ? <Analytics /> : null}
       </body>
     </html>
   );

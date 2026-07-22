@@ -1,211 +1,89 @@
-# Engineering Workflow for Story SEO Pages
+# Revenue-first SEO engineering workflow
 
-This document explains the production system we built for stable daily SEO output.
+This repository has one production path. It targets an independent English searcher job, publishes at most one reviewed answer per Shanghai day, and measures the path from search to revenue without turning missing data into zero.
 
-## Current Strategy
-
-We are not trying to rank for the NovelAI brand first.
-
-The current SEO path is:
+## Acquisition path
 
 ```text
-Low-competition English search keyword
--> Independent story SEO landing page
--> Play CTA
--> NovelAI story share URL
+Independent trial-ready search intent
+-> indexable SEO landing page
+-> /go/novelai/{slug}
+-> NovelAI with UTM + seo_click_id
+-> trial / signup / purchase callback
+-> daily funnel report
 ```
 
-Example:
+The SEO site is not a second product and the bare homepage is not a topic hub. Each content page must answer a useful search question on its own. Its primary business job is to send a qualified reader into the approved NovelAI experience.
+
+## Single source of truth
+
+- `data/config/seo-policy.json`: scoring weights, trial/revenue gates, content limits, page cadence, and required review checks.
+- `data/config/product-facts.json`: approved product facts, constraints, and forbidden claim patterns.
+- `data/research/YYYY-MM-DD.json`: evidence, candidates, funnel snapshot, content strategy, and one review-required draft.
+- `data/reports/YYYY-MM-DD.json`: scored opportunities, observed/unavailable metrics, draft state, and publication state.
+- `data/reviews/YYYY-MM-DD.json`: independent editorial decision and four required review checks.
+- `data/pages/<slug>.json`: published content only. New schema-version 2 pages require a matching approval record.
+
+The TypeScript product-fact module is only a typed wrapper around the JSON catalog. The report builder and the app therefore read the same product truth.
+
+## Intent model
+
+Every candidate records separate 0-100 values for:
+
+- demand proxy;
+- competition proxy;
+- product fit;
+- trial intent;
+- revenue intent;
+- intent specificity;
+- originality;
+- IP risk;
+- cannibalization risk.
+
+A new page is eligible only when all policy-v3 hard gates pass. Traffic potential cannot compensate for weak trial intent, a broad informational task, unsupported product fit, IP risk, or an intent already owned by another page.
+
+## Two-stage release
+
+1. `npm run research:build -- data/research/YYYY-MM-DD.json`
+   validates evidence, scores candidates, checks product claims and content quality, and writes a report with `ready_for_review`. It never writes a public page.
+2. An independent human or explicitly identified Codex editor reviews search intent, product truth, conversion path, and source accuracy, then creates `data/reviews/YYYY-MM-DD.json`.
+3. `npm run research:publish -- data/reports/YYYY-MM-DD.json data/reviews/YYYY-MM-DD.json`
+   verifies the approval artifact and writes a schema-version 2 page.
+4. `npm run verify`
+   runs deterministic tests, TypeScript, and the production Next.js build.
+5. Push only the intended artifacts and code. Verify Vercel READY, rendered H1, canonical, attributed CTA, JSON-LD, and sitemap inclusion before reporting production success.
+
+## Runtime structure
 
 ```text
-2000s marriage life simulator
--> https://seo-pi-fawn.vercel.app
--> /go/story/2000s-marriage-life-simulator
--> NovelAI story page
+app/[slug]/page.tsx                         static SEO route and next-seo JSON-LD
+app/go/novelai/[slug]/route.ts              qualified outbound event + attributed redirect
+app/api/attribution/conversion/route.ts     protected trial/signup/purchase callback
+app/workbench/                              research, review, funnel, and status views
+lib/seo/page-store.ts                       published-page schema guard
+lib/seo/attribution.ts                      destination allowlist and attribution contract
+scripts/build-free-research-report.mjs      research -> review-required report
+scripts/publish-reviewed-page.mjs           approved report -> published page
+scripts/lib/seo-policy.mjs                  deterministic scoring and hard gates
+tests/                                      policy, attribution, and release-boundary tests
 ```
 
-This works well for daily publishing because each page can target one concrete story, scene, or roleplay fantasy.
+## Metadata and structured data
 
-## Engineering Structure
+Use native Next.js metadata for title, description, canonical, Open Graph, and Twitter fields. Use `next-seo` for `ArticleJsonLd` and `FAQJsonLd`. The visible FAQ and its structured data are generated from the same page object, so they cannot drift.
 
-```text
-app/
-  layout.tsx
-  page.tsx
-  robots.ts
-  sitemap.ts
-  components/
-    TrackedStoryLink.tsx
-  go/
-    story/
-      2000s-marriage-life-simulator/
-        route.ts
+## Measurement contract
 
-docs/
-  seo/
-    README.md
-    daily-workflow.md
-    story-page-workflow.md
-    engineering-workflow.md
-    page-brief-template.md
-    page-tracker.csv
-    30-day-topic-plan.csv
-    briefs/
+- Search Console supplies observed impressions, organic clicks, CTR, and position, aggregated by source page and reporting period.
+- Vercel Web Analytics supplies landing-page UV on the same source-page and period dimensions.
+- `/go/novelai/{slug}` creates a `seo_click_id`, logs the qualified outbound click, and forwards UTM fields plus that ID to NovelAI.
+- NovelAI must retain the ID and send it with trial, signup, and payment events. Only the outbound-to-revenue segment is joined event by event with `seo_click_id`.
+- The daily report records each funnel metric as either `observed` with a source or `unavailable` with a reason.
 
-public/
-  googlea20e574c62693e98.html
-```
+See `docs/seo/revenue-attribution.md` for the cross-repository callback contract.
 
-## File Responsibilities
+## Bug control
 
-`app/layout.tsx`
+`npm run test` proves that weak intent cannot pass, cannibalized intent consolidates, the redirect cannot target an unapproved domain, and a report cannot publish without a separate approval artifact. `npm run check` catches type and contract drift. `npm run build` proves App Router, static page generation, metadata, structured data, and dynamic routes compile together.
 
-- Site-wide layout.
-- Global SEO defaults.
-- Vercel Analytics component.
-
-`app/page.tsx`
-
-- First story SEO landing page.
-- Page-level metadata.
-- Visible content.
-- FAQ structured data using `next-seo`.
-- Play CTAs.
-
-`app/components/TrackedStoryLink.tsx`
-
-- Client-side Play CTA wrapper.
-- Tracks `story_play_click` in Vercel Analytics.
-- Sends users to an internal redirect URL.
-
-`app/go/story/.../route.ts`
-
-- Internal redirect route.
-- Logs `story_play_redirect` to Vercel runtime logs.
-- Redirects to the exact NovelAI story URL.
-
-`app/sitemap.ts`
-
-- Generates sitemap.
-- Search Console reads this to discover pages.
-
-`app/robots.ts`
-
-- Allows crawling.
-- Points crawlers to sitemap.
-
-`public/googlea20e574c62693e98.html`
-
-- Google Search Console ownership verification file.
-- Do not delete it.
-
-## Where `next-seo` Fits
-
-We use `next-seo` for structured data, not for normal metadata.
-
-Use Next.js native metadata for:
-
-- `title`
-- `description`
-- canonical URL
-- Open Graph title and description
-- Twitter metadata
-
-Use `next-seo` for:
-
-- `FAQJsonLd`
-- `ArticleJsonLd`
-- `SoftwareApplicationJsonLd`
-- `BreadcrumbJsonLd`
-- Other schema.org JSON-LD blocks
-
-Why:
-
-- Next.js App Router already has first-class metadata support.
-- `next-seo` reduces manual JSON-LD mistakes.
-- This keeps page metadata predictable and structured data reusable.
-
-## Daily Page Production Flow
-
-1. Choose one story.
-2. Copy its NovelAI story share URL.
-3. Pick one low-competition English keyword.
-4. Create or update the story data.
-5. Create the landing page route.
-6. Add visible content that matches the keyword.
-7. Add structured data with `next-seo`.
-8. Add a `/go/story/{slug}` redirect route.
-9. Add the page to sitemap.
-10. Run build locally.
-11. Commit and push.
-12. Verify Vercel deployment.
-13. Submit or inspect URL in Google Search Console.
-14. Record the page in `page-tracker.csv`.
-
-## Stability Rules
-
-- One story page targets one keyword.
-- One page must have one H1.
-- The page must contain useful standalone content, not only a redirect.
-- The visible FAQ must match the `FAQJsonLd` data.
-- Every Play CTA should go through `/go/story/{slug}` for tracking.
-- Do not delete Search Console verification files.
-- Do not manually edit generated build output.
-- Keep metadata, sitemap, and canonical URLs aligned with the production domain.
-
-## Bug Control
-
-Before every push:
-
-```bash
-npm run build
-```
-
-Build catches:
-
-- TypeScript errors.
-- Broken imports.
-- Invalid App Router files.
-- Route generation errors.
-- Metadata typing issues.
-
-Manual checks:
-
-- Open the page locally or on Vercel.
-- Click the Play CTA.
-- Confirm it redirects to NovelAI.
-- Open `/sitemap.xml`.
-- Open `/robots.txt`.
-- Check Vercel deployment status.
-
-Data checks:
-
-- Vercel Analytics: page views and visitors.
-- Vercel Logs: `story_play_redirect`.
-- Google Search Console: index status, queries, clicks, impressions.
-
-## Why This Can Scale Daily
-
-The system separates repeatable parts from creative parts.
-
-Repeatable:
-
-- Route structure.
-- Metadata fields.
-- Sitemap.
-- Robots.
-- FAQ schema.
-- CTA tracking.
-- Redirect logging.
-- Build verification.
-
-Creative:
-
-- Story premise.
-- Keyword selection.
-- Page copy.
-- FAQ wording.
-- Visual direction.
-
-This means each new page should mostly be content and story data, while the engineering surface stays stable.
-
+Production verification remains separate from local verification. A local green build is not a deployment claim.

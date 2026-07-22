@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "facts": [
+    {
+      "id": "voice-roleplay-format",
+      "statement": "The product is an AI voice cosplay and roleplay experience built around acting inside a story.",
+      "source": "Product team brief supplied in this project, 2026-07-20"
+    },
+    {
+      "id": "existing-story",
+      "statement": "Each playable experience starts from an existing story plot rather than an empty chat box.",
+      "source": "Product team brief supplied in this project, 2026-07-20"
+    },
+    {
+      "id": "role-selection",
+      "statement": "Players choose which available story character they want to perform as.",
+      "source": "Product team brief supplied in this project, 2026-07-20"
+    },
+    {
+      "id": "interactive-fiction-history",
+      "statement": "The team has previously built AI interactive-fiction and simulator experiences.",
+      "source": "Product team brief supplied in this project, 2026-07-20"
+    }
+  ],
+  "constraints": [
+    "Do not claim that the product is free, real-time, unlimited, private, or available on a specific platform unless a new approved fact confirms it.",
+    "Do not invent player counts, testimonials, rankings, retention, pricing, latency, voice technology, or safety guarantees.",
+    "Do not use unlicensed entertainment characters, worlds, trademarks, or recognizable third-party IP.",
+    "Do not imply that a feature is already shipped when the approved facts only describe the product direction."
+  ],
+  "forbiddenClaimPatterns": [
+    "\\bmultiplayer\\b",
+    "\\bwith friends\\b",
+    "\\bgroup roleplay\\b",
+    "\\breal[- ]?time\\b",
+    "\\bunlimited\\b",
+    "\\bprivate\\b",
+    "\\bavailable on (?:ios|android|steam|web)\\b",
+    "\\b(?:zero|low) latency\\b"
+  ],
+  "unsupportedKeywordPatterns": [
+    "\\bmultiplayer\\b",
+    "\\bwith friends\\b",
+    "\\bgroup roleplay\\b",
+    "\\breal[- ]?time\\b",
+    "\\bunlimited\\b"
+  ]
+}

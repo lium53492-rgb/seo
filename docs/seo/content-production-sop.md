@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Use AI to accelerate evidence collection, structuring, drafting and checks. Keep editorial judgment, product truth, originality and publication decisions human-controlled. This SOP supplements `free-research-robot.md`; when the two conflict, follow the stricter rule.
+Use AI to accelerate evidence collection, structuring, drafting and checks. Keep editorial judgment, product truth, originality and publication decisions in a separate, identified review step. The reviewer may be human or an explicitly identified Codex editor when the user has delegated that authority; never label an AI review as human. This SOP supplements `free-research-robot.md`; when the two conflict, follow the stricter rule.
 
 ## 1. Start with an intent and knowledge map
 
@@ -12,6 +12,7 @@ Before choosing a keyword, record:
 - the parent topic and adjacent intents already covered by the site;
 - the page's original contribution: a specific explanation, decision aid, scenario, or product-grounded answer that existing pages do not provide;
 - the approved product facts and a real next step the reader can take.
+- the funnel stage, trial intent, revenue intent, conversion hypothesis, and exact metric that would confirm the hypothesis.
 
 Do not create near-duplicate keyword variants. A keyword is only a discovery handle; the publishable unit is a distinct, useful answer inside a coherent topic cluster.
 
@@ -24,13 +25,14 @@ Do not create near-duplicate keyword variants. A keyword is only a discovery han
 
 ## 3. Draft with AI, finish with editorial judgment
 
-AI may prepare the source summary, outline, first draft, schema suggestions and quality checklist. The final editor must:
+AI may prepare the source summary, outline, first draft, schema suggestions and quality checklist. A separate final editor must:
 
 - choose the final intent and title;
 - verify every product claim against the fact whitelist;
 - add the page-specific reasoning and useful distinctions that make the answer non-generic;
 - remove unsupported promises, third-party IP, copied phrasing, and internal-process language;
 - approve the CTA and decide whether the page is ready to publish.
+- create a durable approval artifact; an in-memory judgment or a self-reported draft check is not publication approval.
 
 ### Conversion and page-quality baseline
 
@@ -63,6 +65,8 @@ When a draft includes a contextual internal link, the published template must re
 - Publish no more than one new page per Shanghai day.
 - Track publication date, evidence count, intent/cluster, approved fact IDs, rendering checks, page-level Search Console metrics, and 28-day outcome.
 - Treat organic clicks as search-result clicks, not unique visitors. Do not promise a fixed traffic outcome.
+- Aggregate Search Console clicks and landing UV by source page and reporting period. Join qualified outbounds, trials, signups, payments, and revenue with `seo_click_id`; do not use the shared keyword-research account as an analytics source.
+- Every funnel field must be observed with a named source or unavailable with a reason. Never infer zero from a missing export, empty UI, or disconnected callback.
 - Use report history to identify pages that need improved titles, clearer intent, stronger internal connections, or a product-fact correction. Only set `publicationMode: "update"` when actual Search Console evidence supports an update.
 
 ## 7. Workbench acceptance criteria

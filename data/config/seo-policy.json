@@ -1,0 +1,68 @@
+{
+  "policyVersion": 3,
+  "dailyPageLimit": 1,
+  "candidateCount": {
+    "min": 5,
+    "max": 12
+  },
+  "evidence": {
+    "minLinks": 5,
+    "minDomains": 3
+  },
+  "content": {
+    "minWords": 600,
+    "maxWords": 1000,
+    "minSections": 4,
+    "minFaqs": 3,
+    "maxSimilarity": 0.72
+  },
+  "allowedPagePatterns": [
+    "task_guide",
+    "experience_explainer",
+    "decision_page",
+    "original_inventory",
+    "narrative_essay"
+  ],
+  "allowedSearchIntents": [
+    "commercial",
+    "transactional",
+    "mixed"
+  ],
+  "eligibleFunnelStages": [
+    "trial",
+    "purchase"
+  ],
+  "eligibleConversionGoals": [
+    "trial_start",
+    "purchase"
+  ],
+  "createPageThreshold": 70,
+  "improvePageThreshold": 65,
+  "hardGates": {
+    "minProductFit": 80,
+    "minTrialIntent": 72,
+    "minRevenueIntent": 55,
+    "minIntentSpecificity": 70,
+    "maxIpRisk": 20,
+    "maxCannibalizationRisk": 59
+  },
+  "weights": {
+    "productFit": 0.22,
+    "trialIntent": 0.22,
+    "revenueIntent": 0.15,
+    "intentSpecificity": 0.11,
+    "demand": 0.12,
+    "competitionEase": 0.1,
+    "originality": 0.08
+  },
+  "penalties": {
+    "ipRisk": 0.2,
+    "cannibalizationRisk": 0.16
+  },
+  "requiredReviewChecks": [
+    "search-intent",
+    "product-truth",
+    "conversion-path",
+    "source-accuracy"
+  ]
+}

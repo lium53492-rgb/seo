@@ -2,16 +2,34 @@ import "server-only";
 
 import { readdir, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import seoPolicy from "@/data/config/seo-policy.json";
 import type { PublishedSeoPage } from "./types";
 
 const pagesDirectory = resolve(process.cwd(), "data/pages");
 const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
+function hasValidEditorialReview(page: Partial<PublishedSeoPage>) {
+  const review = page.editorialReview;
+  if (!review || review.decision !== "approved") return false;
+  if (review.reportId !== page.generatedFromReport || review.slug !== page.slug) return false;
+  if (!["human", "codex_editor"].includes(review.reviewerType)) return false;
+  if (review.reviewer.trim().length < 2 || review.notes.trim().length < 20) return false;
+  if (!Number.isFinite(Date.parse(review.reviewedAt)) || !Array.isArray(review.checks)) return false;
+  return seoPolicy.requiredReviewChecks.every((checkId) => {
+    const check = review.checks.find((item) => item.id === checkId);
+    return check?.passed === true && check.detail.trim().length >= 10;
+  });
+}
+
 function isPublishedPage(value: unknown): value is PublishedSeoPage {
   if (!value || typeof value !== "object") return false;
   const page = value as Partial<PublishedSeoPage>;
+  const hasRequiredReview =
+    page.schemaVersion === 1 ||
+    (page.schemaVersion === 2 && hasValidEditorialReview(page));
   return (
-    page.schemaVersion === 1 &&
+    (page.schemaVersion === 1 || page.schemaVersion === 2) &&
+    hasRequiredReview &&
     page.status === "published" &&
     typeof page.slug === "string" &&
     safeSlug.test(page.slug) &&
