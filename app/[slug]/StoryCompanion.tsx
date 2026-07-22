@@ -82,8 +82,8 @@ export function StoryCompanion({ sourceSlug }: StoryCompanionProps) {
           <button className={styles.closeButton} type="button" onClick={() => setIsOpen(false)} aria-label="Hide the story fox guide">×</button>
           <div className={styles.foxWindow}>
             <Image
-              src="/characters/story-fox-expression-strip.webp"
-              alt="An expressive story fox wearing a midnight-blue scarf"
+              src="/characters/story-fox-expression-strip-v2.webp"
+              alt="An expressive white story fox wearing a midnight-blue scarf"
               width={1536}
               height={512}
               sizes="(max-width: 700px) 234px, 378px"
@@ -103,7 +103,7 @@ export function StoryCompanion({ sourceSlug }: StoryCompanionProps) {
         </aside>
       ) : (
         <button className={styles.reopenButton} type="button" onClick={() => setIsOpen(true)} aria-label="Open the story fox guide">
-          <span className={styles.reopenFox} aria-hidden="true"><Image src="/characters/story-fox-expression-strip.webp" alt="" width={1536} height={512} sizes="144px" /></span>
+          <span className={styles.reopenFox} aria-hidden="true"><Image src="/characters/story-fox-expression-strip-v2.webp" alt="" width={1536} height={512} sizes="144px" /></span>
           <strong>Play?</strong>
         </button>
       )}
