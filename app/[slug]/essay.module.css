@@ -1,0 +1,53 @@
+.shell {
+  --newsprint: oklch(95% .025 78);
+  --ink: oklch(20% .02 30);
+  --oxblood: oklch(34% .12 23);
+  --gold: oklch(70% .11 76);
+  --rose-margin: oklch(83% .055 20);
+  min-height: 100vh;
+  background: var(--newsprint);
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+}
+.masthead { min-height: 80px; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 0 clamp(20px, 5vw, 72px); border-top: 8px solid var(--oxblood); border-bottom: 1px solid var(--ink); font-family: var(--font-geist-sans), sans-serif; }
+.masthead a { display: flex; align-items: baseline; gap: 9px; color: inherit; text-decoration: none; }
+.masthead a span { color: var(--oxblood); font-size: .58rem; font-weight: 900; letter-spacing: .16em; }
+.masthead a strong { font-size: 1rem; letter-spacing: .04em; }
+.masthead p { margin: 0; font-size: .62rem; font-weight: 800; letter-spacing: .1em; }
+.hero { padding: 96px clamp(20px, 6vw, 104px) 72px; border-bottom: 1px solid var(--ink); }
+.sectionLabel, .questions header > span, .readingList > span, .finalCta > p { margin: 0 0 20px; color: var(--oxblood); font-family: var(--font-geist-sans), sans-serif; font-size: .66rem; font-weight: 900; letter-spacing: .15em; }
+.hero h1 { max-width: 1300px; margin: 0; font-size: clamp(4.6rem, 11.5vw, 12.5rem); font-weight: 400; line-height: .74; letter-spacing: -.07em; }
+.deck { display: grid; grid-template-columns: minmax(0, 1fr) 180px; gap: 64px; align-items: end; margin-top: 56px; }
+.deck > p { max-width: 900px; margin: 0; font-size: clamp(1.15rem, 2vw, 1.55rem); line-height: 1.65; }
+.deck aside { display: grid; gap: 8px; padding-top: 14px; border-top: 3px solid var(--oxblood); font-family: var(--font-geist-sans), sans-serif; }
+.deck aside span, .deck aside small { font-size: .58rem; font-weight: 850; letter-spacing: .1em; } .deck aside strong { font-size: 1.2rem; }
+.opening { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 72px; align-items: end; padding: 88px clamp(20px, 7vw, 128px); background: var(--oxblood); color: var(--newsprint); }
+.dropQuote { display: grid; grid-template-columns: 72px 1fr; gap: 20px; }
+.dropQuote span { color: var(--gold); font-size: 8rem; line-height: .65; }
+.dropQuote p { max-width: 1000px; margin: 0; font-size: clamp(3rem, 6.5vw, 6.8rem); line-height: .9; letter-spacing: -.055em; }
+.byline { margin: 0; padding-top: 16px; border-top: 1px solid oklch(95% .025 78 / 35%); color: oklch(95% .025 78 / 72%); font-family: var(--font-geist-sans), sans-serif; font-size: .75rem; line-height: 1.6; }
+.essay { max-width: 1180px; margin: 0 auto; padding: 112px clamp(20px, 6vw, 80px); }
+.essay > section { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: clamp(32px, 7vw, 100px); padding: 0 0 96px; }
+.essay aside { display: grid; align-content: start; gap: 8px; padding-top: 9px; border-top: 1px solid var(--ink); font-family: var(--font-geist-sans), sans-serif; }
+.essay aside span { font-size: .58rem; font-weight: 850; letter-spacing: .12em; } .essay aside strong { color: var(--oxblood); font-size: 2.4rem; }
+.essay h2, .questions h2, .readingList h2, .finalCta h2 { margin: 0; font-size: clamp(2.5rem, 5vw, 5.2rem); font-weight: 400; line-height: .98; letter-spacing: -.045em; }
+.essay section > div > p { max-width: 760px; margin: 24px 0 0; font-size: 1.16rem; line-height: 1.92; white-space: pre-line; }
+.essay section:first-child > div > p::first-letter { float: left; margin: 4px 10px 0 0; color: var(--oxblood); font-size: 5.2rem; line-height: .78; }
+.essay blockquote { margin: 52px 0 0; padding: 28px 0 28px 36px; border-left: 8px solid var(--gold); color: var(--oxblood); font-size: clamp(1.7rem, 3.2vw, 3rem); font-style: italic; line-height: 1.2; }
+.questions { display: grid; grid-template-columns: .7fr 1.3fr; gap: 72px; padding: 104px clamp(20px, 7vw, 120px); border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); background: oklch(91% .035 75); }
+.questions details { padding: 22px 0; border-top: 1px solid oklch(20% .02 30 / 28%); }
+.questions summary { display: grid; grid-template-columns: 48px 1fr; cursor: pointer; font-size: 1.08rem; font-weight: 700; }
+.questions summary span { color: var(--oxblood); font-family: var(--font-geist-sans), sans-serif; font-size: .66rem; font-weight: 900; }
+.questions details p { margin: 16px 0 0 48px; line-height: 1.75; }
+.readingList { padding: 96px clamp(20px, 7vw, 120px); }
+.readingList h2 { max-width: 900px; }
+.readingList > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; margin-top: 48px; border-top: 1px solid var(--ink); }
+.readingList a { min-height: 220px; display: grid; align-content: start; gap: 14px; padding: 28px; border-right: 1px solid var(--ink); border-bottom: 1px solid var(--ink); color: inherit; text-decoration: none; }
+.readingList a strong { font-size: 1.5rem; } .readingList a small { color: oklch(42% .025 30); font-family: var(--font-geist-sans), sans-serif; line-height: 1.55; } .readingList a span { margin-top: auto; color: var(--oxblood); font-family: var(--font-geist-sans), sans-serif; font-size: .7rem; font-weight: 900; }
+.finalCta { padding: 112px 20px; text-align: center; background: var(--ink); color: var(--newsprint); }
+.finalCta > p { color: var(--gold); }
+.finalCta h2 { max-width: 850px; margin: 0 auto 28px; }
+.finalCta a { min-height: 50px; display: inline-flex; align-items: center; padding: 0 22px; background: var(--gold); color: var(--ink); font-family: var(--font-geist-sans), sans-serif; font-size: .74rem; font-weight: 900; text-decoration: none; }
+.shell a:focus-visible, .shell summary:focus-visible { outline: 3px solid var(--gold); outline-offset: 4px; }
+@media (max-width: 900px) { .opening, .questions { grid-template-columns: 1fr; } .byline { max-width: 420px; } }
+@media (max-width: 620px) { .masthead p { display: none; } .hero { padding-top: 64px; } .hero h1 { font-size: 5rem; } .deck { grid-template-columns: 1fr; gap: 32px; } .deck aside { width: 180px; } .dropQuote { grid-template-columns: 42px 1fr; } .dropQuote span { font-size: 5rem; } .essay > section { grid-template-columns: 1fr; gap: 24px; padding-bottom: 72px; } .essay aside { width: 110px; } .questions details p { margin-left: 0; } .readingList > div { grid-template-columns: 1fr; } }

@@ -76,7 +76,7 @@ Before a new page can be drafted, its brief must name all seven items:
 1. **Searcher job:** the exact task or decision the visitor is trying to complete.
 2. **One-sentence answer:** the useful answer that appears in the initial rendered HTML.
 3. **Original contribution:** a checklist, decision rule, worked original scene, mistake/recovery pattern, or approved product explanation that is not a rewrite of source pages.
-4. **Page pattern:** `task_guide`, `experience_explainer`, `decision_page`, or `original_inventory`.
+4. **Page pattern:** `task_guide`, `experience_explainer`, `decision_page`, `narrative_essay`, or `original_inventory`. Use `narrative_essay` only when a concept needs a sustained argument and a reading-led hierarchy rather than a task checklist.
 5. **Product bridge:** why the answer naturally leads to story-first voice roleplay and the NovelAI CTA.
 6. **Contextual next step:** at least one relevant published first-party page when one truly helps; use a crawlable descriptive anchor.
 7. **Evidence boundary:** approved product facts, public sources, and explicit limitations. No unverified capabilities.

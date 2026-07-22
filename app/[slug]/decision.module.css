@@ -1,0 +1,61 @@
+.shell {
+  --blueprint: oklch(31% .13 252);
+  --blueprint-deep: oklch(23% .105 252);
+  --chalk: oklch(96% .018 218);
+  --signal: oklch(72% .19 48);
+  --route: oklch(79% .12 174);
+  --route-gray: oklch(73% .03 240);
+  min-height: 100vh;
+  background: var(--blueprint);
+  color: var(--chalk);
+  background-image: linear-gradient(oklch(100% 0 0 / 6%) 1px, transparent 1px), linear-gradient(90deg, oklch(100% 0 0 / 6%) 1px, transparent 1px), linear-gradient(oklch(100% 0 0 / 3%) 1px, transparent 1px), linear-gradient(90deg, oklch(100% 0 0 / 3%) 1px, transparent 1px);
+  background-size: 80px 80px, 80px 80px, 16px 16px, 16px 16px;
+}
+.nav { min-height: 70px; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 0 clamp(20px, 5vw, 72px); border-bottom: 1px solid oklch(100% 0 0 / 20%); font-size: .68rem; font-weight: 900; letter-spacing: .14em; }
+.nav a { color: inherit; text-decoration: none; }
+.brand { display: inline-flex; align-items: center; gap: 12px; }
+.brand span { width: 30px; height: 30px; display: grid; place-items: center; border: 1px solid var(--chalk); border-radius: 50%; font-family: Georgia, serif; font-size: 1rem; font-style: italic; }
+.hero { min-height: 720px; display: grid; grid-template-columns: minmax(0, .82fr) minmax(480px, 1.18fr); gap: clamp(40px, 6vw, 96px); align-items: center; padding: 80px clamp(20px, 5vw, 80px) 104px; }
+.coordinate, .route > header span, .edgeCases > div:first-child > span, .nextRoutes header span, .destinationCta > span { margin: 0 0 18px; color: var(--route); font-size: .68rem; font-weight: 900; letter-spacing: .16em; }
+.hero h1 { margin: 0; font-family: "Arial Narrow", "Roboto Condensed", var(--font-geist-sans), sans-serif; font-size: clamp(4rem, 8vw, 8.5rem); font-weight: 750; line-height: .82; letter-spacing: -.06em; text-transform: uppercase; }
+.heroCopy > p:not(.coordinate) { max-width: 680px; margin: 28px 0 0; color: oklch(100% 0 0 / 74%); font-size: 1.05rem; line-height: 1.72; }
+.routeAction { min-height: 48px; display: inline-flex; align-items: center; margin-top: 28px; padding: 0 18px; background: var(--signal); color: var(--blueprint-deep); font-size: .74rem; font-weight: 900; letter-spacing: .06em; text-decoration: none; }
+.map { position: relative; min-height: 560px; border: 1px solid oklch(100% 0 0 / 28%); background: oklch(20% .09 253 / 34%); overflow: hidden; }
+.map::before { content: ""; position: absolute; inset: 18px; border: 1px dashed oklch(100% 0 0 / 20%); }
+.mapLegend { position: absolute; z-index: 2; top: 30px; right: 32px; display: flex; gap: 18px; font-size: .58rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.mapLegend span { display: inline-flex; align-items: center; gap: 7px; }
+.mapLegend i { width: 8px; height: 8px; border-radius: 50%; background: var(--route); } .mapLegend span:last-child i { background: var(--signal); }
+.routeLine { position: absolute; top: 12%; bottom: 15%; left: 50%; width: 2px; background: var(--route); transform: translateX(-50%) rotate(24deg); transform-origin: center; }
+.routeLine::before, .routeLine::after { content: ""; position: absolute; width: 2px; height: 42%; background: var(--route); transform-origin: bottom; }
+.routeLine::before { top: 28%; transform: rotate(58deg); } .routeLine::after { top: 41%; transform: rotate(-62deg); }
+.node { position: absolute; z-index: 2; width: min(210px, 31%); display: grid; gap: 7px; padding: 14px; border: 1px solid var(--route); background: var(--blueprint-deep); }
+.node span { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: var(--route); color: var(--blueprint-deep); font-size: .68rem; font-weight: 900; }
+.node strong { font-size: .72rem; line-height: 1.35; }
+.node1 { top: 16%; left: 10%; } .node2 { top: 35%; right: 9%; } .node3 { top: 58%; left: 13%; } .node4 { top: 68%; right: 10%; }
+.destination { position: absolute; z-index: 3; right: 32px; bottom: 28px; display: grid; gap: 4px; padding: 15px 18px; background: var(--signal); color: var(--blueprint-deep); }
+.destination span { font-size: .55rem; font-weight: 900; letter-spacing: .12em; } .destination strong { font-size: .86rem; }
+.route { padding: 104px clamp(20px, 7vw, 120px); background: var(--chalk); color: var(--blueprint-deep); background-image: linear-gradient(oklch(31% .13 252 / 6%) 1px, transparent 1px); background-size: 100% 32px; }
+.route > header { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 24px; align-items: start; }
+.route > header span, .edgeCases > div:first-child > span, .nextRoutes header span { color: var(--blueprint); }
+.route h2, .edgeCases h2, .nextRoutes h2, .destinationCta h2 { max-width: 900px; margin: 0; font-size: clamp(2.6rem, 5.2vw, 5.4rem); line-height: .93; letter-spacing: -.055em; }
+.routeList { position: relative; max-width: 1000px; margin: 72px auto 0; }
+.routeList::before { content: ""; position: absolute; top: 0; bottom: 0; left: 40px; width: 2px; background: var(--blueprint); }
+.routeList article { position: relative; display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: 28px; padding-bottom: 64px; }
+.marker { position: relative; z-index: 1; width: 80px; height: 80px; display: grid; place-items: center; border: 2px solid var(--blueprint); border-radius: 50%; background: var(--chalk); color: var(--blueprint); font-size: .75rem; font-weight: 900; }
+.routeList h3 { margin: 0; font-size: clamp(1.45rem, 2.8vw, 2.4rem); }
+.routeList p { max-width: 780px; margin: 16px 0 0; color: oklch(39% .04 248); line-height: 1.78; white-space: pre-line; }
+.edgeCases { display: grid; grid-template-columns: .75fr 1.25fr; gap: 72px; padding: 104px clamp(20px, 7vw, 120px); background: var(--signal); color: var(--blueprint-deep); }
+.edgeCases details { padding: 22px 0; border-top: 1px solid oklch(23% .105 252 / 30%); }
+.edgeCases summary { display: flex; justify-content: space-between; gap: 20px; cursor: pointer; font-weight: 850; }
+.edgeCases summary span { font-size: 1.2rem; }
+.edgeCases p { margin: 16px 0 0; line-height: 1.72; }
+.nextRoutes { display: grid; grid-template-columns: .7fr 1.3fr; gap: 64px; padding: 96px clamp(20px, 7vw, 120px); background: var(--chalk); color: var(--blueprint-deep); }
+.nextRoutes > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.nextRoutes a { min-height: 190px; display: grid; align-content: start; gap: 12px; padding: 24px; border: 1px solid var(--blueprint); color: inherit; text-decoration: none; }
+.nextRoutes a > span { color: var(--signal); font-weight: 900; } .nextRoutes a strong { font-size: 1.25rem; } .nextRoutes a small { color: oklch(42% .04 248); line-height: 1.5; }
+.destinationCta { padding: 112px 20px; text-align: center; background: var(--blueprint-deep); }
+.destinationCta h2 { margin: 0 auto 28px; }
+.destinationCta a { min-height: 50px; display: inline-flex; align-items: center; padding: 0 22px; background: var(--route); color: var(--blueprint-deep); font-size: .74rem; font-weight: 900; text-decoration: none; }
+.shell a:focus-visible, .shell summary:focus-visible { outline: 3px solid var(--signal); outline-offset: 4px; }
+@media (max-width: 940px) { .hero { grid-template-columns: 1fr; } .map { min-height: 520px; } .route > header, .edgeCases, .nextRoutes { grid-template-columns: 1fr; } }
+@media (max-width: 620px) { .nav > a:last-child { display: none; } .hero h1 { font-size: 4rem; } .map { min-height: 460px; } .mapLegend { display: none; } .node { width: 38%; } .node1 { left: 7%; } .node2 { right: 7%; } .node3 { left: 8%; } .node4 { right: 7%; } .routeList::before { left: 27px; } .routeList article { grid-template-columns: 56px 1fr; gap: 18px; } .marker { width: 54px; height: 54px; } .nextRoutes > div { grid-template-columns: 1fr; } }

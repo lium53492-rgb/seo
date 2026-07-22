@@ -143,6 +143,7 @@ export type PublishedSeoPage = {
   publishedAt: string;
   updatedAt: string;
   generatedFromReport: string;
+  pagePattern?: ContentStrategy["pagePattern"];
   title: string;
   metaDescription: string;
   h1: string;
@@ -175,7 +176,12 @@ export type ContentStrategy = {
   searcherJob: string;
   oneSentenceAnswer: string;
   originalContribution: string;
-  pagePattern: "task_guide" | "experience_explainer" | "decision_page" | "original_inventory";
+  pagePattern:
+    | "task_guide"
+    | "experience_explainer"
+    | "decision_page"
+    | "original_inventory"
+    | "narrative_essay";
   productBridge: string;
   contextualNextStep: string;
   evidenceBoundary: string;

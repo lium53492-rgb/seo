@@ -23,7 +23,7 @@ if (policyVersion >= 2) {
       throw new Error(`Content strategy needs a specific ${field}`);
     }
   }
-  const allowedPagePatterns = new Set(["task_guide", "experience_explainer", "decision_page", "original_inventory"]);
+  const allowedPagePatterns = new Set(["task_guide", "experience_explainer", "decision_page", "original_inventory", "narrative_essay"]);
   if (!allowedPagePatterns.has(contentStrategy.pagePattern)) {
     throw new Error("Content strategy needs an approved pagePattern");
   }
@@ -206,6 +206,7 @@ for (const prepared of preparedDrafts) {
   const page = {
     schemaVersion: 1, status: "published", slug: pageSlug, path: `/${pageSlug}`, keyword: opportunity.keyword,
     publishedAt: sameSlug?.publishedAt || checkedAt, updatedAt: checkedAt, generatedFromReport: reportId,
+    pagePattern: contentStrategy.pagePattern,
     title: preparedDraft.title, metaDescription: preparedDraft.metaDescription, h1: preparedDraft.h1,
     heroMarkdown: preparedDraft.heroMarkdown, primaryCta: preparedDraft.primaryCta, sections: preparedDraft.sections,
     faqs: preparedDraft.faqs, factIdsUsed: preparedDraft.factIdsUsed, internalLinks: preparedDraft.internalLinks || [],
