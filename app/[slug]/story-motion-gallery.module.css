@@ -60,7 +60,7 @@
 .stage:hover .scene img { animation-play-state: paused; }
 
 .orbit { position: absolute; inset: 4% -10% 0; border: 1px dashed oklch(90% .18 125 / 20%); border-radius: 50%; transform: rotate(-8deg); animation: orbitTurn 28s linear infinite; }
-.orbit i { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: var(--story-lime); box-shadow: 0 0 18px var(--story-lime); }
+.orbit i { position: absolute; width: 10px; height: 10px; border-radius: 1px; background: var(--story-lime); box-shadow: 0 0 18px var(--story-lime); clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); }
 .orbit i:nth-child(1) { top: 14%; left: 18%; }
 .orbit i:nth-child(2) { right: 6%; top: 52%; background: var(--story-peach); box-shadow: 0 0 18px var(--story-peach); }
 .orbit i:nth-child(3) { left: 44%; bottom: -4px; background: oklch(75% .14 205); box-shadow: 0 0 18px oklch(75% .14 205); }

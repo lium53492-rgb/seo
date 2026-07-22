@@ -130,7 +130,11 @@ export function StoryCompanion({ sourceSlug }: StoryCompanionProps) {
 
   return (
     <>
-      <div ref={cursorRef} className={styles.storyCursor} data-visible="false" aria-hidden="true" />
+      <div ref={cursorRef} className={styles.storyCursor} data-visible="false" aria-hidden="true">
+        <svg viewBox="0 0 30 34" role="presentation">
+          <path d="M12.8 28.8c-2.7-2.2-5.7-5.1-7.9-7.6-.9-1-.7-2.6.4-3.4 1-.7 2.3-.5 3.1.3l2.2 2.1V6.4c0-1.4 1-2.5 2.4-2.5s2.4 1.1 2.4 2.5v8.1-2.8c0-1.4 1-2.5 2.4-2.5s2.4 1.1 2.4 2.5v3-1.9c0-1.4 1-2.5 2.4-2.5s2.4 1.1 2.4 2.5v6.1c0 7-3.7 11.2-9.2 11.2-1.9 0-3.5-.4-5-1.3Z" />
+        </svg>
+      </div>
       <div className={styles.meteorField} aria-hidden="true"><i /><i /><i /><i /></div>
 
       {isOpen ? (
