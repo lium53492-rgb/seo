@@ -15,7 +15,7 @@ export function InventoryCatalogPage({ page, relatedPages }: SeoPageViewProps) {
       <StoryMotionGallery />
       <section className={styles.questions} aria-labelledby="inventory-faq-heading"><header><span>CATALOG NOTES</span><h2 id="inventory-faq-heading">Before opening an entry</h2></header><div>{page.faqs.map((faq) => <details key={faq.question}><summary>{faq.question}</summary><p>{faq.answerMarkdown}</p></details>)}</div></section>
       {relatedPages.length > 0 ? <aside className={styles.related} aria-labelledby="inventory-related-heading"><h2 id="inventory-related-heading">Adjacent shelves</h2>{relatedPages.map((link) => <a key={link.href} href={link.href}><span>{link.anchor}</span><small>↗</small></a>)}</aside> : null}
-      <footer className={styles.footer}><h2>Open the story, then choose where to enter.</h2><TrackedNovelAiHomeLink sourceSlug={page.slug}>Explore stories on NovelAI ↗</TrackedNovelAiHomeLink></footer>
+      <footer className={styles.footer}><h2>Open the story, then choose where to enter.</h2><TrackedNovelAiHomeLink sourceSlug={page.slug} location="final_cta">Explore stories on NovelAI ↗</TrackedNovelAiHomeLink></footer>
     </main>
   );
 }

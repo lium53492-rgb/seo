@@ -1,6 +1,7 @@
 "use client";
 
 import { track } from "@vercel/analytics";
+import type { OutboundLocation } from "@/lib/seo/attribution";
 
 type TrackedNovelAiHomeLinkProps = Omit<
   React.AnchorHTMLAttributes<HTMLAnchorElement>,
@@ -8,7 +9,7 @@ type TrackedNovelAiHomeLinkProps = Omit<
 > & {
   children: React.ReactNode;
   sourceSlug: string;
-  location?: "homepage" | "seo_page";
+  location?: OutboundLocation;
 };
 
 export function TrackedNovelAiHomeLink({

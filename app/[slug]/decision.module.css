@@ -64,7 +64,17 @@
 .shell { --blueprint: oklch(49% .19 274); --blueprint-deep: oklch(29% .16 281); --chalk: oklch(96% .025 205); --signal: oklch(79% .18 55); --route: oklch(82% .16 168); --route-gray: oklch(82% .05 250); background: radial-gradient(circle at 18% 14%, oklch(71% .2 316 / 38%), transparent 28rem), radial-gradient(circle at 85% 70%, oklch(73% .18 206 / 34%), transparent 30rem), linear-gradient(145deg, var(--blueprint-deep), var(--blueprint)); background-attachment: fixed; }
 .nav { position: relative; z-index: 4; background: oklch(29% .16 281 / 48%); backdrop-filter: blur(18px) saturate(140%); }
 .hero { position: relative; }
-.hero h1 { font-family: var(--font-geist-sans), sans-serif; font-weight: 900; letter-spacing: -.075em; text-shadow: 0 8px 32px oklch(22% .15 282 / 28%); }
+.heroCopy { container-type: inline-size; }
+.hero h1 {
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: clamp(3rem, 14cqi, 6.6rem);
+  font-weight: 900;
+  line-height: .88;
+  letter-spacing: 0;
+  overflow-wrap: normal;
+  word-break: normal;
+  text-shadow: 0 8px 32px oklch(22% .15 282 / 28%);
+}
 .routeAction { border-radius: 999px; box-shadow: 0 0 0 8px oklch(79% .18 55 / 12%); transition: transform 200ms cubic-bezier(.25,1,.5,1); }
 .routeAction:hover { transform: rotate(-2deg) scale(1.04); }
 .map { overflow: visible; border: 1px solid oklch(100% 0 0 / 36%); border-radius: 44px 16px 44px 16px; background: linear-gradient(145deg, oklch(100% 0 0 / 15%), oklch(100% 0 0 / 5%)); backdrop-filter: blur(24px) saturate(145%); box-shadow: 0 0 0 12px oklch(100% 0 0 / 4%); }

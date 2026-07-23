@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { isBasicAuthHeaderAuthorized } from "@/lib/seo/auth";
 
 function challenge() {
   return new NextResponse(null, {
@@ -12,6 +13,16 @@ export function proxy(request: NextRequest) {
   if (!password) {
     if (
       process.env.NODE_ENV === "production" &&
+      (request.nextUrl.pathname.startsWith("/workbench/preview") ||
+        request.nextUrl.pathname.startsWith("/workbench/attribution"))
+    ) {
+      return new NextResponse(null, {
+        status: 404,
+        headers: { "Cache-Control": "private, no-store" },
+      });
+    }
+    if (
+      process.env.NODE_ENV === "production" &&
       request.nextUrl.pathname.startsWith("/api/workbench")
     ) {
       return new NextResponse(null, {
@@ -21,15 +32,7 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const authorization = request.headers.get("authorization");
-  if (!authorization?.startsWith("Basic ")) return challenge();
-  try {
-    const decoded = atob(authorization.slice(6));
-    const supplied = decoded.slice(decoded.indexOf(":") + 1);
-    if (supplied !== password) return challenge();
-  } catch {
-    return challenge();
-  }
+  if (!isBasicAuthHeaderAuthorized(request.headers.get("authorization"))) return challenge();
   return NextResponse.next();
 }
 

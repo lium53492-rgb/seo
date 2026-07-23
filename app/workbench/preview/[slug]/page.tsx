@@ -19,10 +19,7 @@ export default async function DraftPreviewPage({
   params: Promise<{ slug: string }>;
 }) {
   const requestHeaders = await headers();
-  if (
-    process.env.WORKBENCH_PASSWORD &&
-    !isBasicAuthHeaderAuthorized(requestHeaders.get("authorization"))
-  ) {
+  if (!isBasicAuthHeaderAuthorized(requestHeaders.get("authorization"))) {
     notFound();
   }
 

@@ -1,28 +1,5 @@
-.storyCursor {
-  --cursor-x: -100px;
-  --cursor-y: -100px;
-  position: fixed;
-  z-index: 10000;
-  top: 0;
-  left: 0;
-  width: 30px;
-  height: 34px;
-  opacity: 0;
-  pointer-events: none;
-  filter: drop-shadow(0 4px 5px oklch(8% .05 286 / 34%));
-  transform: translate3d(var(--cursor-x), var(--cursor-y), 0) translate(-43%, -12%) rotate(-11deg) scale(.8);
-  transform-origin: 43% 12%;
-  transition: opacity 100ms ease, filter 160ms ease, transform 65ms linear;
-}
-
-.storyCursor svg { width: 100%; height: 100%; display: block; overflow: visible; }
-.storyCursor path { fill: oklch(98% .018 92); stroke: oklch(16% .05 286); stroke-width: 1.65; stroke-linejoin: round; transition: fill 160ms ease, stroke 160ms ease; }
-.storyCursor[data-visible="true"] { opacity: 1; transform: translate3d(var(--cursor-x), var(--cursor-y), 0) translate(-43%, -12%) rotate(-11deg) scale(1); }
-.storyCursor[data-action="true"] { filter: drop-shadow(0 5px 7px oklch(90% .2 125 / 28%)); transform: translate3d(var(--cursor-x), var(--cursor-y), 0) translate(-43%, -12%) rotate(-7deg) scale(1.12); }
-.storyCursor[data-action="true"] path { fill: oklch(90% .2 125); stroke: oklch(14% .04 286); }
-
-.meteorField { position: fixed; z-index: 36; inset: 0; overflow: hidden; pointer-events: none; }
-.meteorField i { position: absolute; top: -15%; left: 10%; width: 2px; height: 92px; border-radius: 999px; background: linear-gradient(to bottom, transparent, oklch(95% .12 126 / 72%)); opacity: 0; rotate: -45deg; animation: meteorPass 13s ease-in infinite; }
+.meteorField { position: fixed; z-index: 2; inset: 0; overflow: hidden; pointer-events: none; }
+.meteorField i { position: absolute; top: -15%; left: 10%; width: 1px; height: 92px; border-radius: 999px; background: linear-gradient(to bottom, transparent, oklch(96% .025 92 / 34%)); opacity: 0; rotate: -45deg; animation: meteorPass 13s ease-in infinite; }
 .meteorField i:nth-child(2) { left: 44%; height: 58px; animation-delay: -4s; animation-duration: 17s; }
 .meteorField i:nth-child(3) { left: 72%; height: 110px; animation-delay: -9s; animation-duration: 19s; }
 .meteorField i:nth-child(4) { left: 91%; height: 46px; animation-delay: -12s; animation-duration: 23s; }
@@ -86,7 +63,7 @@
   pointer-events: auto;
   transform: translate3d(var(--pet-look-x), var(--pet-look-y), 0) rotate(var(--pet-tilt));
   transform-origin: 50% 86%;
-  transition: transform 320ms cubic-bezier(.25,1,.5,1), filter 180ms ease;
+  transition: filter 180ms ease;
 }
 .foxButton:hover { filter: brightness(1.04); }
 .groundShadow { position: absolute; z-index: -1; right: 8px; bottom: 5px; width: 150px; height: 26px; border-radius: 50%; background: oklch(8% .045 286 / 32%); filter: blur(9px); animation: shadowBreathe 3.4s ease-in-out infinite; }
@@ -114,7 +91,7 @@
 .reopenButton strong { font-size: .68rem; }
 .closeButton:focus-visible, .foxButton:focus-visible, .playButton:focus-visible, .reopenButton:focus-visible { outline: 3px solid oklch(89% .19 124); outline-offset: 4px; }
 
-@keyframes meteorPass { 0%, 78% { translate: -8vw -18vh; opacity: 0; } 81% { opacity: .72; } 88%, 100% { translate: 48vw 108vh; opacity: 0; } }
+@keyframes meteorPass { 0%, 78% { translate: -8vw -18vh; opacity: 0; } 81% { opacity: .28; } 88%, 100% { translate: 48vw 108vh; opacity: 0; } }
 @keyframes petArrive { from { opacity: 0; transform: translateY(38px) scale(.84) rotate(3deg); } }
 @keyframes foxBreathe { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-4px) scale(1.018, .99); } }
 @keyframes shadowBreathe { 50% { opacity: .72; transform: scaleX(.88); } }
@@ -126,16 +103,22 @@
   :global(body.story-cursor-active),
   :global(body.story-cursor-active a),
   :global(body.story-cursor-active button),
-  :global(body.story-cursor-active summary) { cursor: none !important; }
-}
+  :global(body.story-cursor-active summary) {
+    cursor: url("/cursors/story-hand.svg") 5 3, pointer !important;
+  }
 
-@media (pointer: coarse), (hover: none) { .storyCursor { display: none; } }
+  :global(body.story-cursor-active a),
+  :global(body.story-cursor-active button),
+  :global(body.story-cursor-active summary) {
+    cursor: url("/cursors/story-hand-action.svg") 5 3, pointer !important;
+  }
+}
 
 @media (max-width: 700px) {
   .petStage { right: 4px; bottom: 4px; width: 288px; height: 224px; }
   .foxButton { width: 126px; height: 138px; }
   .groundShadow { right: 2px; width: 112px; height: 20px; }
-  .speechBubble { right: 91px; bottom: 102px; width: 192px; gap: 5px; padding: 13px 14px; border-radius: 21px 21px 7px 21px; }
+  .speechBubble { right: 18px; bottom: 102px; width: 168px; gap: 5px; padding: 13px 14px; border-radius: 21px 21px 7px 21px; }
   .speechBubble > strong { font-size: .96rem; }
   .speechBubble > span { font-size: .48rem; }
   .playButton { min-height: 32px; padding: 0 11px; font-size: .59rem; }

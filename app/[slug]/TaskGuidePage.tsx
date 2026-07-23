@@ -41,7 +41,7 @@ export function TaskGuidePage({ page, relatedPages }: SeoPageViewProps) {
           <div className={styles.actionNote}>
             <span>WHEN YOU ARE READY</span>
             <div><h2>Carry the choice into a real story.</h2><p>The guide ends where the scene begins.</p></div>
-            <TrackedNovelAiHomeLink sourceSlug={page.slug}>Explore stories on NovelAI ↗</TrackedNovelAiHomeLink>
+            <TrackedNovelAiHomeLink sourceSlug={page.slug} location="inline">Explore stories on NovelAI ↗</TrackedNovelAiHomeLink>
           </div>
         </div>
       </section>

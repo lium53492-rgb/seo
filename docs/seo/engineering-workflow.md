@@ -57,13 +57,18 @@ A new page is eligible only when all policy-v3 hard gates pass. Traffic potentia
 
 ```text
 app/[slug]/page.tsx                         static SEO route and next-seo JSON-LD
-app/go/novelai/[slug]/route.ts              qualified outbound event + attributed redirect
-app/api/attribution/conversion/route.ts     protected trial/signup/purchase callback
+app/go/novelai/[slug]/route.ts              attributed redirect + background durable outbound write
+app/api/attribution/conversion/route.ts     protected, idempotent trial/signup/purchase callback
+app/api/attribution/report/route.ts         protected page-period funnel JSON
 app/workbench/                              research, review, funnel, and status views
 lib/seo/page-store.ts                       published-page schema guard
 lib/seo/attribution.ts                      destination allowlist and attribution contract
+lib/seo/attribution-store.ts                atomic Upstash event and cohort persistence
+lib/seo/vercel-analytics.ts                 official page-level UV/pageview API reader
+lib/seo/growth-funnel.ts                    observed/unavailable funnel composition
 scripts/build-free-research-report.mjs      research -> review-required report
 scripts/publish-reviewed-page.mjs           approved report -> published page
+scripts/collect-growth-funnel.mjs           private live funnel collector for automation
 scripts/lib/seo-policy.mjs                  deterministic scoring and hard gates
 tests/                                      policy, attribution, and release-boundary tests
 ```
@@ -76,8 +81,10 @@ Use native Next.js metadata for title, description, canonical, Open Graph, and T
 
 - Search Console supplies observed impressions, organic clicks, CTR, and position, aggregated by source page and reporting period.
 - Vercel Web Analytics supplies landing-page UV on the same source-page and period dimensions.
-- `/go/novelai/{slug}` creates a `seo_click_id`, logs the qualified outbound click, and forwards UTM fields plus that ID to NovelAI.
+- `/go/novelai/{slug}` creates a `seo_click_id`, persists a bot-resistant outbound signal by acquisition page/day, and forwards UTM fields plus that ID to NovelAI.
 - NovelAI must retain the ID and send it with trial, signup, and payment events. Only the outbound-to-revenue segment is joined event by event with `seo_click_id`.
+- Upstash stores idempotent event records and page/day cohort aggregates for 400 days. Vercel Web Analytics remains the privacy-friendly UV source; Redis does not create a second visitor cookie.
+- `/workbench/attribution` combines those two sources. A page can only show a numeric zero after the corresponding source was queried successfully for an explicit period; missing credentials, callbacks, or exports remain unavailable.
 - The daily report records each funnel metric as either `observed` with a source or `unavailable` with a reason.
 
 See `docs/seo/revenue-attribution.md` for the cross-repository callback contract.

@@ -10,7 +10,13 @@ export async function GET(request: Request) {
     if (!report) {
       return Response.json({ error: "No verified local SEO report is available." }, { status: 404 });
     }
-    return Response.json({ ok: true, reportId: report.id, mode: report.mode, generatedAt: report.generatedAt });
+    return Response.json({
+      ok: true,
+      action: "read_only_report_health_check",
+      reportId: report.id,
+      mode: report.mode,
+      generatedAt: report.generatedAt,
+    });
   } catch (error) {
     return Response.json(
       { error: error instanceof Error ? error.message : "Report read failed" },

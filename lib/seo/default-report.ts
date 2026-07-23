@@ -72,3 +72,31 @@ export function createDisconnectedReport(): DailySeoReport {
     caveats: ["No verified daily report was found; no metric has been inferred."],
   };
 }
+
+export function redactPrivateReportData(report: DailySeoReport): DailySeoReport {
+  const funnel = report.funnel;
+  if (!funnel) return { ...report, draft: null, drafts: [] };
+  return {
+    ...report,
+    draft: null,
+    drafts: [],
+    funnel: {
+      ...funnel,
+      attributionStatus: "unavailable",
+      metrics: {
+        ...funnel.metrics,
+        landingUv: unavailableMetric("vercel_analytics", "Protected metric. Configure workbench authentication to view it."),
+        qualifiedOutboundClicks: unavailableMetric("seo_redirect", "Protected metric. Configure workbench authentication to view it."),
+        trialStarts: unavailableMetric("product_analytics", "Protected metric. Configure workbench authentication to view it."),
+        signups: unavailableMetric("product_analytics", "Protected metric. Configure workbench authentication to view it."),
+        paidConversions: unavailableMetric("payments", "Protected metric. Configure workbench authentication to view it."),
+        revenueMinor: unavailableMetric("payments", "Protected metric. Configure workbench authentication to view it."),
+      },
+      currency: undefined,
+    },
+    caveats: [
+      ...report.caveats,
+      "Drafts and conversion metrics are hidden until WORKBENCH_PASSWORD is configured.",
+    ],
+  };
+}

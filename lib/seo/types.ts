@@ -155,6 +155,7 @@ export type PublishedSeoPage = {
   publishedAt: string;
   updatedAt: string;
   generatedFromReport: string;
+  draftDigest?: string;
   pagePattern?: ContentStrategy["pagePattern"];
   title: string;
   metaDescription: string;
@@ -188,6 +189,7 @@ export type ReportPublication = {
   slot?: "morning" | "afternoon";
   reason: string;
   publishedAt?: string;
+  draftDigest?: string;
 };
 
 export type ContentStrategy = {
@@ -217,6 +219,7 @@ export type EditorialReview = {
   reviewer: string;
   reviewedAt: string;
   notes: string;
+  draftDigest: string;
   checks: Array<{
     id: string;
     passed: true;

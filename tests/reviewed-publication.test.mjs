@@ -116,7 +116,11 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.equal(reportBeforeReview.funnel.aggregationKey, "source_slug+reporting_period");
     assert.equal(reportBeforeReview.funnel.conversionJoinKey, "seo_click_id");
     assert.equal(reportBeforeReview.funnel.joinKey, undefined);
+    assert.match(reportBeforeReview.publication.draftDigest, /^[a-f0-9]{64}$/);
     await assert.rejects(readFile(join(workspace, "data", "pages", "play-an-ai-roleplay-story.json"), "utf8"), /ENOENT/);
+    const duplicateBuild = spawnSync(process.execPath, [builderPath, inputPath], { cwd: workspace, encoding: "utf8" });
+    assert.notEqual(duplicateBuild.status, 0);
+    assert.match(duplicateBuild.stderr, /Refusing to overwrite existing daily report/);
 
     const review = {
       schemaVersion: 1,
@@ -127,6 +131,7 @@ test("report generation cannot publish before a separate approval artifact", asy
       reviewer: "Codex editorial review",
       reviewedAt: "2099-01-01T12:00:00.000Z",
       notes: "A second editorial pass confirmed the intent, product truth, sources, and attributed CTA path.",
+      draftDigest: reportBeforeReview.publication.draftDigest,
       checks: [
         { id: "search-intent", passed: true, detail: "The page answers one specific trial-ready searcher job." },
         { id: "product-truth", passed: true, detail: "Every capability statement maps to an approved fact ID." },
@@ -138,11 +143,21 @@ test("report generation cannot publish before a separate approval artifact", asy
     await mkdir(dirname(reviewPath), { recursive: true });
     await writeFile(reviewPath, `${JSON.stringify(review, null, 2)}\n`);
 
+    const tamperedReport = structuredClone(reportBeforeReview);
+    tamperedReport.draft.h1 = "A different draft after approval";
+    await writeFile(reportPath, `${JSON.stringify(tamperedReport, null, 2)}\n`);
+    const tamperedPublish = spawnSync(process.execPath, [publisherPath, reportPath, reviewPath], { cwd: workspace, encoding: "utf8" });
+    assert.notEqual(tamperedPublish.status, 0);
+    assert.match(tamperedPublish.stderr, /SHA-256 digest/);
+
+    await writeFile(reportPath, `${JSON.stringify(reportBeforeReview, null, 2)}\n`);
+
     const publish = spawnSync(process.execPath, [publisherPath, reportPath, reviewPath], { cwd: workspace, encoding: "utf8" });
     assert.equal(publish.status, 0, publish.stderr);
     const page = JSON.parse(await readFile(join(workspace, "data", "pages", "play-an-ai-roleplay-story.json"), "utf8"));
     assert.equal(page.schemaVersion, 2);
     assert.equal(page.editorialReview.decision, "approved");
+    assert.equal(page.draftDigest, review.draftDigest);
     const reportAfterReview = JSON.parse(await readFile(reportPath, "utf8"));
     assert.equal(reportAfterReview.publication.status, "published");
   } finally {

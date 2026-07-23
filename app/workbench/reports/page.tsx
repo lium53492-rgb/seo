@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { isBasicAuthHeaderAuthorized } from "@/lib/seo/auth";
+import { redactPrivateReportData } from "@/lib/seo/default-report";
 import { readReportHistory } from "@/lib/seo/report-store";
 import type { DailySeoReport } from "@/lib/seo/types";
 import { PrintReportButton } from "./PrintReportButton";
@@ -23,7 +24,12 @@ export default async function WorkbenchReportsPage() {
     notFound();
   }
 
-  const reports = (await readReportHistory(90)).slice().reverse();
+  const reports = (await readReportHistory(90))
+    .map((report) => process.env.NODE_ENV === "production" && !process.env.WORKBENCH_PASSWORD
+      ? redactPrivateReportData(report)
+      : report)
+    .slice()
+    .reverse();
 
   return (
     <main className="wb-shell">

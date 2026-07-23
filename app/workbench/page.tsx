@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { isBasicAuthHeaderAuthorized } from "@/lib/seo/auth";
-import { createDisconnectedReport, createUnavailableFunnel } from "@/lib/seo/default-report";
+import { createDisconnectedReport, createUnavailableFunnel, redactPrivateReportData } from "@/lib/seo/default-report";
 import { readLatestReport, readReportHistory } from "@/lib/seo/report-store";
 import type { DailySeoReport, ObservedMetric, RecommendedAction } from "@/lib/seo/types";
 import { FeedbackForm } from "./FeedbackForm";
@@ -65,6 +65,10 @@ export default async function WorkbenchPage() {
     history = await readReportHistory(14);
   } catch (error) {
     report.caveats.push(error instanceof Error ? error.message : "读取日报历史失败。");
+  }
+
+  if (process.env.NODE_ENV === "production" && !process.env.WORKBENCH_PASSWORD) {
+    report = redactPrivateReportData(report);
   }
 
   const top = report.opportunities[0];

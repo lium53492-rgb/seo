@@ -36,7 +36,7 @@ export function NarrativeEssayPage({ page, relatedPages }: SeoPageViewProps) {
 
       {relatedPages.length > 0 ? <aside className={styles.readingList} aria-labelledby="essay-related-heading"><span>FURTHER READING</span><h2 id="essay-related-heading">The next essay starts with a different question.</h2><div>{relatedPages.map((link) => <a key={link.href} href={link.href}><strong>{link.anchor}</strong><small>{link.target.metaDescription}</small><span>Read next ↗</span></a>)}</div></aside> : null}
 
-      <footer className={styles.finalCta}><p>THE END / THE SCENE BEGINS</p><h2>Move from the argument into the story.</h2><TrackedNovelAiHomeLink sourceSlug={page.slug}>Explore stories on NovelAI ↗</TrackedNovelAiHomeLink></footer>
+      <footer className={styles.finalCta}><p>THE END / THE SCENE BEGINS</p><h2>Move from the argument into the story.</h2><TrackedNovelAiHomeLink sourceSlug={page.slug} location="final_cta">Explore stories on NovelAI ↗</TrackedNovelAiHomeLink></footer>
     </main>
   );
 }

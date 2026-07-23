@@ -4,10 +4,11 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://seo-pi-fawn.vercel.
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: {
+    rules: [{
       userAgent: "*",
       allow: "/",
-    },
+      disallow: ["/api/", "/go/", "/workbench/"],
+    }],
     sitemap: `${siteUrl}/sitemap.xml`,
   };
 }

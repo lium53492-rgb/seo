@@ -10,7 +10,7 @@ export function DecisionMapPage({ page, relatedPages }: SeoPageViewProps) {
     <main className={styles.shell}>
       <nav className={styles.nav} aria-label="Primary navigation">
         <a href="/" className={styles.brand}><span>N</span>INTERACTIVE STORY MAP</a>
-        <TrackedNovelAiHomeLink sourceSlug={page.slug}>OPEN NOVELAI ↗</TrackedNovelAiHomeLink>
+        <TrackedNovelAiHomeLink sourceSlug={page.slug} location="header">OPEN NOVELAI ↗</TrackedNovelAiHomeLink>
       </nav>
 
       <header className={styles.hero}>
@@ -49,7 +49,7 @@ export function DecisionMapPage({ page, relatedPages }: SeoPageViewProps) {
 
       {relatedPages.length > 0 ? <aside className={styles.nextRoutes} aria-labelledby="decision-related-heading"><header><span>CONNECTED ROUTES</span><h2 id="decision-related-heading">Keep mapping the experience.</h2></header><div>{relatedPages.map((link, index) => <a key={link.href} href={link.href}><span>0{index + 1}</span><strong>{link.anchor}</strong><small>{link.target.metaDescription}</small></a>)}</div></aside> : null}
 
-      <footer className={styles.destinationCta}><span>DESTINATION</span><h2>The route ends inside the story.</h2><TrackedNovelAiHomeLink sourceSlug={page.slug}>Explore stories on NovelAI ↗</TrackedNovelAiHomeLink></footer>
+      <footer className={styles.destinationCta}><span>DESTINATION</span><h2>The route ends inside the story.</h2><TrackedNovelAiHomeLink sourceSlug={page.slug} location="final_cta">Explore stories on NovelAI ↗</TrackedNovelAiHomeLink></footer>
     </main>
   );
 }

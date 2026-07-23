@@ -11,7 +11,7 @@ export function CinematicExperiencePage({ page, relatedPages }: SeoPageViewProps
       </div>
       <nav className={styles.nav} aria-label="Primary navigation">
         <a className={styles.brand} href="/"><span>N</span>NovelAI Stories</a>
-        <TrackedNovelAiHomeLink className={styles.navAction} sourceSlug={page.slug}>
+        <TrackedNovelAiHomeLink className={styles.navAction} sourceSlug={page.slug} location="header">
           Explore NovelAI <span aria-hidden="true">↗</span>
         </TrackedNovelAiHomeLink>
       </nav>
@@ -22,7 +22,7 @@ export function CinematicExperiencePage({ page, relatedPages }: SeoPageViewProps
           <h1>{page.h1}</h1>
           <p className={styles.lede}>{page.heroMarkdown}</p>
           <div className={styles.actions}>
-            <TrackedNovelAiHomeLink className={styles.primaryAction} sourceSlug={page.slug}>
+            <TrackedNovelAiHomeLink className={styles.primaryAction} sourceSlug={page.slug} location="hero">
               Explore stories on NovelAI
             </TrackedNovelAiHomeLink>
             <a className={styles.secondaryAction} href="#inside-the-scene">Enter the scene</a>
@@ -76,7 +76,7 @@ export function CinematicExperiencePage({ page, relatedPages }: SeoPageViewProps
 
       <footer className={styles.finalCta}>
         <p className={styles.eyebrow}>The stage is set</p><h2>Choose a character and enter the scene.</h2>
-        <TrackedNovelAiHomeLink className={styles.primaryAction} sourceSlug={page.slug}>Explore stories on NovelAI</TrackedNovelAiHomeLink>
+        <TrackedNovelAiHomeLink className={styles.primaryAction} sourceSlug={page.slug} location="final_cta">Explore stories on NovelAI</TrackedNovelAiHomeLink>
       </footer>
     </main>
   );

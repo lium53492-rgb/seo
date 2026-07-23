@@ -3,6 +3,9 @@ node_modules/
 out/
 dist/
 .vercel/
+.playwright-cli/
+output/
+tmp/
 
 *.log
 *.tsbuildinfo

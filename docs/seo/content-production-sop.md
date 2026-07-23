@@ -66,6 +66,7 @@ When a draft includes a contextual internal link, the published template must re
 - Track publication date, evidence count, intent/cluster, approved fact IDs, rendering checks, page-level Search Console metrics, and 28-day outcome.
 - Treat organic clicks as search-result clicks, not unique visitors. Do not promise a fixed traffic outcome.
 - Aggregate Search Console clicks and landing UV by source page and reporting period. Join qualified outbounds, trials, signups, payments, and revenue with `seo_click_id`; do not use the shared keyword-research account as an analytics source.
+- Before scoring the next page, read `/api/attribution/report` (or run `scripts/collect-growth-funnel.mjs`) for every published page being evaluated. Use the same explicit period as the Search Console export, preserve currency boundaries, and surface orphan callbacks as a data-quality defect.
 - Every funnel field must be observed with a named source or unavailable with a reason. Never infer zero from a missing export, empty UI, or disconnected callback.
 - Use report history to identify pages that need improved titles, clearer intent, stronger internal connections, or a product-fact correction. Only set `publicationMode: "update"` when actual Search Console evidence supports an update.
 

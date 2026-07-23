@@ -19,7 +19,6 @@ const guideMessages = [
 ];
 
 export function StoryCompanion({ sourceSlug }: StoryCompanionProps) {
-  const cursorRef = useRef<HTMLDivElement>(null);
   const companionRef = useRef<HTMLElement>(null);
   const bubbleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const celebrationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -53,40 +52,56 @@ export function StoryCompanion({ sourceSlug }: StoryCompanionProps) {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     body.classList.add("story-cursor-active");
     let animationFrame = 0;
+    let currentLookX = 0;
+    let currentLookY = 0;
+    let targetLookX = 0;
+    let targetLookY = 0;
+
+    const renderPointer = () => {
+      animationFrame = 0;
+      const companion = companionRef.current;
+      const companionEase = reducedMotion.matches ? 1 : 0.18;
+
+      currentLookX += (targetLookX - currentLookX) * companionEase;
+      currentLookY += (targetLookY - currentLookY) * companionEase;
+
+      if (companion && !reducedMotion.matches) {
+        companion.style.setProperty("--pet-look-x", `${currentLookX.toFixed(2)}px`);
+        companion.style.setProperty("--pet-look-y", `${currentLookY.toFixed(2)}px`);
+        companion.style.setProperty("--pet-tilt", `${(currentLookX * 0.24).toFixed(2)}deg`);
+      }
+
+      const companionSettled = Math.abs(targetLookX - currentLookX) < 0.08 && Math.abs(targetLookY - currentLookY) < 0.08;
+      if (!companionSettled) {
+        animationFrame = requestAnimationFrame(renderPointer);
+      }
+    };
+
+    const requestPointerRender = () => {
+      if (!animationFrame) animationFrame = requestAnimationFrame(renderPointer);
+    };
 
     const handlePointerMove = (event: PointerEvent) => {
       if (event.pointerType && event.pointerType !== "mouse") return;
-      cancelAnimationFrame(animationFrame);
-      animationFrame = requestAnimationFrame(() => {
-        const cursor = cursorRef.current;
-        const companion = companionRef.current;
-        if (!cursor) return;
-
-        cursor.style.setProperty("--cursor-x", `${event.clientX}px`);
-        cursor.style.setProperty("--cursor-y", `${event.clientY}px`);
-        cursor.dataset.visible = "true";
-
-        const target = event.target instanceof Element ? event.target : null;
-        const interactive = target?.closest("a, button, summary");
-        cursor.dataset.action = interactive ? "true" : "false";
-
-        const label = interactive?.textContent?.toLowerCase() ?? "";
-        cueHoverRef.current = /play|explore|open novelai|enter the scene/.test(label);
-        if (cueHoverRef.current && !celebratingRef.current) setMood("wink");
-
-        if (companion && !reducedMotion.matches) {
-          const lookX = Math.max(-9, Math.min(9, (event.clientX / window.innerWidth - .5) * 18));
-          const lookY = Math.max(-6, Math.min(6, (event.clientY / window.innerHeight - .5) * 12));
-          companion.style.setProperty("--pet-look-x", `${lookX}px`);
-          companion.style.setProperty("--pet-look-y", `${lookY}px`);
-          companion.style.setProperty("--pet-tilt", `${lookX * .24}deg`);
-        }
-      });
+      targetLookX = Math.max(-9, Math.min(9, (event.clientX / window.innerWidth - 0.5) * 18));
+      targetLookY = Math.max(-6, Math.min(6, (event.clientY / window.innerHeight - 0.5) * 12));
+      const target = event.target instanceof Element ? event.target : null;
+      const interactive = target?.closest("a, button, summary");
+      const label = interactive?.textContent?.toLowerCase() ?? "";
+      const isCue = /play|explore|open novelai|enter the scene/.test(label);
+      if (isCue !== cueHoverRef.current) {
+        cueHoverRef.current = isCue;
+        if (!celebratingRef.current) setMood(isCue ? "wink" : "calm");
+      }
+      requestPointerRender();
     };
 
     const handlePointerLeave = () => {
-      if (cursorRef.current) cursorRef.current.dataset.visible = "false";
+      targetLookX = 0;
+      targetLookY = 0;
       cueHoverRef.current = false;
+      if (!celebratingRef.current) setMood("calm");
+      requestPointerRender();
     };
 
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
@@ -130,11 +145,6 @@ export function StoryCompanion({ sourceSlug }: StoryCompanionProps) {
 
   return (
     <>
-      <div ref={cursorRef} className={styles.storyCursor} data-visible="false" aria-hidden="true">
-        <svg viewBox="0 0 30 34" role="presentation">
-          <path d="M12.8 28.8c-2.7-2.2-5.7-5.1-7.9-7.6-.9-1-.7-2.6.4-3.4 1-.7 2.3-.5 3.1.3l2.2 2.1V6.4c0-1.4 1-2.5 2.4-2.5s2.4 1.1 2.4 2.5v8.1-2.8c0-1.4 1-2.5 2.4-2.5s2.4 1.1 2.4 2.5v3-1.9c0-1.4 1-2.5 2.4-2.5s2.4 1.1 2.4 2.5v6.1c0 7-3.7 11.2-9.2 11.2-1.9 0-3.5-.4-5-1.3Z" />
-        </svg>
-      </div>
       <div className={styles.meteorField} aria-hidden="true"><i /><i /><i /><i /></div>
 
       {isOpen ? (
@@ -151,6 +161,7 @@ export function StoryCompanion({ sourceSlug }: StoryCompanionProps) {
             <TrackedNovelAiHomeLink
               className={styles.playButton}
               sourceSlug={sourceSlug}
+              location="companion"
               onMouseEnter={celebrate}
               onFocus={celebrate}
               onClick={celebrate}
@@ -186,7 +197,6 @@ export function StoryCompanion({ sourceSlug }: StoryCompanionProps) {
                 width={1536}
                 height={512}
                 sizes="(max-width: 700px) 300px, 510px"
-                priority
               />
             </span>
             <span className={styles.attentionMark} aria-hidden="true">!</span>

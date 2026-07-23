@@ -1,4 +1,5 @@
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { dirname, resolve } from "node:path";
 import { scoreResearchCandidate } from "./lib/seo-policy.mjs";
 
@@ -52,15 +53,52 @@ const approvedFactIds = new Set(factCatalog.facts.map((fact) => fact.id));
 const forbiddenClaims = factCatalog.forbiddenClaimPatterns.map((pattern) => new RegExp(pattern, "i"));
 const unsupportedKeywords = factCatalog.unsupportedKeywordPatterns.map((pattern) => new RegExp(pattern, "i"));
 
+function registrableDomain(hostname) {
+  const labels = hostname.toLowerCase().replace(/^www\./, "").split(".").filter(Boolean);
+  if (labels.length <= 2) return labels.join(".");
+  const commonSecondLevelSuffixes = new Set(["co.uk", "org.uk", "com.au", "com.cn", "com.hk", "co.jp"]);
+  const lastTwo = labels.slice(-2).join(".");
+  return commonSecondLevelSuffixes.has(lastTwo) ? labels.slice(-3).join(".") : lastTwo;
+}
+
+function sha256(value) {
+  return createHash("sha256").update(JSON.stringify(value)).digest("hex");
+}
+
+function isValidPerformanceUrl(value) {
+  if (value.startsWith("/")) return true;
+  try {
+    return new URL(value).protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function writeJsonAtomic(path, value) {
+  const temporaryPath = `${path}.${process.pid}.tmp`;
+  writeFileSync(temporaryPath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+  renameSync(temporaryPath, path);
+}
+
 const evidenceDomains = new Set();
 const supportedKeywords = new Set();
 for (const item of input.evidence) {
   const url = new URL(item.url);
   if (!/^https?:$/.test(url.protocol)) throw new Error("Evidence URLs must use HTTP(S)");
-  evidenceDomains.add(url.hostname.replace(/^www\./, ""));
+  if (!String(item.title || "").trim() || !String(item.source || "").trim()) {
+    throw new Error("Every evidence item needs a title and source");
+  }
+  if (!Number.isFinite(Date.parse(item.collectedAt || ""))) {
+    throw new Error(`Evidence needs a valid collectedAt timestamp: ${item.url}`);
+  }
+  evidenceDomains.add(registrableDomain(url.hostname));
   for (const keyword of Array.isArray(item.supports) ? item.supports : []) {
     supportedKeywords.add(String(keyword).trim().toLowerCase());
   }
+}
+const candidateKeywords = input.candidates.map((candidate) => String(candidate.keyword || "").trim().toLowerCase());
+if (new Set(candidateKeywords).size !== candidateKeywords.length) {
+  throw new Error("Research candidates must use unique keywords");
 }
 if (evidenceDomains.size < policy.evidence.minDomains) {
   throw new Error(`Evidence must come from at least ${policy.evidence.minDomains} independent domains`);
@@ -174,6 +212,9 @@ function validateFunnel(rawFunnel) {
   if (!/^\d{4}-\d{2}-\d{2}/.test(rawFunnel.periodStart) || !/^\d{4}-\d{2}-\d{2}/.test(rawFunnel.periodEnd)) {
     throw new Error("Funnel snapshot needs an explicit reporting period");
   }
+  if (!Number.isFinite(Date.parse(rawFunnel.periodStart)) || !Number.isFinite(Date.parse(rawFunnel.periodEnd)) || Date.parse(rawFunnel.periodStart) >= Date.parse(rawFunnel.periodEnd)) {
+    throw new Error("Funnel reporting period must use valid increasing timestamps");
+  }
   const metrics = {};
   for (const name of funnelMetricNames) {
     const metric = rawFunnel.metrics?.[name];
@@ -254,7 +295,26 @@ const preparedDrafts = rawDrafts.map((rawDraft, index) => {
 const draft = preparedDrafts[0]?.draft ?? null;
 const selectedOpportunity = preparedDrafts[0]?.opportunity ?? opportunities.find((candidate) => candidate.action === "create_page") ?? opportunities[0];
 if (!selectedOpportunity) throw new Error("Research produced no scored opportunity");
-const performance = Array.isArray(input.performance) ? input.performance : [];
+const performance = Array.isArray(input.performance) ? input.performance.map((row, index) => {
+  const normalized = {
+    url: String(row.url || ""),
+    query: String(row.query || "").trim(),
+    clicks: Number(row.clicks),
+    impressions: Number(row.impressions),
+    ctr: Number(row.ctr),
+    position: Number(row.position),
+    recommendedAction: String(row.recommendedAction || "").trim(),
+  };
+  if (!isValidPerformanceUrl(normalized.url) || !normalized.query || !normalized.recommendedAction ||
+    !Number.isFinite(normalized.clicks) || normalized.clicks < 0 ||
+    !Number.isFinite(normalized.impressions) || normalized.impressions < 0 ||
+    normalized.clicks > normalized.impressions ||
+    !Number.isFinite(normalized.ctr) || normalized.ctr < 0 || normalized.ctr > 1 ||
+    !Number.isFinite(normalized.position) || normalized.position <= 0) {
+    throw new Error(`Invalid Search Console performance row ${index + 1}`);
+  }
+  return normalized;
+}) : [];
 const totals = performance.reduce(
   (result, row) => ({ clicks: result.clicks + (Number(row.clicks) || 0), impressions: result.impressions + (Number(row.impressions) || 0) }),
   { clicks: 0, impressions: 0 },
@@ -265,7 +325,7 @@ const reportId = `seo-${date}`;
 const publication = !draft
   ? { status: "not_requested", reason: "No draft was supplied for editorial review." }
   : draft.quality.passed
-    ? { status: "ready_for_review", slug: preparedDrafts[0].pageSlug, path: `/${preparedDrafts[0].pageSlug}`, reason: "Automated gates passed. A separate editorial approval record is required before publication." }
+    ? { status: "ready_for_review", slug: preparedDrafts[0].pageSlug, path: `/${preparedDrafts[0].pageSlug}`, draftDigest: sha256(draft), reason: "Automated gates passed. A separate editorial approval record bound to this draft digest is required before publication." }
     : { status: "blocked", reason: "Draft did not pass all automated quality gates." };
 const phrase = titleCase(selectedOpportunity.keyword);
 const pageType = /how|what|ideas|guide/.test(selectedOpportunity.keyword) ? "guide" : /romance|fantasy|mystery|school|life/.test(selectedOpportunity.keyword) ? "scenario" : "product";
@@ -331,6 +391,9 @@ const report = {
 };
 
 const outputPath = resolve(`data/reports/${date}.json`);
+if (existsSync(outputPath)) {
+  throw new Error(`Refusing to overwrite existing daily report: ${outputPath}`);
+}
 mkdirSync(dirname(outputPath), { recursive: true });
-writeFileSync(outputPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+writeJsonAtomic(outputPath, report);
 process.stdout.write(`${outputPath}\n`);

@@ -12,6 +12,14 @@ type FeedbackEntry = {
 };
 
 type GithubContent = { content?: string; encoding?: string; sha?: string };
+const githubRequestTimeoutMs = 5_000;
+
+function githubFetch(input: string, init: RequestInit = {}) {
+  return fetch(input, {
+    ...init,
+    signal: init.signal ?? AbortSignal.timeout(githubRequestTimeoutMs),
+  });
+}
 
 function shanghaiDate(date = new Date()) {
   return new Intl.DateTimeFormat("en-CA", {
@@ -78,7 +86,7 @@ export async function persistWorkbenchFeedback(message: string) {
   }
   const endpoint = `https://api.github.com/repos/${repository}/contents/${relativePath}`;
   const headers = githubHeaders(token);
-  const current = await fetch(`${endpoint}?ref=${encodeURIComponent(branch)}`, {
+  const current = await githubFetch(`${endpoint}?ref=${encodeURIComponent(branch)}`, {
     headers,
     cache: "no-store",
   });
@@ -95,7 +103,7 @@ export async function persistWorkbenchFeedback(message: string) {
     throw new Error(`反馈文件读取失败：GitHub ${current.status}`);
   }
   const body = JSON.stringify({ date, entries: [...entries, entry] }, null, 2) + "\n";
-  const saved = await fetch(endpoint, {
+  const saved = await githubFetch(endpoint, {
     method: "PUT",
     headers: { ...headers, "content-type": "application/json" },
     body: JSON.stringify({
