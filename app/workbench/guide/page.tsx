@@ -20,7 +20,7 @@ const stateLabels: Record<IntegrationStatus["state"], string> = {
 
 const dailySteps = [
   ["09:15 收集真实信号", "读取 Search Console、Vercel Analytics 和可用的产品转化数据；没有数据就记录不可用原因。"],
-  ["研究高意图候选", "结合公开网页和 SEO 工具，给试玩意图、付费意图、搜索任务具体度、产品匹配和竞争代理分别打分。"],
+  ["研究高意图候选", "结合公开网页和 SEO 工具，为候选词选择可审计的证据信号；系统再按 policy v4 确定性计算试玩、付费、具体度、产品匹配和竞争代理分。"],
   ["硬门槛筛选", "系统先排除宽泛信息词、弱试玩意图、产品不匹配、第三方 IP、内容蚕食和重复答案。"],
   ["生成事实受控草稿", "第一名合格机会变成 Brief、英文内容和待审页面，但此时不会写入已发布目录。"],
   ["独立编辑审稿", "人工或标明身份的 Codex 编辑器检查搜索意图、产品事实、来源和转化路径，并生成批准记录。"],
@@ -33,7 +33,7 @@ const decisionRows = [
   ["排名 8–20", "补充独特素材、FAQ 与内部链接", "把已有相关性推入首页"],
   ["高 UV、高试玩或付费", "扩展相邻但独立的搜索任务", "复制已经验证的用户意图，而不是复制关键词变体"],
   ["高需求、低产品匹配", "观察，不生成或发布页面", "防止为流量虚构产品能力"],
-  ["关键词暗示多人/好友", "产品匹配最高只能到 49", "除非产品事实库明确确认该能力"],
+  ["关键词暗示多人/好友", "产品信号必须为空并阻断发布", "除非产品事实库明确确认该能力"],
 ];
 
 export default async function WorkbenchGuidePage() {
@@ -176,7 +176,7 @@ export default async function WorkbenchGuidePage() {
             <span>✓ 不出现多人、实时、平台、价格、延迟或第三方 IP 等未批准说法</span>
             <span>✓ 正文深度达标，FAQ、标题、描述和 CTA 完整</span>
             <span>✓ 与已有页面不重复，同一关键词不会再次创建页面</span>
-            <span>✓ 试玩、付费意图和搜索任务具体度达到 policy v3 硬门槛</span>
+            <span>✓ policy v4 计算出的试玩、付费意图和搜索任务具体度达到硬门槛</span>
             <span>✓ 独立批准记录包含搜索意图、产品事实、转化路径和来源复核</span>
           </div>
           <p className="wb-guide-footnote">研究脚本只生成 READY FOR REVIEW；审批脚本读取 data/reviews 中的批准记录后才写入 data/pages。随后 GitHub 推送触发 Vercel 构建。新产品能力仍需先加入唯一事实目录。</p>
