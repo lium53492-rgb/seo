@@ -39,7 +39,7 @@ The research input uses `policyVersion: 3` and includes:
   page;
 - a schema-version 1 funnel snapshot using `source_slug+reporting_period` for search/UV aggregation and `seo_click_id` for outbound-to-revenue conversion joins.
 
-The English draft remains 600-1,000 words, has at least four sections and three FAQs, uses only approved fact IDs, contains one real CTA, avoids prohibited claims and third-party IP, and links a relevant published first-party page when one exists.
+The English draft remains 600-1,000 words, has at least four sections and three FAQs, records its generation model and timestamp, uses only approved fact IDs, contains one real CTA, avoids prohibited claims and third-party IP, and links a relevant published first-party page when one exists. The builder owns the final route slug and binds it to the reviewed draft digest.
 
 ## Build, review, publish
 

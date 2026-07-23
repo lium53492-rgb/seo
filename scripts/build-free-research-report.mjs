@@ -174,6 +174,23 @@ function validateDraft(rawDraft, keyword) {
   if (rawDraft.language !== "en" || rawDraft.reviewRequired !== true) {
     throw new Error("Draft must be English and require editorial review");
   }
+  if (
+    typeof rawDraft.model !== "string" ||
+    rawDraft.model.trim().length < 2 ||
+    typeof rawDraft.generatedAt !== "string" ||
+    !Number.isFinite(Date.parse(rawDraft.generatedAt))
+  ) {
+    throw new Error("Draft must record its generation model and timestamp");
+  }
+  if (
+    shanghaiCalendarDate(rawDraft.generatedAt) !== date ||
+    (
+      Number.isFinite(Date.parse(input.generatedAt || "")) &&
+      Date.parse(rawDraft.generatedAt) > Date.parse(input.generatedAt)
+    )
+  ) {
+    throw new Error("Draft generatedAt must belong to the report date and not follow report generation");
+  }
   const factIds = Array.isArray(rawDraft.factIdsUsed) ? rawDraft.factIdsUsed : [];
   if (factIds.length < 2 || factIds.some((id) => !approvedFactIds.has(id))) {
     throw new Error("Draft uses an unapproved or missing product fact ID");
@@ -482,7 +499,11 @@ const preparedDrafts = rawDrafts.map((rawDraft, index) => {
   if (nearest?.score >= policy.content.maxSimilarity) {
     throw new Error(`Draft is too similar to /${nearest.slug} (${Math.round(nearest.score * 100)}%).`);
   }
-  return { draft, opportunity, pageSlug };
+  return {
+    draft: { ...draft, slug: `/${pageSlug}` },
+    opportunity,
+    pageSlug,
+  };
 });
 
 const draft = preparedDrafts[0]?.draft ?? null;

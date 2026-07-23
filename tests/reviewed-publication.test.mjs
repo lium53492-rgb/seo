@@ -6,6 +6,8 @@ import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import test from "node:test";
 
+import { isReportDraft } from "../lib/seo/report-draft-validation.mjs";
+
 const repoRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const builderPath = join(repoRoot, "scripts", "build-free-research-report.mjs");
 const publisherPath = join(repoRoot, "scripts", "publish-reviewed-page.mjs");
@@ -111,6 +113,8 @@ test("report generation cannot publish before a separate approval artifact", asy
       draft: {
         keyword: keywords[0],
         slug: "/play-an-ai-roleplay-story",
+        model: "codex-test",
+        generatedAt: "2099-01-01T09:15:00+08:00",
         language: "en",
         reviewRequired: true,
         title: "Play an AI Roleplay Story by Entering an Existing Plot",
@@ -134,6 +138,7 @@ test("report generation cannot publish before a separate approval artifact", asy
     const reportPath = join(workspace, "data", "reports", "2099-01-01.json");
     const reportBeforeReview = JSON.parse(await readFile(reportPath, "utf8"));
     assert.equal(reportBeforeReview.policyVersion, 3);
+    assert.equal(isReportDraft(reportBeforeReview.draft), true);
     assert.equal(reportBeforeReview.publication.status, "ready_for_review");
     assert.equal(reportBeforeReview.publicationMode, "create");
     assert.equal(reportBeforeReview.funnel.aggregationKey, "source_slug+reporting_period");
@@ -246,6 +251,7 @@ test("report generation cannot publish before a separate approval artifact", asy
     updateInput.funnel.periodEnd = "2099-01-02T09:00:00+08:00";
     updateInput.draft.keyword = updateKeywords[0];
     updateInput.draft.slug = "/play-an-ai-roleplay-story";
+    updateInput.draft.generatedAt = "2099-01-02T09:15:00+08:00";
     updateInput.draft.internalLinks = [{
       anchor: "Review the existing roleplay entry guide",
       href: "/play-an-ai-roleplay-story",
