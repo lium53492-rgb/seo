@@ -4,7 +4,10 @@ import { isBasicAuthHeaderAuthorized } from "@/lib/seo/auth";
 function challenge() {
   return new NextResponse(null, {
     status: 401,
-    headers: { "WWW-Authenticate": 'Basic realm="SEO Growth Workbench"' },
+    headers: {
+      "Cache-Control": "private, no-store",
+      "WWW-Authenticate": 'Basic realm="SEO Growth Workbench"',
+    },
   });
 }
 
@@ -27,6 +30,7 @@ export function proxy(request: NextRequest) {
     ) {
       return new NextResponse(null, {
         status: 503,
+        headers: { "Cache-Control": "private, no-store" },
       });
     }
     return NextResponse.next();

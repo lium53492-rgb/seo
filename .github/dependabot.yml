@@ -9,6 +9,10 @@ updates:
       timezone: Asia/Shanghai
     open-pull-requests-limit: 4
     versioning-strategy: increase-if-necessary
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
     groups:
       production-minor-and-patch:
         dependency-type: production

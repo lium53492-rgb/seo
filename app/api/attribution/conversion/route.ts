@@ -3,6 +3,7 @@ import { z } from "zod";
 import { logSeoGrowthEvent } from "@/lib/seo/attribution";
 import { recordConversionEvent } from "@/lib/seo/attribution-store";
 import { readPublishedPage } from "@/lib/seo/page-store";
+import { privateJson } from "@/lib/seo/private-response";
 
 export const runtime = "nodejs";
 
@@ -30,31 +31,31 @@ function authorized(header: string | null, secret: string) {
 
 export async function POST(request: Request) {
   const secret = process.env.ATTRIBUTION_SECRET;
-  if (!secret) return Response.json({ error: "Attribution callback is not configured" }, { status: 503 });
+  if (!secret) return privateJson({ error: "Attribution callback is not configured" }, { status: 503 });
   if (!authorized(request.headers.get("authorization"), secret)) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
+    return privateJson({ error: "Unauthorized" }, { status: 401 });
   }
   if (Number(request.headers.get("content-length") || 0) > 16_384) {
-    return Response.json({ error: "Payload too large" }, { status: 413 });
+    return privateJson({ error: "Payload too large" }, { status: 413 });
   }
 
   let parsed;
   try {
     const rawBody = await request.text();
     if (rawBody.length > 16_384) {
-      return Response.json({ error: "Payload too large" }, { status: 413 });
+      return privateJson({ error: "Payload too large" }, { status: 413 });
     }
     parsed = conversionEvent.safeParse(JSON.parse(rawBody));
   } catch {
-    return Response.json({ error: "Invalid JSON" }, { status: 400 });
+    return privateJson({ error: "Invalid JSON" }, { status: 400 });
   }
   if (!parsed.success) {
-    return Response.json({ error: "Invalid conversion event", issues: parsed.error.issues }, { status: 400 });
+    return privateJson({ error: "Invalid conversion event", issues: parsed.error.issues }, { status: 400 });
   }
 
   const event = parsed.data;
   if (!await readPublishedPage(event.sourceSlug)) {
-    return Response.json({ error: "Unknown SEO source slug" }, { status: 404 });
+    return privateJson({ error: "Unknown SEO source slug" }, { status: 404 });
   }
   let internalPersistence: Awaited<ReturnType<typeof recordConversionEvent>> | null = null;
   let internalError: string | null = null;
@@ -63,7 +64,7 @@ export async function POST(request: Request) {
   } catch (error) {
     internalError = error instanceof Error ? error.message : "attribution_store_failed";
     if (/does not match|already bound/.test(internalError)) {
-      return Response.json({ error: internalError }, { status: 409 });
+      return privateJson({ error: internalError }, { status: 409 });
     }
     logSeoGrowthEvent("conversion_store_failed", { eventId: event.eventId, reason: internalError });
   }
@@ -91,18 +92,18 @@ export async function POST(request: Request) {
         eventId: event.eventId,
         reason: error instanceof Error ? error.name : "request_failed",
       });
-      return Response.json({ error: "Conversion sink is unavailable" }, { status: 502 });
+      return privateJson({ error: "Conversion sink is unavailable" }, { status: 502 });
     }
     if (!sinkResponse.ok) {
       logSeoGrowthEvent("conversion_sink_failed", { eventId: event.eventId, status: sinkResponse.status });
-      return Response.json({ error: "Conversion sink rejected the event" }, { status: 502 });
+      return privateJson({ error: "Conversion sink rejected the event" }, { status: 502 });
     }
     externalPersistence = true;
   }
 
   const storedInternally = internalPersistence?.state === "stored" || internalPersistence?.state === "duplicate";
   if (!storedInternally && !externalPersistence) {
-    return Response.json({
+    return privateJson({
       error: internalError || internalPersistence?.detail || "No durable attribution store is configured",
     }, { status: internalError ? 502 : 503 });
   }
@@ -119,7 +120,7 @@ export async function POST(request: Request) {
     sourceSlug: event.sourceSlug,
   });
 
-  return Response.json({
+  return privateJson({
     accepted: true,
     duplicate: internalPersistence?.state === "duplicate",
     eventId: event.eventId,

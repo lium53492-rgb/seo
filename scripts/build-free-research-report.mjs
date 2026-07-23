@@ -582,6 +582,7 @@ const portfolioAction = portfolioActionLabels[portfolioDecision.action];
 const report = {
   id: reportId,
   date,
+  policyVersion: policy.policyVersion,
   ...(portfolioDecision.action === "improve_page"
     ? { publicationMode: "update" }
     : portfolioDecision.action === "create_page"

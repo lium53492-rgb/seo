@@ -309,6 +309,7 @@ export type GrowthPortfolioDecision = {
 export type DailySeoReport = {
   id: string;
   date: string;
+  policyVersion?: 3;
   publicationMode?: "create" | "update";
   generatedAt: string;
   mode: DataMode;

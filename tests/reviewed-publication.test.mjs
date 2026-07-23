@@ -133,6 +133,7 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.equal(build.status, 0, build.stderr);
     const reportPath = join(workspace, "data", "reports", "2099-01-01.json");
     const reportBeforeReview = JSON.parse(await readFile(reportPath, "utf8"));
+    assert.equal(reportBeforeReview.policyVersion, 3);
     assert.equal(reportBeforeReview.publication.status, "ready_for_review");
     assert.equal(reportBeforeReview.publicationMode, "create");
     assert.equal(reportBeforeReview.funnel.aggregationKey, "source_slug+reporting_period");

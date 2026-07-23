@@ -3,6 +3,7 @@ import "server-only";
 import { readdir, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import type { DailySeoReport } from "./types";
+import { isReportDraft } from "./report-draft-validation.mjs";
 
 type GithubContent = {
   sha?: string;
@@ -194,31 +195,11 @@ function isBrief(value: unknown) {
     isStringArray(value.evidenceRequired) && isStringArray(value.qualityGate);
 }
 
-function isDraft(value: unknown) {
-  if (value === null) return true;
-  return isRecord(value) && isString(value.keyword) && isString(value.slug) &&
-    value.language === "en" && isString(value.model) &&
-    isString(value.generatedAt) && Number.isFinite(Date.parse(value.generatedAt)) &&
-    (value.status === "ready_for_review" || value.status === "blocked") &&
-    value.reviewRequired === true && isString(value.title) && isString(value.metaDescription) &&
-    isString(value.h1) && isString(value.heroMarkdown) && isString(value.primaryCta) &&
-    Array.isArray(value.sections) && value.sections.every((section) =>
-      isRecord(section) && isString(section.heading) && isString(section.bodyMarkdown)) &&
-    Array.isArray(value.faqs) && value.faqs.every((faq) =>
-      isRecord(faq) && isString(faq.question) && isString(faq.answerMarkdown)) &&
-    isStringArray(value.factIdsUsed) &&
-    Array.isArray(value.internalLinks) && value.internalLinks.every((link) =>
-      isRecord(link) && isString(link.anchor) && isString(link.href)) &&
-    isStringArray(value.assetBriefs) && isRecord(value.quality) &&
-    typeof value.quality.passed === "boolean" && isFiniteMetric(value.quality.wordCount) &&
-    Array.isArray(value.quality.checks) && value.quality.checks.every((check) =>
-      isRecord(check) && isString(check.id) && isString(check.label) &&
-      typeof check.passed === "boolean" && isString(check.detail));
-}
-
 function parseReport(raw: string, source: string): DailySeoReport {
   const value = JSON.parse(raw) as unknown;
+  const isCurrentPolicyReport = isRecord(value) && value.policyVersion === 3;
   if (!isRecord(value) ||
+    (value.policyVersion !== undefined && value.policyVersion !== 3) ||
     typeof value.id !== "string" ||
     typeof value.date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value.date) ||
     typeof value.generatedAt !== "string" || !Number.isFinite(Date.parse(value.generatedAt)) ||
@@ -233,8 +214,13 @@ function parseReport(raw: string, source: string): DailySeoReport {
     !Array.isArray(value.opportunities) || !value.opportunities.every(isOpportunity) ||
     !Array.isArray(value.performance) || !value.performance.every(isPerformance) ||
     !Array.isArray(value.actions) || !value.actions.every(isAction) ||
-    !isBrief(value.brief) || !isDraft(value.draft) ||
-    (value.drafts !== undefined && (!Array.isArray(value.drafts) || !value.drafts.every(isDraft))) ||
+    !isBrief(value.brief) ||
+    !isReportDraft(value.draft, { allowLegacyMetadata: !isCurrentPolicyReport }) ||
+    (value.drafts !== undefined && (
+      !Array.isArray(value.drafts) ||
+      !value.drafts.every((draft) =>
+        isReportDraft(draft, { allowLegacyMetadata: !isCurrentPolicyReport }))
+    )) ||
     (value.funnel !== undefined && !isFunnel(value.funnel)) ||
     (value.portfolioFunnels !== undefined && !isGrowthPortfolio(value.portfolioFunnels)) ||
     (value.portfolioDecision !== undefined && !isPortfolioDecision(value.portfolioDecision)) ||
