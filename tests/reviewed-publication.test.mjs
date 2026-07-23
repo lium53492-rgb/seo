@@ -70,6 +70,13 @@ test("report generation cannot publish before a separate approval artifact", asy
         supports,
       })),
       performance: [],
+      portfolioDecision: {
+        schemaVersion: 1,
+        action: "create_page",
+        targetSlug: null,
+        rationale: "The portfolio has no previous pages, so a first trial-ready page is the explicit cold-start decision.",
+        evidenceSlugs: [],
+      },
       funnel: {
         schemaVersion: 1,
         aggregationKey: "source_slug+reporting_period",
@@ -85,6 +92,21 @@ test("report generation cannot publish before a separate approval artifact", asy
           paidConversions: unavailable("payments", "Payment callbacks are not connected in this fixture."),
           revenueMinor: unavailable("payments", "Attributed revenue is not connected in this fixture."),
         },
+      },
+      portfolioFunnels: {
+        schemaVersion: 1,
+        generatedAt: "2099-01-01T09:00:00+08:00",
+        periodBasis: "complete_shanghai_calendar_days",
+        aggregationKey: "source_slug+reporting_period",
+        conversionJoinKey: "seo_click_id",
+        periodStart: "2098-12-05T00:00:00+08:00",
+        periodEnd: "2099-01-01T00:00:00+08:00",
+        summary: {
+          publishedPages: 0,
+          collectedPages: 0,
+          unavailablePages: 0,
+        },
+        entries: [],
       },
       draft: {
         keyword: keywords[0],
@@ -116,6 +138,9 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.equal(reportBeforeReview.funnel.aggregationKey, "source_slug+reporting_period");
     assert.equal(reportBeforeReview.funnel.conversionJoinKey, "seo_click_id");
     assert.equal(reportBeforeReview.funnel.joinKey, undefined);
+    assert.equal(reportBeforeReview.portfolioFunnels.summary.publishedPages, 0);
+    assert.equal(reportBeforeReview.portfolioFunnels.periodBasis, "complete_shanghai_calendar_days");
+    assert.equal(reportBeforeReview.portfolioDecision.action, "create_page");
     assert.match(reportBeforeReview.publication.draftDigest, /^[a-f0-9]{64}$/);
     await assert.rejects(readFile(join(workspace, "data", "pages", "play-an-ai-roleplay-story.json"), "utf8"), /ENOENT/);
     const duplicateBuild = spawnSync(process.execPath, [builderPath, inputPath], { cwd: workspace, encoding: "utf8" });
@@ -160,6 +185,79 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.equal(page.draftDigest, review.draftDigest);
     const reportAfterReview = JSON.parse(await readFile(reportPath, "utf8"));
     assert.equal(reportAfterReview.publication.status, "published");
+
+    const updateInput = structuredClone(input);
+    updateInput.date = "2099-01-02";
+    updateInput.generatedAt = "2099-01-02T09:15:00+08:00";
+    updateInput.publicationMode = "update";
+    const updateKeywords = [
+      "personalize an ai roleplay story",
+      "improve an ai voice story",
+      "refine a story roleplay game",
+      "adjust a choose your role story",
+      "update an interactive roleplay story",
+    ];
+    updateInput.candidates = updateInput.candidates.map((candidate, index) => ({
+      ...candidate,
+      keyword: updateKeywords[index],
+      existingUrl: "/play-an-ai-roleplay-story",
+    }));
+    updateInput.evidence = updateInput.evidence.map((item) => ({
+      ...item,
+      collectedAt: "2099-01-02T09:00:00+08:00",
+      supports: updateKeywords,
+    }));
+    updateInput.performance = [{
+      url: "https://seo.example/play-an-ai-roleplay-story",
+      query: updateKeywords[0],
+      clicks: 2,
+      impressions: 20,
+      ctr: 0.1,
+      position: 8,
+      recommendedAction: "Improve the existing page around the observed query.",
+    }];
+    updateInput.portfolioFunnels = {
+      ...updateInput.portfolioFunnels,
+      generatedAt: "2099-01-02T09:10:00+08:00",
+      periodStart: "2098-12-05T16:00:00.000Z",
+      periodEnd: "2099-01-01T16:00:00.000Z",
+      summary: {
+        publishedPages: 1,
+        collectedPages: 0,
+        unavailablePages: 1,
+      },
+      entries: [{
+        sourceSlug: "play-an-ai-roleplay-story",
+        path: "/play-an-ai-roleplay-story",
+        keyword: keywords[0],
+        state: "unavailable",
+        reason: "Private attribution is unavailable in this isolated update fixture.",
+      }],
+    };
+    updateInput.portfolioDecision = {
+      schemaVersion: 1,
+      action: "improve_page",
+      targetSlug: "play-an-ai-roleplay-story",
+      rationale: "An observed Search Console row points to the existing page, so the decision is to improve that route rather than create a duplicate.",
+      evidenceSlugs: ["play-an-ai-roleplay-story"],
+    };
+    updateInput.funnel.periodStart = "2098-12-06T00:00:00+08:00";
+    updateInput.funnel.periodEnd = "2099-01-02T09:00:00+08:00";
+    updateInput.draft.keyword = updateKeywords[0];
+    updateInput.draft.slug = "/play-an-ai-roleplay-story";
+    updateInput.draft.internalLinks = [{
+      anchor: "Review the existing roleplay entry guide",
+      href: "/play-an-ai-roleplay-story",
+    }];
+    const updateInputPath = join(workspace, "data", "research", "2099-01-02.json");
+    await writeFile(updateInputPath, `${JSON.stringify(updateInput, null, 2)}\n`);
+
+    const updateBuild = spawnSync(process.execPath, [builderPath, updateInputPath], { cwd: workspace, encoding: "utf8" });
+    assert.equal(updateBuild.status, 0, updateBuild.stderr);
+    const updateReport = JSON.parse(await readFile(join(workspace, "data", "reports", "2099-01-02.json"), "utf8"));
+    assert.equal(updateReport.publicationMode, "update");
+    assert.equal(updateReport.publication.slug, "play-an-ai-roleplay-story");
+    assert.equal(updateReport.brief.slug, "/play-an-ai-roleplay-story");
   } finally {
     await rm(workspace, { recursive: true, force: true });
   }

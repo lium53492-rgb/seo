@@ -9,8 +9,10 @@
     "start": "next start",
     "check": "tsc --noEmit",
     "test": "node --test tests/*.test.mjs",
-    "verify": "npm run test && npm run check && npm run build && npm run verify:pages",
+    "verify": "npm run test && npm run check:experience && npm run check && npm run build && npm run verify:pages",
+    "check:experience": "node scripts/verify-experience-contracts.mjs",
     "verify:pages": "node scripts/verify-built-pages.mjs",
+    "growth:collect": "node scripts/collect-growth-portfolio.mjs",
     "research:build": "node scripts/build-free-research-report.mjs",
     "research:publish": "node scripts/publish-reviewed-page.mjs"
   },

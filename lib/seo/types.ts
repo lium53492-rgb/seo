@@ -255,6 +255,57 @@ export type SeoGrowthFunnel = {
   currency?: string;
 };
 
+export type GrowthPortfolioReport = {
+  sourceSlug: string;
+  funnel: SeoGrowthFunnel;
+  pageviews: number | null;
+  outboundRequests: number | null;
+  purchaseEvents: number | null;
+  orphanCallbacks: number | null;
+  revenueByCurrency: Record<string, number>;
+  ctaLocations: Record<string, number>;
+};
+
+export type GrowthPortfolioEntry =
+  | {
+      sourceSlug: string;
+      path: string;
+      keyword: string;
+      state: "collected";
+      report: GrowthPortfolioReport;
+    }
+  | {
+      sourceSlug: string;
+      path: string;
+      keyword: string;
+      state: "unavailable";
+      reason: string;
+    };
+
+export type GrowthPortfolioSnapshot = {
+  schemaVersion: 1;
+  generatedAt: string;
+  periodBasis: "complete_shanghai_calendar_days";
+  aggregationKey: "source_slug+reporting_period";
+  conversionJoinKey: "seo_click_id";
+  periodStart: string;
+  periodEnd: string;
+  summary: {
+    publishedPages: number;
+    collectedPages: number;
+    unavailablePages: number;
+  };
+  entries: GrowthPortfolioEntry[];
+};
+
+export type GrowthPortfolioDecision = {
+  schemaVersion: 1;
+  action: RecommendedAction;
+  targetSlug: string | null;
+  rationale: string;
+  evidenceSlugs: string[];
+};
+
 export type DailySeoReport = {
   id: string;
   date: string;
@@ -281,6 +332,8 @@ export type DailySeoReport = {
   publications?: ReportPublication[];
   contentStrategy?: ContentStrategy | null;
   funnel?: SeoGrowthFunnel;
+  portfolioFunnels?: GrowthPortfolioSnapshot;
+  portfolioDecision?: GrowthPortfolioDecision;
   integrations: IntegrationStatus[];
   evidence?: Array<{
     title: string;

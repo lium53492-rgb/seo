@@ -64,6 +64,8 @@
   transform: translate3d(var(--pet-look-x), var(--pet-look-y), 0) rotate(var(--pet-tilt));
   transform-origin: 50% 86%;
   transition: filter 180ms ease;
+  backface-visibility: hidden;
+  will-change: transform;
 }
 .foxButton:hover { filter: brightness(1.04); }
 .groundShadow { position: absolute; z-index: -1; right: 8px; bottom: 5px; width: 150px; height: 26px; border-radius: 50%; background: oklch(8% .045 286 / 32%); filter: blur(9px); animation: shadowBreathe 3.4s ease-in-out infinite; }

@@ -1,7 +1,8 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
-import { dirname, resolve } from "node:path";
+import { dirname, relative, resolve } from "node:path";
 import { scoreResearchCandidate } from "./lib/seo-policy.mjs";
+import { evaluateGrowthFeedbackGate } from "./lib/growth-portfolio.mjs";
 
 const inputPath = process.argv[2];
 if (!inputPath) throw new Error("Usage: npm run research:build -- data/research/YYYY-MM-DD.json");
@@ -15,6 +16,15 @@ const date = String(input.date || "");
 if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error("date must be YYYY-MM-DD");
 if (Number(input.policyVersion) !== policy.policyVersion) {
   throw new Error(`Research must use policyVersion ${policy.policyVersion}`);
+}
+
+function shanghaiCalendarDate(value) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date(value));
 }
 
 const contentStrategy = input.contentStrategy || null;
@@ -139,6 +149,23 @@ function existingPages() {
     .filter((page) => page.status === "published");
 }
 
+function readPortfolioInput() {
+  if (input.portfolioFunnels && input.portfolioSnapshot) {
+    throw new Error("Use either embedded portfolioFunnels or portfolioSnapshot, not both");
+  }
+  if (input.portfolioFunnels) return input.portfolioFunnels;
+  if (typeof input.portfolioSnapshot !== "string" || !input.portfolioSnapshot.trim()) {
+    throw new Error("Research must include a current all-page growth portfolio snapshot");
+  }
+  const growthDirectory = resolve("data/growth");
+  const portfolioPath = resolve(input.portfolioSnapshot);
+  const relativePath = relative(growthDirectory, portfolioPath);
+  if (!relativePath || relativePath.startsWith("..") || resolve(growthDirectory, relativePath) !== portfolioPath) {
+    throw new Error("portfolioSnapshot must resolve inside data/growth");
+  }
+  return readJson(portfolioPath);
+}
+
 function validateDraft(rawDraft, keyword) {
   if (!rawDraft) return null;
   if (String(rawDraft.keyword || "").trim().toLowerCase() !== keyword) {
@@ -248,6 +275,171 @@ function validateFunnel(rawFunnel) {
   };
 }
 
+function nullableNonNegative(value, field) {
+  if (value === null) return null;
+  if (!Number.isFinite(Number(value)) || Number(value) < 0) {
+    throw new Error(`${field} must be null or a non-negative number`);
+  }
+  return Number(value);
+}
+
+function validatePortfolioSnapshot(rawPortfolio, publishedPages) {
+  if (
+    !rawPortfolio ||
+    rawPortfolio.schemaVersion !== 1 ||
+    rawPortfolio.periodBasis !== "complete_shanghai_calendar_days" ||
+    rawPortfolio.aggregationKey !== "source_slug+reporting_period" ||
+    rawPortfolio.conversionJoinKey !== "seo_click_id"
+  ) {
+    throw new Error("Growth portfolio must use schema v1, complete Shanghai days, and the approved join contract");
+  }
+  const generatedAt = Date.parse(rawPortfolio.generatedAt || "");
+  const periodStart = Date.parse(rawPortfolio.periodStart || "");
+  const periodEnd = Date.parse(rawPortfolio.periodEnd || "");
+  if (
+    !Number.isFinite(generatedAt) ||
+    !Number.isFinite(periodStart) ||
+    !Number.isFinite(periodEnd) ||
+    periodStart >= periodEnd ||
+    periodEnd > generatedAt
+  ) {
+    throw new Error("Growth portfolio needs a valid completed reporting period and generatedAt timestamp");
+  }
+  if (shanghaiCalendarDate(rawPortfolio.generatedAt) !== date) {
+    throw new Error(`Growth portfolio must be collected on the report's Shanghai date: ${date}`);
+  }
+  if (!Array.isArray(rawPortfolio.entries)) {
+    throw new Error("Growth portfolio entries must be an array");
+  }
+
+  const pageBySlug = new Map(publishedPages.map((page) => [page.slug, page]));
+  const entrySlugs = rawPortfolio.entries.map((entry) => String(entry?.sourceSlug || ""));
+  if (new Set(entrySlugs).size !== entrySlugs.length) {
+    throw new Error("Growth portfolio source slugs must be unique");
+  }
+  const missingSlugs = [...pageBySlug.keys()].filter((slug) => !entrySlugs.includes(slug));
+  const unknownSlugs = entrySlugs.filter((slug) => !pageBySlug.has(slug));
+  if (missingSlugs.length || unknownSlugs.length) {
+    throw new Error(
+      `Growth portfolio must cover every published page. Missing: ${missingSlugs.join(", ") || "none"}; unknown: ${unknownSlugs.join(", ") || "none"}`,
+    );
+  }
+
+  const entries = rawPortfolio.entries.map((entry) => {
+    const page = pageBySlug.get(entry.sourceSlug);
+    if (!page || entry.path !== page.path || entry.keyword !== page.keyword) {
+      throw new Error(`Growth portfolio metadata does not match /${entry.sourceSlug}`);
+    }
+    if (entry.state === "unavailable") {
+      if (typeof entry.reason !== "string" || entry.reason.trim().length < 20) {
+        throw new Error(`Unavailable growth entry needs a specific reason: ${entry.sourceSlug}`);
+      }
+      return {
+        sourceSlug: page.slug,
+        path: page.path,
+        keyword: page.keyword,
+        state: "unavailable",
+        reason: entry.reason.trim(),
+      };
+    }
+    if (entry.state !== "collected" || entry.report?.sourceSlug !== page.slug) {
+      throw new Error(`Growth entry must be collected or unavailable: ${entry.sourceSlug}`);
+    }
+    const funnel = validateFunnel(entry.report.funnel);
+    if (funnel.periodStart !== rawPortfolio.periodStart || funnel.periodEnd !== rawPortfolio.periodEnd) {
+      throw new Error(`Growth entry uses a mismatched reporting period: ${entry.sourceSlug}`);
+    }
+    const revenueByCurrency = {};
+    for (const [currency, value] of Object.entries(entry.report.revenueByCurrency || {})) {
+      if (!/^[A-Z]{3}$/.test(currency) || !Number.isFinite(Number(value)) || Number(value) < 0) {
+        throw new Error(`Growth entry has invalid currency revenue: ${entry.sourceSlug}`);
+      }
+      revenueByCurrency[currency] = Number(value);
+    }
+    return {
+      sourceSlug: page.slug,
+      path: page.path,
+      keyword: page.keyword,
+      state: "collected",
+      report: {
+        sourceSlug: page.slug,
+        funnel,
+        pageviews: nullableNonNegative(entry.report.pageviews, "pageviews"),
+        outboundRequests: nullableNonNegative(entry.report.outboundRequests, "outboundRequests"),
+        purchaseEvents: nullableNonNegative(entry.report.purchaseEvents, "purchaseEvents"),
+        orphanCallbacks: nullableNonNegative(entry.report.orphanCallbacks, "orphanCallbacks"),
+        revenueByCurrency,
+        ctaLocations: Object.fromEntries(
+          Object.entries(entry.report.ctaLocations || {}).map(([location, value]) => [
+            location,
+            nullableNonNegative(value, `CTA location ${location}`),
+          ]),
+        ),
+      },
+    };
+  });
+
+  const collectedPages = entries.filter((entry) => entry.state === "collected").length;
+  return {
+    schemaVersion: 1,
+    generatedAt: rawPortfolio.generatedAt,
+    periodBasis: "complete_shanghai_calendar_days",
+    aggregationKey: "source_slug+reporting_period",
+    conversionJoinKey: "seo_click_id",
+    periodStart: rawPortfolio.periodStart,
+    periodEnd: rawPortfolio.periodEnd,
+    summary: {
+      publishedPages: entries.length,
+      collectedPages,
+      unavailablePages: entries.length - collectedPages,
+    },
+    entries,
+  };
+}
+
+function validatePortfolioDecision(rawDecision, publishedPages) {
+  const allowedActions = new Set(["create_page", "improve_page", "consolidate", "observe"]);
+  if (!rawDecision || !allowedActions.has(rawDecision.action)) {
+    throw new Error("Research must include a portfolioDecision with create_page, improve_page, consolidate, or observe");
+  }
+  if (typeof rawDecision.rationale !== "string" || rawDecision.rationale.trim().length < 40) {
+    throw new Error("portfolioDecision needs a specific evidence-led rationale");
+  }
+  const evidenceSlugs = Array.isArray(rawDecision.evidenceSlugs)
+    ? rawDecision.evidenceSlugs.map(String)
+    : [];
+  if (new Set(evidenceSlugs).size !== evidenceSlugs.length) {
+    throw new Error("portfolioDecision evidenceSlugs must be unique");
+  }
+  const publishedSlugs = new Set(publishedPages.map((page) => page.slug));
+  if (evidenceSlugs.some((slug) => !publishedSlugs.has(slug))) {
+    throw new Error("portfolioDecision may cite only published source slugs");
+  }
+  if (publishedPages.length && !evidenceSlugs.length) {
+    throw new Error("portfolioDecision must cite at least one published page");
+  }
+  const targetSlug = rawDecision.targetSlug == null ? null : String(rawDecision.targetSlug);
+  if (["improve_page", "consolidate"].includes(rawDecision.action) && !publishedSlugs.has(targetSlug)) {
+    throw new Error(`${rawDecision.action} requires a published targetSlug`);
+  }
+  if (rawDecision.action === "create_page" && targetSlug !== null) {
+    throw new Error("create_page must not target an existing slug");
+  }
+  if (rawDecision.action === "observe" && targetSlug !== null && !publishedSlugs.has(targetSlug)) {
+    throw new Error("observe targetSlug must be null or an existing published page");
+  }
+  return {
+    schemaVersion: 1,
+    action: rawDecision.action,
+    targetSlug,
+    rationale: rawDecision.rationale.trim(),
+    evidenceSlugs,
+  };
+}
+
+const pages = existingPages();
+const portfolioFunnels = validatePortfolioSnapshot(readPortfolioInput(), pages);
+const portfolioDecision = validatePortfolioDecision(input.portfolioDecision, pages);
 const opportunities = input.candidates
   .map((candidate) => scoreResearchCandidate(candidate, policy))
   .sort((left, right) => right.score - left.score)
@@ -257,7 +449,6 @@ if (rawDrafts.length > policy.dailyPageLimit) {
   throw new Error(`A daily report may contain at most ${policy.dailyPageLimit} publishable draft`);
 }
 
-const pages = existingPages();
 const preparedDrafts = rawDrafts.map((rawDraft, index) => {
   const keyword = String(rawDraft?.keyword || "").trim().toLowerCase();
   const opportunity = opportunities.find((candidate) => candidate.keyword === keyword);
@@ -267,7 +458,9 @@ const preparedDrafts = rawDrafts.map((rawDraft, index) => {
     throw new Error(`Draft ${index + 1} must target an opportunity marked ${expectedAction}`);
   }
   const draft = validateDraft(rawDraft, keyword);
-  const pageSlug = slugify(opportunity.keyword);
+  const pageSlug = input.publicationMode === "update"
+    ? portfolioDecision.targetSlug
+    : slugify(opportunity.keyword);
   if (!pageSlug) throw new Error("Draft keyword did not produce a safe slug");
   if (rawDraft.slug && String(rawDraft.slug).replace(/^\//, "") !== pageSlug) {
     throw new Error(`Draft slug must match the researched keyword: ${pageSlug}`);
@@ -320,6 +513,54 @@ const totals = performance.reduce(
   { clicks: 0, impressions: 0 },
 );
 const funnel = validateFunnel(input.funnel);
+const observedLandingPages = portfolioFunnels.entries.filter(
+  (entry) => entry.state === "collected" && entry.report.funnel.metrics.landingUv.status === "observed",
+).length;
+const orphanCallbacks = portfolioFunnels.entries.reduce(
+  (total, entry) => total + (
+    entry.state === "collected" && entry.report.orphanCallbacks !== null
+      ? entry.report.orphanCallbacks
+      : 0
+  ),
+  0,
+);
+const feedbackGate = evaluateGrowthFeedbackGate({
+  publicationMode: input.publicationMode,
+  hasDraft: rawDrafts.length > 0,
+  publishedPageCount: pages.length,
+  observedLandingPages,
+  orphanCallbacks,
+  policy: policy.feedbackLoop,
+});
+if (!feedbackGate.passed) throw new Error(feedbackGate.reason);
+if (rawDrafts.length) {
+  const expectedDecision = input.publicationMode === "update" ? "improve_page" : "create_page";
+  if (portfolioDecision.action !== expectedDecision) {
+    throw new Error(`A supplied draft requires portfolioDecision.action ${expectedDecision}`);
+  }
+}
+if (["consolidate", "observe"].includes(portfolioDecision.action) && rawDrafts.length) {
+  throw new Error(`${portfolioDecision.action} cannot publish a new draft`);
+}
+if (input.publicationMode === "update" && preparedDrafts.length) {
+  const targetPath = preparedDrafts[0].opportunity.existingUrl;
+  const targetPage = pages.find((page) => page.slug === portfolioDecision.targetSlug);
+  if (!targetPage || targetPage.path !== targetPath) {
+    throw new Error("Update mode targetSlug must match the opportunity existingUrl");
+  }
+  const matchingPerformance = performance.some((row) => {
+    try {
+      const rowPath = row.url.startsWith("/") ? row.url : new URL(row.url).pathname;
+      const expectedPath = targetPath?.startsWith("/") ? targetPath : new URL(targetPath).pathname;
+      return rowPath === expectedPath;
+    } catch {
+      return false;
+    }
+  });
+  if (!matchingPerformance) {
+    throw new Error("Update mode requires an observed Search Console row for the exact published target page");
+  }
+}
 const checkedAt = new Date().toISOString();
 const reportId = `seo-${date}`;
 const publication = !draft
@@ -330,14 +571,25 @@ const publication = !draft
 const phrase = titleCase(selectedOpportunity.keyword);
 const pageType = /how|what|ideas|guide/.test(selectedOpportunity.keyword) ? "guide" : /romance|fantasy|mystery|school|life/.test(selectedOpportunity.keyword) ? "scenario" : "product";
 const allFunnelObserved = Object.values(funnel.metrics).every((metric) => metric.status === "observed");
+const portfolioActionLabels = {
+  create_page: "create a new page",
+  improve_page: `improve /${portfolioDecision.targetSlug}`,
+  consolidate: `consolidate /${portfolioDecision.targetSlug}`,
+  observe: portfolioDecision.targetSlug ? `observe /${portfolioDecision.targetSlug}` : "observe the portfolio",
+};
+const portfolioAction = portfolioActionLabels[portfolioDecision.action];
 
 const report = {
   id: reportId,
   date,
-  publicationMode: input.publicationMode === "update" ? "update" : "create",
+  ...(portfolioDecision.action === "improve_page"
+    ? { publicationMode: "update" }
+    : portfolioDecision.action === "create_page"
+      ? { publicationMode: "create" }
+      : {}),
   generatedAt: input.generatedAt || checkedAt,
   mode: performance.length && allFunnelObserved ? "live" : "partial",
-  headline: `Today's revenue-first priority: ${selectedOpportunity.action === "improve_page" ? "improve" : "create"} - ${selectedOpportunity.keyword}`,
+  headline: `Today's revenue-first priority: ${portfolioAction}`,
   summary: {
     candidatesAnalyzed: input.candidates.length,
     publishableOpportunities: opportunities.filter((row) => row.action === "create_page").length,
@@ -348,16 +600,20 @@ const report = {
   opportunities,
   performance,
   funnel,
+  portfolioFunnels,
+  portfolioDecision,
   publication,
   publications: [publication],
   actions: [
-    { priority: "P0", action: `Prepare a fact-constrained English page for \"${selectedOpportunity.keyword}\"`, why: selectedOpportunity.reason, expectedImpact: "Target a specific searcher who is close to trial or purchase." },
+    { priority: "P0", action: portfolioAction, why: portfolioDecision.rationale, expectedImpact: portfolioDecision.action === "create_page" ? "Target a specific searcher who is close to trial or purchase." : "Use observed portfolio evidence before increasing page count." },
     { priority: "P1", action: "Verify evidence, intent, and conversion hypothesis", why: "Research proxies rank options; they do not replace observed search or revenue data.", expectedImpact: "Prevent broad traffic from displacing qualified product demand." },
     { priority: "P2", action: publication.status === "ready_for_review" ? `Independently review ${publication.path} before publishing` : "Resolve the failed publication gate", why: publication.reason, expectedImpact: "Keep editorial approval separate from generation." },
   ],
   brief: {
     keyword: selectedOpportunity.keyword,
-    slug: `/${slugify(selectedOpportunity.keyword)}`,
+    slug: portfolioDecision.action === "improve_page"
+      ? `/${portfolioDecision.targetSlug}`
+      : `/${slugify(selectedOpportunity.keyword)}`,
     pageType,
     searchIntent: selectedOpportunity.intent,
     title: `${phrase} | Enter a Story and Choose a Role`,

@@ -83,6 +83,8 @@ export default async function WorkbenchPage() {
     evidenceCount: evidence.filter((item) => item.supports.map((keyword) => keyword.toLowerCase()).includes(opportunity.keyword)).length,
   }));
   const funnel = report.funnel ?? createUnavailableFunnel(report.date);
+  const portfolio = report.portfolioFunnels;
+  const portfolioDecision = report.portfolioDecision;
   const aggregationKey = funnel.aggregationKey ?? "source_slug+reporting_period";
   const conversionJoinKey = funnel.conversionJoinKey ?? funnel.joinKey ?? "seo_click_id";
   const hasSearchPerformance = report.performance.length > 0;
@@ -108,6 +110,7 @@ export default async function WorkbenchPage() {
           <a href="#signals"><span>↗</span>趋势与热点</a>
           <a href="#opportunities"><span>◎</span>机会雷达</a>
           <a href="#funnel"><span>◇</span>营收漏斗</a>
+          <a href="#portfolio"><span>▦</span>全站增长</a>
           <a href="#cluster"><span>⌘</span>内容集群</a>
           <a href="#feedback"><span>✦</span>内容指导</a>
           <a href="/workbench/reports"><span>▤</span>日报归档</a>
@@ -152,6 +155,11 @@ export default async function WorkbenchPage() {
 
         <section className="wb-section" id="funnel">
           <div className="wb-section-heading"><div><p className="wb-kicker">SEARCH → REVENUE</p><h2>搜索与 UV 按页面周期聚合，转化用 click_id 连接。</h2></div><span className="wb-data-note">归因状态：{funnel.attributionStatus} · 聚合键：{aggregationKey} · 转化键：{conversionJoinKey}</span></div>
+          <p className="wb-data-note">
+            {portfolio
+              ? `页面组合快照：${portfolio.summary.collectedPages}/${portfolio.summary.publishedPages} 个已发布页面已采集；${portfolio.summary.unavailablePages} 个不可用。周期 ${portfolio.periodStart.slice(0, 10)} 至 ${portfolio.periodEnd.slice(0, 10)}。`
+              : "当前日报是旧版产物，没有全页面增长快照；新版工作流会将其视为不可用于扩页决策。"}
+          </p>
           <div className="wb-table-wrap"><table><thead><tr><th>漏斗步骤</th><th>观测值</th><th>来源</th><th>状态说明</th></tr></thead><tbody>{funnelRows.map(([label, metric, source]) => <tr key={label}><td><strong>{label}</strong></td><td><strong className="wb-score-inline">{metricValue(metric, funnel.currency)}</strong></td><td>{source}</td><td>{metric.detail}</td></tr>)}</tbody></table></div>
           <div className="wb-stat-grid wb-funnel-rates">
             <article><p>落地页 → NovelAI</p><strong>{funnelRate(funnel.metrics.qualifiedOutboundClicks, funnel.metrics.landingUv)}</strong><span>高质量出站率</span></article>
@@ -159,6 +167,47 @@ export default async function WorkbenchPage() {
             <article><p>试玩 → 付费</p><strong>{funnelRate(funnel.metrics.paidConversions, funnel.metrics.trialStarts)}</strong><span>付费转化率</span></article>
             <article><p>每个 SEO UV 营收</p><strong>{funnel.metrics.revenueMinor.status === "observed" && funnel.metrics.landingUv.status === "observed" && funnel.metrics.revenueMinor.value !== null && funnel.metrics.landingUv.value ? metricValue({ ...funnel.metrics.revenueMinor, value: funnel.metrics.revenueMinor.value / funnel.metrics.landingUv.value }, funnel.currency) : "—"}</strong><span>收入 / 落地页 UV</span></article>
           </div>
+        </section>
+
+        <section className="wb-section" id="portfolio">
+          <div className="wb-section-heading">
+            <div><p className="wb-kicker">ALL-PAGE GROWTH PORTFOLIO</p><h2>每天先看全部已发布页面，再决定新建、优化还是暂停。</h2></div>
+            <span className="wb-data-note">{portfolio ? `${portfolio.periodStart.slice(0, 10)} → ${portfolio.periodEnd.slice(0, 10)} · ${portfolio.summary.collectedPages}/${portfolio.summary.publishedPages} 页已采集 · 决策 ${portfolioDecision?.action ?? "未记录"}` : "等待第一份全站增长快照"}</span>
+          </div>
+          {portfolio ? (
+            <>
+              <div className="wb-stat-grid">
+                <article><p>已发布页面</p><strong>{portfolio.summary.publishedPages}</strong><span>快照必须覆盖全部页面</span></article>
+                <article><p>已采集页面</p><strong>{portfolio.summary.collectedPages}</strong><span>返回真实页面级漏斗</span></article>
+                <article><p>不可用页面</p><strong>{portfolio.summary.unavailablePages}</strong><span>缺失数据保留原因，不换算为 0</span></article>
+                <article><p>发布反馈门</p><strong>{portfolio.entries.some((entry) => entry.state === "collected" && (entry.report.orphanCallbacks ?? 0) > 0) ? "阻断" : "正常"}</strong><span>孤立回调必须先修复</span></article>
+              </div>
+              {portfolioDecision ? <div className="wb-empty-state"><strong>{portfolioDecision.action}</strong>：{portfolioDecision.rationale}</div> : null}
+              <div className="wb-table-wrap">
+                <table>
+                  <thead><tr><th>页面</th><th>状态</th><th>落地 UV</th><th>合格出站</th><th>付费</th><th>孤立回调</th><th>对下一次生产的影响</th></tr></thead>
+                  <tbody>{portfolio.entries.map((entry) => entry.state === "collected" ? (
+                    <tr key={entry.sourceSlug}>
+                      <td><strong>{entry.keyword}</strong><small>{entry.path}</small></td>
+                      <td><span className="wb-mode-badge live">OBSERVED</span></td>
+                      <td>{metricValue(entry.report.funnel.metrics.landingUv)}</td>
+                      <td>{metricValue(entry.report.funnel.metrics.qualifiedOutboundClicks)}</td>
+                      <td>{metricValue(entry.report.funnel.metrics.paidConversions)}</td>
+                      <td>{entry.report.orphanCallbacks ?? "—"}</td>
+                      <td>{(entry.report.orphanCallbacks ?? 0) > 0 ? "暂停发布并修复归因" : "可用于决定优化、合并或新建"}</td>
+                    </tr>
+                  ) : (
+                    <tr key={entry.sourceSlug}>
+                      <td><strong>{entry.keyword}</strong><small>{entry.path}</small></td>
+                      <td><span className="wb-mode-badge partial">UNAVAILABLE</span></td>
+                      <td>—</td><td>—</td><td>—</td><td>—</td>
+                      <td>{entry.reason}</td>
+                    </tr>
+                  ))}</tbody>
+                </table>
+              </div>
+            </>
+          ) : <div className="wb-empty-state">运行 growth:collect 后，工作台会逐页显示真实 UV、出站、付费与归因质量；没有凭证时只显示不可用原因。</div>}
         </section>
 
         <section className="wb-section" id="signals">

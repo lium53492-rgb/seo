@@ -28,12 +28,12 @@ evidence and user authorization.
 
 Before a new page or update:
 
-- Read the four source-of-truth files in priority item 3.
+- Read every source-of-truth file in priority item 3.
 - Read all unconsumed feedback entries and record their adoption/rejection
   before marking them consumed.
-- Inspect current published pages, current-day research/report/page/PDF paths,
-  and `git status`; never overwrite, delete, stage, commit, or push unrelated
-  user work.
+- Inspect current published pages, current-day growth/research/report/review/
+  page/PDF paths, and `git status`; never overwrite, delete, stage, commit, or
+  push unrelated user work.
 - Treat `demandScore` and `difficulty` only as transparent 0-100 public-web
   research proxies. Keep observed Search Console data separate; when the
   logged-in browser has no visible rows, record `performance: []` and the
@@ -45,6 +45,13 @@ Before a new page or update:
   The shared SEO-tool account is a research source, not a UV or revenue source.
 - Aggregate Search Console and landing UV by source slug and reporting period.
   Use `seo_click_id` only for the qualified-outbound-to-revenue event chain.
+- Run `npm.cmd run growth:collect` before candidate research. The resulting
+  `data/growth/YYYY-MM-DD.json` must cover every published page over the same
+  complete Shanghai-day window, even when an entry is explicitly unavailable.
+- After the cold-start allowance in `data/config/seo-policy.json` is exhausted,
+  do not publish another new page until at least one existing page has observed
+  landing UV. Stop on orphan conversion callbacks instead of hiding a broken
+  attribution join.
 
 ## Content and page requirements
 
@@ -67,18 +74,19 @@ Before a new page or update:
 
 - Publish at most one new page per Shanghai day. A different keyword spelling
   is not a different intent, and an update is a separate evidence-led decision.
-- If same-day research, report, page, or PDF artifacts already exist from
+- If same-day growth, research, report, page, or PDF artifacts already exist from
   another task, stop and report the conflict instead of overwriting them.
 - The research builder may only create a `ready_for_review` report. A separate
   identified editorial approval in `data/reviews/` is mandatory before the
   publisher writes a schema-version 2 page.
 - Run the research builder, publisher, and `npm.cmd run verify` before release.
   Generate, render, and visually inspect the daily PDF when required.
-- A daily SEO commit may contain only that day's research, report, and page
-  artifacts unless the user explicitly expands the scope. Do not push `main`
-  when it would also publish unrelated local commits. Do not claim deployment
-  until remote push, Vercel READY, rendered H1/canonical/CTA checks, and sitemap
-  inclusion are all independently verified.
+- A daily SEO commit may contain only that day's growth snapshot, research,
+  report, review, page, and requested PDF artifacts unless the user explicitly
+  expands the scope. Do not push `main` when it would also publish unrelated
+  local commits. Do not claim deployment until remote push, Vercel READY,
+  rendered H1/canonical/CTA checks, and sitemap inclusion are all independently
+  verified.
 
 ## Reporting and durable context
 

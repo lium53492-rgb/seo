@@ -19,6 +19,7 @@ The SEO site is not a second product and the bare homepage is not a topic hub. E
 
 - `data/config/seo-policy.json`: scoring weights, trial/revenue gates, content limits, page cadence, and required review checks.
 - `data/config/product-facts.json`: approved product facts, constraints, and forbidden claim patterns.
+- `data/growth/YYYY-MM-DD.json`: one immutable, all-published-page snapshot over complete Shanghai calendar days.
 - `data/research/YYYY-MM-DD.json`: evidence, candidates, funnel snapshot, content strategy, and one review-required draft.
 - `data/reports/YYYY-MM-DD.json`: scored opportunities, observed/unavailable metrics, draft state, and publication state.
 - `data/reviews/YYYY-MM-DD.json`: independent editorial decision and four required review checks.
@@ -44,14 +45,18 @@ A new page is eligible only when all policy-v3 hard gates pass. Traffic potentia
 
 ## Two-stage release
 
-1. `npm run research:build -- data/research/YYYY-MM-DD.json`
-   validates evidence, scores candidates, checks product claims and content quality, and writes a report with `ready_for_review`. It never writes a public page.
-2. An independent human or explicitly identified Codex editor reviews search intent, product truth, conversion path, and source accuracy, then creates `data/reviews/YYYY-MM-DD.json`.
-3. `npm run research:publish -- data/reports/YYYY-MM-DD.json data/reviews/YYYY-MM-DD.json`
+1. `npm run growth:collect`
+   queries every published page for the same 28 completed Shanghai days and writes an immutable portfolio snapshot. A missing credential or source creates an explicit unavailable entry.
+2. `npm run research:build -- data/research/YYYY-MM-DD.json`
+   validates the all-page portfolio, its create/improve/consolidate/observe
+   decision, evidence, candidates, product claims, and content quality, then
+   writes a report with `ready_for_review`. It never writes a public page.
+3. An independent human or explicitly identified Codex editor reviews search intent, product truth, conversion path, and source accuracy, then creates `data/reviews/YYYY-MM-DD.json`.
+4. `npm run research:publish -- data/reports/YYYY-MM-DD.json data/reviews/YYYY-MM-DD.json`
    verifies the approval artifact and writes a schema-version 2 page.
-4. `npm run verify`
+5. `npm run verify`
    runs deterministic tests, TypeScript, and the production Next.js build.
-5. Push only the intended artifacts and code. Verify Vercel READY, rendered H1, canonical, attributed CTA, JSON-LD, and sitemap inclusion before reporting production success.
+6. Push only the intended artifacts and code. Verify Vercel READY, rendered H1, canonical, attributed CTA, JSON-LD, and sitemap inclusion before reporting production success.
 
 ## Runtime structure
 
@@ -69,6 +74,7 @@ lib/seo/growth-funnel.ts                    observed/unavailable funnel composit
 scripts/build-free-research-report.mjs      research -> review-required report
 scripts/publish-reviewed-page.mjs           approved report -> published page
 scripts/collect-growth-funnel.mjs           private live funnel collector for automation
+scripts/collect-growth-portfolio.mjs        immutable all-page 28-day feedback snapshot
 scripts/lib/seo-policy.mjs                  deterministic scoring and hard gates
 tests/                                      policy, attribution, and release-boundary tests
 ```
@@ -86,6 +92,8 @@ Use native Next.js metadata for title, description, canonical, Open Graph, and T
 - Upstash stores idempotent event records and page/day cohort aggregates for 400 days. Vercel Web Analytics remains the privacy-friendly UV source; Redis does not create a second visitor cookie.
 - `/workbench/attribution` combines those two sources. A page can only show a numeric zero after the corresponding source was queried successfully for an explicit period; missing credentials, callbacks, or exports remain unavailable.
 - The daily report records each funnel metric as either `observed` with a source or `unavailable` with a reason.
+- Before generating a new daily draft, run `npm run growth:collect`. The report builder requires a snapshot covering every published page for one identical complete-Shanghai-day period. After the four-page cold start, at least one page must have observed landing UV before another new page can pass the publication gate.
+- Any orphan conversion callback blocks publication until the join defect is repaired. Public unauthenticated workbench views replace every page-level portfolio metric with an explicit protected/unavailable entry.
 
 See `docs/seo/revenue-attribution.md` for the cross-repository callback contract.
 

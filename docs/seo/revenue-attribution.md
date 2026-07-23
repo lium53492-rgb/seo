@@ -101,3 +101,5 @@ Authorization: Basic <workbench credentials>
 ```
 
 `node scripts/collect-growth-funnel.mjs <slug> <from> <to>` reads the same endpoint for a daily automation. It does not invent Search Console data; organic clicks must still be copied or exported separately for the identical page and period.
+
+The normal production command is `npm run growth:collect`. It queries every published page for the prior 28 complete Shanghai calendar days and writes `data/growth/YYYY-MM-DD.json`. The daily research file either embeds this object as `portfolioFunnels` or points to it with `portfolioSnapshot`. The report builder rejects missing pages, duplicate slugs, mismatched periods, stale snapshots, orphan callbacks, and blind expansion after the four-page cold-start allowance.

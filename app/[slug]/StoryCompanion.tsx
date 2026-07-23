@@ -56,6 +56,8 @@ export function StoryCompanion({ sourceSlug }: StoryCompanionProps) {
     let currentLookY = 0;
     let targetLookX = 0;
     let targetLookY = 0;
+    let moodInterval = 0;
+    let messageInterval = 0;
 
     const renderPointer = () => {
       animationFrame = 0;
@@ -85,7 +87,11 @@ export function StoryCompanion({ sourceSlug }: StoryCompanionProps) {
       if (event.pointerType && event.pointerType !== "mouse") return;
       targetLookX = Math.max(-9, Math.min(9, (event.clientX / window.innerWidth - 0.5) * 18));
       targetLookY = Math.max(-6, Math.min(6, (event.clientY / window.innerHeight - 0.5) * 12));
-      const target = event.target instanceof Element ? event.target : null;
+      requestPointerRender();
+    };
+
+    const updateCueMood = (eventTarget: EventTarget | null) => {
+      const target = eventTarget instanceof Element ? eventTarget : null;
       const interactive = target?.closest("a, button, summary");
       const label = interactive?.textContent?.toLowerCase() ?? "";
       const isCue = /play|explore|open novelai|enter the scene/.test(label);
@@ -93,8 +99,10 @@ export function StoryCompanion({ sourceSlug }: StoryCompanionProps) {
         cueHoverRef.current = isCue;
         if (!celebratingRef.current) setMood(isCue ? "wink" : "calm");
       }
-      requestPointerRender();
     };
+
+    const handlePointerOver = (event: PointerEvent) => updateCueMood(event.target);
+    const handleFocusIn = (event: FocusEvent) => updateCueMood(event.target);
 
     const handlePointerLeave = () => {
       targetLookX = 0;
@@ -104,40 +112,35 @@ export function StoryCompanion({ sourceSlug }: StoryCompanionProps) {
       requestPointerRender();
     };
 
-    window.addEventListener("pointermove", handlePointerMove, { passive: true });
-    document.documentElement.addEventListener("mouseleave", handlePointerLeave);
+    if (!reducedMotion.matches) {
+      window.addEventListener("pointermove", handlePointerMove, { passive: true });
+      document.addEventListener("pointerover", handlePointerOver, { passive: true });
+      document.addEventListener("focusin", handleFocusIn);
+      document.documentElement.addEventListener("mouseleave", handlePointerLeave);
 
-    if (reducedMotion.matches) {
-      return () => {
-        cancelAnimationFrame(animationFrame);
-        if (bubbleTimerRef.current) clearTimeout(bubbleTimerRef.current);
-        if (celebrationTimerRef.current) clearTimeout(celebrationTimerRef.current);
-        window.removeEventListener("pointermove", handlePointerMove);
-        document.documentElement.removeEventListener("mouseleave", handlePointerLeave);
-        body.classList.remove("story-cursor-active");
-      };
+      const moodSequence: FoxMood[] = ["calm", "wink", "calm", "celebrate", "calm"];
+      let moodStep = 0;
+      moodInterval = window.setInterval(() => {
+        if (cueHoverRef.current) return;
+        moodStep = (moodStep + 1) % moodSequence.length;
+        setMood(moodSequence[moodStep]);
+      }, 4200);
+
+      messageInterval = window.setInterval(() => {
+        setMessageIndex((current) => (current + 1) % guideMessages.length);
+        showGuideBubble();
+      }, 7800);
     }
-
-    const moodSequence: FoxMood[] = ["calm", "wink", "calm", "celebrate", "calm"];
-    let moodStep = 0;
-    const moodInterval = window.setInterval(() => {
-      if (cueHoverRef.current) return;
-      moodStep = (moodStep + 1) % moodSequence.length;
-      setMood(moodSequence[moodStep]);
-    }, 4200);
-
-    const messageInterval = window.setInterval(() => {
-      setMessageIndex((current) => (current + 1) % guideMessages.length);
-      showGuideBubble();
-    }, 7800);
 
     return () => {
       cancelAnimationFrame(animationFrame);
-      window.clearInterval(moodInterval);
-      window.clearInterval(messageInterval);
+      if (moodInterval) window.clearInterval(moodInterval);
+      if (messageInterval) window.clearInterval(messageInterval);
       if (bubbleTimerRef.current) clearTimeout(bubbleTimerRef.current);
       if (celebrationTimerRef.current) clearTimeout(celebrationTimerRef.current);
       window.removeEventListener("pointermove", handlePointerMove);
+      document.removeEventListener("pointerover", handlePointerOver);
+      document.removeEventListener("focusin", handleFocusIn);
       document.documentElement.removeEventListener("mouseleave", handlePointerLeave);
       body.classList.remove("story-cursor-active");
     };

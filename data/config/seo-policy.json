@@ -1,6 +1,11 @@
 {
   "policyVersion": 3,
   "dailyPageLimit": 1,
+  "feedbackLoop": {
+    "coldStartPublishedPageLimit": 4,
+    "minimumObservedLandingPages": 1,
+    "blockOnOrphanCallbacks": true
+  },
   "candidateCount": {
     "min": 5,
     "max": 12

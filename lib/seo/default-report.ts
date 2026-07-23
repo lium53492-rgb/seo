@@ -74,12 +74,35 @@ export function createDisconnectedReport(): DailySeoReport {
 }
 
 export function redactPrivateReportData(report: DailySeoReport): DailySeoReport {
+  const portfolioFunnels = report.portfolioFunnels
+    ? {
+        ...report.portfolioFunnels,
+        summary: {
+          publishedPages: report.portfolioFunnels.entries.length,
+          collectedPages: 0,
+          unavailablePages: report.portfolioFunnels.entries.length,
+        },
+        entries: report.portfolioFunnels.entries.map((entry) => ({
+          sourceSlug: entry.sourceSlug,
+          path: entry.path,
+          keyword: entry.keyword,
+          state: "unavailable" as const,
+          reason: "Protected page-level metrics. Configure workbench authentication to view them.",
+        })),
+      }
+    : undefined;
   const funnel = report.funnel;
-  if (!funnel) return { ...report, draft: null, drafts: [] };
+  if (!funnel) return {
+    ...report,
+    draft: null,
+    drafts: [],
+    portfolioFunnels,
+  };
   return {
     ...report,
     draft: null,
     drafts: [],
+    portfolioFunnels,
     funnel: {
       ...funnel,
       attributionStatus: "unavailable",

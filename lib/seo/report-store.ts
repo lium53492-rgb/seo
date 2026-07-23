@@ -20,8 +20,11 @@ const intents = new Set(["commercial", "informational", "navigational", "transac
 const recommendedActions = new Set(["create_page", "improve_page", "consolidate", "observe"]);
 const priorities = new Set(["P0", "P1", "P2"]);
 const integrationStates = new Set(["connected", "configured", "replaced", "missing", "error"]);
+const metricSources = new Set(["search_console", "vercel_analytics", "seo_redirect", "product_analytics", "payments"]);
+const ctaLocations = new Set(["seo_page", "header", "final_cta", "companion"]);
 const safeRepository = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
 const safeBranch = /^[A-Za-z0-9._/-]+$/;
+const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 function githubFetch(input: string, init: RequestInit = {}) {
   return fetch(input, {
@@ -89,6 +92,99 @@ function isIntegration(value: unknown) {
     (value.lastCheckedAt === undefined || (isString(value.lastCheckedAt) && Number.isFinite(Date.parse(value.lastCheckedAt))));
 }
 
+function isObservedMetric(value: unknown) {
+  return isRecord(value) &&
+    (value.status === "observed" || value.status === "unavailable") &&
+    isString(value.source) && metricSources.has(value.source) &&
+    isString(value.detail) &&
+    (value.status === "observed" ? isFiniteMetric(value.value) : value.value === null);
+}
+
+function isFunnel(value: unknown): value is Record<string, unknown> {
+  if (!isRecord(value) || value.schemaVersion !== 1 ||
+    value.aggregationKey !== "source_slug+reporting_period" ||
+    (value.conversionJoinKey ?? value.joinKey) !== "seo_click_id" ||
+    !isString(value.periodStart) || !Number.isFinite(Date.parse(value.periodStart)) ||
+    !isString(value.periodEnd) || !Number.isFinite(Date.parse(value.periodEnd)) ||
+    Date.parse(value.periodStart) >= Date.parse(value.periodEnd)) return false;
+  const metrics = value.metrics;
+  if (!isRecord(metrics)) return false;
+  const names = [
+    "organicClicks",
+    "landingUv",
+    "qualifiedOutboundClicks",
+    "trialStarts",
+    "signups",
+    "paidConversions",
+    "revenueMinor",
+  ];
+  return names.every((name) => isObservedMetric(metrics[name])) &&
+    (value.currency === undefined || (isString(value.currency) && /^[A-Z]{3}$/.test(value.currency)));
+}
+
+function isNullableMetric(value: unknown) {
+  return value === null || isFiniteMetric(value);
+}
+
+function isMetricRecord(value: unknown, isAllowedKey: (key: string) => boolean) {
+  return isRecord(value) && Object.entries(value).every(([key, metric]) =>
+    isAllowedKey(key) && isFiniteMetric(metric));
+}
+
+function isGrowthPortfolio(value: unknown) {
+  if (!isRecord(value) || value.schemaVersion !== 1 ||
+    value.periodBasis !== "complete_shanghai_calendar_days" ||
+    value.aggregationKey !== "source_slug+reporting_period" ||
+    value.conversionJoinKey !== "seo_click_id" ||
+    !isString(value.generatedAt) || !Number.isFinite(Date.parse(value.generatedAt)) ||
+    !isString(value.periodStart) || !Number.isFinite(Date.parse(value.periodStart)) ||
+    !isString(value.periodEnd) || !Number.isFinite(Date.parse(value.periodEnd)) ||
+    Date.parse(value.periodStart) >= Date.parse(value.periodEnd) ||
+    Date.parse(value.periodEnd) > Date.parse(value.generatedAt) ||
+    !isRecord(value.summary) ||
+    !Number.isInteger(value.summary.publishedPages) || Number(value.summary.publishedPages) < 0 ||
+    !Number.isInteger(value.summary.collectedPages) || Number(value.summary.collectedPages) < 0 ||
+    !Number.isInteger(value.summary.unavailablePages) || Number(value.summary.unavailablePages) < 0 ||
+    !Array.isArray(value.entries)) return false;
+
+  const slugs = new Set<string>();
+  let collectedPages = 0;
+  for (const entry of value.entries) {
+    if (!isRecord(entry) || !isString(entry.sourceSlug) || !isString(entry.path) || !isString(entry.keyword) ||
+      !safeSlug.test(entry.sourceSlug) || entry.path !== `/${entry.sourceSlug}` ||
+      slugs.has(entry.sourceSlug)) return false;
+    slugs.add(entry.sourceSlug);
+    if (entry.state === "unavailable") {
+      if (!isString(entry.reason)) return false;
+      continue;
+    }
+    if (entry.state !== "collected" || !isRecord(entry.report) ||
+      entry.report.sourceSlug !== entry.sourceSlug || !isFunnel(entry.report.funnel) ||
+      entry.report.funnel.periodStart !== value.periodStart ||
+      entry.report.funnel.periodEnd !== value.periodEnd ||
+      !isNullableMetric(entry.report.pageviews) ||
+      !isNullableMetric(entry.report.outboundRequests) ||
+      !isNullableMetric(entry.report.purchaseEvents) ||
+      !isNullableMetric(entry.report.orphanCallbacks) ||
+      !isMetricRecord(entry.report.revenueByCurrency, (key) => /^[A-Z]{3}$/.test(key)) ||
+      !isMetricRecord(entry.report.ctaLocations, (key) => ctaLocations.has(key))) return false;
+    collectedPages += 1;
+  }
+  return value.summary.publishedPages === value.entries.length &&
+    value.summary.collectedPages === collectedPages &&
+    value.summary.unavailablePages === value.entries.length - collectedPages;
+}
+
+function isPortfolioDecision(value: unknown) {
+  return isRecord(value) &&
+    value.schemaVersion === 1 &&
+    isString(value.action) && recommendedActions.has(value.action) &&
+    (value.targetSlug === null || isString(value.targetSlug)) &&
+    isString(value.rationale) &&
+    isStringArray(value.evidenceSlugs) &&
+    new Set(value.evidenceSlugs).size === value.evidenceSlugs.length;
+}
+
 function isBrief(value: unknown) {
   if (value === null) return true;
   return isRecord(value) && isString(value.keyword) && isString(value.slug) &&
@@ -139,6 +235,9 @@ function parseReport(raw: string, source: string): DailySeoReport {
     !Array.isArray(value.actions) || !value.actions.every(isAction) ||
     !isBrief(value.brief) || !isDraft(value.draft) ||
     (value.drafts !== undefined && (!Array.isArray(value.drafts) || !value.drafts.every(isDraft))) ||
+    (value.funnel !== undefined && !isFunnel(value.funnel)) ||
+    (value.portfolioFunnels !== undefined && !isGrowthPortfolio(value.portfolioFunnels)) ||
+    (value.portfolioDecision !== undefined && !isPortfolioDecision(value.portfolioDecision)) ||
     !Array.isArray(value.integrations) || !value.integrations.every(isIntegration) ||
     !Array.isArray(value.caveats) || !value.caveats.every(isString)) {
     throw new Error(`Invalid SEO report shape: ${source}`);

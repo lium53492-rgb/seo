@@ -5,9 +5,10 @@ This is the active zero-additional-API-cost production protocol. It uses public 
 ## Preflight
 
 1. Read `AGENTS.md`, `data/config/seo-policy.json`, `data/config/product-facts.json`, this file, the content-production SOP, pending feedback, and every unconsumed feedback item.
-2. Inspect `git status`, all current published pages, the current-day research/report/review/page/PDF paths, and the latest report.
+2. Inspect `git status`, all current published pages, the current-day growth/research/report/review/page/PDF paths, and the latest report.
 3. Stop rather than overwrite another task's same-day artifact or unrelated local work.
 4. Record Search Console, Vercel UV, outbound, trial, signup, payment, and revenue as observed or unavailable. Never convert unavailable data to zero.
+5. Run `npm.cmd run growth:collect` before researching candidates. Read the resulting all-page snapshot and stop blind new-page production when the configured cold-start allowance is exhausted without observed landing UV.
 
 ## Candidate research
 
@@ -32,6 +33,10 @@ The research input uses `policyVersion: 3` and includes:
 - one approved `pagePattern`;
 - `productBridge`, `contextualNextStep`, and `evidenceBoundary`;
 - `conversionHypothesis`, `primaryConversion`, and `measurementPlan`;
+- a `portfolioDecision` with schema version 1, one of `create_page`,
+  `improve_page`, `consolidate`, or `observe`, an evidence-led rationale,
+  cited published slugs, and a target slug when the action changes an existing
+  page;
 - a schema-version 1 funnel snapshot using `source_slug+reporting_period` for search/UV aggregation and `seo_click_id` for outbound-to-revenue conversion joins.
 
 The English draft remains 600-1,000 words, has at least four sections and three FAQs, uses only approved fact IDs, contains one real CTA, avoids prohibited claims and third-party IP, and links a relevant published first-party page when one exists.
@@ -39,12 +44,13 @@ The English draft remains 600-1,000 words, has at least four sections and three 
 ## Build, review, publish
 
 ```text
+npm run growth:collect
 npm run research:build -- data/research/YYYY-MM-DD.json
 npm run research:publish -- data/reports/YYYY-MM-DD.json data/reviews/YYYY-MM-DD.json
 npm run verify
 ```
 
-The first command writes a review-required report and cannot write `data/pages`. Before the second command, an independent editor creates a review artifact with an identified reviewer, timestamp, substantive notes, and passed checks for search intent, product truth, conversion path, and source accuracy. A Codex review must identify itself as `codex_editor`; it must never be labelled human.
+The growth command writes `data/growth/YYYY-MM-DD.json` and refuses to overwrite it. The research input embeds that snapshot or references it with `portfolioSnapshot`; the builder verifies that every published page is represented over one complete Shanghai-day period. The research command writes a review-required report and cannot write `data/pages`. Before publication, an independent editor creates a review artifact with an identified reviewer, timestamp, substantive notes, and passed checks for search intent, product truth, conversion path, and source accuracy. A Codex review must identify itself as `codex_editor`; it must never be labelled human.
 
 The publisher enforces one page per report/day, writes schema-version 2 page data, attaches the approval record, and updates the report to `published`. Existing schema-version 1 pages remain readable but all new pages use version 2.
 
