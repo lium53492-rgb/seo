@@ -8,7 +8,8 @@ This is the active zero-additional-API-cost production protocol. It uses public 
 2. Inspect `git status`, all current published pages, the current-day growth/research/report/review/page/PDF paths, and the latest report.
 3. Stop rather than overwrite another task's same-day artifact or unrelated local work.
 4. Record Search Console, Vercel UV, outbound, trial, signup, payment, and revenue as observed or unavailable. Never convert unavailable data to zero.
-5. Run `npm.cmd run growth:collect` before researching candidates. Read the resulting all-page snapshot and stop blind new-page production when the configured cold-start allowance is exhausted without observed landing UV.
+5. Run `npm.cmd run growth:check` after any credential or callback change. Full-loop readiness requires an observed Search Console probe, observed Vercel landing UV, an observed attribution store, and the NovelAI callback secret.
+6. Run `npm.cmd run growth:collect` before researching candidates. It uses the official Search Console and Vercel APIs over the configured 28-day finalized-data window, currently ending three complete Shanghai days before the run. Read the resulting all-page snapshot and stop blind new-page production when the configured cold-start allowance is exhausted unless one published page has both non-zero landing UV and non-zero exact-page Search Console impressions. Direct or internal UV alone never unlocks expansion.
 
 ## Candidate research
 
@@ -50,7 +51,7 @@ npm run research:publish -- data/reports/YYYY-MM-DD.json data/reviews/YYYY-MM-DD
 npm run verify
 ```
 
-The growth command writes `data/growth/YYYY-MM-DD.json` and refuses to overwrite it. The research input embeds that snapshot or references it with `portfolioSnapshot`; the builder verifies that every published page is represented over one complete Shanghai-day period. The research command writes a review-required report and cannot write `data/pages`. Before publication, an independent editor creates a review artifact with an identified reviewer, timestamp, substantive notes, and passed checks for search intent, product truth, conversion path, and source accuracy. A Codex review must identify itself as `codex_editor`; it must never be labelled human.
+The readiness command probes the live private data path and exits non-zero while the full loop is incomplete. The growth command writes `data/growth/YYYY-MM-DD.json` and refuses to overwrite it. The research input embeds that snapshot or references it with `portfolioSnapshot`; the builder verifies that every published page is represented over one complete Shanghai-day period and the policy-defined reporting lag. The research command writes a review-required report and cannot write `data/pages`. Before publication, an independent editor creates a review artifact with an identified reviewer, timestamp, substantive notes, and passed checks for search intent, product truth, conversion path, and source accuracy. A Codex review must identify itself as `codex_editor`; it must never be labelled human.
 
 The publisher enforces one page per report/day, writes schema-version 2 page data, attaches the approval record, and updates the report to `published`. Existing schema-version 1 pages remain readable but all new pages use version 2.
 

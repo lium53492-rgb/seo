@@ -5,13 +5,16 @@ function shanghaiDayStart(value) {
   return Math.floor((value + shanghaiOffsetMs) / dayMs) * dayMs - shanghaiOffsetMs;
 }
 
-export function completeShanghaiWindow(days, now = new Date()) {
+export function completeShanghaiWindow(days, now = new Date(), reportingLagDays = 3) {
   if (!Number.isInteger(days) || days < 1 || days > 93) {
     throw new Error("Growth portfolio window must contain 1 to 93 complete Shanghai days");
   }
+  if (!Number.isInteger(reportingLagDays) || reportingLagDays < 0 || reportingLagDays > 14) {
+    throw new Error("Growth portfolio reporting lag must contain 0 to 14 complete Shanghai days");
+  }
   const current = now instanceof Date ? now.getTime() : new Date(now).getTime();
   if (!Number.isFinite(current)) throw new Error("Growth portfolio reference time is invalid");
-  const periodEnd = shanghaiDayStart(current);
+  const periodEnd = shanghaiDayStart(current) - reportingLagDays * dayMs;
   return {
     periodStart: new Date(periodEnd - days * dayMs).toISOString(),
     periodEnd: new Date(periodEnd).toISOString(),
@@ -27,11 +30,26 @@ export function shanghaiDate(now = new Date()) {
   }).format(now);
 }
 
+export function countSearchValidatedLandingPages(entries) {
+  if (!Array.isArray(entries)) return 0;
+  return entries.filter((entry) => {
+    const landingUv = entry?.report?.funnel?.metrics?.landingUv;
+    const searchPerformance = entry?.report?.searchPerformance;
+    return (
+      entry?.state === "collected" &&
+      landingUv?.status === "observed" &&
+      Number(landingUv.value) > 0 &&
+      searchPerformance?.state === "observed" &&
+      Number(searchPerformance.impressions) > 0
+    );
+  }).length;
+}
+
 export function evaluateGrowthFeedbackGate({
   publicationMode,
   hasDraft,
   publishedPageCount,
-  observedLandingPages,
+  searchValidatedLandingPages,
   orphanCallbacks,
   policy,
 }) {
@@ -45,11 +63,11 @@ export function evaluateGrowthFeedbackGate({
     publicationMode !== "update" &&
     hasDraft &&
     publishedPageCount >= Number(policy?.coldStartPublishedPageLimit ?? 0) &&
-    observedLandingPages < Number(policy?.minimumObservedLandingPages ?? 1)
+    searchValidatedLandingPages < Number(policy?.minimumSearchValidatedLandingPages ?? 1)
   ) {
     return {
       passed: false,
-      reason: "Growth feedback gate blocked a new page: collect observed landing UV for at least one published page first",
+      reason: "Growth feedback gate blocked a new page: at least one published page needs non-zero landing UV and non-zero exact-page Search Console impressions; direct or internal UV alone does not qualify",
     };
   }
   return { passed: true, reason: "The growth feedback gate passed." };
@@ -123,11 +141,12 @@ export async function collectGrowthPortfolio({
   password,
   siteUrl = "https://seo-pi-fawn.vercel.app",
   days = 28,
+  reportingLagDays = 3,
   now = new Date(),
   fetchImpl = fetch,
 }) {
   const normalizedPages = validatePages(pages);
-  const period = completeShanghaiWindow(days, now);
+  const period = completeShanghaiWindow(days, now, reportingLagDays);
   const normalizedSiteUrl = normalizeSiteUrl(siteUrl);
   const authorization = password
     ? `Basic ${Buffer.from(`seo:${password}`).toString("base64")}`
@@ -181,6 +200,8 @@ export async function collectGrowthPortfolio({
     schemaVersion: 1,
     generatedAt: new Date(now).toISOString(),
     periodBasis: "complete_shanghai_calendar_days",
+    reportingWindowDays: days,
+    reportingLagDays,
     aggregationKey: "source_slug+reporting_period",
     conversionJoinKey: "seo_click_id",
     ...period,

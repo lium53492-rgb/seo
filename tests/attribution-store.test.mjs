@@ -8,6 +8,10 @@ import {
 } from "../lib/seo/attribution-store.ts";
 import { readLandingUv } from "../lib/seo/vercel-analytics.ts";
 import {
+  readSearchConsolePagePerformance,
+  searchConsoleStatus,
+} from "../lib/seo/search-console.ts";
+import {
   normalizeShanghaiReportingPeriod,
   shanghaiReportingWindow,
 } from "../lib/seo/reporting-period.ts";
@@ -19,6 +23,10 @@ const managedEnv = [
   "KV_REST_API_TOKEN",
   "VERCEL_ANALYTICS_TOKEN",
   "VERCEL_TOKEN",
+  "NEXT_PUBLIC_SITE_URL",
+  "GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL",
+  "GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY",
+  "GOOGLE_SEARCH_CONSOLE_SITE_URL",
 ];
 
 function restoreEnvironment(snapshot) {
@@ -42,10 +50,60 @@ test("reporting periods align UV and conversions to Shanghai calendar days", () 
   assert.deepEqual(
     shanghaiReportingWindow(30, new Date("2026-07-23T03:00:00Z")),
     {
-      periodStart: "2026-06-23T16:00:00.000Z",
-      periodEnd: "2026-07-23T16:00:00.000Z",
+      periodStart: "2026-06-19T16:00:00.000Z",
+      periodEnd: "2026-07-19T16:00:00.000Z",
     },
   );
+});
+
+test("Search Console reads finalized exact-page performance with explicit provenance", async () => {
+  const environment = Object.fromEntries(managedEnv.map((key) => [key, process.env[key]]));
+  try {
+    process.env.NEXT_PUBLIC_SITE_URL = "https://seo.example.com";
+    process.env.GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL = "seo-reader@example.iam.gserviceaccount.com";
+    process.env.GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY = "test-private-key";
+    assert.equal(searchConsoleStatus().configured, true);
+
+    const requests = [];
+    const observed = await readSearchConsolePagePerformance({
+      sourceSlug: "play-an-ai-roleplay-story",
+      periodStart: "2026-06-20T16:00:00.000Z",
+      periodEnd: "2026-07-20T16:00:00.000Z",
+    }, {
+      getAccessToken: async () => "google-token",
+      fetchImpl: async (url, init) => {
+        requests.push({
+          url: String(url),
+          authorization: init?.headers?.authorization,
+          body: JSON.parse(String(init?.body)),
+        });
+        return Response.json({
+          rows: [{
+            keys: ["https://seo.example.com/play-an-ai-roleplay-story"],
+            clicks: 7,
+            impressions: 70,
+            ctr: 0.1,
+            position: 8.5,
+          }],
+        });
+      },
+    });
+
+    assert.equal(observed.state, "observed");
+    assert.equal(observed.clicks, 7);
+    assert.equal(observed.impressions, 70);
+    assert.equal(observed.ctr, 0.1);
+    assert.equal(observed.position, 8.5);
+    assert.equal(requests[0].authorization, "Bearer google-token");
+    assert.equal(requests[0].body.startDate, "2026-06-21");
+    assert.equal(requests[0].body.endDate, "2026-07-20");
+    assert.equal(
+      requests[0].body.dimensionFilterGroups[0].filters[0].expression,
+      "https://seo.example.com/play-an-ai-roleplay-story",
+    );
+  } finally {
+    restoreEnvironment(environment);
+  }
 });
 
 test("attribution storage is explicit, idempotent, and cohort based", async () => {

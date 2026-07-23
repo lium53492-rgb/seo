@@ -255,6 +255,19 @@ export type SeoGrowthFunnel = {
   currency?: string;
 };
 
+export type SearchConsolePerformanceSnapshot = {
+  state: "observed" | "unavailable";
+  sourceSlug: string;
+  pageUrl: string;
+  startDate: string;
+  endDate: string;
+  clicks: number | null;
+  impressions: number | null;
+  ctr: number | null;
+  position: number | null;
+  detail: string;
+};
+
 export type GrowthPortfolioReport = {
   sourceSlug: string;
   funnel: SeoGrowthFunnel;
@@ -264,6 +277,7 @@ export type GrowthPortfolioReport = {
   orphanCallbacks: number | null;
   revenueByCurrency: Record<string, number>;
   ctaLocations: Record<string, number>;
+  searchPerformance?: SearchConsolePerformanceSnapshot;
 };
 
 export type GrowthPortfolioEntry =
@@ -286,6 +300,8 @@ export type GrowthPortfolioSnapshot = {
   schemaVersion: 1;
   generatedAt: string;
   periodBasis: "complete_shanghai_calendar_days";
+  reportingWindowDays?: number;
+  reportingLagDays?: number;
   aggregationKey: "source_slug+reporting_period";
   conversionJoinKey: "seo_click_id";
   periodStart: string;

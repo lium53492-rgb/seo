@@ -2,7 +2,10 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, writeFile
 import { createHash } from "node:crypto";
 import { dirname, relative, resolve } from "node:path";
 import { scoreResearchCandidate } from "./lib/seo-policy.mjs";
-import { evaluateGrowthFeedbackGate } from "./lib/growth-portfolio.mjs";
+import {
+  countSearchValidatedLandingPages,
+  evaluateGrowthFeedbackGate,
+} from "./lib/growth-portfolio.mjs";
 
 const inputPath = process.argv[2];
 if (!inputPath) throw new Error("Usage: npm run research:build -- data/research/YYYY-MM-DD.json");
@@ -62,6 +65,14 @@ const titleCase = (value) => String(value).replace(/\b\w/g, (letter) => letter.t
 const approvedFactIds = new Set(factCatalog.facts.map((fact) => fact.id));
 const forbiddenClaims = factCatalog.forbiddenClaimPatterns.map((pattern) => new RegExp(pattern, "i"));
 const unsupportedKeywords = factCatalog.unsupportedKeywordPatterns.map((pattern) => new RegExp(pattern, "i"));
+const allowedCtaLocations = new Set(["seo_page", "hero", "header", "inline", "final_cta", "companion"]);
+
+function validatedCtaLocation(location) {
+  if (!allowedCtaLocations.has(location)) {
+    throw new Error(`Growth entry has an unknown CTA location: ${location}`);
+  }
+  return location;
+}
 
 function registrableDomain(hostname) {
   const labels = hostname.toLowerCase().replace(/^www\./, "").split(".").filter(Boolean);
@@ -300,15 +311,60 @@ function nullableNonNegative(value, field) {
   return Number(value);
 }
 
+function requiredNonNegative(value, field) {
+  const normalized = nullableNonNegative(value, field);
+  if (normalized === null) throw new Error(`${field} must be a non-negative number`);
+  return normalized;
+}
+
+function validateSearchPerformance(value, sourceSlug) {
+  if (
+    !value ||
+    !["observed", "unavailable"].includes(value.state) ||
+    value.sourceSlug !== sourceSlug ||
+    typeof value.pageUrl !== "string" ||
+    !/^https:\/\//.test(value.pageUrl) ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(value.startDate || "") ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(value.endDate || "") ||
+    typeof value.detail !== "string" ||
+    value.detail.trim().length < 20
+  ) {
+    throw new Error(`Growth entry has invalid Search Console provenance: ${sourceSlug}`);
+  }
+  if (value.state === "unavailable") {
+    if ([value.clicks, value.impressions, value.ctr, value.position].some((metric) => metric !== null)) {
+      throw new Error(`Unavailable Search Console metrics must stay null: ${sourceSlug}`);
+    }
+    return { ...value, detail: value.detail.trim() };
+  }
+  const clicks = nullableNonNegative(value.clicks, "Search Console clicks");
+  const impressions = nullableNonNegative(value.impressions, "Search Console impressions");
+  const ctr = nullableNonNegative(value.ctr, "Search Console CTR");
+  const position = nullableNonNegative(value.position, "Search Console position");
+  if (clicks === null || impressions === null || ctr === null || ctr > 1) {
+    throw new Error(`Observed Search Console metrics are incomplete: ${sourceSlug}`);
+  }
+  return {
+    ...value,
+    clicks,
+    impressions,
+    ctr,
+    position,
+    detail: value.detail.trim(),
+  };
+}
+
 function validatePortfolioSnapshot(rawPortfolio, publishedPages) {
   if (
     !rawPortfolio ||
     rawPortfolio.schemaVersion !== 1 ||
     rawPortfolio.periodBasis !== "complete_shanghai_calendar_days" ||
+    rawPortfolio.reportingWindowDays !== Number(policy.feedbackLoop?.reportingWindowDays ?? 28) ||
+    rawPortfolio.reportingLagDays !== Number(policy.feedbackLoop?.reportingLagDays ?? 3) ||
     rawPortfolio.aggregationKey !== "source_slug+reporting_period" ||
     rawPortfolio.conversionJoinKey !== "seo_click_id"
   ) {
-    throw new Error("Growth portfolio must use schema v1, complete Shanghai days, and the approved join contract");
+    throw new Error("Growth portfolio must use schema v1, the configured reporting lag, complete Shanghai days, and the approved join contract");
   }
   const generatedAt = Date.parse(rawPortfolio.generatedAt || "");
   const periodStart = Date.parse(rawPortfolio.periodStart || "");
@@ -388,10 +444,11 @@ function validatePortfolioSnapshot(rawPortfolio, publishedPages) {
         revenueByCurrency,
         ctaLocations: Object.fromEntries(
           Object.entries(entry.report.ctaLocations || {}).map(([location, value]) => [
-            location,
-            nullableNonNegative(value, `CTA location ${location}`),
+            validatedCtaLocation(location),
+            requiredNonNegative(value, `CTA location ${location}`),
           ]),
         ),
+        searchPerformance: validateSearchPerformance(entry.report.searchPerformance, page.slug),
       },
     };
   });
@@ -401,6 +458,8 @@ function validatePortfolioSnapshot(rawPortfolio, publishedPages) {
     schemaVersion: 1,
     generatedAt: rawPortfolio.generatedAt,
     periodBasis: "complete_shanghai_calendar_days",
+    reportingWindowDays: rawPortfolio.reportingWindowDays,
+    reportingLagDays: rawPortfolio.reportingLagDays,
     aggregationKey: "source_slug+reporting_period",
     conversionJoinKey: "seo_click_id",
     periodStart: rawPortfolio.periodStart,
@@ -534,9 +593,7 @@ const totals = performance.reduce(
   { clicks: 0, impressions: 0 },
 );
 const funnel = validateFunnel(input.funnel);
-const observedLandingPages = portfolioFunnels.entries.filter(
-  (entry) => entry.state === "collected" && entry.report.funnel.metrics.landingUv.status === "observed",
-).length;
+const searchValidatedLandingPages = countSearchValidatedLandingPages(portfolioFunnels.entries);
 const orphanCallbacks = portfolioFunnels.entries.reduce(
   (total, entry) => total + (
     entry.state === "collected" && entry.report.orphanCallbacks !== null
@@ -549,7 +606,7 @@ const feedbackGate = evaluateGrowthFeedbackGate({
   publicationMode: input.publicationMode,
   hasDraft: rawDrafts.length > 0,
   publishedPageCount: pages.length,
-  observedLandingPages,
+  searchValidatedLandingPages,
   orphanCallbacks,
   policy: policy.feedbackLoop,
 });

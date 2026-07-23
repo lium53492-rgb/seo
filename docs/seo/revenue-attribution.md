@@ -64,6 +64,8 @@ SEO Vercel project:
 - `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`: durable, atomic attribution storage. The Vercel Marketplace Upstash integration can inject these variables.
 - `VERCEL_ANALYTICS_TOKEN`: server-only Vercel access token used by the public Web Analytics API to read page-level visitors and pageviews.
 - `VERCEL_ANALYTICS_PROJECT_ID` and `VERCEL_ANALYTICS_TEAM_ID`: optional explicit API scope; this repository defaults to its current Vercel project and team IDs.
+- `GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL` and `GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY`: server-only Google service-account credentials for the Search Console API.
+- `GOOGLE_SEARCH_CONSOLE_SITE_URL`: optional Search Console property identifier; defaults to the URL-prefix form of `NEXT_PUBLIC_SITE_URL`.
 - `ATTRIBUTION_SINK_URL`: optional durable event sink. When configured, a sink failure returns 502 so NovelAI can retry.
 - `ATTRIBUTION_SINK_TOKEN`: optional bearer token for the sink.
 
@@ -78,7 +80,7 @@ NovelAI application:
 - Trial, signup, and purchase callbacks deduplicate by `eventId`.
 - Trial, signup, and paid-conversion counts are unique per click. Multiple unique purchase events may add revenue, while one acquired click still counts as one paid conversion.
 - Conversion revenue is added to the Shanghai-day acquisition cohort of the original click, not the payment day. This makes page-level revenue per acquired UV meaningful.
-- Report requests are rounded outward to complete Shanghai calendar days before both Redis cohorts and Vercel UV are queried. The returned `periodStart` and `periodEnd` are the actual normalized boundaries, so numerator and denominator always cover the same window.
+- Report requests are rounded outward to complete Shanghai calendar days before Redis cohorts, Vercel UV, and Search Console are queried. Portfolio collection ends after the policy-defined three-day finalized-data lag. The returned `periodStart` and `periodEnd` are the actual normalized boundaries, so numerator and denominator always cover the same release window. Search Console labels query dates in Pacific Time; that source-timezone detail remains visible in its provenance.
 - Revenue is stored separately for each ISO currency. The workbench never sums unlike currencies.
 - If a signed callback arrives without its outbound event, it is retained under the supplied source and callback date, and `orphanCallbacks` exposes the broken join.
 - Event and cohort keys expire after 400 days. No email, account ID, payment ID, IP address, or other direct personal data is stored.
@@ -100,6 +102,8 @@ GET /api/attribution/report?sourceSlug=<slug>&from=<ISO>&to=<ISO>
 Authorization: Basic <workbench credentials>
 ```
 
-`node scripts/collect-growth-funnel.mjs <slug> <from> <to>` reads the same endpoint for a daily automation. It does not invent Search Console data; organic clicks must still be copied or exported separately for the identical page and period.
+`node scripts/collect-growth-funnel.mjs <slug> <from> <to>` reads the same endpoint for a daily automation. The endpoint queries finalized Search Console data for the exact page and period; a successful empty row is observed zero, while missing credentials, authorization, or API access remains unavailable.
 
-The normal production command is `npm run growth:collect`. It queries every published page for the prior 28 complete Shanghai calendar days and writes `data/growth/YYYY-MM-DD.json`. The daily research file either embeds this object as `portfolioFunnels` or points to it with `portfolioSnapshot`. The report builder rejects missing pages, duplicate slugs, mismatched periods, stale snapshots, orphan callbacks, and blind expansion after the four-page cold-start allowance.
+Run `npm run growth:check` after configuring or changing credentials. It calls the protected readiness endpoint, performs a one-day live probe, and exits non-zero until Search Console, Vercel UV, Upstash attribution, and the NovelAI callback boundary are ready.
+
+The normal production command is `npm run growth:collect`. It queries every published page for the prior 28 complete Shanghai calendar days ending after the configured three-day lag and writes `data/growth/YYYY-MM-DD.json`. The daily research file either embeds this object as `portfolioFunnels` or points to it with `portfolioSnapshot`. The report builder rejects missing pages, duplicate slugs, mismatched periods, stale snapshots, wrong lag, orphan callbacks, and blind expansion after the four-page cold-start allowance. After that allowance, one published page must show both non-zero landing UV and non-zero exact-page Search Console impressions; direct or internal UV does not count as search validation.

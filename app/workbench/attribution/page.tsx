@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
+import seoPolicy from "@/data/config/seo-policy.json";
 import { isBasicAuthHeaderAuthorized } from "@/lib/seo/auth";
 import { readLiveGrowthFunnel, unavailableLiveGrowthFunnel, type LiveGrowthFunnel } from "@/lib/seo/growth-funnel";
 import { listPublishedPages } from "@/lib/seo/page-store";
@@ -41,7 +42,9 @@ export default async function WorkbenchAttributionPage() {
   const requestHeaders = await headers();
   if (!isBasicAuthHeaderAuthorized(requestHeaders.get("authorization"))) notFound();
 
-  const period = shanghaiReportingWindow(30);
+  const reportingWindowDays = Number(seoPolicy.feedbackLoop.reportingWindowDays);
+  const reportingLagDays = Number(seoPolicy.feedbackLoop.reportingLagDays);
+  const period = shanghaiReportingWindow(reportingWindowDays, new Date(), reportingLagDays);
   const pages = await listPublishedPages();
   const rows = await Promise.all(pages.map(async (page) => {
     try {
@@ -71,22 +74,24 @@ export default async function WorkbenchAttributionPage() {
           <a href="/workbench/reports"><span>▤</span>日报归档</a>
           <a href="/workbench/guide"><span>?</span>使用指南</a>
         </nav>
-        <div className="wb-sidebar-note"><span className="wb-dot partial" /><p><strong>近 30 天</strong><small>按获客页面与上海日期聚合</small></p></div>
+        <div className="wb-sidebar-note"><span className="wb-dot partial" /><p><strong>完整 {reportingWindowDays} 天</strong><small>延迟 {reportingLagDays} 天，避开未完成数据</small></p></div>
       </aside>
 
       <div className="wb-main wb-reports">
         <header className="wb-topbar">
-          <div><p className="wb-kicker">UV → OUTBOUND → REVENUE</p><h1>每个页面都用真实业务结果接受检验。</h1></div>
-          <div className="wb-top-actions"><a className="wb-guide-link" href="/workbench">返回今日工作台</a></div>
+          <div><p className="wb-kicker">SEARCH → UV → REVENUE</p><h1>每个页面都用真实业务结果接受检验。</h1></div>
+          <div className="wb-top-actions"><a className="wb-guide-link" href="/api/attribution/readiness">数据就绪检查</a><a className="wb-guide-link" href="/workbench">返回今日工作台</a></div>
         </header>
-        <p className="wb-report-intro">落地页 UV 来自 Vercel Web Analytics；出站、试玩、注册、付费和营收来自持久化归因事件。搜索点击仍由 Search Console 按相同页面和周期单独导入，不进行虚假的用户级拼接。</p>
+        <p className="wb-report-intro">搜索表现来自 Google Search Console 只读 API，落地页 UV 来自 Vercel Web Analytics；出站、试玩、注册、付费和营收来自持久化归因事件。搜索和 UV 按页面与报告周期聚合，只有出站之后的转化使用 seo_click_id 连接，不进行虚假的搜索用户级拼接。</p>
 
         {rows.length ? <div className="wb-table-wrap"><table><thead><tr>
-          <th>SEO 页面</th><th>UV</th><th>有效出站</th><th>出站率</th><th>试玩</th><th>注册</th><th>付费</th><th>归因营收</th><th>状态</th>
+          <th>SEO 页面</th><th>搜索点击</th><th>曝光</th><th>UV</th><th>有效出站</th><th>出站率</th><th>试玩</th><th>注册</th><th>付费</th><th>归因营收</th><th>状态</th>
         </tr></thead><tbody>{rows.map(({ page, growth }, index) => {
           const funnel = growth.funnel;
           return <tr key={page.slug}>
             <td><span className="wb-rank">{String(index + 1).padStart(2, "0")}</span><strong>{page.keyword}</strong><small>/{page.slug}</small></td>
+            <td>{metricValue(funnel.metrics.organicClicks)}</td>
+            <td>{growth.searchPerformance.impressions?.toLocaleString("zh-CN") ?? "—"}</td>
             <td>{metricValue(funnel.metrics.landingUv)}</td>
             <td>{metricValue(funnel.metrics.qualifiedOutboundClicks)}</td>
             <td>{rate(funnel.metrics.qualifiedOutboundClicks, funnel.metrics.landingUv)}</td>
@@ -102,6 +107,7 @@ export default async function WorkbenchAttributionPage() {
           <div className="wb-section-heading"><div><p className="wb-kicker">DATA CONTRACT</p><h2>哪些数字可用，哪些缺口仍然存在。</h2></div></div>
           <div className="wb-report-archive">{rows.map(({ page, growth }) => <article className="wb-report-card" key={`status-${page.slug}`}>
             <div className="wb-report-card-head"><div><p className="wb-kicker">/{page.slug}</p><h2>{page.title}</h2></div><span className={`wb-mode-badge ${growth.funnel.attributionStatus === "connected" ? "live" : "partial"}`}>{growth.funnel.attributionStatus}</span></div>
+            <p>{growth.searchPerformance.detail}</p>
             <p>{growth.funnel.metrics.landingUv.detail}</p>
             <p>{growth.funnel.metrics.qualifiedOutboundClicks.detail}</p>
             {growth.orphanCallbacks ? <p><strong>{growth.orphanCallbacks}</strong> 个回调没有匹配到原始出站事件，已保留但标记为孤立归因。</p> : null}

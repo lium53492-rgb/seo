@@ -1,5 +1,9 @@
 import { readAttributionAggregate, type AttributionAggregate } from "./attribution-store";
 import { normalizeShanghaiReportingPeriod } from "./reporting-period";
+import {
+  readSearchConsolePagePerformance,
+  type SearchConsolePagePerformance,
+} from "./search-console";
 import type { ObservedMetric, SeoGrowthFunnel } from "./types";
 import { readLandingUv, type LandingUvResult } from "./vercel-analytics";
 
@@ -38,6 +42,7 @@ export type LiveGrowthFunnel = {
   orphanCallbacks: number | null;
   revenueByCurrency: Record<string, number>;
   ctaLocations: Record<string, number>;
+  searchPerformance: SearchConsolePagePerformance;
 };
 
 export async function readLiveGrowthFunnel(input: {
@@ -48,9 +53,10 @@ export async function readLiveGrowthFunnel(input: {
 }): Promise<LiveGrowthFunnel> {
   const period = normalizeShanghaiReportingPeriod(input);
   const reportingInput = { ...input, ...period };
-  const [aggregate, landing] = await Promise.all([
+  const [aggregate, landing, searchPerformance] = await Promise.all([
     readAttributionAggregate(reportingInput),
     readLandingUv(reportingInput),
+    readSearchConsolePagePerformance(reportingInput),
   ]);
   const currencies = Object.keys(aggregate.revenueByCurrency).sort();
   const currency = currencies.length === 1 ? currencies[0] : undefined;
@@ -62,9 +68,10 @@ export async function readLiveGrowthFunnel(input: {
   const landingUv = landing.state === "observed" && landing.visitors !== null
     ? observedMetric("vercel_analytics", landing.visitors, landing.detail)
     : unavailableMetric("vercel_analytics", landing.detail);
-  const organicClicks = input.organicClicks ?? unavailableMetric(
-    "search_console",
-    "Search Console clicks must be imported separately for the same page and reporting period.",
+  const organicClicks = input.organicClicks ?? (
+    searchPerformance.state === "observed" && searchPerformance.clicks !== null
+      ? observedMetric("search_console", searchPerformance.clicks, searchPerformance.detail)
+      : unavailableMetric("search_console", searchPerformance.detail)
   );
   const conversionMetrics = [
     landingUv,
@@ -104,6 +111,7 @@ export async function readLiveGrowthFunnel(input: {
     orphanCallbacks: aggregate.orphanCallbacks,
     revenueByCurrency: aggregate.revenueByCurrency,
     ctaLocations: aggregate.ctaLocations,
+    searchPerformance,
   };
 }
 
@@ -139,5 +147,17 @@ export function unavailableLiveGrowthFunnel(input: {
     orphanCallbacks: null,
     revenueByCurrency: {},
     ctaLocations: {},
+    searchPerformance: {
+      state: "unavailable",
+      sourceSlug: input.sourceSlug,
+      pageUrl: "",
+      startDate: input.periodStart.slice(0, 10),
+      endDate: input.periodEnd.slice(0, 10),
+      clicks: null,
+      impressions: null,
+      ctr: null,
+      position: null,
+      detail: input.detail,
+    },
   };
 }

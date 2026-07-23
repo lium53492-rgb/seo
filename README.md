@@ -1,19 +1,18 @@
 # NovelAI SEO Growth Workbench
 
-A Next.js SEO landing site plus a daily research-to-action workbench for NovelAI voice roleplay and interactive stories.
-
-## First Page
-
-- Keyword: `2000s marriage life simulator`
-- Page: `/`
-- Destination story: `https://www.novelai.ai/story/9b61e7e9-772c-44ad-b318-5f76db9c993a/episode/bd7eaf4e-a4d7-411f-a71b-f2fb4216b410?progression=guided&scenarioId=scenario-1&preventRepeatChoices=1`
+A Next.js SEO landing site plus a revenue-first research-to-action workbench for
+NovelAI voice roleplay and interactive stories. Each published page owns one
+independent search intent and sends qualified readers through an attributed
+NovelAI redirect.
 
 ## Commands
 
 ```bash
 npm install
 npm run dev
-npm run build
+npm run growth:check
+npm run growth:collect
+npm run verify
 ```
 
 ## Workbench
@@ -37,13 +36,14 @@ Codex public-web research
 -> Vercel workbench refresh
 ```
 
-The Codex desktop automation runs every day at 09:15 Asia/Shanghai. It researches
-the public web, writes `data/research/YYYY-MM-DD.json`, builds
-`data/reports/YYYY-MM-DD.json`, validates the project, and pushes only those two
-daily files. The highest-scoring supported keyword also receives a human-review
-English page draft. The builder blocks unsupported product claims and unapproved
-fact IDs. The workbench labels research values as proxy scores; they are not
-monthly search volume, CPC, Google data, or Semrush KD. See
+The Codex desktop automation runs every day at 09:15 Asia/Shanghai. It first
+collects one all-page growth snapshot, then researches the public web, writes a
+review-required English draft, and builds a durable report. A separate approval
+artifact is mandatory before publication. The builder blocks unsupported
+product claims, weak trial/revenue intent, duplicate intent, unapproved facts,
+and blind page expansion without observed UV. The workbench labels research
+values as proxy scores; they are not monthly search volume, CPC, Google data, or
+Semrush KD. See
 `docs/seo/free-research-robot.md` for the evidence and scoring protocol.
 
 Semrush is replaced by the free Codex research path. Vercel Web Analytics pageview
@@ -51,9 +51,10 @@ instrumentation is installed; enable the project-level switch in Vercel to begin
 collection. Google Search Console remains free but requires a verified property
 and service-account authorization before daily query/page metrics can be read.
 
-Semrush, Search Console, AI Gateway, and the protected server-run workflow remain
-optional upgrades. Without a workbench password, the public dashboard is
-read-only while the run API stays disabled.
+Search Console, Vercel Analytics, Upstash, and the NovelAI conversion callback
+are explicit data connections. Missing connections stay `unavailable`; they
+never become synthetic zeroes. Without a workbench password, private page-level
+funnel data and run endpoints stay protected.
 
 Copy `.env.example` to `.env.local` and configure only the integrations you have. Never commit `.env.local`.
 
@@ -62,22 +63,24 @@ Copy `.env.example` to `.env.local` and configure only the integrations you have
 - `NEXT_PUBLIC_SITE_URL`
 - `CODEX_RESEARCH_MODE=true`
 
-### Optional provider-backed variables
+### Private data and provider variables
 
 - `WORKBENCH_PASSWORD`
+- `ATTRIBUTION_SECRET`
 - `CRON_SECRET`
-- `SEMRUSH_API_KEY`
-- `GSC_SITE_URL`
-- `GOOGLE_SERVICE_ACCOUNT_EMAIL`
-- `GOOGLE_PRIVATE_KEY`
+- `UPSTASH_REDIS_REST_URL`
+- `UPSTASH_REDIS_REST_TOKEN`
+- `VERCEL_ANALYTICS_TOKEN`
+- `GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL`
+- `GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY`
+- `GOOGLE_SEARCH_CONSOLE_SITE_URL`
 - `GITHUB_REPORTS_TOKEN`
 - `GITHUB_REPORTS_REPO`
 
-AI generation uses Vercel AI Gateway OIDC automatically in production. Set
-`SEO_CONTENT_MODEL` to an available Gateway language model; a static provider
-key is not required on Vercel.
-
-The Google service account must be added as a user on the Search Console property. The GitHub token should be fine-grained and limited to Contents access on this repository.
+The Google service account must be added as a user on the Search Console
+property. The GitHub token should be fine-grained and limited to Contents access
+on this repository. Run `npm run growth:check` after changing any analytics or
+callback credential.
 
 ## Deployment
 

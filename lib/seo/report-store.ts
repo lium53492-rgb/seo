@@ -22,7 +22,7 @@ const recommendedActions = new Set(["create_page", "improve_page", "consolidate"
 const priorities = new Set(["P0", "P1", "P2"]);
 const integrationStates = new Set(["connected", "configured", "replaced", "missing", "error"]);
 const metricSources = new Set(["search_console", "vercel_analytics", "seo_redirect", "product_analytics", "payments"]);
-const ctaLocations = new Set(["seo_page", "header", "final_cta", "companion"]);
+const ctaLocations = new Set(["seo_page", "hero", "header", "inline", "final_cta", "companion"]);
 const safeRepository = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
 const safeBranch = /^[A-Za-z0-9._/-]+$/;
 const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -132,9 +132,37 @@ function isMetricRecord(value: unknown, isAllowedKey: (key: string) => boolean) 
     isAllowedKey(key) && isFiniteMetric(metric));
 }
 
+function isSearchPerformance(value: unknown, sourceSlug: string) {
+  if (!isRecord(value) ||
+    (value.state !== "observed" && value.state !== "unavailable") ||
+    value.sourceSlug !== sourceSlug ||
+    !isString(value.pageUrl) || !value.pageUrl.startsWith("https://") ||
+    !isString(value.startDate) || !/^\d{4}-\d{2}-\d{2}$/.test(value.startDate) ||
+    !isString(value.endDate) || !/^\d{4}-\d{2}-\d{2}$/.test(value.endDate) ||
+    !isString(value.detail)) return false;
+  if (value.state === "unavailable") {
+    return value.clicks === null &&
+      value.impressions === null &&
+      value.ctr === null &&
+      value.position === null;
+  }
+  return isFiniteMetric(value.clicks) &&
+    isFiniteMetric(value.impressions) &&
+    isFiniteMetric(value.ctr) && value.ctr <= 1 &&
+    isNullableMetric(value.position);
+}
+
 function isGrowthPortfolio(value: unknown) {
   if (!isRecord(value) || value.schemaVersion !== 1 ||
     value.periodBasis !== "complete_shanghai_calendar_days" ||
+    (value.reportingWindowDays !== undefined &&
+      (!Number.isInteger(value.reportingWindowDays) ||
+        Number(value.reportingWindowDays) < 1 ||
+        Number(value.reportingWindowDays) > 93)) ||
+    (value.reportingLagDays !== undefined &&
+      (!Number.isInteger(value.reportingLagDays) ||
+        Number(value.reportingLagDays) < 0 ||
+        Number(value.reportingLagDays) > 14)) ||
     value.aggregationKey !== "source_slug+reporting_period" ||
     value.conversionJoinKey !== "seo_click_id" ||
     !isString(value.generatedAt) || !Number.isFinite(Date.parse(value.generatedAt)) ||
@@ -168,7 +196,9 @@ function isGrowthPortfolio(value: unknown) {
       !isNullableMetric(entry.report.purchaseEvents) ||
       !isNullableMetric(entry.report.orphanCallbacks) ||
       !isMetricRecord(entry.report.revenueByCurrency, (key) => /^[A-Z]{3}$/.test(key)) ||
-      !isMetricRecord(entry.report.ctaLocations, (key) => ctaLocations.has(key))) return false;
+      !isMetricRecord(entry.report.ctaLocations, (key) => ctaLocations.has(key)) ||
+      (entry.report.searchPerformance !== undefined &&
+        !isSearchPerformance(entry.report.searchPerformance, entry.sourceSlug))) return false;
     collectedPages += 1;
   }
   return value.summary.publishedPages === value.entries.length &&

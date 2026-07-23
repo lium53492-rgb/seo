@@ -3,8 +3,10 @@
   "dailyPageLimit": 1,
   "feedbackLoop": {
     "coldStartPublishedPageLimit": 4,
-    "minimumObservedLandingPages": 1,
-    "blockOnOrphanCallbacks": true
+    "minimumSearchValidatedLandingPages": 1,
+    "blockOnOrphanCallbacks": true,
+    "reportingWindowDays": 28,
+    "reportingLagDays": 3
   },
   "candidateCount": {
     "min": 5,

@@ -47,11 +47,17 @@ Before a new page or update:
   Use `seo_click_id` only for the qualified-outbound-to-revenue event chain.
 - Run `npm.cmd run growth:collect` before candidate research. The resulting
   `data/growth/YYYY-MM-DD.json` must cover every published page over the same
-  complete Shanghai-day window, even when an entry is explicitly unavailable.
+  complete Shanghai-day window, ending after the configured finalized-data
+  lag, even when an entry is explicitly unavailable.
+- Run `npm.cmd run growth:check` after changing analytics credentials or
+  callbacks. Do not describe the revenue loop as ready unless the protected
+  probe observes Search Console, landing UV, and the attribution store and the
+  NovelAI callback secret is configured.
 - After the cold-start allowance in `data/config/seo-policy.json` is exhausted,
-  do not publish another new page until at least one existing page has observed
-  landing UV. Stop on orphan conversion callbacks instead of hiding a broken
-  attribution join.
+  do not publish another new page until at least one existing page has both
+  non-zero landing UV and non-zero exact-page Search Console impressions.
+  Direct or internal UV alone does not qualify. Stop on orphan conversion
+  callbacks instead of hiding a broken attribution join.
 
 ## Content and page requirements
 

@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   collectGrowthPortfolio,
   completeShanghaiWindow,
+  countSearchValidatedLandingPages,
   evaluateGrowthFeedbackGate,
   shanghaiDate,
 } from "../scripts/lib/growth-portfolio.mjs";
@@ -39,6 +40,18 @@ function collectedReport(page, period) {
     orphanCallbacks: 0,
     revenueByCurrency: {},
     ctaLocations: { header: 1, final_cta: 2 },
+    searchPerformance: {
+      state: "unavailable",
+      sourceSlug: page.slug,
+      pageUrl: `https://seo.example/${page.slug}`,
+      startDate: period.periodStart.slice(0, 10),
+      endDate: period.periodEnd.slice(0, 10),
+      clicks: null,
+      impressions: null,
+      ctr: null,
+      position: null,
+      detail: "Search Console was not configured in this fixture.",
+    },
   };
 }
 
@@ -46,12 +59,17 @@ test("growth windows contain only complete Shanghai calendar days", () => {
   const now = new Date("2026-07-23T03:30:00.000Z");
   const period = completeShanghaiWindow(28, now);
   assert.deepEqual(period, {
+    periodStart: "2026-06-21T16:00:00.000Z",
+    periodEnd: "2026-07-19T16:00:00.000Z",
+  });
+  assert.deepEqual(completeShanghaiWindow(28, now, 0), {
     periodStart: "2026-06-24T16:00:00.000Z",
     periodEnd: "2026-07-22T16:00:00.000Z",
   });
   assert.equal(shanghaiDate(now), "2026-07-23");
   assert.throws(() => completeShanghaiWindow(0, now), /1 to 93/);
   assert.throws(() => completeShanghaiWindow(94, now), /1 to 93/);
+  assert.throws(() => completeShanghaiWindow(28, now, 15), /0 to 14/);
 });
 
 test("missing credentials are explicit and never converted into zero metrics", async () => {
@@ -102,6 +120,8 @@ test("collector authenticates and keeps every page bound to the same reporting p
 
   assert.equal(snapshot.summary.collectedPages, 2);
   assert.equal(snapshot.summary.unavailablePages, 0);
+  assert.equal(snapshot.reportingWindowDays, 28);
+  assert.equal(snapshot.reportingLagDays, 3);
   assert.equal(requested.length, 2);
   for (const request of requested) {
     assert.equal(request.url.protocol, "https:");
@@ -130,14 +150,14 @@ test("collector rejects unsafe origins and malformed page metadata before fetchi
 test("feedback gate stops blind fifth-page production and orphan attribution", () => {
   const policy = {
     coldStartPublishedPageLimit: 4,
-    minimumObservedLandingPages: 1,
+    minimumSearchValidatedLandingPages: 1,
     blockOnOrphanCallbacks: true,
   };
   assert.equal(evaluateGrowthFeedbackGate({
     publicationMode: "create",
     hasDraft: true,
     publishedPageCount: 4,
-    observedLandingPages: 0,
+    searchValidatedLandingPages: 0,
     orphanCallbacks: 0,
     policy,
   }).passed, false);
@@ -145,7 +165,7 @@ test("feedback gate stops blind fifth-page production and orphan attribution", (
     publicationMode: "create",
     hasDraft: true,
     publishedPageCount: 4,
-    observedLandingPages: 1,
+    searchValidatedLandingPages: 1,
     orphanCallbacks: 1,
     policy,
   }).passed, false);
@@ -153,8 +173,34 @@ test("feedback gate stops blind fifth-page production and orphan attribution", (
     publicationMode: "create",
     hasDraft: true,
     publishedPageCount: 4,
-    observedLandingPages: 1,
+    searchValidatedLandingPages: 1,
     orphanCallbacks: 0,
     policy,
   }).passed, true);
+});
+
+test("only same-page UV plus exact-page search evidence unlocks expansion", () => {
+  const entry = {
+    state: "collected",
+    report: {
+      funnel: {
+        metrics: {
+          landingUv: { status: "observed", value: 12 },
+        },
+      },
+      searchPerformance: {
+        state: "unavailable",
+        impressions: null,
+      },
+    },
+  };
+
+  assert.equal(countSearchValidatedLandingPages([entry]), 0);
+  entry.report.searchPerformance = { state: "observed", impressions: 0 };
+  assert.equal(countSearchValidatedLandingPages([entry]), 0);
+  entry.report.searchPerformance = { state: "observed", impressions: 2 };
+  entry.report.funnel.metrics.landingUv.value = 0;
+  assert.equal(countSearchValidatedLandingPages([entry]), 0);
+  entry.report.funnel.metrics.landingUv.value = 12;
+  assert.equal(countSearchValidatedLandingPages([entry]), 1);
 });

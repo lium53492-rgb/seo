@@ -14,7 +14,11 @@ import {
 
 const outputArgument = process.argv[2];
 const daysArgument = process.argv[3];
-const days = daysArgument === undefined ? 28 : Number(daysArgument);
+const policy = JSON.parse(readFileSync(resolve("data/config/seo-policy.json"), "utf8"));
+const days = daysArgument === undefined
+  ? Number(policy.feedbackLoop?.reportingWindowDays ?? 28)
+  : Number(daysArgument);
+const reportingLagDays = Number(policy.feedbackLoop?.reportingLagDays ?? 3);
 const pagesDirectory = resolve("data/pages");
 const pages = existsSync(pagesDirectory)
   ? readdirSync(pagesDirectory)
@@ -30,6 +34,7 @@ const snapshot = await collectGrowthPortfolio({
   password: process.env.WORKBENCH_PASSWORD,
   siteUrl: process.env.SEO_REPORT_SITE_URL,
   days,
+  reportingLagDays,
 });
 
 if (outputArgument === "-") {

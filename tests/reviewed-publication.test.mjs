@@ -99,6 +99,8 @@ test("report generation cannot publish before a separate approval artifact", asy
         schemaVersion: 1,
         generatedAt: "2099-01-01T09:00:00+08:00",
         periodBasis: "complete_shanghai_calendar_days",
+        reportingWindowDays: 28,
+        reportingLagDays: 3,
         aggregationKey: "source_slug+reporting_period",
         conversionJoinKey: "seo_click_id",
         periodStart: "2098-12-05T00:00:00+08:00",
@@ -146,6 +148,8 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.equal(reportBeforeReview.funnel.joinKey, undefined);
     assert.equal(reportBeforeReview.portfolioFunnels.summary.publishedPages, 0);
     assert.equal(reportBeforeReview.portfolioFunnels.periodBasis, "complete_shanghai_calendar_days");
+    assert.equal(reportBeforeReview.portfolioFunnels.reportingWindowDays, 28);
+    assert.equal(reportBeforeReview.portfolioFunnels.reportingLagDays, 3);
     assert.equal(reportBeforeReview.portfolioDecision.action, "create_page");
     assert.match(reportBeforeReview.publication.draftDigest, /^[a-f0-9]{64}$/);
     await assert.rejects(readFile(join(workspace, "data", "pages", "play-an-ai-roleplay-story.json"), "utf8"), /ENOENT/);

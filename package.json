@@ -12,6 +12,7 @@
     "verify": "npm run test && npm run check:experience && npm run check && npm run build && npm run verify:pages",
     "check:experience": "node scripts/verify-experience-contracts.mjs",
     "verify:pages": "node scripts/verify-built-pages.mjs",
+    "growth:check": "node scripts/check-growth-readiness.mjs",
     "growth:collect": "node scripts/collect-growth-portfolio.mjs",
     "research:build": "node scripts/build-free-research-report.mjs",
     "research:publish": "node scripts/publish-reviewed-page.mjs"
@@ -27,14 +28,15 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "geist": "^1.7.0",
+    "google-auth-library": "^10.9.0",
     "lucide-react": "^1.25.0",
-    "next": "^16.2.10",
+    "next": "^16.2.11",
     "next-seo": "^7.2.0",
     "postcss": "^8.5.20",
     "radix-ui": "^1.6.4",
     "react": "19.2.6",
     "react-dom": "19.2.6",
-    "shadcn": "^4.13.1",
+    "sharp": "^0.35.0",
     "streamdown": "^2.5.0",
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.3.3",
@@ -48,6 +50,7 @@
     "typescript": "^5"
   },
   "overrides": {
-    "postcss": "^8.5.20"
+    "postcss": "^8.5.20",
+    "sharp": "$sharp"
   }
 }

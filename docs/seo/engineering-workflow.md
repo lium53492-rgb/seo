@@ -46,7 +46,7 @@ A new page is eligible only when all policy-v3 hard gates pass. Traffic potentia
 ## Two-stage release
 
 1. `npm run growth:collect`
-   queries every published page for the same 28 completed Shanghai days and writes an immutable portfolio snapshot. A missing credential or source creates an explicit unavailable entry.
+   queries every published page for the same 28 completed Shanghai days ending after the policy-defined finalized-data lag and writes an immutable portfolio snapshot. A missing credential or source creates an explicit unavailable entry. Run `npm run growth:check` first after any credential or callback change.
 2. `npm run research:build -- data/research/YYYY-MM-DD.json`
    validates the all-page portfolio, its create/improve/consolidate/observe
    decision, evidence, candidates, product claims, and content quality, then
@@ -65,16 +65,19 @@ app/[slug]/page.tsx                         static SEO route and next-seo JSON-L
 app/go/novelai/[slug]/route.ts              attributed redirect + background durable outbound write
 app/api/attribution/conversion/route.ts     protected, idempotent trial/signup/purchase callback
 app/api/attribution/report/route.ts         protected page-period funnel JSON
+app/api/attribution/readiness/route.ts      protected live configuration and source probe
 app/workbench/                              research, review, funnel, and status views
 lib/seo/page-store.ts                       published-page schema guard
 lib/seo/attribution.ts                      destination allowlist and attribution contract
 lib/seo/attribution-store.ts                atomic Upstash event and cohort persistence
+lib/seo/search-console.ts                   official finalized exact-page search API reader
 lib/seo/vercel-analytics.ts                 official page-level UV/pageview API reader
 lib/seo/growth-funnel.ts                    observed/unavailable funnel composition
 scripts/build-free-research-report.mjs      research -> review-required report
 scripts/publish-reviewed-page.mjs           approved report -> published page
 scripts/collect-growth-funnel.mjs           private live funnel collector for automation
 scripts/collect-growth-portfolio.mjs        immutable all-page 28-day feedback snapshot
+scripts/check-growth-readiness.mjs          private end-to-end source readiness check
 scripts/lib/seo-policy.mjs                  deterministic scoring and hard gates
 tests/                                      policy, attribution, and release-boundary tests
 ```
@@ -85,14 +88,14 @@ Use native Next.js metadata for title, description, canonical, Open Graph, and T
 
 ## Measurement contract
 
-- Search Console supplies observed impressions, organic clicks, CTR, and position, aggregated by source page and reporting period.
+- Search Console supplies finalized impressions, organic clicks, CTR, and position through its official API, filtered to the exact source page and reporting period.
 - Vercel Web Analytics supplies landing-page UV on the same source-page and period dimensions.
 - `/go/novelai/{slug}` creates a `seo_click_id`, persists a bot-resistant outbound signal by acquisition page/day, and forwards UTM fields plus that ID to NovelAI.
 - NovelAI must retain the ID and send it with trial, signup, and payment events. Only the outbound-to-revenue segment is joined event by event with `seo_click_id`.
 - Upstash stores idempotent event records and page/day cohort aggregates for 400 days. Vercel Web Analytics remains the privacy-friendly UV source; Redis does not create a second visitor cookie.
-- `/workbench/attribution` combines those two sources. A page can only show a numeric zero after the corresponding source was queried successfully for an explicit period; missing credentials, callbacks, or exports remain unavailable.
+- `/workbench/attribution` combines those sources. A page can only show a numeric zero after the corresponding source was queried successfully for an explicit period; missing credentials, callbacks, or API access remain unavailable.
 - The daily report records each funnel metric as either `observed` with a source or `unavailable` with a reason.
-- Before generating a new daily draft, run `npm run growth:collect`. The report builder requires a snapshot covering every published page for one identical complete-Shanghai-day period. After the four-page cold start, at least one page must have observed landing UV before another new page can pass the publication gate.
+- Before generating a new daily draft, run `npm run growth:check` and `npm run growth:collect`. The report builder requires a snapshot covering every published page for one identical complete-Shanghai-day period and the configured three-day lag. After the four-page cold start, at least one published page must have both non-zero landing UV and non-zero exact-page Search Console impressions before another new page can pass the publication gate; direct or internal UV alone cannot unlock expansion.
 - Any orphan conversion callback blocks publication until the join defect is repaired. Public unauthenticated workbench views replace every page-level portfolio metric with an explicit protected/unavailable entry.
 
 See `docs/seo/revenue-attribution.md` for the cross-repository callback contract.

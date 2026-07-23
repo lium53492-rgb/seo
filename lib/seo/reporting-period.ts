@@ -31,12 +31,19 @@ export function normalizeShanghaiReportingPeriod(input: {
   };
 }
 
-export function shanghaiReportingWindow(days: number, now: Date = new Date()) {
+export function shanghaiReportingWindow(
+  days: number,
+  now: Date = new Date(),
+  reportingLagDays = 3,
+) {
   if (!Number.isInteger(days) || days < 1 || days > 93) {
     throw new Error("Reporting window must contain 1 to 93 Shanghai calendar days");
   }
+  if (!Number.isInteger(reportingLagDays) || reportingLagDays < 0 || reportingLagDays > 14) {
+    throw new Error("Reporting lag must contain 0 to 14 complete Shanghai days");
+  }
   const current = timestamp(now, "Reporting window reference time");
-  const periodEnd = shanghaiDayStart(current) + dayMs;
+  const periodEnd = shanghaiDayStart(current) - reportingLagDays * dayMs;
   return {
     periodStart: new Date(periodEnd - days * dayMs).toISOString(),
     periodEnd: new Date(periodEnd).toISOString(),
