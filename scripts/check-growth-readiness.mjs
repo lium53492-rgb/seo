@@ -1,3 +1,5 @@
+import "./load-env.mjs";
+
 const siteUrl = (process.env.SEO_REPORT_SITE_URL || "https://seo-pi-fawn.vercel.app").replace(/\/$/, "");
 const password = process.env.WORKBENCH_PASSWORD;
 

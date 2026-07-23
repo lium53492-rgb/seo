@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
@@ -35,6 +36,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const isVercel = process.env.VERCEL === "1";
+  const googleAnalyticsId =
+    process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-S1CJS32N3F";
 
   return (
     <html lang="en" className={cn(GeistSans.variable, GeistMono.variable)}>
@@ -42,6 +45,20 @@ export default function RootLayout({
         {children}
         {isVercel ? <Analytics /> : null}
       </body>
+      {googleAnalyticsId ? (
+        <>
+          <Script
+            src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
+            strategy="afterInteractive"
+          />
+          <Script id="google-analytics" strategy="afterInteractive">
+            {`window.dataLayer = window.dataLayer || [];
+function gtag(){window.dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${googleAnalyticsId}');`}
+          </Script>
+        </>
+      ) : null}
     </html>
   );
 }

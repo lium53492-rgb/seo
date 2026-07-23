@@ -1,3 +1,5 @@
+import "./load-env.mjs";
+
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 

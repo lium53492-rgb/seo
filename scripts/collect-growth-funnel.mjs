@@ -1,3 +1,5 @@
+import "./load-env.mjs";
+
 const [sourceSlug, periodStart, periodEnd] = process.argv.slice(2);
 if (!sourceSlug || !periodStart || !periodEnd) {
   throw new Error("Usage: node scripts/collect-growth-funnel.mjs <source-slug> <period-start> <period-end>");

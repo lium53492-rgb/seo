@@ -1,3 +1,5 @@
+import "./load-env.mjs";
+
 import {
   existsSync,
   mkdirSync,

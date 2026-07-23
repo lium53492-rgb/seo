@@ -1,3 +1,5 @@
+import "./load-env.mjs";
+
 import { randomUUID } from "node:crypto";
 
 const siteUrl = (
