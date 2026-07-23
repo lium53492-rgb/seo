@@ -8,27 +8,26 @@ This is the active zero-additional-API-cost production protocol. It uses public 
 2. Inspect `git status`, all current published pages, the current-day growth/research/report/review/page/PDF paths, and the latest report.
 3. Stop rather than overwrite another task's same-day artifact or unrelated local work.
 4. Record Search Console, Vercel UV, outbound, trial, signup, payment, and revenue as observed or unavailable. Never convert unavailable data to zero.
-5. Run `npm.cmd run growth:check` after any credential or callback change. Full-loop readiness requires an observed Search Console probe, observed Vercel landing UV, an observed attribution store, and the NovelAI callback secret.
+5. Run `npm.cmd run growth:probe` from the NovelAI server environment after callback deployment or secret rotation, then run `npm.cmd run growth:check`. Full-loop readiness requires observed Search Console, Vercel landing UV, and attribution-store probes plus a recent signed NovelAI callback handshake.
 6. Run `npm.cmd run growth:collect` before researching candidates. It uses the official Search Console and Vercel APIs over the configured 28-day finalized-data window, currently ending three complete Shanghai days before the run. Read the resulting all-page snapshot and stop blind new-page production when the configured cold-start allowance is exhausted unless one published page has both non-zero landing UV and non-zero exact-page Search Console impressions. Direct or internal UV alone never unlocks expansion.
 
 ## Candidate research
 
-Use 5-12 candidates and at least five accessible evidence URLs from at least three independent domains. Every candidate must have direct `evidence.supports` coverage.
+Use 5-12 candidates and at least five accessible evidence URLs from at least three independent domains. Give every evidence item a stable safe `id`. Every candidate must reference at least two supporting evidence IDs from at least two independent domains, and every referenced item must list that exact keyword in `supports`.
 
-For policy version 3, every candidate needs:
+For policy version 4, every candidate needs:
 
 - `demandScore` and `difficulty`: transparent 0-100 public-web proxies unless an observed provider metric is explicitly cited;
 - `intent`: commercial, transactional, mixed, informational, or navigational;
 - `funnelStage`: problem, solution, trial, or purchase;
 - `conversionGoal`: qualified_outbound_click, trial_start, or purchase;
-- `productFit`, `trialIntent`, `revenueIntent`, `intentSpecificity`, and `originality`;
-- `ipRisk` and `cannibalizationRisk`.
+- a `decisionEvidence` object with the candidate-specific searcher job, evidence references, approved product fact IDs, discrete product/trial/revenue/specificity signals, IP class, cannibalization class, nearest published slug when relevant, and a specific rationale for every score dimension.
 
-New pages must pass every hard gate in `data/config/seo-policy.json`. Demand cannot override a failed trial, revenue, specificity, product, IP, or cannibalization gate.
+The builder derives `productFit`, `trialIntent`, `revenueIntent`, `intentSpecificity`, `originality`, `ipRisk`, and `cannibalizationRisk` from the versioned signal weights. Raw AI-supplied values for those fields are ignored. New pages must pass every hard gate in `data/config/seo-policy.json`; demand cannot override a failed trial, revenue, specificity, product, IP, or cannibalization gate. See `research-signal-contract.md` for the exact contract and formulas.
 
 ## Content strategy and funnel
 
-The research input uses `policyVersion: 3` and includes:
+The research input uses `policyVersion: 4` and includes:
 
 - `searcherJob`, `oneSentenceAnswer`, and `originalContribution`;
 - one approved `pagePattern`;

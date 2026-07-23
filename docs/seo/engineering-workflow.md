@@ -29,7 +29,7 @@ The TypeScript product-fact module is only a typed wrapper around the JSON catal
 
 ## Intent model
 
-Every candidate records separate 0-100 values for:
+Every policy-version 4 candidate records public evidence references and discrete signals. The scorer, not the generating model, derives separate 0-100 values for:
 
 - demand proxy;
 - competition proxy;
@@ -41,7 +41,9 @@ Every candidate records separate 0-100 values for:
 - IP risk;
 - cannibalization risk.
 
-A new page is eligible only when all policy-v3 hard gates pass. Traffic potential cannot compensate for weak trial intent, a broad informational task, unsupported product fit, IP risk, or an intent already owned by another page.
+Product signals must map to approved product fact IDs. Search evidence must directly support the candidate and come from at least two independent domains. The candidate also records a specific rationale for each dimension so an editor can audit why each signal was selected. Demand and difficulty remain labelled research proxies because they are not observed Search Console metrics.
+
+A new page is eligible only when all policy-v4 hard gates pass. Raw model-supplied product, trial, revenue, specificity, originality, IP, and cannibalization scores are ignored. Traffic potential cannot compensate for weak trial intent, a broad informational task, unsupported product fit, IP risk, or an intent already owned by another page.
 
 ## Two-stage release
 
@@ -64,6 +66,7 @@ A new page is eligible only when all policy-v3 hard gates pass. Traffic potentia
 app/[slug]/page.tsx                         static SEO route and next-seo JSON-LD
 app/go/novelai/[slug]/route.ts              attributed redirect + background durable outbound write
 app/api/attribution/conversion/route.ts     protected, idempotent trial/signup/purchase callback
+app/api/attribution/probe/route.ts          signed NovelAI callback handshake with no funnel mutation
 app/api/attribution/report/route.ts         protected page-period funnel JSON
 app/api/attribution/readiness/route.ts      protected live configuration and source probe
 app/workbench/                              research, review, funnel, and status views
@@ -78,7 +81,9 @@ scripts/publish-reviewed-page.mjs           approved report -> published page
 scripts/collect-growth-funnel.mjs           private live funnel collector for automation
 scripts/collect-growth-portfolio.mjs        immutable all-page 28-day feedback snapshot
 scripts/check-growth-readiness.mjs          private end-to-end source readiness check
+scripts/probe-novelai-callback.mjs          non-business callback boundary acceptance probe
 scripts/lib/seo-policy.mjs                  deterministic scoring and hard gates
+docs/seo/research-signal-contract.md        evidence schema, score formulas, and examples
 tests/                                      policy, attribution, and release-boundary tests
 ```
 
@@ -92,6 +97,7 @@ Use native Next.js metadata for title, description, canonical, Open Graph, and T
 - Vercel Web Analytics supplies landing-page UV on the same source-page and period dimensions.
 - `/go/novelai/{slug}` creates a `seo_click_id`, persists a bot-resistant outbound signal by acquisition page/day, and forwards UTM fields plus that ID to NovelAI.
 - NovelAI must retain the ID and send it with trial, signup, and payment events. Only the outbound-to-revenue segment is joined event by event with `seo_click_id`.
+- After NovelAI deployment or secret rotation, its server environment runs `npm run growth:probe`. The signed probe is stored outside funnel cohorts and must be recent before readiness reports `outboundToRevenue` or `fullLoop`.
 - Upstash stores idempotent event records and page/day cohort aggregates for 400 days. Vercel Web Analytics remains the privacy-friendly UV source; Redis does not create a second visitor cookie.
 - `/workbench/attribution` combines those sources. A page can only show a numeric zero after the corresponding source was queried successfully for an explicit period; missing credentials, callbacks, or API access remain unavailable.
 - The daily report records each funnel metric as either `observed` with a source or `unavailable` with a reason.
@@ -102,6 +108,6 @@ See `docs/seo/revenue-attribution.md` for the cross-repository callback contract
 
 ## Bug control
 
-`npm run test` proves that weak intent cannot pass, cannibalized intent consolidates, the redirect cannot target an unapproved domain, and a report cannot publish without a separate approval artifact. `npm run check` catches type and contract drift. `npm run build` proves App Router, static page generation, metadata, structured data, and dynamic routes compile together.
+`npm run test` proves that inflated AI scores cannot bypass weak evidence signals, weak intent cannot pass, cannibalized intent consolidates, the redirect cannot target an unapproved domain, and a report cannot publish without a separate approval artifact. `npm run check` catches type and contract drift. `npm run build` proves App Router, static page generation, metadata, structured data, and dynamic routes compile together.
 
 Production verification remains separate from local verification. A local green build is not a deployment claim.

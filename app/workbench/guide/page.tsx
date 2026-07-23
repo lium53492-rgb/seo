@@ -170,7 +170,8 @@ export default async function WorkbenchGuidePage() {
           <div className="wb-section-heading"><div><p className="wb-kicker">TWO-STAGE QUALITY GATE</p><h2>自动检查和独立审稿缺一不可</h2></div></div>
           <div className="wb-publish-checklist">
             <span>✓ 至少 5 条公开证据，且来自至少 3 个独立域名</span>
-            <span>✓ 每个候选词都有可回溯的 evidence.supports</span>
+            <span>✓ 每个候选词引用至少 2 条、来自 2 个独立域名的直接证据</span>
+            <span>✓ 产品、试玩、付费、具体度、IP 与重复风险由 policy v4 信号确定性算分</span>
             <span>✓ 页面只使用产品事实白名单中的事实 ID</span>
             <span>✓ 不出现多人、实时、平台、价格、延迟或第三方 IP 等未批准说法</span>
             <span>✓ 正文深度达标，FAQ、标题、描述和 CTA 完整</span>

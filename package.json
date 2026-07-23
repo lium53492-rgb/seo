@@ -13,6 +13,7 @@
     "check:experience": "node scripts/verify-experience-contracts.mjs",
     "verify:pages": "node scripts/verify-built-pages.mjs",
     "growth:check": "node scripts/check-growth-readiness.mjs",
+    "growth:probe": "node scripts/probe-novelai-callback.mjs",
     "growth:collect": "node scripts/collect-growth-portfolio.mjs",
     "research:build": "node scripts/build-free-research-report.mjs",
     "research:publish": "node scripts/publish-reviewed-page.mjs"

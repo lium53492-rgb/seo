@@ -3,7 +3,9 @@ import test from "node:test";
 import {
   attributionStoreStatus,
   readAttributionAggregate,
+  readNovelAiIntegrationProbe,
   recordConversionEvent,
+  recordNovelAiIntegrationProbe,
   recordOutboundClick,
 } from "../lib/seo/attribution-store.ts";
 import { readLandingUv } from "../lib/seo/vercel-analytics.ts";
@@ -209,6 +211,42 @@ test("durable cohorts and Vercel UV expose compatible live inputs", async () => 
     assert.equal(uv.state, "observed");
     assert.equal(uv.visitors, 12);
     assert.equal(uv.pageviews, 18);
+  } finally {
+    globalThis.fetch = originalFetch;
+    restoreEnvironment(environment);
+  }
+});
+
+test("NovelAI callback handshake is durable without changing funnel cohorts", async () => {
+  const environment = Object.fromEntries(managedEnv.map((key) => [key, process.env[key]]));
+  const originalFetch = globalThis.fetch;
+  try {
+    process.env.UPSTASH_REDIS_REST_URL = "https://example.upstash.io";
+    process.env.UPSTASH_REDIS_REST_TOKEN = "test-token";
+    const probe = {
+      schemaVersion: 1,
+      probeId: "0f24f6a5-77f7-48d8-aaf8-9ccf3a937cd3",
+      producer: "novelai",
+      occurredAt: "2026-07-23T10:00:00+08:00",
+    };
+    const commands = [];
+    globalThis.fetch = async (_url, init) => {
+      const command = JSON.parse(String(init?.body));
+      commands.push(command);
+      return Response.json({
+        result: command[0] === "SET" ? "OK" : JSON.stringify(probe),
+      });
+    };
+
+    const stored = await recordNovelAiIntegrationProbe(probe);
+    const observed = await readNovelAiIntegrationProbe();
+    assert.equal(stored.state, "stored");
+    assert.equal(observed.state, "observed");
+    assert.equal(observed.probeId, probe.probeId);
+    assert.equal(observed.lastObservedAt, probe.occurredAt);
+    assert.deepEqual(commands.map((command) => command[0]), ["SET", "GET"]);
+    assert.match(commands[0][1], /integration:novelai/);
+    assert.doesNotMatch(commands[0].join(" "), /cohort:/);
   } finally {
     globalThis.fetch = originalFetch;
     restoreEnvironment(environment);

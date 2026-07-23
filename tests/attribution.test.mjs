@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { buildNovelAiAttributionUrl, normalizeOutboundLocation } from "../lib/seo/attribution.ts";
+import {
+  buildNovelAiAttributionUrl,
+  isAttributionAuthorized,
+  normalizeOutboundLocation,
+} from "../lib/seo/attribution.ts";
 
 test("NovelAI redirect carries a stable revenue attribution contract", () => {
   const clickId = "5e9560bf-66ae-42af-b7f6-ea45fdf36cbd";
@@ -21,6 +25,12 @@ test("NovelAI redirect carries a stable revenue attribution contract", () => {
 
 test("unknown CTA locations are normalized", () => {
   assert.equal(normalizeOutboundLocation("invented-location"), "seo_page");
+});
+
+test("callback authorization requires an exact bearer secret", () => {
+  assert.equal(isAttributionAuthorized("Bearer shared-secret", "shared-secret"), true);
+  assert.equal(isAttributionAuthorized("Bearer wrong-secret", "shared-secret"), false);
+  assert.equal(isAttributionAuthorized(null, "shared-secret"), false);
 });
 
 test("redirect refuses a non-NovelAI destination", () => {

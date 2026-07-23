@@ -1,6 +1,5 @@
-import { timingSafeEqual } from "node:crypto";
 import { z } from "zod";
-import { logSeoGrowthEvent } from "@/lib/seo/attribution";
+import { isAttributionAuthorized, logSeoGrowthEvent } from "@/lib/seo/attribution";
 import { recordConversionEvent } from "@/lib/seo/attribution-store";
 import { readPublishedPage } from "@/lib/seo/page-store";
 import { privateJson } from "@/lib/seo/private-response";
@@ -22,17 +21,10 @@ const conversionEvent = z.object({
   }
 });
 
-function authorized(header: string | null, secret: string) {
-  const provided = header?.startsWith("Bearer ") ? header.slice(7) : "";
-  const left = Buffer.from(provided);
-  const right = Buffer.from(secret);
-  return left.length === right.length && timingSafeEqual(left, right);
-}
-
 export async function POST(request: Request) {
   const secret = process.env.ATTRIBUTION_SECRET;
   if (!secret) return privateJson({ error: "Attribution callback is not configured" }, { status: 503 });
-  if (!authorized(request.headers.get("authorization"), secret)) {
+  if (!isAttributionAuthorized(request.headers.get("authorization"), secret)) {
     return privateJson({ error: "Unauthorized" }, { status: 401 });
   }
   if (Number(request.headers.get("content-length") || 0) > 16_384) {

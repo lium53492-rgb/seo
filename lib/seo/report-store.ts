@@ -2,6 +2,7 @@ import "server-only";
 
 import { readdir, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import seoPolicy from "@/data/config/seo-policy.json";
 import type { DailySeoReport } from "./types";
 import { isReportDraft } from "./report-draft-validation.mjs";
 
@@ -12,6 +13,16 @@ type GithubContent = {
   name?: string;
   path?: string;
   type?: string;
+};
+
+type DecisionEvidenceRecord = Record<string, unknown> & {
+  evidenceRefs: string[];
+  rationale: Record<string, unknown>;
+};
+
+type EvidenceItemRecord = Record<string, unknown> & {
+  id?: string;
+  supports: string[];
 };
 
 const DEFAULT_REPORTS_REPO = "lium53492-rgb/seo";
@@ -26,6 +37,25 @@ const ctaLocations = new Set(["seo_page", "hero", "header", "inline", "final_cta
 const safeRepository = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
 const safeBranch = /^[A-Za-z0-9._/-]+$/;
 const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const safeEvidenceId = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const decisionEvidencePolicy = seoPolicy.decisionEvidence;
+const productSignals = new Set(Object.keys(decisionEvidencePolicy.productSignals));
+const trialSignals = new Set(Object.keys(decisionEvidencePolicy.trialSignals));
+const revenueSignals = new Set(Object.keys(decisionEvidencePolicy.revenueSignals));
+const specificitySignals = new Set(Object.keys(decisionEvidencePolicy.specificitySignals));
+const ipClasses = new Set(Object.keys(decisionEvidencePolicy.ipClasses));
+const cannibalizationClasses = new Set(Object.keys(decisionEvidencePolicy.cannibalizationClasses));
+const decisionRationaleFields = [
+  "demand",
+  "difficulty",
+  "productFit",
+  "trialIntent",
+  "revenueIntent",
+  "intentSpecificity",
+  "originality",
+  "ipRisk",
+  "cannibalizationRisk",
+];
 
 function githubFetch(input: string, init: RequestInit = {}) {
   return fetch(input, {
@@ -50,7 +80,35 @@ function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every(isString);
 }
 
-function isOpportunity(value: unknown) {
+function isKnownUniqueStringArray(value: unknown, allowed?: Set<string>): value is string[] {
+  return isStringArray(value) &&
+    new Set(value).size === value.length &&
+    (!allowed || value.every((item) => allowed.has(item)));
+}
+
+function isDecisionEvidence(value: unknown): value is DecisionEvidenceRecord {
+  if (!isRecord(value) || value.schemaVersion !== 1 ||
+    !isKnownUniqueStringArray(value.evidenceRefs) || value.evidenceRefs.length < 2 ||
+    value.evidenceRefs.some((id) => !safeEvidenceId.test(id)) ||
+    !isString(value.searcherJob) ||
+    value.searcherJob.trim().length < decisionEvidencePolicy.minSearcherJobChars ||
+    !isKnownUniqueStringArray(value.productFactIds) ||
+    !isKnownUniqueStringArray(value.productSignals, productSignals) ||
+    !isKnownUniqueStringArray(value.trialSignals, trialSignals) ||
+    !isKnownUniqueStringArray(value.revenueSignals, revenueSignals) ||
+    !isKnownUniqueStringArray(value.specificitySignals, specificitySignals) ||
+    !isString(value.ipClass) || !ipClasses.has(value.ipClass) ||
+    !isString(value.cannibalizationClass) || !cannibalizationClasses.has(value.cannibalizationClass) ||
+    !(value.nearestExistingSlug === null ||
+      (isString(value.nearestExistingSlug) && safeSlug.test(value.nearestExistingSlug)))) return false;
+  const rationale = value.rationale;
+  if (!isRecord(rationale)) return false;
+  return decisionRationaleFields.every((field) =>
+    isString(rationale[field]) &&
+    rationale[field].trim().length >= decisionEvidencePolicy.minRationaleChars);
+}
+
+function isOpportunity(value: unknown, requireDecisionEvidence = false) {
   return isRecord(value) &&
     isString(value.keyword) &&
     isString(value.seed) &&
@@ -67,7 +125,45 @@ function isOpportunity(value: unknown) {
     isFiniteMetric(value.cannibalizationRisk) && value.cannibalizationRisk <= 100 &&
     isFiniteMetric(value.score) && value.score <= 100 &&
     isString(value.action) && recommendedActions.has(value.action) &&
-    isString(value.reason);
+    isString(value.reason) &&
+    (!requireDecisionEvidence || (
+      value.scoreBasis === "evidence_signals_v1" &&
+      isFiniteMetric(value.trialIntent) && value.trialIntent <= 100 &&
+      isFiniteMetric(value.revenueIntent) && value.revenueIntent <= 100 &&
+      isFiniteMetric(value.intentSpecificity) && value.intentSpecificity <= 100 &&
+      isDecisionEvidence(value.decisionEvidence)
+    ));
+}
+
+function isEvidenceItem(value: unknown, requireId = false): value is EvidenceItemRecord {
+  return isRecord(value) &&
+    (!requireId || (isString(value.id) && safeEvidenceId.test(value.id))) &&
+    isString(value.title) &&
+    isString(value.url) &&
+    isString(value.source) &&
+    isString(value.collectedAt) &&
+    isStringArray(value.supports);
+}
+
+function hasValidEvidenceReferences(value: Record<string, unknown>) {
+  if (value.policyVersion !== 4) return true;
+  if (!Array.isArray(value.evidence) || !Array.isArray(value.opportunities)) return false;
+  const evidenceItems = value.evidence.filter((item) => isEvidenceItem(item, true));
+  if (evidenceItems.length !== value.evidence.length) return false;
+  const evidenceById = new Map(
+    evidenceItems.map((item) => [String(item.id), item]),
+  );
+  if (evidenceById.size !== evidenceItems.length) return false;
+  return value.opportunities.every((opportunity) => {
+    if (!isRecord(opportunity) || !isDecisionEvidence(opportunity.decisionEvidence)) return false;
+    return opportunity.decisionEvidence.evidenceRefs.every((id) => {
+      const item = evidenceById.get(id);
+      return item && Array.isArray(item.supports) &&
+        item.supports.some((keyword) =>
+          typeof keyword === "string" &&
+          keyword.trim().toLowerCase() === String(opportunity.keyword).trim().toLowerCase());
+    });
+  });
 }
 
 function isPerformance(value: unknown) {
@@ -227,9 +323,11 @@ function isBrief(value: unknown) {
 
 function parseReport(raw: string, source: string): DailySeoReport {
   const value = JSON.parse(raw) as unknown;
-  const isCurrentPolicyReport = isRecord(value) && value.policyVersion === 3;
+  const isStructuredPolicyReport = isRecord(value) &&
+    (value.policyVersion === 3 || value.policyVersion === 4);
+  const requiresDecisionEvidence = isRecord(value) && value.policyVersion === 4;
   if (!isRecord(value) ||
-    (value.policyVersion !== undefined && value.policyVersion !== 3) ||
+    (value.policyVersion !== undefined && value.policyVersion !== 3 && value.policyVersion !== 4) ||
     typeof value.id !== "string" ||
     typeof value.date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value.date) ||
     typeof value.generatedAt !== "string" || !Number.isFinite(Date.parse(value.generatedAt)) ||
@@ -241,19 +339,26 @@ function parseReport(raw: string, source: string): DailySeoReport {
     !isFiniteMetric(value.summary.totalClicks) ||
     !isFiniteMetric(value.summary.totalImpressions) ||
     !isFiniteMetric(value.summary.averageCtr) ||
-    !Array.isArray(value.opportunities) || !value.opportunities.every(isOpportunity) ||
+    !Array.isArray(value.opportunities) ||
+    !value.opportunities.every((opportunity) =>
+      isOpportunity(opportunity, requiresDecisionEvidence)) ||
     !Array.isArray(value.performance) || !value.performance.every(isPerformance) ||
     !Array.isArray(value.actions) || !value.actions.every(isAction) ||
     !isBrief(value.brief) ||
-    !isReportDraft(value.draft, { allowLegacyMetadata: !isCurrentPolicyReport }) ||
+    !isReportDraft(value.draft, { allowLegacyMetadata: !isStructuredPolicyReport }) ||
     (value.drafts !== undefined && (
       !Array.isArray(value.drafts) ||
       !value.drafts.every((draft) =>
-        isReportDraft(draft, { allowLegacyMetadata: !isCurrentPolicyReport }))
+        isReportDraft(draft, { allowLegacyMetadata: !isStructuredPolicyReport }))
     )) ||
     (value.funnel !== undefined && !isFunnel(value.funnel)) ||
     (value.portfolioFunnels !== undefined && !isGrowthPortfolio(value.portfolioFunnels)) ||
     (value.portfolioDecision !== undefined && !isPortfolioDecision(value.portfolioDecision)) ||
+    (value.evidence !== undefined && (
+      !Array.isArray(value.evidence) ||
+      !value.evidence.every((item) => isEvidenceItem(item, requiresDecisionEvidence))
+    )) ||
+    !hasValidEvidenceReferences(value) ||
     !Array.isArray(value.integrations) || !value.integrations.every(isIntegration) ||
     !Array.isArray(value.caveats) || !value.caveats.every(isString)) {
     throw new Error(`Invalid SEO report shape: ${source}`);

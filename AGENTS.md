@@ -50,9 +50,11 @@ Before a new page or update:
   complete Shanghai-day window, ending after the configured finalized-data
   lag, even when an entry is explicitly unavailable.
 - Run `npm.cmd run growth:check` after changing analytics credentials or
-  callbacks. Do not describe the revenue loop as ready unless the protected
-  probe observes Search Console, landing UV, and the attribution store and the
-  NovelAI callback secret is configured.
+  callbacks. Run `npm.cmd run growth:probe` from the NovelAI server
+  environment after callback deployment or secret rotation. Do not describe
+  the revenue loop as ready unless the protected probe observes Search
+  Console, landing UV, and the attribution store and a recent signed NovelAI
+  callback handshake exists.
 - After the cold-start allowance in `data/config/seo-policy.json` is exhausted,
   do not publish another new page until at least one existing page has both
   non-zero landing UV and non-zero exact-page Search Console impressions.
@@ -63,8 +65,11 @@ Before a new page or update:
 
 - One distinct search intent and one H1 per page. Select a new answer, not a
   near-duplicate keyword variant.
-- New candidates must use policy version 3 and pass product-fit, trial-intent,
-  revenue-intent, intent-specificity, IP, and cannibalization hard gates.
+- New candidates must use policy version 4. Each candidate must cite at least
+  two directly supporting evidence records from two independent domains and
+  provide the required decision-evidence signals and rationales. The builder,
+  not the generating model, derives product-fit, trial-intent, revenue-intent,
+  intent-specificity, originality, IP, and cannibalization scores.
 - The English draft must be review-required, 600-1,000 words, have at least
   four sections and three FAQs, use approved facts only, contain a real CTA,
   and pass the builder's source, IP, duplicate, slug, and link gates.

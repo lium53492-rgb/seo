@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { randomUUID, timingSafeEqual } from "node:crypto";
 
 const defaultDestination = "https://www.novelai.ai/zh-CN/";
 const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -18,6 +18,13 @@ export function normalizeOutboundLocation(value: string | null): OutboundLocatio
 
 export function createSeoClickId() {
   return randomUUID();
+}
+
+export function isAttributionAuthorized(header: string | null, secret: string) {
+  const provided = header?.startsWith("Bearer ") ? header.slice(7) : "";
+  const left = Buffer.from(provided);
+  const right = Buffer.from(secret);
+  return left.length === right.length && timingSafeEqual(left, right);
 }
 
 function approvedDestination(value = process.env.NOVELAI_DESTINATION_URL || defaultDestination) {

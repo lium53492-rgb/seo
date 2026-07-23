@@ -80,7 +80,10 @@ export default async function WorkbenchPage() {
   const feedbackEnabled = Boolean(process.env.WORKBENCH_PASSWORD && process.env.GITHUB_REPORTS_TOKEN);
   const hotSignals = report.opportunities.slice(0, 5).map((opportunity) => ({
     ...opportunity,
-    evidenceCount: evidence.filter((item) => item.supports.map((keyword) => keyword.toLowerCase()).includes(opportunity.keyword)).length,
+    evidenceCount: opportunity.decisionEvidence?.evidenceRefs.length ??
+      evidence.filter((item) =>
+        item.supports.map((keyword) => keyword.toLowerCase()).includes(opportunity.keyword)
+      ).length,
   }));
   const funnel = report.funnel ?? createUnavailableFunnel(report.date);
   const portfolio = report.portfolioFunnels;
@@ -142,7 +145,7 @@ export default async function WorkbenchPage() {
           </div>
           <div className="wb-score-card">
             <span>OPPORTUNITY SCORE</span><strong>{top?.score ?? "—"}</strong><div className="wb-score-track"><i style={{ width: `${top?.score ?? 0}%` }} /></div>
-            <dl><div><dt>需求代理分</dt><dd>{top ? `${top.demandScore ?? 0}/100` : "—"}</dd></div><div><dt>竞争代理分</dt><dd>{top?.difficulty ?? "—"}</dd></div><div><dt>产品匹配</dt><dd>{top?.productFit ?? "—"}</dd></div></dl>
+            <dl><div><dt>需求代理分</dt><dd>{top ? `${top.demandScore ?? 0}/100` : "—"}</dd></div><div><dt>竞争代理分</dt><dd>{top?.difficulty ?? "—"}</dd></div><div><dt>产品匹配</dt><dd>{top?.productFit ?? "—"}</dd></div><div><dt>评分依据</dt><dd>{top?.scoreBasis === "evidence_signals_v1" ? "证据信号" : "历史规则"}</dd></div></dl>
           </div>
         </section>
 
@@ -220,7 +223,7 @@ export default async function WorkbenchPage() {
 
         <section className="wb-section" id="opportunities">
           <div className="wb-section-heading"><div><p className="wb-kicker">OPPORTUNITY RADAR</p><h2>只显示有公开来源支撑的机会。</h2></div><span className="wb-data-note">需求与难度都是 0–100 透明代理分。</span></div>
-          {report.opportunities.length ? <div className="wb-table-wrap"><table><thead><tr><th>关键词</th><th>意图阶段</th><th>需求</th><th>竞争</th><th>试玩</th><th>付费</th><th>机会分</th><th>动作</th></tr></thead><tbody>{report.opportunities.slice(0, 8).map((opportunity, index) => <tr key={opportunity.keyword}><td><span className="wb-rank">{String(index + 1).padStart(2, "0")}</span><strong>{opportunity.keyword}</strong><small>{opportunity.source}</small></td><td>{opportunity.funnelStage ?? opportunity.intent}</td><td>{opportunity.demandScore ?? 0}/100</td><td><span className={`wb-kd ${opportunity.difficulty <= 30 ? "easy" : opportunity.difficulty <= 50 ? "medium" : "hard"}`}>{opportunity.difficulty}</span></td><td>{opportunity.trialIntent ?? "—"}</td><td>{opportunity.revenueIntent ?? "—"}</td><td><strong className="wb-score-inline">{opportunity.score}</strong></td><td><span className={`wb-action-tag ${opportunity.action}`}>{actionLabels[opportunity.action]}</span></td></tr>)}</tbody></table></div> : <div className="wb-empty-state">等待本地免费研究自动化；不会用演示关键词填充。</div>}
+          {report.opportunities.length ? <div className="wb-table-wrap"><table><thead><tr><th>关键词</th><th>意图阶段</th><th>需求</th><th>竞争</th><th>试玩</th><th>付费</th><th>机会分</th><th>动作</th></tr></thead><tbody>{report.opportunities.slice(0, 8).map((opportunity, index) => <tr key={opportunity.keyword}><td><span className="wb-rank">{String(index + 1).padStart(2, "0")}</span><strong>{opportunity.keyword}</strong><small>{opportunity.scoreBasis === "evidence_signals_v1" ? `规则计算 · ${opportunity.decisionEvidence?.evidenceRefs.length ?? 0} 条引用` : opportunity.source}</small></td><td>{opportunity.funnelStage ?? opportunity.intent}</td><td>{opportunity.demandScore ?? 0}/100</td><td><span className={`wb-kd ${opportunity.difficulty <= 30 ? "easy" : opportunity.difficulty <= 50 ? "medium" : "hard"}`}>{opportunity.difficulty}</span></td><td>{opportunity.trialIntent ?? "—"}</td><td>{opportunity.revenueIntent ?? "—"}</td><td><strong className="wb-score-inline">{opportunity.score}</strong></td><td><span className={`wb-action-tag ${opportunity.action}`}>{actionLabels[opportunity.action]}</span></td></tr>)}</tbody></table></div> : <div className="wb-empty-state">等待本地免费研究自动化；不会用演示关键词填充。</div>}
         </section>
 
         <section className="wb-section" id="cluster">

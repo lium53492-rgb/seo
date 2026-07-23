@@ -1,12 +1,13 @@
 {
-  "policyVersion": 3,
+  "policyVersion": 4,
   "dailyPageLimit": 1,
   "feedbackLoop": {
     "coldStartPublishedPageLimit": 4,
     "minimumSearchValidatedLandingPages": 1,
     "blockOnOrphanCallbacks": true,
     "reportingWindowDays": 28,
-    "reportingLagDays": 3
+    "reportingLagDays": 3,
+    "callbackProbeMaxAgeHours": 168
   },
   "candidateCount": {
     "min": 5,
@@ -15,6 +16,69 @@
   "evidence": {
     "minLinks": 5,
     "minDomains": 3
+  },
+  "decisionEvidence": {
+    "schemaVersion": 1,
+    "scoreBasis": "evidence_signals_v1",
+    "minEvidenceRefs": 2,
+    "minIndependentDomains": 2,
+    "minSearcherJobChars": 30,
+    "minRationaleChars": 30,
+    "productSignals": {
+      "voice_roleplay": {
+        "weight": 30,
+        "factId": "voice-roleplay-format"
+      },
+      "story_premise": {
+        "weight": 25,
+        "factId": "existing-story"
+      },
+      "role_selection": {
+        "weight": 25,
+        "factId": "role-selection"
+      },
+      "interactive_fiction": {
+        "weight": 20,
+        "factId": "interactive-fiction-history"
+      }
+    },
+    "trialSignals": {
+      "solution_aware": 25,
+      "immediate_use": 30,
+      "experience_seeking": 30,
+      "action_language": 15
+    },
+    "revenueSignals": {
+      "commercial_comparison": 30,
+      "alternative_seeking": 25,
+      "purchase_language": 40,
+      "recurring_use": 15
+    },
+    "specificitySignals": {
+      "defined_task": 30,
+      "defined_format": 25,
+      "defined_audience": 25,
+      "narrow_modifier": 20
+    },
+    "ipClasses": {
+      "original_generic": 0,
+      "ambiguous_reference": 50,
+      "third_party_ip": 100
+    },
+    "cannibalizationClasses": {
+      "new_intent": {
+        "cannibalizationRisk": 10,
+        "originality": 90
+      },
+      "adjacent_intent": {
+        "cannibalizationRisk": 45,
+        "originality": 70
+      },
+      "same_intent": {
+        "cannibalizationRisk": 90,
+        "originality": 30
+      }
+    }
   },
   "content": {
     "minWords": 600,

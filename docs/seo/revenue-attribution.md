@@ -37,6 +37,7 @@ On the NovelAI application:
 4. POST the event server-to-server to `https://seo-pi-fawn.vercel.app/api/attribution/conversion` with `Authorization: Bearer <ATTRIBUTION_SECRET>`.
 5. Retry non-2xx responses and deduplicate by `eventId` in the durable analytics or payment sink.
 6. Do not send email, display name, raw payment identifiers, or other personal data.
+7. From the NovelAI server environment, run `npm run growth:probe` after deployment or secret rotation. It signs a non-business handshake to `/api/attribution/probe`; the probe never increments trial, signup, payment, revenue, or outbound metrics.
 
 Use first-touch acquisition within the product's chosen attribution lifetime: once an anonymous session has an eligible `seo_click_id`, do not replace it with a later direct visit. If the business later adopts another attribution model, version that rule instead of silently changing historical comparisons.
 
@@ -85,6 +86,7 @@ NovelAI application:
 - If a signed callback arrives without its outbound event, it is retained under the supplied source and callback date, and `orphanCallbacks` exposes the broken join.
 - Event and cohort keys expire after 400 days. No email, account ID, payment ID, IP address, or other direct personal data is stored.
 - The callback returns `202` only when the internal Redis store or an explicitly configured external sink durably accepts the event. Missing storage returns `503`; transient failures return `502`; NovelAI must retry both.
+- The signed integration handshake is stored separately for eight days. Readiness requires a successful handshake within the policy-defined seven-day window, so merely setting a secret on the SEO project cannot create a false full-loop status.
 
 ## Funnel report
 
@@ -104,6 +106,6 @@ Authorization: Basic <workbench credentials>
 
 `node scripts/collect-growth-funnel.mjs <slug> <from> <to>` reads the same endpoint for a daily automation. The endpoint queries finalized Search Console data for the exact page and period; a successful empty row is observed zero, while missing credentials, authorization, or API access remains unavailable.
 
-Run `npm run growth:check` after configuring or changing credentials. It calls the protected readiness endpoint, performs a one-day live probe, and exits non-zero until Search Console, Vercel UV, Upstash attribution, and the NovelAI callback boundary are ready.
+Run `npm run growth:probe` from a server environment holding the same `ATTRIBUTION_SECRET` as NovelAI, then run `npm run growth:check`. The readiness command calls the protected endpoint, performs a one-day live source probe, and exits non-zero until Search Console, Vercel UV, Upstash attribution, and a recent signed NovelAI callback handshake are all ready.
 
 The normal production command is `npm run growth:collect`. It queries every published page for the prior 28 complete Shanghai calendar days ending after the configured three-day lag and writes `data/growth/YYYY-MM-DD.json`. The daily research file either embeds this object as `portfolioFunnels` or points to it with `portfolioSnapshot`. The report builder rejects missing pages, duplicate slugs, mismatched periods, stale snapshots, wrong lag, orphan callbacks, and blind expansion after the four-page cold-start allowance. After that allowance, one published page must show both non-zero landing UV and non-zero exact-page Search Console impressions; direct or internal UV does not count as search validation.

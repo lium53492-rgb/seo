@@ -2,6 +2,7 @@ import type { OutboundLocation } from "./attribution";
 
 const keyPrefix = "seo:v1:";
 const retentionSeconds = 400 * 24 * 60 * 60;
+const integrationProbeRetentionSeconds = 8 * 24 * 60 * 60;
 const requestTimeoutMs = 2_500;
 const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -100,6 +101,20 @@ export type AttributionAggregate = {
   orphanCallbacks: number | null;
   revenueByCurrency: Record<string, number>;
   ctaLocations: Record<string, number>;
+  detail: string;
+};
+
+export type NovelAiIntegrationProbe = {
+  schemaVersion: 1;
+  probeId: string;
+  producer: "novelai";
+  occurredAt: string;
+};
+
+export type NovelAiIntegrationProbeStatus = {
+  state: "observed" | "unavailable";
+  lastObservedAt: string | null;
+  probeId: string | null;
   detail: string;
 };
 
@@ -246,6 +261,72 @@ export async function recordConversionEvent(event: AttributionConversionEvent): 
       ? "The callback was stored, but no matching outbound event was available."
       : "The conversion was joined to its outbound click.",
   };
+}
+
+export async function recordNovelAiIntegrationProbe(
+  probe: NovelAiIntegrationProbe,
+): Promise<AttributionWriteResult> {
+  const response = await redisCommand([
+    "SET",
+    `${keyPrefix}integration:novelai`,
+    JSON.stringify(probe),
+    "EX",
+    integrationProbeRetentionSeconds,
+  ]);
+  if (!response.configured) {
+    return {
+      state: "unavailable",
+      detail: attributionStoreStatus().detail ?? "Attribution store is not configured.",
+    };
+  }
+  return response.result === "OK"
+    ? { state: "stored", detail: "NovelAI callback handshake stored without changing funnel metrics." }
+    : { state: "unavailable", detail: "Attribution store did not confirm the NovelAI handshake." };
+}
+
+export async function readNovelAiIntegrationProbe(): Promise<NovelAiIntegrationProbeStatus> {
+  const response = await redisCommand(["GET", `${keyPrefix}integration:novelai`]);
+  if (!response.configured) {
+    return {
+      state: "unavailable",
+      lastObservedAt: null,
+      probeId: null,
+      detail: attributionStoreStatus().detail ?? "Attribution store is not configured.",
+    };
+  }
+  if (typeof response.result !== "string") {
+    return {
+      state: "unavailable",
+      lastObservedAt: null,
+      probeId: null,
+      detail: "NovelAI has not completed a recent signed callback handshake.",
+    };
+  }
+  try {
+    const probe = JSON.parse(response.result) as Partial<NovelAiIntegrationProbe>;
+    if (
+      probe.schemaVersion !== 1 ||
+      probe.producer !== "novelai" ||
+      typeof probe.probeId !== "string" ||
+      typeof probe.occurredAt !== "string" ||
+      !Number.isFinite(Date.parse(probe.occurredAt))
+    ) {
+      throw new Error("invalid_probe");
+    }
+    return {
+      state: "observed",
+      lastObservedAt: probe.occurredAt,
+      probeId: probe.probeId,
+      detail: "Read the latest signed NovelAI callback handshake from the attribution store.",
+    };
+  } catch {
+    return {
+      state: "unavailable",
+      lastObservedAt: null,
+      probeId: null,
+      detail: "The stored NovelAI callback handshake is malformed.",
+    };
+  }
 }
 
 function periodDays(periodStart: string, periodEnd: string) {

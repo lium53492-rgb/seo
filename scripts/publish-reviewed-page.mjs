@@ -147,6 +147,13 @@ const page = {
     intentSpecificity: opportunity.intentSpecificity,
     funnelStage: opportunity.funnelStage,
     conversionGoal: opportunity.conversionGoal,
+    ...(opportunity.scoreBasis ? { scoreBasis: opportunity.scoreBasis } : {}),
+    ...(opportunity.decisionEvidence
+      ? {
+          evidenceRefs: opportunity.decisionEvidence.evidenceRefs,
+          productFactIds: opportunity.decisionEvidence.productFactIds,
+        }
+      : {}),
   },
 };
 

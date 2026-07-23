@@ -19,6 +19,8 @@ Do not create near-duplicate keyword variants. A keyword is only a discovery han
 ## 2. Research with source provenance
 
 - Capture public evidence URLs, publisher/domain, date when visible, and the exact demand signal each source supports.
+- Give every evidence record a stable ID. For policy version 4, each candidate must reference at least two directly supporting records from two independent domains and explain every selected product, trial, revenue, specificity, IP, and cannibalization signal.
+- Never copy model-supplied hard-gate scores into a report. The builder derives them from the versioned signal policy; demand and difficulty remain explicitly labelled research proxies with rationales.
 - Prefer official pages, credible editorial sources, public communities, and observable first-party Search Console data. Keep Search Console metrics separate from proxy demand and difficulty scores.
 - Treat trend or hot-topic signals as leads, not facts. They need a source, freshness date, product-fit check, and intellectual-property risk check before they can influence a brief.
 - Monitor Google policy or ranking-system changes through official Google Search Status Dashboard and Search Central documentation. Do not treat screenshots or third-party summaries as authoritative policy.

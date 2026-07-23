@@ -62,6 +62,7 @@ if (!Array.isArray(input.evidence) || input.evidence.length < policy.evidence.mi
 
 const slugify = (value) => String(value).toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 const titleCase = (value) => String(value).replace(/\b\w/g, (letter) => letter.toUpperCase());
+const safeEvidenceId = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const approvedFactIds = new Set(factCatalog.facts.map((fact) => fact.id));
 const forbiddenClaims = factCatalog.forbiddenClaimPatterns.map((pattern) => new RegExp(pattern, "i"));
 const unsupportedKeywords = factCatalog.unsupportedKeywordPatterns.map((pattern) => new RegExp(pattern, "i"));
@@ -103,7 +104,13 @@ function writeJsonAtomic(path, value) {
 
 const evidenceDomains = new Set();
 const supportedKeywords = new Set();
+const evidenceById = new Map();
+const evidenceDomainById = new Map();
 for (const item of input.evidence) {
+  const evidenceId = String(item.id || "").trim();
+  if (!safeEvidenceId.test(evidenceId) || evidenceById.has(evidenceId)) {
+    throw new Error(`Every evidence item needs a unique safe id: ${evidenceId || "<empty>"}`);
+  }
   const url = new URL(item.url);
   if (!/^https?:$/.test(url.protocol)) throw new Error("Evidence URLs must use HTTP(S)");
   if (!String(item.title || "").trim() || !String(item.source || "").trim()) {
@@ -112,7 +119,10 @@ for (const item of input.evidence) {
   if (!Number.isFinite(Date.parse(item.collectedAt || ""))) {
     throw new Error(`Evidence needs a valid collectedAt timestamp: ${item.url}`);
   }
-  evidenceDomains.add(registrableDomain(url.hostname));
+  const domain = registrableDomain(url.hostname);
+  evidenceDomains.add(domain);
+  evidenceById.set(evidenceId, item);
+  evidenceDomainById.set(evidenceId, domain);
   for (const keyword of Array.isArray(item.supports) ? item.supports : []) {
     supportedKeywords.add(String(keyword).trim().toLowerCase());
   }
@@ -128,9 +138,6 @@ for (const candidate of input.candidates) {
   const keyword = String(candidate.keyword || "").trim().toLowerCase();
   if (!keyword || !supportedKeywords.has(keyword)) {
     throw new Error(`Missing evidence support for candidate: ${keyword || "<empty>"}`);
-  }
-  if (unsupportedKeywords.some((pattern) => pattern.test(keyword)) && Number(candidate.productFit) > 49) {
-    throw new Error(`Unsupported capability keyword must have productFit <= 49: ${keyword}`);
   }
 }
 
@@ -514,9 +521,65 @@ function validatePortfolioDecision(rawDecision, publishedPages) {
 }
 
 const pages = existingPages();
+const preparedCandidateInputs = input.candidates.map((candidate) => {
+  const keyword = String(candidate.keyword || "").trim().toLowerCase();
+  const decisionEvidence = candidate.decisionEvidence || {};
+  const evidenceRefs = Array.isArray(decisionEvidence.evidenceRefs)
+    ? decisionEvidence.evidenceRefs.map((id) => String(id || "").trim())
+    : [];
+  const referencedDomains = new Set();
+  for (const evidenceId of evidenceRefs) {
+    const item = evidenceById.get(evidenceId);
+    if (!item) throw new Error(`Candidate ${keyword} references unknown evidence: ${evidenceId}`);
+    const supports = new Set(
+      (Array.isArray(item.supports) ? item.supports : [])
+        .map((value) => String(value || "").trim().toLowerCase()),
+    );
+    if (!supports.has(keyword)) {
+      throw new Error(`Evidence ${evidenceId} does not directly support candidate: ${keyword}`);
+    }
+    referencedDomains.add(evidenceDomainById.get(evidenceId));
+  }
+  if (referencedDomains.size < policy.decisionEvidence.minIndependentDomains) {
+    throw new Error(
+      `Candidate ${keyword} needs evidence from at least ${policy.decisionEvidence.minIndependentDomains} independent domains`,
+    );
+  }
+  const productFactIds = Array.isArray(decisionEvidence.productFactIds)
+    ? decisionEvidence.productFactIds
+    : [];
+  const unknownFactId = productFactIds.find((id) => !approvedFactIds.has(id));
+  if (unknownFactId) {
+    throw new Error(`Candidate ${keyword} references an unapproved product fact ID: ${unknownFactId}`);
+  }
+  if (
+    unsupportedKeywords.some((pattern) => pattern.test(keyword)) &&
+    Array.isArray(decisionEvidence.productSignals) &&
+    decisionEvidence.productSignals.length > 0
+  ) {
+    throw new Error(`Unsupported capability keyword cannot claim product-fit signals: ${keyword}`);
+  }
+  const cannibalizationClass = String(decisionEvidence.cannibalizationClass || "");
+  const nearestExistingSlug = decisionEvidence.nearestExistingSlug;
+  if (cannibalizationClass === "new_intent") {
+    if (candidate.existingUrl) {
+      throw new Error(`A new_intent candidate cannot name an existingUrl: ${keyword}`);
+    }
+    return candidate;
+  }
+  if (typeof nearestExistingSlug !== "string") return candidate;
+  const nearestPage = pages.find((page) => page.slug === nearestExistingSlug);
+  if (!nearestPage) {
+    throw new Error(`Candidate ${keyword} names an unpublished nearestExistingSlug: ${nearestExistingSlug}`);
+  }
+  if (candidate.existingUrl && candidate.existingUrl !== nearestPage.path) {
+    throw new Error(`Candidate ${keyword} existingUrl does not match nearestExistingSlug`);
+  }
+  return { ...candidate, existingUrl: nearestPage.path };
+});
 const portfolioFunnels = validatePortfolioSnapshot(readPortfolioInput(), pages);
 const portfolioDecision = validatePortfolioDecision(input.portfolioDecision, pages);
-const opportunities = input.candidates
+const opportunities = preparedCandidateInputs
   .map((candidate) => scoreResearchCandidate(candidate, policy))
   .sort((left, right) => right.score - left.score)
   .slice(0, policy.candidateCount.max);
@@ -716,10 +779,11 @@ const report = {
   ],
   evidence: input.evidence.map((item) => {
     const url = new URL(item.url);
-    return { title: String(item.title || url.hostname), url: url.toString(), source: String(item.source || url.hostname), collectedAt: item.collectedAt || checkedAt, supports: Array.isArray(item.supports) ? item.supports.map(String) : [] };
+    return { id: String(item.id), title: String(item.title || url.hostname), url: url.toString(), source: String(item.source || url.hostname), collectedAt: item.collectedAt || checkedAt, supports: Array.isArray(item.supports) ? item.supports.map(String) : [] };
   }),
   caveats: [
-    "Demand and difficulty are transparent 0-100 research proxies unless an evidence record explicitly names an observed provider metric.",
+    "Product fit, trial intent, revenue intent, specificity, originality, IP risk, and cannibalization risk are derived from policy-versioned evidence signals rather than AI-supplied scores.",
+    "Demand and difficulty remain transparent 0-100 research proxies and require candidate-level rationales and evidence references unless an evidence record explicitly names an observed provider metric.",
     "Missing Search Console, UV, trial, payment, or revenue data stays unavailable rather than being converted to zero.",
     "The report builder never publishes a page; scripts/publish-reviewed-page.mjs requires a separate approval record.",
   ],

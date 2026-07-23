@@ -28,6 +28,20 @@ test("report generation cannot publish before a separate approval artifact", asy
       "choose a role story game",
       "interactive story roleplay trial",
     ];
+    const decisionRationale = Object.fromEntries([
+      "demand",
+      "difficulty",
+      "productFit",
+      "trialIntent",
+      "revenueIntent",
+      "intentSpecificity",
+      "originality",
+      "ipRisk",
+      "cannibalizationRisk",
+    ].map((field) => [
+      field,
+      `The ${field} judgment is grounded in the cited public evidence and the explicit searcher job.`,
+    ]));
     const candidates = keywords.map((keyword, index) => ({
       keyword,
       seed: "ai roleplay story",
@@ -44,11 +58,49 @@ test("report generation cannot publish before a separate approval artifact", asy
       intentSpecificity: 93 - index,
       ipRisk: 0,
       cannibalizationRisk: 5 + index,
+      decisionEvidence: {
+        schemaVersion: 1,
+        evidenceRefs: ["evidence-1", "evidence-2"],
+        searcherJob: `Enter ${keyword} immediately and decide whether this product format is worth trying.`,
+        productFactIds: [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection",
+          "interactive-fiction-history",
+        ],
+        productSignals: [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection",
+          "interactive_fiction",
+        ],
+        trialSignals: [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking",
+          "action_language",
+        ],
+        revenueSignals: [
+          "commercial_comparison",
+          "alternative_seeking",
+          "recurring_use",
+        ],
+        specificitySignals: [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier",
+        ],
+        ipClass: "original_generic",
+        cannibalizationClass: "new_intent",
+        nearestExistingSlug: null,
+        rationale: decisionRationale,
+      },
     }));
     const supports = [...keywords];
     const paragraph = Array.from({ length: 5 }, (_, index) => `Step ${index + 1} keeps the reader inside an original plot, connects the selected role to a clear scene, and explains the next decision without inventing product capabilities or borrowing a familiar fictional world.`).join(" ");
     const input = {
-      policyVersion: 3,
+      policyVersion: 4,
       date: "2099-01-01",
       generatedAt: "2099-01-01T09:15:00+08:00",
       contentStrategy: {
@@ -65,6 +117,7 @@ test("report generation cannot publish before a separate approval artifact", asy
       },
       candidates,
       evidence: Array.from({ length: 5 }, (_, index) => ({
+        id: `evidence-${index + 1}`,
         title: `Independent evidence ${index + 1}`,
         url: `https://source${index + 1}.example/evidence`,
         source: `Source ${index + 1}`,
@@ -133,13 +186,42 @@ test("report generation cannot publish before a separate approval artifact", asy
       },
     };
     const inputPath = join(workspace, "data", "research", "2099-01-01.json");
+
+    const unknownEvidenceInput = structuredClone(input);
+    unknownEvidenceInput.candidates[0].decisionEvidence.evidenceRefs = [
+      "evidence-1",
+      "missing-evidence",
+    ];
+    await writeFile(inputPath, `${JSON.stringify(unknownEvidenceInput, null, 2)}\n`);
+    const unknownEvidenceBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(unknownEvidenceBuild.status, 0);
+    assert.match(unknownEvidenceBuild.stderr, /references unknown evidence/);
+
+    const unboundCannibalizationInput = structuredClone(input);
+    unboundCannibalizationInput.candidates[0].decisionEvidence.cannibalizationClass = "same_intent";
+    await writeFile(inputPath, `${JSON.stringify(unboundCannibalizationInput, null, 2)}\n`);
+    const unboundCannibalizationBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(unboundCannibalizationBuild.status, 0);
+    assert.match(unboundCannibalizationBuild.stderr, /needs nearestExistingSlug/);
+
     await writeFile(inputPath, `${JSON.stringify(input, null, 2)}\n`);
 
     const build = spawnSync(process.execPath, [builderPath, inputPath], { cwd: workspace, encoding: "utf8" });
     assert.equal(build.status, 0, build.stderr);
     const reportPath = join(workspace, "data", "reports", "2099-01-01.json");
     const reportBeforeReview = JSON.parse(await readFile(reportPath, "utf8"));
-    assert.equal(reportBeforeReview.policyVersion, 3);
+    assert.equal(reportBeforeReview.policyVersion, 4);
+    assert.equal(reportBeforeReview.opportunities[0].scoreBasis, "evidence_signals_v1");
+    assert.deepEqual(
+      reportBeforeReview.opportunities[0].decisionEvidence.evidenceRefs,
+      ["evidence-1", "evidence-2"],
+    );
     assert.equal(isReportDraft(reportBeforeReview.draft), true);
     assert.equal(reportBeforeReview.publication.status, "ready_for_review");
     assert.equal(reportBeforeReview.publicationMode, "create");
@@ -211,6 +293,12 @@ test("report generation cannot publish before a separate approval artifact", asy
       ...candidate,
       keyword: updateKeywords[index],
       existingUrl: "/play-an-ai-roleplay-story",
+      decisionEvidence: {
+        ...candidate.decisionEvidence,
+        searcherJob: `Improve ${updateKeywords[index]} on the existing route using observed query evidence.`,
+        cannibalizationClass: "adjacent_intent",
+        nearestExistingSlug: "play-an-ai-roleplay-story",
+      },
     }));
     updateInput.evidence = updateInput.evidence.map((item) => ({
       ...item,

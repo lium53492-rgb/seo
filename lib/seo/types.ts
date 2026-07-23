@@ -20,11 +20,45 @@ export type ConversionGoal =
   | "trial_start"
   | "purchase";
 
+export type CandidateDecisionEvidence = {
+  schemaVersion: 1;
+  evidenceRefs: string[];
+  searcherJob: string;
+  productFactIds: string[];
+  productSignals: Array<
+    "voice_roleplay" | "story_premise" | "role_selection" | "interactive_fiction"
+  >;
+  trialSignals: Array<
+    "solution_aware" | "immediate_use" | "experience_seeking" | "action_language"
+  >;
+  revenueSignals: Array<
+    "commercial_comparison" | "alternative_seeking" | "purchase_language" | "recurring_use"
+  >;
+  specificitySignals: Array<
+    "defined_task" | "defined_format" | "defined_audience" | "narrow_modifier"
+  >;
+  ipClass: "original_generic" | "ambiguous_reference" | "third_party_ip";
+  cannibalizationClass: "new_intent" | "adjacent_intent" | "same_intent";
+  nearestExistingSlug: string | null;
+  rationale: {
+    demand: string;
+    difficulty: string;
+    productFit: string;
+    trialIntent: string;
+    revenueIntent: string;
+    intentSpecificity: string;
+    originality: string;
+    ipRisk: string;
+    cannibalizationRisk: string;
+  };
+};
+
 export type KeywordCandidate = {
   keyword: string;
   seed: string;
   source: "demo" | "semrush" | "search_console" | "codex_research";
   metricBasis?: "provider_metrics" | "research_proxy";
+  scoreBasis?: "evidence_signals_v1";
   demandScore?: number;
   volume: number;
   difficulty: number;
@@ -41,6 +75,7 @@ export type KeywordCandidate = {
   conversionGoal?: ConversionGoal;
   ipRisk: number;
   cannibalizationRisk: number;
+  decisionEvidence?: CandidateDecisionEvidence;
   existingUrl?: string;
   score: number;
   action: RecommendedAction;
@@ -178,6 +213,9 @@ export type PublishedSeoPage = {
     intentSpecificity?: number;
     funnelStage?: FunnelStage;
     conversionGoal?: ConversionGoal;
+    scoreBasis?: "evidence_signals_v1";
+    evidenceRefs?: string[];
+    productFactIds?: string[];
   };
   editorialReview?: EditorialReview;
 };
@@ -325,7 +363,7 @@ export type GrowthPortfolioDecision = {
 export type DailySeoReport = {
   id: string;
   date: string;
-  policyVersion?: 3;
+  policyVersion?: 3 | 4;
   publicationMode?: "create" | "update";
   generatedAt: string;
   mode: DataMode;
@@ -353,6 +391,7 @@ export type DailySeoReport = {
   portfolioDecision?: GrowthPortfolioDecision;
   integrations: IntegrationStatus[];
   evidence?: Array<{
+    id?: string;
     title: string;
     url: string;
     source: string;
