@@ -1,0 +1,63 @@
+name: Growth readiness
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: growth-readiness-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Check production growth sources
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CI: "true"
+      WORKBENCH_PASSWORD: ${{ secrets.WORKBENCH_PASSWORD }}
+      SEO_REPORT_SITE_URL: https://seo-pi-fawn.vercel.app
+    steps:
+      - name: Check out the exact commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Use the production Node.js major
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: "24"
+          cache: npm
+          package-manager-cache: false
+
+      - name: Install the locked dependency graph
+        run: npm ci --no-audit
+
+      - name: Probe production growth readiness
+        id: readiness
+        shell: bash
+        run: |
+          set +e
+          npm run growth:check > readiness.json 2> readiness.err
+          status=$?
+          cat readiness.json
+          cat readiness.err >&2
+          echo "exit_code=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Record the probe result
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Production growth readiness"
+            echo
+            echo "- Exit code: \`${{ steps.readiness.outputs.exit_code }}\`"
+            echo "- Endpoint: \`https://seo-pi-fawn.vercel.app/api/attribution/readiness\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail when the complete loop is not ready
+        if: steps.readiness.outputs.exit_code != '0'
+        run: exit 1
