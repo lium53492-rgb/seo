@@ -49,7 +49,7 @@ export default async function DraftPreviewPage({
           <MessageResponse className="wb-preview-lede">{draft.heroMarkdown}</MessageResponse>
           <a
             className="wb-preview-cta"
-            href="https://www.novelai.ai/zh-CN/"
+            href={`/go/novelai/${encodeURIComponent(slug)}?location=preview`}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -65,6 +65,17 @@ export default async function DraftPreviewPage({
             </div>
           ))}
         </section>
+
+        {draft.internalLinks.length ? (
+          <nav className="wb-preview-links" aria-label="Related SEO pages">
+            <p className="wb-kicker">RELATED GUIDES</p>
+            <div>
+              {draft.internalLinks.map((link) => (
+                <a href={link.href} key={`${link.href}-${link.anchor}`}>{link.anchor}</a>
+              ))}
+            </div>
+          </nav>
+        ) : null}
 
         <section className="wb-preview-faq">
           <p className="wb-kicker">FAQ</p>

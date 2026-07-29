@@ -1,5 +1,45 @@
 export type DataMode = "disconnected" | "live" | "partial";
 
+export type WorkbenchFeedbackDecision = "adopted" | "rejected";
+
+export type WorkbenchFeedbackEntry = {
+  id: string;
+  createdAt: string;
+  message: string;
+  source: "workbench";
+  kind: "content_guidance";
+  consumedAt?: string;
+  decision?: WorkbenchFeedbackDecision;
+  rationale?: string;
+};
+
+export type WorkbenchFeedbackQueueEntry = WorkbenchFeedbackEntry & {
+  /** Exact Shanghai-date inbox file that owns this entry. */
+  date: string;
+};
+
+export type WorkbenchFeedbackQueueSummary = {
+  pendingCount: number;
+  entries: WorkbenchFeedbackQueueEntry[];
+  destination: "local" | "github";
+};
+
+export type MarkWorkbenchFeedbackConsumedInput = {
+  id: string;
+  date: string;
+  decision: WorkbenchFeedbackDecision;
+  rationale: string;
+  consumedAt?: string;
+};
+
+export type ReportFeedbackDecision = {
+  id: string;
+  date: string;
+  message: string;
+  decision: WorkbenchFeedbackDecision;
+  rationale: string;
+};
+
 export type SearchIntent =
   | "commercial"
   | "informational"
@@ -91,6 +131,34 @@ export type PagePerformance = {
   position: number;
   recommendedAction: string;
 };
+
+export type GoogleTrendsSourceUrl =
+  | `https://trends.google.com/${string}`
+  | `https://developers.google.com/search/apis/trends${string}`;
+
+export type GoogleTrendsDirection = "rising" | "flat" | "falling" | "unknown";
+
+type GoogleTrendsSignalBase = {
+  keyword: string;
+  source: "google_trends";
+  sourceUrl: GoogleTrendsSourceUrl;
+  geo: string;
+  period: string;
+  collectedAt: string;
+  detail: string;
+};
+
+export type GoogleTrendsSignal =
+  | (GoogleTrendsSignalBase & {
+      state: "observed";
+      relativeInterest: number;
+      direction: GoogleTrendsDirection;
+    })
+  | (GoogleTrendsSignalBase & {
+      state: "unavailable";
+      relativeInterest: null;
+      direction: "unknown";
+    });
 
 export type IntegrationStatus = {
   id:
@@ -377,6 +445,10 @@ export type DailySeoReport = {
   };
   opportunities: KeywordCandidate[];
   performance: PagePerformance[];
+  /** Official Google Trends observations. Relative interest is not search volume. */
+  trendSignals?: GoogleTrendsSignal[];
+  /** Verbatim disposition of every locally unconsumed workbench input at build time. */
+  feedbackDecisions?: ReportFeedbackDecision[];
   actions: DailyAction[];
   brief: PageBrief | null;
   draft: GeneratedPageDraft | null;

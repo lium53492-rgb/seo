@@ -12,6 +12,7 @@ npm install
 npm run dev
 npm run growth:check
 npm run growth:collect
+npm run feedback:sync
 npm run verify
 ```
 
@@ -19,7 +20,8 @@ npm run verify
 
 Open `/workbench` to inspect the latest persisted production report. With no
 external credentials or report configured, the UI shows a disconnected state
-with zero metrics; it never substitutes demo values.
+with unavailable metrics; it never substitutes demo values or turns missing
+observations into zero.
 
 Open `/workbench/guide` for the Chinese operating manual, the daily review
 checklist, the data-to-design decision rules, and direct authorization links.
@@ -41,10 +43,17 @@ collects one all-page growth snapshot, then researches the public web, writes a
 review-required English draft, and builds a durable report. A separate approval
 artifact is mandatory before publication. The builder blocks unsupported
 product claims, weak trial/revenue intent, duplicate intent, unapproved facts,
-and blind page expansion without observed UV. The workbench labels research
+and blind page expansion after cold start without both observed exact-page
+Search Console impressions and landing UV. The workbench labels research
 values as proxy scores; they are not monthly search volume, CPC, Google data, or
 Semrush KD. See
 `docs/seo/free-research-robot.md` for the evidence and scoring protocol.
+
+The dashboard also keeps official Google Trends relative-interest signals
+separate from keyword volume, ranks published pages only with observed
+page-level data, and exposes today's artifact/blocker state. Publishing,
+Vercel deployment, Google indexing, and a live third-party backlink are
+independent statuses; none is guaranteed or inferred from another.
 
 Semrush is replaced by the free Codex research path. Vercel Web Analytics pageview
 instrumentation is installed; enable the project-level switch in Vercel to begin

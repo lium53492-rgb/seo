@@ -8,16 +8,29 @@ export function RunPipelineButton({ enabled }: { enabled: boolean }) {
   const [status, setStatus] = useState<"idle" | "refreshing" | "error">("idle");
   const [message, setMessage] = useState("");
 
-  function refreshReport() {
+  async function refreshReport() {
     setStatus("refreshing");
     setMessage("");
     try {
+      const response = await fetch("/api/workbench/run", {
+        method: "POST",
+        cache: "no-store",
+        headers: { accept: "application/json" },
+      });
+      const body = await response.json() as {
+        error?: string;
+        pipeline?: { stage?: string; blockers?: string[] };
+      };
+      if (!response.ok || !body.pipeline?.stage) {
+        throw new Error(body.error || `流程状态读取失败（HTTP ${response.status}）`);
+      }
       router.refresh();
       setStatus("idle");
-      setMessage("已重新读取当前日报数据。");
+      const blockerCount = body.pipeline.blockers?.length ?? 0;
+      setMessage(`今日阶段：${body.pipeline.stage}；${blockerCount ? `${blockerCount} 个阻塞` : "没有已记录阻塞"}。`);
     } catch (error) {
       setStatus("error");
-      setMessage(error instanceof Error ? error.message : "日报刷新失败");
+      setMessage(error instanceof Error ? error.message : "流程状态读取失败");
     }
   }
 
@@ -27,15 +40,15 @@ export function RunPipelineButton({ enabled }: { enabled: boolean }) {
         className="wb-primary-button"
         type="button"
         disabled={!enabled || status === "refreshing"}
-        onClick={refreshReport}
+        onClick={() => void refreshReport()}
       >
         {!enabled
           ? "工作台为只读"
           : status === "refreshing"
-            ? "正在读取日报…"
-            : "重新读取日报数据"}
+            ? "正在检查流程…"
+            : "检查今日流程状态"}
       </button>
-      {!enabled ? <p className="wb-readonly-note">配置工作台密码后可刷新受保护数据。</p> : null}
+      {!enabled ? <p className="wb-readonly-note">当前无法读取受保护的流程状态。</p> : null}
       {message ? <p className={`wb-run-message ${status === "error" ? "wb-run-error" : ""}`}>{message}</p> : null}
     </div>
   );

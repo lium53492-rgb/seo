@@ -127,10 +127,216 @@ for (const item of input.evidence) {
     supportedKeywords.add(String(keyword).trim().toLowerCase());
   }
 }
+
+function validateTrendSignals(rawSignals, candidateKeywordSet) {
+  if (rawSignals === undefined) return [];
+  if (!Array.isArray(rawSignals)) {
+    throw new Error("trendSignals must be an array when supplied");
+  }
+
+  const allowedFields = new Set([
+    "keyword",
+    "source",
+    "sourceUrl",
+    "state",
+    "relativeInterest",
+    "direction",
+    "geo",
+    "period",
+    "collectedAt",
+    "detail",
+  ]);
+  const directions = new Set(["rising", "flat", "falling", "unknown"]);
+  const identities = new Set();
+
+  return rawSignals.map((item, index) => {
+    if (!item || typeof item !== "object" || Array.isArray(item)) {
+      throw new Error(`trendSignals[${index}] must be an object`);
+    }
+    const unknownField = Object.keys(item).find((field) => !allowedFields.has(field));
+    if (unknownField) {
+      throw new Error(`trendSignals[${index}] has an unknown field: ${unknownField}`);
+    }
+
+    const keyword = String(item.keyword || "").trim().toLowerCase();
+    if (!candidateKeywordSet.has(keyword)) {
+      throw new Error(`Google Trends signal must reference a research candidate: ${keyword || "<empty>"}`);
+    }
+    if (item.source !== "google_trends") {
+      throw new Error(`Google Trends signal has an invalid source: ${keyword}`);
+    }
+
+    let sourceUrl;
+    try {
+      sourceUrl = new URL(item.sourceUrl);
+    } catch {
+      throw new Error(`Google Trends signal needs a valid sourceUrl: ${keyword}`);
+    }
+    const isTrendsUi = sourceUrl.protocol === "https:" &&
+      !sourceUrl.username && !sourceUrl.password &&
+      sourceUrl.hostname === "trends.google.com" &&
+      sourceUrl.pathname.startsWith("/trends/");
+    const isTrendsDocumentation = sourceUrl.protocol === "https:" &&
+      !sourceUrl.username && !sourceUrl.password &&
+      sourceUrl.hostname === "developers.google.com" &&
+      sourceUrl.pathname.startsWith("/search/apis/trends");
+    if (!isTrendsUi && !isTrendsDocumentation) {
+      throw new Error(`Google Trends sourceUrl must use an official Google Trends URL: ${keyword}`);
+    }
+
+    const geo = String(item.geo || "").trim();
+    if (!/^(?:Worldwide|[A-Z]{2}(?:-[A-Z0-9]{1,3})?)$/.test(geo)) {
+      throw new Error(`Google Trends signal needs an explicit geo such as Worldwide, US, or US-CA: ${keyword}`);
+    }
+    const period = String(item.period || "").trim();
+    if (period.length < 3) {
+      throw new Error(`Google Trends signal needs an explicit period: ${keyword}`);
+    }
+    const collectedAt = String(item.collectedAt || "");
+    if (!Number.isFinite(Date.parse(collectedAt)) || shanghaiCalendarDate(collectedAt) !== date) {
+      throw new Error(`Google Trends signal must be collected on the report's Shanghai date: ${keyword}`);
+    }
+    const detail = String(item.detail || "").trim();
+    if (detail.length < 12) {
+      throw new Error(`Google Trends signal needs a specific detail: ${keyword}`);
+    }
+
+    if (!["observed", "unavailable"].includes(item.state)) {
+      throw new Error(`Google Trends signal has an invalid state: ${keyword}`);
+    }
+    if (!directions.has(item.direction)) {
+      throw new Error(`Google Trends signal has an invalid direction: ${keyword}`);
+    }
+    if (item.state === "observed") {
+      if (!isTrendsUi) {
+        throw new Error(`Observed Google Trends signals must link to trends.google.com: ${keyword}`);
+      }
+      if (!Number.isInteger(item.relativeInterest) ||
+        item.relativeInterest < 0 || item.relativeInterest > 100) {
+        throw new Error(`Observed Google Trends relativeInterest must be an integer from 0 to 100: ${keyword}`);
+      }
+    } else if (item.relativeInterest !== null || item.direction !== "unknown") {
+      throw new Error(`Unavailable Google Trends signals must use relativeInterest null and direction unknown: ${keyword}`);
+    }
+
+    const identity = `${keyword}|${geo}|${period}`;
+    if (identities.has(identity)) {
+      throw new Error(`Duplicate Google Trends signal: ${identity}`);
+    }
+    identities.add(identity);
+
+    return {
+      keyword,
+      source: "google_trends",
+      sourceUrl: sourceUrl.toString(),
+      state: item.state,
+      relativeInterest: item.relativeInterest,
+      direction: item.direction,
+      geo,
+      period,
+      collectedAt,
+      detail,
+    };
+  });
+}
+
+function readUnconsumedFeedback() {
+  const inboxDirectory = resolve("data/seo-feedback/inbox");
+  if (!existsSync(inboxDirectory)) return [];
+  return readdirSync(inboxDirectory)
+    .filter((name) => /^\d{4}-\d{2}-\d{2}\.json$/.test(name))
+    .sort()
+    .flatMap((name) => {
+      const document = readJson(resolve(inboxDirectory, name));
+      const inboxDate = name.slice(0, 10);
+      if (document.date !== inboxDate || !Array.isArray(document.entries)) {
+        throw new Error(`Invalid workbench feedback inbox: ${name}`);
+      }
+      return document.entries
+        .filter((entry) => !entry?.consumedAt)
+        .map((entry) => {
+          if (
+            typeof entry?.id !== "string" ||
+            !entry.id.trim() ||
+            typeof entry.message !== "string" ||
+            !entry.message.trim()
+          ) {
+            throw new Error(`Invalid unconsumed workbench feedback entry: ${name}`);
+          }
+          return {
+            id: entry.id,
+            date: inboxDate,
+            message: entry.message,
+          };
+        });
+    });
+}
+
+function validateFeedbackDecisions(rawDecisions, pendingFeedback) {
+  if (rawDecisions === undefined && pendingFeedback.length === 0) return [];
+  if (rawDecisions === undefined) {
+    throw new Error(
+      `feedbackDecisions must cover all ${pendingFeedback.length} unconsumed workbench entries`,
+    );
+  }
+  if (!Array.isArray(rawDecisions)) {
+    throw new Error("feedbackDecisions must be an array covering every unconsumed workbench entry");
+  }
+  if (rawDecisions.length !== pendingFeedback.length) {
+    throw new Error(
+      `feedbackDecisions must cover all ${pendingFeedback.length} unconsumed workbench entries`,
+    );
+  }
+  const expected = new Map(
+    pendingFeedback.map((entry) => [`${entry.date}|${entry.id}`, entry]),
+  );
+  const seen = new Set();
+  return rawDecisions.map((item, index) => {
+    if (!item || typeof item !== "object" || Array.isArray(item)) {
+      throw new Error(`feedbackDecisions[${index}] must be an object`);
+    }
+    const allowedFields = new Set(["id", "date", "message", "decision", "rationale"]);
+    const unknownField = Object.keys(item).find((field) => !allowedFields.has(field));
+    if (unknownField) {
+      throw new Error(`feedbackDecisions[${index}] has an unknown field: ${unknownField}`);
+    }
+    const id = String(item.id || "");
+    const feedbackDate = String(item.date || "");
+    const identity = `${feedbackDate}|${id}`;
+    const source = expected.get(identity);
+    if (!source || seen.has(identity)) {
+      throw new Error(`feedbackDecisions[${index}] does not match one unique unconsumed entry`);
+    }
+    if (item.message !== source.message) {
+      throw new Error(`feedbackDecisions[${index}] must preserve the feedback message verbatim`);
+    }
+    if (!["adopted", "rejected"].includes(item.decision)) {
+      throw new Error(`feedbackDecisions[${index}] needs adopted or rejected`);
+    }
+    const rationale = String(item.rationale || "").trim();
+    if (rationale.length < 20) {
+      throw new Error(`feedbackDecisions[${index}] needs a specific rationale`);
+    }
+    seen.add(identity);
+    return {
+      id,
+      date: feedbackDate,
+      message: source.message,
+      decision: item.decision,
+      rationale,
+    };
+  });
+}
+
 const candidateKeywords = input.candidates.map((candidate) => String(candidate.keyword || "").trim().toLowerCase());
 if (new Set(candidateKeywords).size !== candidateKeywords.length) {
   throw new Error("Research candidates must use unique keywords");
 }
+const trendSignals = validateTrendSignals(input.trendSignals, new Set(candidateKeywords));
+const feedbackDecisions = validateFeedbackDecisions(
+  input.feedbackDecisions,
+  readUnconsumedFeedback(),
+);
 if (evidenceDomains.size < policy.evidence.minDomains) {
   throw new Error(`Evidence must come from at least ${policy.evidence.minDomains} independent domains`);
 }
@@ -741,6 +947,8 @@ const report = {
   },
   opportunities,
   performance,
+  trendSignals,
+  feedbackDecisions,
   funnel,
   portfolioFunnels,
   portfolioDecision,
@@ -784,6 +992,8 @@ const report = {
   caveats: [
     "Product fit, trial intent, revenue intent, specificity, originality, IP risk, and cannibalization risk are derived from policy-versioned evidence signals rather than AI-supplied scores.",
     "Demand and difficulty remain transparent 0-100 research proxies and require candidate-level rationales and evidence references unless an evidence record explicitly names an observed provider metric.",
+    "Google Trends relative interest is a normalized 0-100 signal for the selected geography and period, not search volume; unavailable access remains explicit.",
+    "Every locally unconsumed workbench instruction is preserved verbatim with an adopted or rejected decision before it may be marked consumed.",
     "Missing Search Console, UV, trial, payment, or revenue data stays unavailable rather than being converted to zero.",
     "The report builder never publishes a page; scripts/publish-reviewed-page.mjs requires a separate approval record.",
   ],

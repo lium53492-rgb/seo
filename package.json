@@ -15,7 +15,8 @@
     "growth:check": "node scripts/check-growth-readiness.mjs",
     "growth:probe": "node scripts/probe-novelai-callback.mjs",
     "growth:collect": "node scripts/collect-growth-portfolio.mjs",
-    "research:build": "node scripts/build-free-research-report.mjs",
+    "feedback:sync": "node scripts/sync-workbench-feedback.mjs",
+    "research:build": "npm run feedback:sync && node scripts/build-free-research-report.mjs",
     "research:publish": "node scripts/publish-reviewed-page.mjs"
   },
   "dependencies": {

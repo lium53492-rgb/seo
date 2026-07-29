@@ -34,6 +34,19 @@ const priorities = new Set(["P0", "P1", "P2"]);
 const integrationStates = new Set(["connected", "configured", "replaced", "missing", "error"]);
 const metricSources = new Set(["search_console", "vercel_analytics", "seo_redirect", "product_analytics", "payments"]);
 const ctaLocations = new Set(["seo_page", "hero", "header", "inline", "final_cta", "companion"]);
+const googleTrendsDirections = new Set(["rising", "flat", "falling", "unknown"]);
+const googleTrendsFields = new Set([
+  "keyword",
+  "source",
+  "sourceUrl",
+  "state",
+  "relativeInterest",
+  "direction",
+  "geo",
+  "period",
+  "collectedAt",
+  "detail",
+]);
 const safeRepository = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
 const safeBranch = /^[A-Za-z0-9._/-]+$/;
 const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -175,6 +188,81 @@ function isPerformance(value: unknown) {
     isFiniteMetric(value.ctr) && value.ctr <= 1 &&
     isFiniteMetric(value.position) &&
     isString(value.recommendedAction);
+}
+
+function shanghaiCalendarDate(value: string) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date(value));
+}
+
+function isOfficialGoogleTrendsUrl(value: string, observed: boolean) {
+  try {
+    const url = new URL(value);
+    if (url.protocol !== "https:" || url.username || url.password) return false;
+    const isTrendsUi =
+      url.hostname === "trends.google.com" && url.pathname.startsWith("/trends/");
+    if (observed) return isTrendsUi;
+    return isTrendsUi ||
+      (url.hostname === "developers.google.com" &&
+        url.pathname.startsWith("/search/apis/trends"));
+  } catch {
+    return false;
+  }
+}
+
+function hasValidTrendSignals(
+  signals: unknown,
+  opportunities: unknown[],
+  reportDate: string,
+) {
+  if (!Array.isArray(signals)) return false;
+  const candidateKeywords = new Set(
+    opportunities
+      .filter(isRecord)
+      .map((opportunity) => String(opportunity.keyword).trim().toLowerCase()),
+  );
+  const identities = new Set<string>();
+
+  return signals.every((signal) => {
+    if (!isRecord(signal) ||
+      Object.keys(signal).length !== googleTrendsFields.size ||
+      Object.keys(signal).some((field) => !googleTrendsFields.has(field)) ||
+      !isString(signal.keyword) ||
+      !candidateKeywords.has(signal.keyword.trim().toLowerCase()) ||
+      signal.source !== "google_trends" ||
+      !isString(signal.sourceUrl) ||
+      !isString(signal.geo) ||
+      !/^(?:Worldwide|[A-Z]{2}(?:-[A-Z0-9]{1,3})?)$/.test(signal.geo) ||
+      !isString(signal.period) ||
+      !isString(signal.collectedAt) ||
+      !Number.isFinite(Date.parse(signal.collectedAt)) ||
+      shanghaiCalendarDate(signal.collectedAt) !== reportDate ||
+      !isString(signal.detail) ||
+      signal.detail.trim().length < 12 ||
+      !isString(signal.direction) ||
+      !googleTrendsDirections.has(signal.direction)) return false;
+
+    const observed = signal.state === "observed";
+    if (!observed && signal.state !== "unavailable") return false;
+    if (!isOfficialGoogleTrendsUrl(signal.sourceUrl, observed)) return false;
+    if (observed) {
+      if (!Number.isInteger(signal.relativeInterest) ||
+        Number(signal.relativeInterest) < 0 ||
+        Number(signal.relativeInterest) > 100) return false;
+    } else if (signal.relativeInterest !== null || signal.direction !== "unknown") {
+      return false;
+    }
+
+    const identity =
+      `${signal.keyword.trim().toLowerCase()}|${signal.geo}|${signal.period.trim()}`;
+    if (identities.has(identity)) return false;
+    identities.add(identity);
+    return true;
+  });
 }
 
 function isAction(value: unknown) {
@@ -321,7 +409,37 @@ function isBrief(value: unknown) {
     isStringArray(value.evidenceRequired) && isStringArray(value.qualityGate);
 }
 
-function parseReport(raw: string, source: string): DailySeoReport {
+function isPublication(value: unknown) {
+  if (!isRecord(value) ||
+    !["published", "ready_for_review", "blocked", "not_requested"].includes(String(value.status)) ||
+    !isString(value.reason)) return false;
+  return (value.path === undefined || (isString(value.path) && value.path.startsWith("/"))) &&
+    (value.slug === undefined || (isString(value.slug) && safeSlug.test(value.slug))) &&
+    (value.slot === undefined || value.slot === "morning" || value.slot === "afternoon") &&
+    (value.publishedAt === undefined ||
+      (isString(value.publishedAt) && Number.isFinite(Date.parse(value.publishedAt)))) &&
+    (value.draftDigest === undefined ||
+      (isString(value.draftDigest) && /^[a-f0-9]{64}$/.test(value.draftDigest)));
+}
+
+function hasValidFeedbackDecisions(value: unknown) {
+  if (!Array.isArray(value)) return false;
+  const identities = new Set<string>();
+  return value.every((item) => {
+    if (!isRecord(item) ||
+      !isString(item.id) ||
+      !isString(item.date) || !/^\d{4}-\d{2}-\d{2}$/.test(item.date) ||
+      typeof item.message !== "string" || !item.message.trim() ||
+      (item.decision !== "adopted" && item.decision !== "rejected") ||
+      !isString(item.rationale)) return false;
+    const identity = `${item.date}|${item.id}`;
+    if (identities.has(identity)) return false;
+    identities.add(identity);
+    return true;
+  });
+}
+
+export function parseReport(raw: string, source: string): DailySeoReport {
   const value = JSON.parse(raw) as unknown;
   const isStructuredPolicyReport = isRecord(value) &&
     (value.policyVersion === 3 || value.policyVersion === 4);
@@ -345,6 +463,11 @@ function parseReport(raw: string, source: string): DailySeoReport {
     !Array.isArray(value.performance) || !value.performance.every(isPerformance) ||
     !Array.isArray(value.actions) || !value.actions.every(isAction) ||
     !isBrief(value.brief) ||
+    (value.publication !== undefined && !isPublication(value.publication)) ||
+    (value.publications !== undefined && (
+      !Array.isArray(value.publications) ||
+      !value.publications.every(isPublication)
+    )) ||
     !isReportDraft(value.draft, { allowLegacyMetadata: !isStructuredPolicyReport }) ||
     (value.drafts !== undefined && (
       !Array.isArray(value.drafts) ||
@@ -358,6 +481,10 @@ function parseReport(raw: string, source: string): DailySeoReport {
       !Array.isArray(value.evidence) ||
       !value.evidence.every((item) => isEvidenceItem(item, requiresDecisionEvidence))
     )) ||
+    (value.trendSignals !== undefined &&
+      !hasValidTrendSignals(value.trendSignals, value.opportunities, value.date)) ||
+    (value.feedbackDecisions !== undefined &&
+      !hasValidFeedbackDecisions(value.feedbackDecisions)) ||
     !hasValidEvidenceReferences(value) ||
     !Array.isArray(value.integrations) || !value.integrations.every(isIntegration) ||
     !Array.isArray(value.caveats) || !value.caveats.every(isString)) {
@@ -400,29 +527,13 @@ async function fetchStoredReport(path: string) {
   return parseReport(json, path);
 }
 
-async function readBundledLatestReport() {
-  const reportsDirectory = resolve(process.cwd(), "data/reports");
-  try {
-    const latest = (await readdir(reportsDirectory))
-      .filter((name) => /^\d{4}-\d{2}-\d{2}\.json$/.test(name))
-      .sort((left, right) => right.localeCompare(left))[0];
-    if (!latest) return null;
-    const path = resolve(reportsDirectory, latest);
-    return parseReport(await readFile(path, "utf8"), path);
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
-    throw error;
-  }
-}
-
-export async function readReportHistory(limit = 14) {
-  const safeLimit = Number.isInteger(limit) ? Math.min(90, Math.max(1, limit)) : 14;
+async function readBundledReportHistory(limit: number) {
   const reportsDirectory = resolve(process.cwd(), "data/reports");
   try {
     const names = (await readdir(reportsDirectory))
       .filter((name) => /^\d{4}-\d{2}-\d{2}\.json$/.test(name))
       .sort((left, right) => right.localeCompare(left))
-      .slice(0, safeLimit)
+      .slice(0, limit)
       .reverse();
     return Promise.all(
       names.map(async (name) => {
@@ -436,32 +547,48 @@ export async function readReportHistory(limit = 14) {
   }
 }
 
-export async function readLatestReport() {
-  const bundled = await readBundledLatestReport();
-  const { token, repository, branch } = githubConfig();
+async function readRemoteReportHistory(limit: number, token: string) {
+  const { repository, branch } = githubConfig();
+  const response = await githubFetch(
+    `https://api.github.com/repos/${repository}/contents/data/reports?ref=${encodeURIComponent(branch)}`,
+    { headers: headers(token), cache: "no-store" },
+  );
+  if (response.status === 404) return [];
+  if (!response.ok) throw new Error(`GitHub report list failed: ${response.status}`);
+  const items = (await response.json()) as GithubContent[];
+  const paths = items
+    .filter((item) => item.type === "file" && /^\d{4}-\d{2}-\d{2}\.json$/.test(item.name ?? ""))
+    .sort((left, right) => (right.name ?? "").localeCompare(left.name ?? ""))
+    .slice(0, limit)
+    .map((item) => item.path)
+    .filter((path): path is string => Boolean(path));
+  const reports = await Promise.all(paths.map((path) => fetchStoredReport(path)));
+  return reports
+    .filter((report): report is DailySeoReport => report !== null)
+    .sort((left, right) => left.date.localeCompare(right.date));
+}
+
+export async function readReportHistory(limit = 14) {
+  const safeLimit = Number.isInteger(limit) ? Math.min(90, Math.max(1, limit)) : 14;
+  const bundled = await readBundledReportHistory(safeLimit);
+  const { token } = githubConfig();
   if (!token) return bundled;
   try {
-    const response = await githubFetch(
-      `https://api.github.com/repos/${repository}/contents/data/reports?ref=${encodeURIComponent(branch)}`,
-      { headers: headers(token), cache: "no-store" },
-    );
-    if (response.status === 404) return bundled;
-    if (!response.ok) {
-      if (bundled) return bundled;
-      throw new Error(`GitHub report list failed: ${response.status}`);
-    }
-    const items = (await response.json()) as GithubContent[];
-    const latest = items
-      .filter((item) => item.type === "file" && /^\d{4}-\d{2}-\d{2}\.json$/.test(item.name ?? ""))
-      .sort((left, right) => (right.name ?? "").localeCompare(left.name ?? ""))[0];
-    const remote = latest?.path ? await fetchStoredReport(latest.path) : null;
-    if (!remote) return bundled;
-    if (!bundled) return remote;
-    return remote.date >= bundled.date ? remote : bundled;
-  } catch (error) {
-    if (bundled) return bundled;
-    throw error;
+    const remote = await readRemoteReportHistory(safeLimit, token);
+    const merged = new Map<string, DailySeoReport>();
+    for (const report of bundled) merged.set(report.date, report);
+    for (const report of remote) merged.set(report.date, report);
+    return [...merged.values()]
+      .sort((left, right) => left.date.localeCompare(right.date))
+      .slice(-safeLimit);
+  } catch {
+    return bundled;
   }
+}
+
+export async function readLatestReport() {
+  const reports = await readReportHistory(1);
+  return reports.at(-1) ?? null;
 }
 
 export async function persistReport(report: DailySeoReport) {

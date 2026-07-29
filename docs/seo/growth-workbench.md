@@ -1,75 +1,107 @@
-# SEO Growth Workbench MVP
+# SEO Growth Workbench
 
-## Goal
+## Purpose
 
-Turn daily SEO research into one prioritized, auditable action rather than mechanically publishing one page every day.
+The workbench turns research and observed performance into one auditable daily
+decision: create, improve, consolidate, or observe. It does not promise that a
+page will be published every day. Publication stops whenever the growth,
+evidence, editorial, repository, deployment, or live-page gate is incomplete.
 
-## Implemented in this MVP
+## Actual architecture
 
-1. Semrush related-keyword collection from configurable seeds.
-2. Google Search Console query-by-page performance collection.
-3. Opportunity scoring across demand, difficulty, trend, product fit, originality, conversion intent, IP risk, and cannibalization risk.
-4. Automatic choice between create, improve, consolidate, and observe.
-5. A structured page brief with evidence and quality gates.
-6. A protected `/workbench` dashboard.
-7. A protected manual-run endpoint.
-8. A daily Vercel Cron endpoint.
-9. Optional JSON report persistence through the GitHub Contents API.
-10. Explicit disconnected, partial, and live data modes with no demo fallback.
-11. A fact-constrained AI landing-page draft with deterministic quality checks.
-12. A protected, noindex draft preview route.
-
-## Daily Run
+The production scheduler is the Codex desktop automation at 09:15
+Asia/Shanghai. Vercel serves the site and the read-only workbench; it does not
+run the research pipeline. `vercel.json` intentionally contains no cron job.
 
 ```text
-01:15 UTC / 09:15 Asia/Shanghai
--> Vercel calls /api/cron/daily-seo with CRON_SECRET
--> collect Semrush candidates
--> collect Search Console performance
--> normalize and score
--> select the highest-value action
--> build the page brief
--> generate a structured English page draft through Vercel AI Gateway
--> block drafts that fail fact, IP, metadata, depth, or link checks
--> persist data/reports/YYYY-MM-DD.json when GitHub is connected
--> write a structured completion event to Vercel logs
+Codex desktop automation
+-> growth:check
+-> growth:collect (all published pages, one finalized Shanghai-day window)
+-> policy-v4 public-web and authorized-tool research
+-> optional official Google Trends signal
+-> deterministic candidate scoring
+-> research:build (READY FOR REVIEW only)
+-> independent approval record
+-> research:publish
+-> npm run verify
+-> scoped Git commit and remote push
+-> Vercel READY
+-> live H1 / canonical / CTA / sitemap checks
+-> indexing observation and authorized distribution follow-up
 ```
 
-## Scoring Principle
+`POST /api/workbench/run` is deliberately read-only. It reports today's local
+artifact and blocker state; it never pretends to start a serverless production
+job.
 
-The score intentionally does not optimize only for low keyword difficulty.
+## What the workbench shows
 
-Positive inputs:
+- The latest valid report, with proxy research scores separated from observed
+  Search Console and funnel metrics.
+- Today's pipeline artifacts and explicit blockers, including an invalid
+  policy version or a PDF without a builder-backed report.
+- A page leaderboard ordered by data availability, exact-page Search Console
+  impressions and clicks, landing UV, qualified outbound clicks, and paid
+  conversions. Unavailable values render as `—`, not zero.
+- Official Google Trends relative-interest observations when collected. A
+  Trends value is not monthly search volume; missing access stays unavailable.
+- The search-to-revenue funnel. Search Console and landing UV aggregate by
+  source slug and reporting period; downstream events join on `seo_click_id`.
+- A durable, verbatim feedback queue. Each unconsumed item must receive an
+  adopted/rejected decision and rationale before it is marked consumed.
+- Separate `ready_for_review`, `published`, deployed, indexed, and backlink-live
+  states. None is inferred from another.
 
-- product fit
-- originality potential
-- conversion intent
-- search demand
-- ranking feasibility
-- recent growth
+## Data and publication gates
 
-Penalties:
+- Policy v4 requires 5–12 distinct candidates.
+- Every candidate cites at least two directly supporting records from two
+  independent domains and includes decision-evidence signals and rationales.
+- The builder derives product fit, trial intent, revenue intent, intent
+  specificity, originality, IP risk, and cannibalization risk.
+- Demand and difficulty remain transparent 0–100 public-research proxies unless
+  an authorized provider observation is explicitly recorded.
+- Drafts are 600–1,000 English words with one intent, one H1, at least four
+  sections, at least three FAQs, approved product facts, internal links, and an
+  attributed CTA.
+- After the four-page cold-start allowance, a new page requires at least one
+  existing page with both non-zero landing UV and non-zero exact-page Search
+  Console impressions. Direct/internal UV does not qualify.
+- An update requires an observed Search Console row for the exact target page.
+- Orphan conversion callbacks block publication.
+- Existing same-day growth, research, report, review, page, or PDF artifacts
+  are immutable unless the user explicitly authorizes replacement.
 
-- unlicensed IP risk
-- keyword cannibalization risk
+## Indexing and external distribution
 
-The exact weight is centralized in `lib/seo/scoring.ts` and can be calibrated after 30–60 days of real conversion data.
+Publishing makes a URL eligible for crawling; it does not guarantee Google
+indexing. The release check verifies the live URL, canonical, crawlable links,
+`robots.txt`, and sitemap inclusion. Search Console URL Inspection or sitemap
+submission can request discovery, but `indexed` is recorded only when Google
+reports it.
 
-## Safety and Quality Gates
+External links are never auto-posted to accounts or communities without
+authorization. The automation may research relevant outreach targets and
+prepare truthful pitches. `backlink-live` requires a publicly reachable
+third-party URL that actually links to the SEO page.
 
-- No automatic publication when real product evidence is missing.
-- Production paths do not load demo figures; missing integrations render zero data.
-- Without `WORKBENCH_PASSWORD`, the disconnected workbench is public and read-only while its mutation API remains disabled.
-- After live data is connected, set `WORKBENCH_PASSWORD` to protect the page and its action API together.
-- Manual runs recheck authorization at the API layer.
-- Cron requests require `Authorization: Bearer $CRON_SECRET`.
-- External credentials are server-only variables.
-- A page brief requires real stories, roles, voice/product facts, and original assets before publication.
+## Required commands
 
-## Next Implementation Slice
+```bash
+npm run growth:check
+npm run growth:collect
+npm run feedback:sync
+npm run research:build -- data/research/YYYY-MM-DD.json
+npm run research:publish -- data/reports/YYYY-MM-DD.json data/reviews/YYYY-MM-DD.json
+npm run verify
+```
 
-1. Store reports and run history in Neon instead of Git commits when the volume grows.
-2. Add browser QA, broken-link checks, metadata checks, and screenshot approval.
-3. Create a GitHub PR automatically after the quality gate and human review pass.
-4. Add product events: CTA click, role selected, voice session started, registration, D1 retention, and payment.
-5. Train the opportunity weights against conversions rather than traffic alone.
+Run `growth:probe` from the NovelAI server environment after callback deployment
+or secret rotation. Do not describe the revenue loop as ready until the
+protected probe sees Search Console, landing UV, attribution storage, and a
+recent signed callback handshake.
+
+`research:build` runs `feedback:sync` first. Production submissions are stored
+through GitHub, while the builder deliberately reads the local inbox; the sync
+step merges the authoritative remote queue into the local tree and aborts on a
+network or decision conflict so feedback cannot be silently skipped.

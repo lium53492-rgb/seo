@@ -19,13 +19,15 @@ const stateLabels: Record<IntegrationStatus["state"], string> = {
 };
 
 const dailySteps = [
-  ["09:15 收集真实信号", "读取 Search Console、Vercel Analytics 和可用的产品转化数据；没有数据就记录不可用原因。"],
-  ["研究高意图候选", "结合公开网页和 SEO 工具，为候选词选择可审计的证据信号；系统再按 policy v4 确定性计算试玩、付费、具体度、产品匹配和竞争代理分。"],
+  ["09:15 收集真实信号", "先检查连接，再覆盖全部已发布页面读取 Search Console、Vercel Analytics 和可用的产品转化数据；没有数据就记录不可用原因。"],
+  ["研究高意图候选", "结合公开网页、授权 SEO 工具和可用的官方 Google Trends 相对热度，为候选词选择可审计证据；系统再按 policy v4 确定性计算试玩、付费、具体度、产品匹配和竞争代理分。"],
+  ["处理内容反馈", "逐字读取所有未消费指导，为每条记录采用或拒绝及原因，再把决定带进选题和 Brief。"],
   ["硬门槛筛选", "系统先排除宽泛信息词、弱试玩意图、产品不匹配、第三方 IP、内容蚕食和重复答案。"],
   ["生成事实受控草稿", "第一名合格机会变成 Brief、英文内容和待审页面，但此时不会写入已发布目录。"],
   ["独立编辑审稿", "人工或标明身份的 Codex 编辑器检查搜索意图、产品事实、来源和转化路径，并生成批准记录。"],
   ["测试后发布", "审批脚本写入页面；测试、类型检查、构建、线上 H1/canonical/CTA/sitemap 全部通过后才报告上线。"],
-  ["按营收反馈", "搜索点击和落地页 UV 按页面与周期聚合；用 seo_click_id 连接 NovelAI 出站、试玩、注册、付费和营收，再反向调整下一轮选题。"],
+  ["跟踪收录与授权分发", "上线、Vercel READY、Google indexed、backlink-live 分别记录；只在获授权渠道投放外链，不把提交收录误报为已收录。"],
+  ["按营收反馈", "页面榜单比较 exact-page GSC、UV、出站和付费；用 seo_click_id 连接 NovelAI 事件，再反向调整下一轮选题。"],
 ];
 
 const decisionRows = [
@@ -69,8 +71,8 @@ export default async function WorkbenchGuidePage() {
       <div className="wb-main wb-guide" id="guide">
         <header className="wb-guide-hero">
           <p className="wb-kicker">OPERATING MANUAL</p>
-          <h1>你只看结果，工作台负责把研究变成行动。</h1>
-          <p>每天沿同一条链路完成研究、评分、写作、独立审稿、质检和发布。你打开工作台时可以直接看到关键词为什么值得做，以及它带来的 UV、试玩和付费是否可观测。</p>
+          <h1>先看证据和阻断，再决定今天是否发布。</h1>
+          <p>每天沿同一条链路完成采集、研究、反馈、评分、写作、独立审稿和质检；只有全部闸门通过才发布。工作台会明确区分代理分、真实页面数据、部署、收录和外链状态。</p>
           <div className="wb-hero-actions">
             <a className="wb-primary-link" href="/workbench">打开今日任务</a>
             {report.publication?.status === "published" && report.publication.path ? (
@@ -86,9 +88,9 @@ export default async function WorkbenchGuidePage() {
             <div><p className="wb-kicker">30-SECOND START</p><h2>每天只做三件事</h2></div>
           </div>
           <div className="wb-guide-cards">
-            <article><span>01</span><h3>看今天为什么选它</h3><p>先看机会分、产品匹配、竞争代理分和来源，不需要逐个研究关键词。</p></article>
-            <article><span>02</span><h3>看发布状态</h3><p>READY FOR REVIEW 只是待审稿；只有 PUBLISHED 才代表审批和工程闸门都已通过。</p></article>
-            <article><span>03</span><h3>只处理异常</h3><p>只有闸门失败或产品事实变化时才需要你介入；其他日期保持零操作。</p></article>
+            <article><span>01</span><h3>看今日流水线</h3><p>先确认增长、研究、日报、审稿和 PDF 哪一步存在，以及是否使用 policy v4。</p></article>
+            <article><span>02</span><h3>看机会与页面榜单</h3><p>Google Trends 只看相对热度；真正的胜出页面按 GSC、UV、出站和付费观测值比较。</p></article>
+            <article><span>03</span><h3>看独立状态</h3><p>READY FOR REVIEW、PUBLISHED、Vercel READY、Google indexed 和 backlink-live 互不替代。</p></article>
           </div>
         </section>
 
@@ -118,7 +120,7 @@ export default async function WorkbenchGuidePage() {
               <tbody>{decisionRows.map(([signal, change, why]) => <tr key={signal}><td><strong>{signal}</strong></td><td>{change}</td><td>{why}</td></tr>)}</tbody>
             </table>
           </div>
-          <div className="wb-guide-note"><strong>读数原则：</strong>“需求分/竞争分”来自公开研究，只用于方向判断；曝光、点击、UV、试玩、付费和营收只有在对应数据源返回观测值后才显示。空数组和未连接一律不当作 0。</div>
+          <div className="wb-guide-note"><strong>读数原则：</strong>“需求分/竞争分”来自公开研究，只用于方向判断；Google Trends 的 0–100 是所选地区和期间内的相对热度，也不是月搜索量。曝光、点击、UV、试玩、付费和营收只有在对应数据源返回观测值后才显示。空数组和未连接一律不当作 0。</div>
         </section>
 
         <section className="wb-section" id="connections">
@@ -145,10 +147,11 @@ export default async function WorkbenchGuidePage() {
               <h3>免费读取真实搜索曝光与点击</h3>
               <ol>
                 <li>网址前缀属性 <code>https://seo-pi-fawn.vercel.app/</code> 已完成验证。</li>
-                <li>在运行 Codex 的这台电脑上保持 Google Search Console 登录。</li>
-                <li>每日任务会打开最近 28 天 Performance 页面，只读取 Google 明确显示的 query × page 指标。</li>
-                <li>若新站为 0 或登录失效，日报会写空值和原因，不会用代理分补位。</li>
-                <li>服务账号 API 是将来的可选增强，不再阻塞研究、页面生成或发布。</li>
+                <li>为该属性配置 Search Console API 服务账号，并把账号邮箱加入属性用户。</li>
+                <li>生产环境配置 client email、private key 和准确的 site URL；变更后运行 <code>growth:check</code>。</li>
+                <li>每日组合快照只读取最终数据，并按同一个完整上海日窗口覆盖所有已发布页面。</li>
+                <li>登录浏览器只作为 API 不可用时的显式人工核验；没有可见行就写 <code>performance: []</code> 和原因。</li>
+                <li>提交 sitemap 或 URL Inspection 只是请求发现，只有 Google 明确报告后才记为 <code>indexed</code>。</li>
               </ol>
             </article>
             <article>
@@ -180,6 +183,7 @@ export default async function WorkbenchGuidePage() {
             <span>✓ 独立批准记录包含搜索意图、产品事实、转化路径和来源复核</span>
           </div>
           <p className="wb-guide-footnote">研究脚本只生成 READY FOR REVIEW；审批脚本读取 data/reviews 中的批准记录后才写入 data/pages。随后 GitHub 推送触发 Vercel 构建。新产品能力仍需先加入唯一事实目录。</p>
+          <div className="wb-guide-note"><strong>外链边界：</strong>系统可以研究相关站点和准备真实 outreach 文案，但只有在你授权的账号、站点或合作渠道中才允许发布。第三方页面公开可访问且实际链接目标 SEO 页面后，才能记为 backlink-live。</div>
         </section>
       </div>
     </main>

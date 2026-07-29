@@ -116,6 +116,32 @@ test("report generation cannot publish before a separate approval artifact", asy
         measurementPlan: "Join outbound clicks to NovelAI trial and payment callbacks with seo_click_id.",
       },
       candidates,
+      trendSignals: [
+        {
+          keyword: keywords[0],
+          source: "google_trends",
+          sourceUrl: "https://trends.google.com/trends/explore?date=today%2012-m&geo=US&q=ai%20roleplay%20story",
+          state: "observed",
+          relativeInterest: 67,
+          direction: "rising",
+          geo: "US",
+          period: "past 12 months",
+          collectedAt: "2099-01-01T09:05:00+08:00",
+          detail: "Test fixture for a visible official Google Trends relative-interest observation.",
+        },
+        {
+          keyword: keywords[1],
+          source: "google_trends",
+          sourceUrl: "https://developers.google.com/search/apis/trends",
+          state: "unavailable",
+          relativeInterest: null,
+          direction: "unknown",
+          geo: "Worldwide",
+          period: "past 12 months",
+          collectedAt: "2099-01-01T09:05:00+08:00",
+          detail: "Test fixture records that an official Google Trends observation was unavailable.",
+        },
+      ],
       evidence: Array.from({ length: 5 }, (_, index) => ({
         id: `evidence-${index + 1}`,
         title: `Independent evidence ${index + 1}`,
@@ -210,6 +236,56 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.notEqual(unboundCannibalizationBuild.status, 0);
     assert.match(unboundCannibalizationBuild.stderr, /needs nearestExistingSlug/);
 
+    const unofficialTrendInput = structuredClone(input);
+    unofficialTrendInput.trendSignals[0].sourceUrl = "https://example.com/trends";
+    await writeFile(inputPath, `${JSON.stringify(unofficialTrendInput, null, 2)}\n`);
+    const unofficialTrendBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(unofficialTrendBuild.status, 0);
+    assert.match(unofficialTrendBuild.stderr, /official Google Trends URL/);
+
+    const invalidTrendValueInput = structuredClone(input);
+    invalidTrendValueInput.trendSignals[0].relativeInterest = 101;
+    await writeFile(inputPath, `${JSON.stringify(invalidTrendValueInput, null, 2)}\n`);
+    const invalidTrendValueBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(invalidTrendValueBuild.status, 0);
+    assert.match(invalidTrendValueBuild.stderr, /relativeInterest must be an integer from 0 to 100/);
+
+    await mkdir(join(workspace, "data", "seo-feedback", "inbox"), { recursive: true });
+    const feedbackMessage = "  Keep the exact page intent narrow.\n\nDo not flatten this feedback.  ";
+    await writeFile(
+      join(workspace, "data", "seo-feedback", "inbox", "2098-12-31.json"),
+      `${JSON.stringify({
+        date: "2098-12-31",
+        entries: [{
+          id: "feedback-verbatim-fixture",
+          createdAt: "2098-12-31T08:00:00.000Z",
+          message: feedbackMessage,
+          source: "workbench",
+          kind: "content_guidance",
+        }],
+      }, null, 2)}\n`,
+    );
+    await writeFile(inputPath, `${JSON.stringify(input, null, 2)}\n`);
+    const missingFeedbackDecisionBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(missingFeedbackDecisionBuild.status, 0);
+    assert.match(missingFeedbackDecisionBuild.stderr, /cover all 1 unconsumed workbench entries/);
+
+    input.feedbackDecisions = [{
+      id: "feedback-verbatim-fixture",
+      date: "2098-12-31",
+      message: feedbackMessage,
+      decision: "adopted",
+      rationale: "The draft keeps one trial-ready task and preserves the requested narrow intent.",
+    }];
     await writeFile(inputPath, `${JSON.stringify(input, null, 2)}\n`);
 
     const build = spawnSync(process.execPath, [builderPath, inputPath], { cwd: workspace, encoding: "utf8" });
@@ -233,6 +309,13 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.equal(reportBeforeReview.portfolioFunnels.reportingWindowDays, 28);
     assert.equal(reportBeforeReview.portfolioFunnels.reportingLagDays, 3);
     assert.equal(reportBeforeReview.portfolioDecision.action, "create_page");
+    assert.equal(reportBeforeReview.trendSignals[0].relativeInterest, 67);
+    assert.equal(reportBeforeReview.trendSignals[0].source, "google_trends");
+    assert.equal(reportBeforeReview.trendSignals[1].state, "unavailable");
+    assert.equal(reportBeforeReview.trendSignals[1].relativeInterest, null);
+    assert.equal(reportBeforeReview.feedbackDecisions.length, 1);
+    assert.equal(reportBeforeReview.feedbackDecisions[0].message, feedbackMessage);
+    assert.equal(reportBeforeReview.feedbackDecisions[0].decision, "adopted");
     assert.match(reportBeforeReview.publication.draftDigest, /^[a-f0-9]{64}$/);
     await assert.rejects(readFile(join(workspace, "data", "pages", "play-an-ai-roleplay-story.json"), "utf8"), /ENOENT/);
     const duplicateBuild = spawnSync(process.execPath, [builderPath, inputPath], { cwd: workspace, encoding: "utf8" });
@@ -279,6 +362,7 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.equal(reportAfterReview.publication.status, "published");
 
     const updateInput = structuredClone(input);
+    delete updateInput.trendSignals;
     updateInput.date = "2099-01-02";
     updateInput.generatedAt = "2099-01-02T09:15:00+08:00";
     updateInput.publicationMode = "update";
@@ -357,6 +441,7 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.equal(updateReport.publicationMode, "update");
     assert.equal(updateReport.publication.slug, "play-an-ai-roleplay-story");
     assert.equal(updateReport.brief.slug, "/play-an-ai-roleplay-story");
+    assert.deepEqual(updateReport.trendSignals, []);
   } finally {
     await rm(workspace, { recursive: true, force: true });
   }

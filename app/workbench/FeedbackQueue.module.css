@@ -1,0 +1,162 @@
+.queue {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--wb-line);
+}
+
+.header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.header > div {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.eyebrow {
+  color: var(--wb-green);
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.count {
+  color: var(--wb-ink);
+  font-size: 1.7rem;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.countLabel {
+  color: var(--wb-muted);
+  font-size: 0.68rem;
+}
+
+.refresh {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid #cfd3cb;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--wb-ink);
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.refresh:hover:not(:disabled),
+.refresh:focus-visible {
+  border-color: var(--wb-green);
+  color: var(--wb-green);
+}
+
+.refresh:focus-visible {
+  outline: 2px solid rgba(27, 107, 75, 0.28);
+  outline-offset: 2px;
+}
+
+.refresh:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.entries {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entry {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid #dfe2da;
+  border-radius: 8px;
+  background: #f5f4ef;
+}
+
+.entryMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--wb-muted);
+  font-size: 0.6rem;
+}
+
+.entryMeta span {
+  color: var(--wb-green);
+  font-weight: 900;
+}
+
+.message {
+  margin: 0;
+  color: var(--wb-ink);
+  font-size: 0.76rem;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.entry code {
+  color: var(--wb-muted);
+  font-size: 0.56rem;
+  overflow-wrap: anywhere;
+}
+
+.statePanel {
+  display: grid;
+  gap: 5px;
+  padding: 13px 14px;
+  border: 1px dashed #cfd2ca;
+  border-radius: 8px;
+  background: #f2f1ec;
+}
+
+.statePanel strong {
+  color: var(--wb-muted);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+}
+
+.statePanel span {
+  color: var(--wb-muted);
+  font-size: 0.68rem;
+  line-height: 1.55;
+}
+
+.statePanel.error {
+  border-color: #e7c7c2;
+  background: #fff1ef;
+}
+
+.statePanel.error strong,
+.statePanel.error span {
+  color: #8d3e35;
+}
+
+@media (max-width: 560px) {
+  .header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .refresh {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .refresh {
+    transition: none;
+  }
+}

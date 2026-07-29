@@ -35,9 +35,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const isVercel = process.env.VERCEL === "1";
+  const isVercel =
+    process.env.VERCEL === "1" && Boolean(process.env.VERCEL_URL);
   const googleAnalyticsId =
-    process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-S1CJS32N3F";
+    isVercel
+      ? process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-S1CJS32N3F"
+      : "";
 
   return (
     <html lang="en" className={cn(GeistSans.variable, GeistMono.variable)}>
