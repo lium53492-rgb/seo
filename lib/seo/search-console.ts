@@ -7,6 +7,7 @@ import type {
 
 const searchConsoleScope = "https://www.googleapis.com/auth/webmasters.readonly";
 const requestTimeoutMs = 5_000;
+const urlInspectionRequestTimeoutMs = 15_000;
 const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const rfc3339Zulu = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?Z$/;
 const fallbackSiteUrl = "https://seo-pi-fawn.vercel.app";
@@ -456,7 +457,7 @@ export async function readSearchConsoleUrlInspection(input: {
           languageCode: "en-US",
         }),
         cache: "no-store",
-        signal: AbortSignal.timeout(requestTimeoutMs),
+        signal: AbortSignal.timeout(urlInspectionRequestTimeoutMs),
       },
     );
   } catch (error) {
