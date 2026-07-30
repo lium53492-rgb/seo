@@ -127,7 +127,6 @@ file either embeds this object as `portfolioFunnels` or points to it with
 `portfolioSnapshot`. The report builder accepts legacy schema version 1 only as
 migration input and always emits the public schema-version 2 projection. It
 rejects missing pages, duplicate slugs, mismatched periods, stale snapshots,
-wrong lag, a true attribution-join blocker, and blind expansion after the
-four-page cold-start allowance. After that allowance, one published page must
-show both non-zero landing UV and non-zero exact-page Search Console
-impressions; direct or internal UV does not count as search validation.
+wrong lag, and a true attribution-join blocker. Page count, landing UV, and
+exact-page Search Console impressions remain recorded decision signals, but
+zero or unavailable values do not independently block a distinct new page.

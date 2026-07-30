@@ -247,8 +247,9 @@ test("collector does not publish an observed URL Inspection shell without decisi
   assert.match(snapshot.entries[0].reason, /safe public page snapshot/);
 });
 
-test("feedback gate stops blind fifth-page production and orphan attribution", () => {
+test("feedback gate permits expansion without UV or GSC results but still blocks broken attribution", () => {
   const policy = {
+    // Legacy expansion settings must no longer reactivate the retired gate.
     coldStartPublishedPageLimit: 4,
     minimumSearchValidatedLandingPages: 1,
     blockOnOrphanCallbacks: true,
@@ -260,7 +261,7 @@ test("feedback gate stops blind fifth-page production and orphan attribution", (
     searchValidatedLandingPages: 0,
     orphanCallbacks: 0,
     policy,
-  }).passed, false);
+  }).passed, true);
   assert.equal(evaluateGrowthFeedbackGate({
     publicationMode: "create",
     hasDraft: true,
@@ -279,7 +280,7 @@ test("feedback gate stops blind fifth-page production and orphan attribution", (
   }).passed, true);
 });
 
-test("only same-page UV plus exact-page search evidence unlocks expansion", () => {
+test("same-page UV plus exact-page search evidence remains a reporting signal", () => {
   const entry = {
     state: "collected",
     report: {

@@ -43,10 +43,10 @@ collects one all-page growth snapshot, then researches the public web, writes a
 review-required English draft, and builds a durable report. A separate approval
 artifact is mandatory before publication. The builder blocks unsupported
 product claims, weak trial/revenue intent, duplicate intent, unapproved facts,
-and blind page expansion after cold start without both observed exact-page
-Search Console impressions and landing UV. The workbench labels research
-values as proxy scores; they are not monthly search volume, CPC, Google data, or
-Semrush KD. See
+and broken attribution joins. Page count, exact-page Search Console impressions,
+and landing UV remain prioritization evidence rather than a hard expansion
+gate. The workbench labels research values as proxy scores; they are not monthly
+search volume, CPC, Google data, or Semrush KD. See
 `docs/seo/free-research-robot.md` for the evidence and scoring protocol.
 
 The dashboard also keeps official Google Trends relative-interest signals

@@ -3,7 +3,6 @@ import { createHash } from "node:crypto";
 import { dirname, relative, resolve } from "node:path";
 import { scoreResearchCandidate } from "./lib/seo-policy.mjs";
 import {
-  countSearchValidatedLandingPages,
   evaluateConsolidationEvidence,
   evaluateGrowthFeedbackGate,
   projectPrivateGrowthReport,
@@ -1218,12 +1217,7 @@ if (!consolidationEvidence.passed) {
   throw new Error(`Consolidation evidence gate failed: ${consolidationEvidence.reason} Record observe until the evidence is sufficient.`);
 }
 const funnel = validateFunnel(input.funnel);
-const searchValidatedLandingPages = countSearchValidatedLandingPages(portfolioFunnels.entries);
 const feedbackGate = evaluateGrowthFeedbackGate({
-  publicationMode: input.publicationMode,
-  hasDraft: rawDrafts.length > 0,
-  publishedPageCount: pages.length,
-  searchValidatedLandingPages,
   attributionJoinBlocked: portfolioFunnels.summary.attributionJoinBlocked,
   policy: policy.feedbackLoop,
 });

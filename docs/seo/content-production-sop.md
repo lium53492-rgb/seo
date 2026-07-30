@@ -78,7 +78,7 @@ When a draft includes a contextual internal link, the published template must re
   snapshot keeps only exact-page GSC, sanitized URL Inspection, aggregate UV,
   aggregate qualified outbound, and boolean readiness/blocking state.
 - Convert that portfolio into a durable `portfolioDecision`: `create_page`, `improve_page`, `consolidate`, or `observe`. Record an evidence-led rationale, cited published slugs, and a target slug when applicable. A draft is legal only for the matching create or improve action.
-- Four existing pages are the present cold-start allowance. Once that allowance is reached, at least one published page must have both non-zero landing UV and non-zero Search Console impressions for its exact URL before another new page can pass the builder. Direct or internal UV alone does not qualify. An update additionally needs an observed Search Console row for its exact target URL.
+- Page count, landing UV, and exact-page Search Console impressions are observed prioritization signals, not a hard prerequisite for a distinct new page. Zero or unavailable performance does not by itself block `create_page`; every candidate still needs the normal evidence, product, intent, originality, IP, review, and daily-limit gates. An update additionally needs an observed Search Console row for its exact target URL.
 - Consolidation is not permission to redirect. The builder requires distinct
   source and target slugs, at least one query observed for both exact pages,
   at least 20 exact-page impressions per page over the same finalized period,

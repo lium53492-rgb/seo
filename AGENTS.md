@@ -55,11 +55,10 @@ Before a new page or update:
   the revenue loop as ready unless the protected probe observes Search
   Console, landing UV, and the attribution store and a recent signed NovelAI
   callback handshake exists.
-- After the cold-start allowance in `data/config/seo-policy.json` is exhausted,
-  do not publish another new page until at least one existing page has both
-  non-zero landing UV and non-zero exact-page Search Console impressions.
-  Direct or internal UV alone does not qualify. Stop on orphan conversion
-  callbacks instead of hiding a broken attribution join.
+- Do not use a published-page count, non-zero landing UV, or non-zero exact-page
+  Search Console impressions as a hard prerequisite for a distinct new page.
+  Keep those metrics as observed prioritization signals. Stop on orphan
+  conversion callbacks instead of hiding a broken attribution join.
 
 ## Content and page requirements
 

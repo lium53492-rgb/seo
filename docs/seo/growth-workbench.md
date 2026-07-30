@@ -67,9 +67,8 @@ job.
 - Drafts are 600–1,000 English words with one intent, one H1, at least four
   sections, at least three FAQs, approved product facts, internal links, and an
   attributed CTA.
-- After the four-page cold-start allowance, a new page requires at least one
-  existing page with both non-zero landing UV and non-zero exact-page Search
-  Console impressions. Direct/internal UV does not qualify.
+- Page count, landing UV, and exact-page Search Console impressions remain
+  prioritization signals; they do not independently block a distinct new page.
 - An update requires an observed Search Console row for the exact target page.
 - A broken attribution join blocks publication. The public snapshot exposes
   only that boolean blocker, never callback counts or event detail.

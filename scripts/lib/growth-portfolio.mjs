@@ -47,10 +47,6 @@ export function countSearchValidatedLandingPages(entries) {
 }
 
 export function evaluateGrowthFeedbackGate({
-  publicationMode,
-  hasDraft,
-  publishedPageCount,
-  searchValidatedLandingPages,
   attributionJoinBlocked,
   orphanCallbacks,
   policy,
@@ -60,17 +56,6 @@ export function evaluateGrowthFeedbackGate({
     return {
       passed: false,
       reason: "Growth portfolio reports a broken attribution join; repair it before publishing",
-    };
-  }
-  if (
-    publicationMode !== "update" &&
-    hasDraft &&
-    publishedPageCount >= Number(policy?.coldStartPublishedPageLimit ?? 0) &&
-    searchValidatedLandingPages < Number(policy?.minimumSearchValidatedLandingPages ?? 1)
-  ) {
-    return {
-      passed: false,
-      reason: "Growth feedback gate blocked a new page: at least one published page needs non-zero landing UV and non-zero exact-page Search Console impressions; direct or internal UV alone does not qualify",
     };
   }
   return { passed: true, reason: "The growth feedback gate passed." };
@@ -574,9 +559,7 @@ export async function collectGrowthPortfolio({
   const attributionJoinReady =
     collectedEntries.length === entries.length &&
     collectedEntries.every((entry) => entry.report.decisionState.attributionJoinChecked);
-  const hasSearchValidatedLandingPage = collectedEntries.some(
-    (entry) => entry.report.decisionState.samePageSearchValidated,
-  );
+  const hasSearchValidatedLandingPage = countSearchValidatedLandingPages(entries) > 0;
 
   return {
     schemaVersion: 2,

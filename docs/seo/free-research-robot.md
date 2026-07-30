@@ -14,7 +14,7 @@ This is the active zero-additional-API-cost production protocol. It uses public 
    revenue, currency, purchase-event, callback-count, click-ID, or cohort detail
    into `data/growth` or `data/reports`.
 5. Run `npm.cmd run growth:probe` from the NovelAI server environment after callback deployment or secret rotation, then run `npm.cmd run growth:check`. Full-loop readiness requires observed Search Console, Vercel landing UV, and attribution-store probes plus a recent signed NovelAI callback handshake.
-6. Run `npm.cmd run growth:collect` before researching candidates. It uses the official Search Console and Vercel APIs over the configured 28-day finalized-data window, currently ending three complete Shanghai days before the run. Read the resulting all-page snapshot and stop blind new-page production when the configured cold-start allowance is exhausted unless one published page has both non-zero landing UV and non-zero exact-page Search Console impressions. Direct or internal UV alone never unlocks expansion.
+6. Run `npm.cmd run growth:collect` before researching candidates. It uses the official Search Console and Vercel APIs over the configured 28-day finalized-data window, currently ending three complete Shanghai days before the run. Read the resulting all-page snapshot and use page-level UV and exact-page Search Console evidence to prioritize decisions, but do not treat page count, zero metrics, or unavailable metrics as a standalone hard block on a distinct `create_page` candidate.
 
 ## Candidate research
 
