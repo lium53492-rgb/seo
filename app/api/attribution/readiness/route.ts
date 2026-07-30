@@ -1,4 +1,7 @@
-import { isWorkbenchAuthorized } from "@/lib/seo/auth";
+import {
+  isPrivateAttributionAccessConfigured,
+  isPrivateAttributionRequestAuthorized,
+} from "@/lib/seo/auth";
 import seoPolicy from "@/data/config/seo-policy.json";
 import {
   attributionStoreStatus,
@@ -15,10 +18,10 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function GET(request: Request) {
-  if (!process.env.WORKBENCH_PASSWORD) {
+  if (!isPrivateAttributionAccessConfigured()) {
     return privateJson({ error: "Private growth readiness is not configured" }, { status: 503 });
   }
-  if (!isWorkbenchAuthorized(request)) {
+  if (!isPrivateAttributionRequestAuthorized(request)) {
     return privateJson({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -41,6 +44,10 @@ export async function GET(request: Request) {
         searchConsole: {
           state: growth.searchPerformance.state,
           detail: growth.searchPerformance.detail,
+        },
+        urlInspection: {
+          state: growth.urlInspection.state,
+          detail: growth.urlInspection.detail,
         },
         landingUv: {
           state: growth.funnel.metrics.landingUv.status,
@@ -101,6 +108,7 @@ export async function GET(request: Request) {
   };
   const sourceProbeReady = probe && !("state" in probe) &&
     probe.searchConsole.state === "observed" &&
+    probe.urlInspection.state === "observed" &&
     probe.landingUv.state === "observed" &&
     probe.attributionStore.state === "observed";
 
@@ -121,6 +129,13 @@ export async function GET(request: Request) {
     },
     probe,
     readyFor: {
+      searchEvidence: Boolean(
+        searchConsole.configured &&
+        probe &&
+        !("state" in probe) &&
+        probe.searchConsole.state === "observed" &&
+        probe.urlInspection.state === "observed"
+      ),
       searchToUv: searchConsole.configured && landingUv.configured,
       outboundToRevenue: attributionStore.configured &&
         conversionCallback.configured &&

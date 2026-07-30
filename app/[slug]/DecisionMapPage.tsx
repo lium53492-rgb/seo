@@ -9,7 +9,7 @@ export function DecisionMapPage({ page, relatedPages }: SeoPageViewProps) {
   return (
     <main className={styles.shell}>
       <nav className={styles.nav} aria-label="Primary navigation">
-        <a href="/" className={styles.brand}><span>N</span>INTERACTIVE STORY MAP</a>
+        <span className={styles.brand}><span>N</span>INTERACTIVE STORY MAP</span>
         <TrackedNovelAiHomeLink sourceSlug={page.slug} location="header">OPEN NOVELAI ↗</TrackedNovelAiHomeLink>
       </nav>
 

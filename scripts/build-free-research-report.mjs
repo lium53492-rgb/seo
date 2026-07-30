@@ -4,7 +4,9 @@ import { dirname, relative, resolve } from "node:path";
 import { scoreResearchCandidate } from "./lib/seo-policy.mjs";
 import {
   countSearchValidatedLandingPages,
+  evaluateConsolidationEvidence,
   evaluateGrowthFeedbackGate,
+  projectPrivateGrowthReport,
 } from "./lib/growth-portfolio.mjs";
 
 const inputPath = process.argv[2];
@@ -544,11 +546,34 @@ function validateSearchPerformance(value, sourceSlug) {
   ) {
     throw new Error(`Growth entry has invalid Search Console provenance: ${sourceSlug}`);
   }
+  let pageUrl;
+  try {
+    pageUrl = new URL(value.pageUrl);
+  } catch {
+    throw new Error(`Growth entry has invalid Search Console page URL: ${sourceSlug}`);
+  }
+  if (pageUrl.pathname.replace(/\/$/, "") !== `/${sourceSlug}`) {
+    throw new Error(`Growth entry Search Console evidence is not for the exact page: ${sourceSlug}`);
+  }
+  const common = {
+    state: value.state,
+    sourceSlug,
+    pageUrl: pageUrl.toString(),
+    startDate: value.startDate,
+    endDate: value.endDate,
+  };
   if (value.state === "unavailable") {
     if ([value.clicks, value.impressions, value.ctr, value.position].some((metric) => metric !== null)) {
       throw new Error(`Unavailable Search Console metrics must stay null: ${sourceSlug}`);
     }
-    return { ...value, detail: value.detail.trim() };
+    return {
+      ...common,
+      clicks: null,
+      impressions: null,
+      ctr: null,
+      position: null,
+      detail: value.detail.trim(),
+    };
   }
   const clicks = nullableNonNegative(value.clicks, "Search Console clicks");
   const impressions = nullableNonNegative(value.impressions, "Search Console impressions");
@@ -558,7 +583,7 @@ function validateSearchPerformance(value, sourceSlug) {
     throw new Error(`Observed Search Console metrics are incomplete: ${sourceSlug}`);
   }
   return {
-    ...value,
+    ...common,
     clicks,
     impressions,
     ctr,
@@ -567,17 +592,316 @@ function validateSearchPerformance(value, sourceSlug) {
   };
 }
 
+function normalizedPublicCanonical(value, pageUrl) {
+  if (value === null) return null;
+  try {
+    const canonical = new URL(value);
+    if (
+      !["http:", "https:"].includes(canonical.protocol) ||
+      canonical.origin !== pageUrl.origin
+    ) {
+      return null;
+    }
+    canonical.username = "";
+    canonical.password = "";
+    canonical.search = "";
+    canonical.hash = "";
+    return canonical.toString();
+  } catch {
+    return null;
+  }
+}
+
+function validateUrlInspection(value, sourceSlug, fallbackInspectedAt) {
+  if (value === undefined) {
+    return {
+      state: "unavailable",
+      sourceSlug,
+      pageUrl: `https://seo-pi-fawn.vercel.app/${sourceSlug}`,
+      inspectedAt: fallbackInspectedAt,
+      verdict: null,
+      coverageState: null,
+      robotsTxtState: null,
+      indexingState: null,
+      pageFetchState: null,
+      lastCrawlTime: null,
+      googleCanonical: null,
+      userCanonical: null,
+      crawledAs: null,
+      sitemap: [],
+      detail: "URL Inspection was not collected in this legacy growth snapshot.",
+    };
+  }
+  if (
+    !value ||
+    !["observed", "unavailable"].includes(value.state) ||
+    value.sourceSlug !== sourceSlug ||
+    typeof value.pageUrl !== "string" ||
+    !/^https:\/\//.test(value.pageUrl) ||
+    !Number.isFinite(Date.parse(value.inspectedAt || "")) ||
+    typeof value.detail !== "string" ||
+    value.detail.trim().length < 20 ||
+    !Array.isArray(value.sitemap) ||
+    value.sitemap.some((item) => typeof item !== "string" || !/^https:\/\//.test(item))
+  ) {
+    throw new Error(`Growth entry has invalid URL Inspection provenance: ${sourceSlug}`);
+  }
+  const nullableFields = [
+    "verdict",
+    "coverageState",
+    "robotsTxtState",
+    "indexingState",
+    "pageFetchState",
+    "lastCrawlTime",
+    "googleCanonical",
+    "userCanonical",
+    "crawledAs",
+  ];
+  if (nullableFields.some((field) => value[field] !== null && typeof value[field] !== "string")) {
+    throw new Error(`Growth entry has invalid URL Inspection fields: ${sourceSlug}`);
+  }
+  if (
+    value.lastCrawlTime !== null &&
+    !Number.isFinite(Date.parse(value.lastCrawlTime))
+  ) {
+    throw new Error(`Growth entry has invalid URL Inspection crawl time: ${sourceSlug}`);
+  }
+  if (
+    value.state === "unavailable" &&
+    (
+      nullableFields.some((field) => value[field] !== null) ||
+      value.sitemap.length > 0
+    )
+  ) {
+    throw new Error(`Unavailable URL Inspection fields must stay empty: ${sourceSlug}`);
+  }
+  const pageUrl = new URL(value.pageUrl);
+  if (pageUrl.pathname.replace(/\/$/, "") !== `/${sourceSlug}`) {
+    throw new Error(`Growth entry URL Inspection is not for the exact page: ${sourceSlug}`);
+  }
+  const googleCanonical = normalizedPublicCanonical(value.googleCanonical, pageUrl);
+  const userCanonical = normalizedPublicCanonical(value.userCanonical, pageUrl);
+  if (
+    value.state === "observed" &&
+    [
+      value.verdict,
+      value.coverageState,
+      value.robotsTxtState,
+      value.indexingState,
+      value.pageFetchState,
+      value.lastCrawlTime,
+      googleCanonical,
+      userCanonical,
+      value.crawledAs,
+    ].every((field) => field === null)
+  ) {
+    throw new Error(`Observed URL Inspection needs a real decision field: ${sourceSlug}`);
+  }
+  return {
+    state: value.state,
+    sourceSlug,
+    pageUrl: pageUrl.toString(),
+    inspectedAt: value.inspectedAt,
+    verdict: value.verdict,
+    coverageState: value.coverageState,
+    robotsTxtState: value.robotsTxtState,
+    indexingState: value.indexingState,
+    pageFetchState: value.pageFetchState,
+    lastCrawlTime: value.lastCrawlTime,
+    googleCanonical,
+    userCanonical,
+    crawledAs: value.crawledAs,
+    sitemap: [],
+    detail: value.detail.trim(),
+  };
+}
+
+const persistedGrowthForbiddenKeys = new Set([
+  "clickId",
+  "cohort",
+  "conversionJoinKey",
+  "joinKey",
+  "funnel",
+  "organicClicks",
+  "trialStarts",
+  "signups",
+  "paidConversions",
+  "revenueMinor",
+  "currency",
+  "purchaseEvents",
+  "orphanCallbacks",
+  "revenueByCurrency",
+  "pageviews",
+  "outboundRequests",
+  "ctaLocations",
+]);
+
+function findForbiddenGrowthKey(value) {
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const found = findForbiddenGrowthKey(item);
+      if (found) return found;
+    }
+    return null;
+  }
+  if (!isRecord(value)) return null;
+  for (const [key, child] of Object.entries(value)) {
+    if (persistedGrowthForbiddenKeys.has(key)) return key;
+    const found = findForbiddenGrowthKey(child);
+    if (found) return found;
+  }
+  return null;
+}
+
+function publicDecisionMetric(value, name, source) {
+  if (
+    !value ||
+    !["observed", "unavailable"].includes(value.status) ||
+    value.source !== source ||
+    typeof value.detail !== "string" ||
+    value.detail.trim().length < 20
+  ) {
+    throw new Error(`Growth entry has invalid public ${name} evidence`);
+  }
+  const observed = value.status === "observed";
+  const metricValue = observed ? requiredNonNegative(value.value, name) : null;
+  if (!observed && value.value !== null) {
+    throw new Error(`Unavailable public ${name} evidence must use a null value`);
+  }
+  const detail = name === "landingUv"
+    ? observed
+      ? "Observed the exact landing page's aggregate UV through Vercel Web Analytics for this reporting period."
+      : "Exact-page landing UV was unavailable from Vercel Web Analytics for this reporting period."
+    : observed
+      ? "Observed the page-level qualified outbound aggregate through the private attribution service for this reporting period."
+      : "The page-level qualified outbound aggregate was unavailable from the private attribution service for this reporting period.";
+  return {
+    status: observed ? "observed" : "unavailable",
+    value: metricValue,
+    source,
+    detail,
+  };
+}
+
+function publicPortfolioReport(rawReport, page, rawPortfolio) {
+  if (!rawReport || rawReport.sourceSlug !== page.slug) {
+    throw new Error(`Growth entry report does not match /${page.slug}`);
+  }
+
+  if (rawPortfolio.schemaVersion === 1) {
+    const legacyFunnel = validateFunnel(rawReport.funnel);
+    if (
+      legacyFunnel.periodStart !== rawPortfolio.periodStart ||
+      legacyFunnel.periodEnd !== rawPortfolio.periodEnd
+    ) {
+      throw new Error(`Growth entry uses a mismatched reporting period: ${page.slug}`);
+    }
+    const projected = projectPrivateGrowthReport(
+      {
+        ...rawReport,
+        funnel: legacyFunnel,
+        urlInspection: validateUrlInspection(
+          rawReport.urlInspection,
+          page.slug,
+          rawPortfolio.generatedAt,
+        ),
+      },
+      page,
+      {
+        periodStart: rawPortfolio.periodStart,
+        periodEnd: rawPortfolio.periodEnd,
+      },
+    );
+    return {
+      ...projected,
+      searchPerformance: validateSearchPerformance(projected.searchPerformance, page.slug),
+      urlInspection: validateUrlInspection(
+        projected.urlInspection,
+        page.slug,
+        rawPortfolio.generatedAt,
+      ),
+    };
+  }
+
+  const landingUv = publicDecisionMetric(
+    rawReport.metrics?.landingUv,
+    "landingUv",
+    "vercel_analytics",
+  );
+  const qualifiedOutboundClicks = publicDecisionMetric(
+    rawReport.metrics?.qualifiedOutboundClicks,
+    "qualifiedOutboundClicks",
+    "seo_redirect",
+  );
+  const searchPerformance = validateSearchPerformance(rawReport.searchPerformance, page.slug);
+  const urlInspection = validateUrlInspection(
+    rawReport.urlInspection,
+    page.slug,
+    rawPortfolio.generatedAt,
+  );
+  const suppliedState = rawReport.decisionState;
+  if (
+    !suppliedState ||
+    [
+      "landingUvReady",
+      "qualifiedOutboundReady",
+      "searchPerformanceReady",
+      "urlInspectionReady",
+      "attributionJoinChecked",
+      "attributionJoinBlocked",
+      "samePageSearchValidated",
+    ].some((name) => typeof suppliedState[name] !== "boolean") ||
+    (suppliedState.attributionJoinBlocked && !suppliedState.attributionJoinChecked)
+  ) {
+    throw new Error(`Growth entry has invalid public decision state: ${page.slug}`);
+  }
+  const derivedState = {
+    landingUvReady: landingUv.status === "observed",
+    qualifiedOutboundReady: qualifiedOutboundClicks.status === "observed",
+    searchPerformanceReady: searchPerformance.state === "observed",
+    urlInspectionReady: urlInspection.state === "observed",
+    attributionJoinChecked: suppliedState.attributionJoinChecked,
+    attributionJoinBlocked: suppliedState.attributionJoinBlocked,
+    samePageSearchValidated:
+      landingUv.status === "observed" &&
+      landingUv.value > 0 &&
+      searchPerformance.state === "observed" &&
+      Number(searchPerformance.impressions) > 0,
+  };
+  for (const [key, value] of Object.entries(derivedState)) {
+    if (suppliedState[key] !== value) {
+      throw new Error(`Growth entry has inconsistent public decision state: ${page.slug}`);
+    }
+  }
+  return {
+    sourceSlug: page.slug,
+    metrics: { landingUv, qualifiedOutboundClicks },
+    searchPerformance,
+    urlInspection,
+    decisionState: derivedState,
+  };
+}
+
 function validatePortfolioSnapshot(rawPortfolio, publishedPages) {
+  const legacySnapshot = rawPortfolio?.schemaVersion === 1;
+  const publicSnapshot = rawPortfolio?.schemaVersion === 2;
   if (
     !rawPortfolio ||
-    rawPortfolio.schemaVersion !== 1 ||
+    (!legacySnapshot && !publicSnapshot) ||
+    (publicSnapshot && rawPortfolio.privacyClass !== "public_growth_evidence") ||
     rawPortfolio.periodBasis !== "complete_shanghai_calendar_days" ||
     rawPortfolio.reportingWindowDays !== Number(policy.feedbackLoop?.reportingWindowDays ?? 28) ||
     rawPortfolio.reportingLagDays !== Number(policy.feedbackLoop?.reportingLagDays ?? 3) ||
     rawPortfolio.aggregationKey !== "source_slug+reporting_period" ||
-    rawPortfolio.conversionJoinKey !== "seo_click_id"
+    (legacySnapshot && rawPortfolio.conversionJoinKey !== "seo_click_id")
   ) {
-    throw new Error("Growth portfolio must use schema v1, the configured reporting lag, complete Shanghai days, and the approved join contract");
+    throw new Error("Growth portfolio must use public schema v2 (or readable legacy v1), the configured reporting lag, and complete Shanghai days");
+  }
+  if (publicSnapshot) {
+    const forbiddenKey = findForbiddenGrowthKey(rawPortfolio);
+    if (forbiddenKey) {
+      throw new Error(`Public growth schema v2 contains a forbidden private field: ${forbiddenKey}`);
+    }
   }
   const generatedAt = Date.parse(rawPortfolio.generatedAt || "");
   const periodStart = Date.parse(rawPortfolio.periodStart || "");
@@ -628,59 +952,60 @@ function validatePortfolioSnapshot(rawPortfolio, publishedPages) {
         reason: entry.reason.trim(),
       };
     }
-    if (entry.state !== "collected" || entry.report?.sourceSlug !== page.slug) {
+    if (entry.state !== "collected") {
       throw new Error(`Growth entry must be collected or unavailable: ${entry.sourceSlug}`);
-    }
-    const funnel = validateFunnel(entry.report.funnel);
-    if (funnel.periodStart !== rawPortfolio.periodStart || funnel.periodEnd !== rawPortfolio.periodEnd) {
-      throw new Error(`Growth entry uses a mismatched reporting period: ${entry.sourceSlug}`);
-    }
-    const revenueByCurrency = {};
-    for (const [currency, value] of Object.entries(entry.report.revenueByCurrency || {})) {
-      if (!/^[A-Z]{3}$/.test(currency) || !Number.isFinite(Number(value)) || Number(value) < 0) {
-        throw new Error(`Growth entry has invalid currency revenue: ${entry.sourceSlug}`);
-      }
-      revenueByCurrency[currency] = Number(value);
     }
     return {
       sourceSlug: page.slug,
       path: page.path,
       keyword: page.keyword,
       state: "collected",
-      report: {
-        sourceSlug: page.slug,
-        funnel,
-        pageviews: nullableNonNegative(entry.report.pageviews, "pageviews"),
-        outboundRequests: nullableNonNegative(entry.report.outboundRequests, "outboundRequests"),
-        purchaseEvents: nullableNonNegative(entry.report.purchaseEvents, "purchaseEvents"),
-        orphanCallbacks: nullableNonNegative(entry.report.orphanCallbacks, "orphanCallbacks"),
-        revenueByCurrency,
-        ctaLocations: Object.fromEntries(
-          Object.entries(entry.report.ctaLocations || {}).map(([location, value]) => [
-            validatedCtaLocation(location),
-            requiredNonNegative(value, `CTA location ${location}`),
-          ]),
-        ),
-        searchPerformance: validateSearchPerformance(entry.report.searchPerformance, page.slug),
-      },
+      report: publicPortfolioReport(entry.report, page, rawPortfolio),
     };
   });
 
-  const collectedPages = entries.filter((entry) => entry.state === "collected").length;
+  const collectedEntries = entries.filter((entry) => entry.state === "collected");
+  const attributionJoinBlocked = collectedEntries.some(
+    (entry) => entry.report.decisionState.attributionJoinBlocked,
+  );
+  const attributionJoinReady =
+    collectedEntries.length === entries.length &&
+    collectedEntries.every((entry) => entry.report.decisionState.attributionJoinChecked);
+  const hasSearchValidatedLandingPage = collectedEntries.some(
+    (entry) => entry.report.decisionState.samePageSearchValidated,
+  );
+  if (publicSnapshot) {
+    const expectedSummary = {
+      publishedPages: entries.length,
+      collectedPages: collectedEntries.length,
+      unavailablePages: entries.length - collectedEntries.length,
+      attributionJoinReady,
+      attributionJoinBlocked,
+      hasSearchValidatedLandingPage,
+    };
+    for (const [key, value] of Object.entries(expectedSummary)) {
+      if (rawPortfolio.summary?.[key] !== value) {
+        throw new Error(`Public growth portfolio summary is inconsistent: ${key}`);
+      }
+    }
+  }
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
+    privacyClass: "public_growth_evidence",
     generatedAt: rawPortfolio.generatedAt,
     periodBasis: "complete_shanghai_calendar_days",
     reportingWindowDays: rawPortfolio.reportingWindowDays,
     reportingLagDays: rawPortfolio.reportingLagDays,
     aggregationKey: "source_slug+reporting_period",
-    conversionJoinKey: "seo_click_id",
     periodStart: rawPortfolio.periodStart,
     periodEnd: rawPortfolio.periodEnd,
     summary: {
       publishedPages: entries.length,
-      collectedPages,
-      unavailablePages: entries.length - collectedPages,
+      collectedPages: collectedEntries.length,
+      unavailablePages: entries.length - collectedEntries.length,
+      attributionJoinReady,
+      attributionJoinBlocked,
+      hasSearchValidatedLandingPage,
     },
     entries,
   };
@@ -717,12 +1042,34 @@ function validatePortfolioDecision(rawDecision, publishedPages) {
   if (rawDecision.action === "observe" && targetSlug !== null && !publishedSlugs.has(targetSlug)) {
     throw new Error("observe targetSlug must be null or an existing published page");
   }
+  const sourceSlug = rawDecision.sourceSlug == null ? null : String(rawDecision.sourceSlug);
+  const overlapQueries = Array.isArray(rawDecision.overlapQueries)
+    ? [...new Set(
+        rawDecision.overlapQueries
+          .map((query) => String(query || "").trim().toLowerCase())
+          .filter(Boolean),
+      )]
+    : [];
+  if (rawDecision.action === "consolidate") {
+    if (!publishedSlugs.has(sourceSlug) || sourceSlug === targetSlug) {
+      throw new Error("consolidate requires a distinct published sourceSlug");
+    }
+    if (!overlapQueries.length) {
+      throw new Error("consolidate requires explicit overlapQueries evidence");
+    }
+    if (!evidenceSlugs.includes(sourceSlug) || !evidenceSlugs.includes(targetSlug)) {
+      throw new Error("consolidate evidenceSlugs must include both sourceSlug and targetSlug");
+    }
+  }
   return {
     schemaVersion: 1,
     action: rawDecision.action,
     targetSlug,
     rationale: rawDecision.rationale.trim(),
     evidenceSlugs,
+    ...(rawDecision.action === "consolidate"
+      ? { sourceSlug, overlapQueries }
+      : {}),
   };
 }
 
@@ -861,22 +1208,23 @@ const totals = performance.reduce(
   (result, row) => ({ clicks: result.clicks + (Number(row.clicks) || 0), impressions: result.impressions + (Number(row.impressions) || 0) }),
   { clicks: 0, impressions: 0 },
 );
+const consolidationEvidence = evaluateConsolidationEvidence({
+  decision: portfolioDecision,
+  entries: portfolioFunnels.entries,
+  performance,
+  minimumImpressions: 20,
+});
+if (!consolidationEvidence.passed) {
+  throw new Error(`Consolidation evidence gate failed: ${consolidationEvidence.reason} Record observe until the evidence is sufficient.`);
+}
 const funnel = validateFunnel(input.funnel);
 const searchValidatedLandingPages = countSearchValidatedLandingPages(portfolioFunnels.entries);
-const orphanCallbacks = portfolioFunnels.entries.reduce(
-  (total, entry) => total + (
-    entry.state === "collected" && entry.report.orphanCallbacks !== null
-      ? entry.report.orphanCallbacks
-      : 0
-  ),
-  0,
-);
 const feedbackGate = evaluateGrowthFeedbackGate({
   publicationMode: input.publicationMode,
   hasDraft: rawDrafts.length > 0,
   publishedPageCount: pages.length,
   searchValidatedLandingPages,
-  orphanCallbacks,
+  attributionJoinBlocked: portfolioFunnels.summary.attributionJoinBlocked,
   policy: policy.feedbackLoop,
 });
 if (!feedbackGate.passed) throw new Error(feedbackGate.reason);
@@ -949,7 +1297,6 @@ const report = {
   performance,
   trendSignals,
   feedbackDecisions,
-  funnel,
   portfolioFunnels,
   portfolioDecision,
   publication,
@@ -983,7 +1330,7 @@ const report = {
     { id: "search_console", name: "Google Search Console", state: performance.length ? "connected" : "missing", detail: performance.length ? `${performance.length} visible query/page rows recorded.` : "No visible Search Console rows were available; no metrics were inferred.", href: "https://search.google.com/search-console", actionLabel: "Open Search Console" },
     { id: "ai_gateway", name: "Codex Content", state: draft ? "connected" : "configured", detail: draft ? "A fact-constrained draft is ready for a separate editorial review." : "Research is ready for drafting." },
     { id: "github", name: "GitHub Reports", state: "configured", detail: "Daily reports and approved pages are committed only after verification.", href: "https://github.com/lium53492-rgb/seo/tree/main/data/reports", actionLabel: "Open report history" },
-    { id: "product_analytics", name: "Revenue Attribution", state: funnel.attributionStatus === "connected" ? "connected" : funnel.attributionStatus === "partial" ? "configured" : "missing", detail: funnel.attributionStatus === "connected" ? "Search and UV aggregate by source slug and period; outbound, trial, payment, and revenue events join by seo_click_id." : "The funnel records unavailable fields explicitly until NovelAI trial/payment callbacks are connected.", href: "https://vercel.com/elser1/seo/analytics", actionLabel: "Open analytics" },
+    { id: "product_analytics", name: "Revenue Attribution", state: funnel.attributionStatus === "connected" ? "connected" : funnel.attributionStatus === "partial" ? "configured" : "missing", detail: portfolioFunnels.summary.attributionJoinReady ? "Private downstream attribution was checked; only boolean readiness and blocking state are retained in this public report." : "Private downstream attribution readiness is incomplete; no commercial outcome detail is retained in this public report.", href: "https://vercel.com/elser1/seo/analytics", actionLabel: "Open analytics" },
   ],
   evidence: input.evidence.map((item) => {
     const url = new URL(item.url);

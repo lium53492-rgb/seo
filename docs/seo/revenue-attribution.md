@@ -61,6 +61,8 @@ For `purchase_completed`, also send integer `revenueMinor` and an uppercase thre
 SEO Vercel project:
 
 - `NOVELAI_DESTINATION_URL`: optional approved NovelAI URL; defaults to the current Chinese home route.
+- `WORKBENCH_PASSWORD`: optional Basic-auth password for interactive human access to the private workbench and attribution views. Without it, the complete `/workbench` and `/api/workbench` route families fail closed; `SEO_AUTOMATION_TOKEN` is not accepted as a browser credential.
+- `SEO_AUTOMATION_TOKEN`: required machine-only bearer token for `growth:check`, `growth:collect`, and other private report automation. Generate it from at least 32 random bytes, configure the same value in the SEO Vercel project and trusted automation environment, and never expose it in browser JavaScript.
 - `ATTRIBUTION_SECRET`: required for conversion callbacks.
 - `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`: durable, atomic attribution storage. The Vercel Marketplace Upstash integration can inject these variables.
 - `VERCEL_ANALYTICS_TOKEN`: server-only Vercel access token used by the public Web Analytics API to read page-level visitors and pageviews.
@@ -90,7 +92,14 @@ NovelAI application:
 
 ## Funnel report
 
-Each daily research input must include a funnel snapshot for a stated period. Use `aggregationKey: "source_slug+reporting_period"` for search and UV, and `conversionJoinKey: "seo_click_id"` for the event-level conversion segment. The seven metrics are organic clicks, landing UV, qualified outbound clicks, trial starts, signups, paid conversions, and revenue in minor units. Each metric must be either:
+The authenticated API may return the complete funnel for a stated period, but
+that response is private and may exist only in process memory. A committable
+daily research input uses public growth schema version 2 with
+`aggregationKey: "source_slug+reporting_period"`. It contains finalized
+exact-page Search Console, sanitized indexed-version URL Inspection, aggregate
+landing UV, aggregate qualified outbound, and boolean readiness/blocking state.
+It must not contain click IDs, cohort keys, downstream event counts, currency,
+amounts, purchase events, callback counts, or CTA-location detail.
 
 - `observed`: non-negative value, named source, and collection note; or
 - `unavailable`: `null` value, named expected source, and a specific reason.
@@ -101,11 +110,24 @@ The protected live view is `/workbench/attribution`. Its JSON contract is:
 
 ```text
 GET /api/attribution/report?sourceSlug=<slug>&from=<ISO>&to=<ISO>
-Authorization: Basic <workbench credentials>
+Authorization: Bearer <SEO_AUTOMATION_TOKEN>
 ```
 
-`node scripts/collect-growth-funnel.mjs <slug> <from> <to>` reads the same endpoint for a daily automation. The endpoint queries finalized Search Console data for the exact page and period; a successful empty row is observed zero, while missing credentials, authorization, or API access remains unavailable.
+Interactive workbench users may continue to use `Authorization: Basic <workbench credentials>`. Automation uses the separate bearer token, so removing or rotating the human password does not interrupt scheduled collection and does not make revenue data public. If neither private credential is configured, the endpoint fails closed.
+
+`node scripts/collect-growth-funnel.mjs <slug> <from> <to>` reads the same endpoint for a daily automation using `SEO_AUTOMATION_TOKEN`. The endpoint queries finalized Search Console data for the exact page and period plus Google URL Inspection for the indexed version of that canonical URL; a successful empty Search Analytics row is observed zero, while missing credentials, authorization, API access, or index data remains unavailable.
 
 Run `npm run growth:probe` from a server environment holding the same `ATTRIBUTION_SECRET` as NovelAI, then run `npm run growth:check`. The readiness command calls the protected endpoint, performs a one-day live source probe, and exits non-zero until Search Console, Vercel UV, Upstash attribution, and a recent signed NovelAI callback handshake are all ready.
 
-The normal production command is `npm run growth:collect`. It queries every published page for the prior 28 complete Shanghai calendar days ending after the configured three-day lag and writes `data/growth/YYYY-MM-DD.json`. The daily research file either embeds this object as `portfolioFunnels` or points to it with `portfolioSnapshot`. The report builder rejects missing pages, duplicate slugs, mismatched periods, stale snapshots, wrong lag, orphan callbacks, and blind expansion after the four-page cold-start allowance. After that allowance, one published page must show both non-zero landing UV and non-zero exact-page Search Console impressions; direct or internal UV does not count as search validation.
+The normal production command is `npm run growth:collect`. It queries every
+published page for the prior 28 complete Shanghai calendar days ending after
+the configured three-day lag, projects each private response to the safe public
+schema in memory, and writes `data/growth/YYYY-MM-DD.json`. The daily research
+file either embeds this object as `portfolioFunnels` or points to it with
+`portfolioSnapshot`. The report builder accepts legacy schema version 1 only as
+migration input and always emits the public schema-version 2 projection. It
+rejects missing pages, duplicate slugs, mismatched periods, stale snapshots,
+wrong lag, a true attribution-join blocker, and blind expansion after the
+four-page cold-start allowance. After that allowance, one published page must
+show both non-zero landing UV and non-zero exact-page Search Console
+impressions; direct or internal UV does not count as search validation.

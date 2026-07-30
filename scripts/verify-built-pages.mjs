@@ -31,6 +31,21 @@ if (!pages.length) throw new Error("No published SEO pages were found for build 
 const sitemapPath = resolve(buildDirectory, "sitemap.xml.body");
 if (!existsSync(sitemapPath)) throw new Error("The production build did not emit sitemap.xml.");
 const sitemap = readFileSync(sitemapPath, "utf8");
+const robotsPath = resolve(buildDirectory, "robots.txt.body");
+if (!existsSync(robotsPath)) throw new Error("The production build did not emit robots.txt.");
+const robots = readFileSync(robotsPath, "utf8");
+for (const fragment of [
+  "User-Agent: *",
+  "Allow: /",
+  "Disallow: /api/",
+  "Disallow: /go/",
+  "Disallow: /workbench/",
+  `Sitemap: ${siteUrl}/sitemap.xml`,
+]) {
+  if (!robots.includes(fragment)) {
+    throw new Error(`The production robots.txt is missing ${fragment}.`);
+  }
+}
 
 for (const page of pages) {
   const htmlPath = resolve(buildDirectory, `${page.slug}.html`);
@@ -57,6 +72,15 @@ for (const page of pages) {
   if (!sitemap.includes(`<loc>${canonical}</loc>`)) {
     throw new Error(`/${page.slug} is missing from the built sitemap.`);
   }
+  if (/<a\b[^>]*\bhref="\/"/i.test(html)) {
+    throw new Error(`/${page.slug} contains a misleading link to the redirecting homepage.`);
+  }
+  for (const target of pages) {
+    if (target.slug === page.slug) continue;
+    if (!html.includes(`href="/${target.slug}"`)) {
+      throw new Error(`/${page.slug} is missing a crawlable link to /${target.slug} in initial HTML.`);
+    }
+  }
 }
 
-process.stdout.write(`Verified ${pages.length} built SEO pages, their metadata, CTA routes, and sitemap entries.\n`);
+process.stdout.write(`Verified ${pages.length} built SEO pages, their metadata, CTA routes, cross-links, robots, and sitemap entries.\n`);

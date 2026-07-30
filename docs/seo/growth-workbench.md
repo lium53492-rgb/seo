@@ -41,12 +41,15 @@ job.
 - Today's pipeline artifacts and explicit blockers, including an invalid
   policy version or a PDF without a builder-backed report.
 - A page leaderboard ordered by data availability, exact-page Search Console
-  impressions and clicks, landing UV, qualified outbound clicks, and paid
-  conversions. Unavailable values render as `—`, not zero.
+  impressions and clicks, landing UV, and qualified outbound clicks.
+  Unavailable values render as `—`, not zero.
 - Official Google Trends relative-interest observations when collected. A
   Trends value is not monthly search volume; missing access stays unavailable.
-- The search-to-revenue funnel. Search Console and landing UV aggregate by
-  source slug and reporting period; downstream events join on `seo_click_id`.
+- The committable decision view contains exact-page Search Console, indexed
+  URL Inspection, page-level landing UV, qualified outbound aggregates, and
+  boolean attribution readiness/blocking state. The complete commercial
+  funnel remains available only through the authenticated private API and
+  process memory.
 - A durable, verbatim feedback queue. Each unconsumed item must receive an
   adopted/rejected decision and rationale before it is marked consumed.
 - Separate `ready_for_review`, `published`, deployed, indexed, and backlink-live
@@ -68,7 +71,13 @@ job.
   existing page with both non-zero landing UV and non-zero exact-page Search
   Console impressions. Direct/internal UV does not qualify.
 - An update requires an observed Search Console row for the exact target page.
-- Orphan conversion callbacks block publication.
+- A broken attribution join blocks publication. The public snapshot exposes
+  only that boolean blocker, never callback counts or event detail.
+- Consolidation additionally requires distinct source/target pages, an
+  overlapping query observed on both pages, at least 20 exact-page impressions
+  for each page in the same finalized period, and a successfully fetched,
+  indexable, same-site self-canonical target in URL Inspection. Without all of
+  those signals, the decision must remain `observe`; no redirect is generated.
 - Existing same-day growth, research, report, review, page, or PDF artifacts
   are immutable unless the user explicitly authorizes replacement.
 
@@ -86,6 +95,19 @@ prepare truthful pitches. `backlink-live` requires a publicly reachable
 third-party URL that actually links to the SEO page.
 
 ## Required commands
+
+`growth:check` and `growth:collect` authenticate to the private attribution APIs with the machine-only `SEO_AUTOMATION_TOKEN`. Generate it from at least 32 random bytes and configure the same value in Vercel and the trusted Codex environment. Keep `WORKBENCH_PASSWORD` only when people need interactive workbench access; the automation never reads it. If the human password is absent, every `/workbench` page fails closed with `404` and every `/api/workbench` route fails closed with `503`, in every environment. The bearer token does not unlock either route family.
+
+Each collected page now includes both finalized exact-page Search Analytics and the indexed-version URL Inspection result. URL Inspection is not a live-page test; unavailable credentials or an unknown Google-index version remain explicit instead of being treated as an indexing failure.
+
+`growth:collect` writes public schema version 2. The private attribution report
+is projected in memory, and the file retains only exact-page GSC, sanitized URL
+Inspection, aggregate landing UV, aggregate qualified outbound, and boolean
+decision states. The builder can read a legacy schema-version 1 snapshot for
+migration, but any report it writes contains only the schema-v2 public
+projection. The public URL Inspection projection drops sitemap references,
+removes canonical credentials/query/fragment data, and retains a canonical only
+when it is same-origin with the inspected page.
 
 ```bash
 npm run growth:check

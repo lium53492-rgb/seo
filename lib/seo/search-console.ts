@@ -1,13 +1,18 @@
 import { createHash } from "node:crypto";
 import { GoogleAuth } from "google-auth-library";
-import type { SearchConsolePerformanceSnapshot } from "./types";
+import type {
+  SearchConsolePerformanceSnapshot,
+  SearchConsoleUrlInspectionSnapshot,
+} from "./types";
 
 const searchConsoleScope = "https://www.googleapis.com/auth/webmasters.readonly";
 const requestTimeoutMs = 5_000;
 const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const rfc3339Zulu = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?Z$/;
 const fallbackSiteUrl = "https://seo-pi-fawn.vercel.app";
 
 export type SearchConsolePagePerformance = SearchConsolePerformanceSnapshot;
+export type SearchConsoleUrlInspection = SearchConsoleUrlInspectionSnapshot;
 
 type SearchConsoleConfig = {
   clientEmail: string;
@@ -32,7 +37,12 @@ function publicSiteUrl() {
 
 function configuredSiteUrl() {
   const value = process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL?.trim();
-  if (value) return value;
+  if (value) {
+    if (value.startsWith("sc-domain:")) return value;
+    const site = new URL(value);
+    if (!site.pathname.endsWith("/")) site.pathname = `${site.pathname}/`;
+    return site.toString();
+  }
   const site = publicSiteUrl();
   return `${site.origin}/`;
 }
@@ -129,6 +139,393 @@ function unavailable(input: {
     ctr: null,
     position: null,
     detail: input.detail,
+  };
+}
+
+const inspectionVerdicts = new Set([
+  "VERDICT_UNSPECIFIED",
+  "PASS",
+  "PARTIAL",
+  "FAIL",
+  "NEUTRAL",
+] as const);
+const inspectionRobotsTxtStates = new Set([
+  "ROBOTS_TXT_STATE_UNSPECIFIED",
+  "ALLOWED",
+  "DISALLOWED",
+] as const);
+const inspectionIndexingStates = new Set([
+  "INDEXING_STATE_UNSPECIFIED",
+  "INDEXING_ALLOWED",
+  "BLOCKED_BY_META_TAG",
+  "BLOCKED_BY_HTTP_HEADER",
+  "BLOCKED_BY_ROBOTS_TXT",
+] as const);
+const inspectionPageFetchStates = new Set([
+  "PAGE_FETCH_STATE_UNSPECIFIED",
+  "SUCCESSFUL",
+  "SOFT_404",
+  "BLOCKED_ROBOTS_TXT",
+  "NOT_FOUND",
+  "ACCESS_DENIED",
+  "SERVER_ERROR",
+  "REDIRECT_ERROR",
+  "ACCESS_FORBIDDEN",
+  "BLOCKED_4XX",
+  "INTERNAL_CRAWL_ERROR",
+  "INVALID_URL",
+] as const);
+const inspectionCrawlers = new Set([
+  "CRAWLING_USER_AGENT_UNSPECIFIED",
+  "DESKTOP",
+  "MOBILE",
+] as const);
+
+type InspectionIndexStatusPayload = {
+  verdict?: unknown;
+  coverageState?: unknown;
+  robotsTxtState?: unknown;
+  indexingState?: unknown;
+  pageFetchState?: unknown;
+  lastCrawlTime?: unknown;
+  googleCanonical?: unknown;
+  userCanonical?: unknown;
+  crawledAs?: unknown;
+  sitemap?: unknown;
+};
+
+type ParsedCanonical = {
+  value: string | null;
+  state: "absent" | "accepted" | "normalized" | "cross_site" | "invalid";
+};
+
+type ParsedInspectionIndexStatus = {
+  value: {
+    verdict: SearchConsoleUrlInspection["verdict"];
+    coverageState: string | null;
+    robotsTxtState: SearchConsoleUrlInspection["robotsTxtState"];
+    indexingState: SearchConsoleUrlInspection["indexingState"];
+    pageFetchState: SearchConsoleUrlInspection["pageFetchState"];
+    lastCrawlTime: string | null;
+    googleCanonical: string | null;
+    userCanonical: string | null;
+    crawledAs: SearchConsoleUrlInspection["crawledAs"];
+    sitemap: [];
+  } | null;
+  detail: string | null;
+};
+
+function inspectionUnavailable(input: {
+  sourceSlug: string;
+  pageUrl: string;
+  inspectedAt: string;
+  detail: string;
+}): SearchConsoleUrlInspection {
+  return {
+    state: "unavailable",
+    sourceSlug: input.sourceSlug,
+    pageUrl: input.pageUrl,
+    inspectedAt: input.inspectedAt,
+    verdict: null,
+    coverageState: null,
+    robotsTxtState: null,
+    indexingState: null,
+    pageFetchState: null,
+    lastCrawlTime: null,
+    googleCanonical: null,
+    userCanonical: null,
+    crawledAs: null,
+    sitemap: [],
+    detail: input.detail,
+  };
+}
+
+function optionalString(value: unknown) {
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function sameSiteCanonical(value: unknown, siteOrigin: string): ParsedCanonical {
+  if (value === undefined) return { value: null, state: "absent" };
+  const text = optionalString(value);
+  if (!text) return { value: null, state: "invalid" };
+  try {
+    const parsed = new URL(text);
+    if (
+      (parsed.protocol !== "http:" && parsed.protocol !== "https:") ||
+      parsed.origin !== siteOrigin
+    ) {
+      return { value: null, state: "cross_site" };
+    }
+    const original = parsed.toString();
+    parsed.username = "";
+    parsed.password = "";
+    parsed.search = "";
+    parsed.hash = "";
+    const normalized = parsed.toString();
+    return {
+      value: normalized,
+      state: normalized === original ? "accepted" : "normalized",
+    };
+  } catch {
+    return { value: null, state: "invalid" };
+  }
+}
+
+function optionalEnum<T extends string>(value: unknown, allowed: ReadonlySet<T>) {
+  return typeof value === "string" && allowed.has(value as T)
+    ? value as T
+    : null;
+}
+
+function parseInspectionIndexStatus(
+  value: unknown,
+  siteOrigin: string,
+): ParsedInspectionIndexStatus {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return {
+      value: null,
+      detail: "URL Inspection API returned an invalid index-status result.",
+    };
+  }
+  const payload = value as InspectionIndexStatusPayload;
+
+  const lastCrawlTime = optionalString(payload.lastCrawlTime);
+  if (
+    lastCrawlTime &&
+    (
+      !rfc3339Zulu.test(lastCrawlTime) ||
+      !Number.isFinite(Date.parse(lastCrawlTime))
+    )
+  ) {
+    return {
+      value: null,
+      detail: "URL Inspection API returned an invalid index-status result.",
+    };
+  }
+
+  const coverageState = optionalString(payload.coverageState);
+  const verdict = optionalEnum(payload.verdict, inspectionVerdicts);
+  const robotsTxtState = optionalEnum(
+    payload.robotsTxtState,
+    inspectionRobotsTxtStates,
+  );
+  const indexingState = optionalEnum(
+    payload.indexingState,
+    inspectionIndexingStates,
+  );
+  const pageFetchState = optionalEnum(
+    payload.pageFetchState,
+    inspectionPageFetchStates,
+  );
+  const crawledAs = optionalEnum(payload.crawledAs, inspectionCrawlers);
+  const googleCanonical = sameSiteCanonical(payload.googleCanonical, siteOrigin);
+  const userCanonical = sameSiteCanonical(payload.userCanonical, siteOrigin);
+
+  if (
+    (payload.verdict !== undefined && !verdict) ||
+    (payload.robotsTxtState !== undefined && !robotsTxtState) ||
+    (payload.indexingState !== undefined && !indexingState) ||
+    (payload.pageFetchState !== undefined && !pageFetchState) ||
+    (payload.crawledAs !== undefined && !crawledAs) ||
+    (payload.coverageState !== undefined && !coverageState) ||
+    (payload.lastCrawlTime !== undefined && !lastCrawlTime) ||
+    googleCanonical.state === "invalid" ||
+    userCanonical.state === "invalid"
+  ) {
+    return {
+      value: null,
+      detail: "URL Inspection API returned an invalid index-status result.",
+    };
+  }
+
+  const omittedCanonicals = [
+    googleCanonical.state === "cross_site" ? "Google-selected" : null,
+    userCanonical.state === "cross_site" ? "user-declared" : null,
+  ].filter((entry): entry is string => Boolean(entry));
+  const normalizedCanonicals = [
+    googleCanonical.state === "normalized" ? "Google-selected" : null,
+    userCanonical.state === "normalized" ? "user-declared" : null,
+  ].filter((entry): entry is string => Boolean(entry));
+  const canonicalNotes = [];
+  if (omittedCanonicals.length) {
+    canonicalNotes.push(
+      `${omittedCanonicals.join(" and ")} cross-site canonical ${omittedCanonicals.length === 1 ? "was" : "were"} omitted.`,
+    );
+  }
+  if (normalizedCanonicals.length) {
+    canonicalNotes.push(
+      `${normalizedCanonicals.join(" and ")} canonical ${normalizedCanonicals.length === 1 ? "was" : "were"} normalized without credentials, query, or fragment.`,
+    );
+  }
+
+  const hasDecisionEvidence = Boolean(
+    verdict ||
+    coverageState ||
+    robotsTxtState ||
+    indexingState ||
+    pageFetchState ||
+    googleCanonical.value ||
+    userCanonical.value,
+  );
+  if (!hasDecisionEvidence) {
+    return {
+      value: null,
+      detail: [
+        "URL Inspection API returned no usable decision evidence.",
+        ...canonicalNotes,
+      ].join(" "),
+    };
+  }
+
+  return {
+    value: {
+      verdict,
+      coverageState,
+      robotsTxtState,
+      indexingState,
+      pageFetchState,
+      lastCrawlTime,
+      googleCanonical: googleCanonical.value,
+      userCanonical: userCanonical.value,
+      crawledAs,
+      // Sitemap URLs can expose private or obsolete discovery paths and are
+      // not required for page-level indexing decisions, so never persist them.
+      sitemap: [],
+    },
+    detail: canonicalNotes.length ? canonicalNotes.join(" ") : null,
+  };
+}
+
+export async function readSearchConsoleUrlInspection(input: {
+  sourceSlug: string;
+}, options: {
+  fetchImpl?: typeof fetch;
+  getAccessToken?: (config: SearchConsoleConfig) => Promise<string | null>;
+  now?: () => Date;
+} = {}): Promise<SearchConsoleUrlInspection> {
+  if (!safeSlug.test(input.sourceSlug)) {
+    throw new Error("Search Console source slug is invalid");
+  }
+  const inspectedAt = (options.now?.() || new Date()).toISOString();
+  const pageUrl = new URL(`/${input.sourceSlug}`, publicSiteUrl()).toString();
+  const config = searchConsoleConfig();
+  if (!config) {
+    return inspectionUnavailable({
+      sourceSlug: input.sourceSlug,
+      pageUrl,
+      inspectedAt,
+      detail: searchConsoleStatus().detail ?? "Search Console is not configured.",
+    });
+  }
+
+  let token: string | null | undefined;
+  try {
+    token = options.getAccessToken
+      ? await options.getAccessToken(config)
+      : await authClient(config).getAccessToken();
+  } catch (error) {
+    return inspectionUnavailable({
+      sourceSlug: input.sourceSlug,
+      pageUrl,
+      inspectedAt,
+      detail: `Search Console authorization failed: ${error instanceof Error ? error.name : "authentication_error"}.`,
+    });
+  }
+  if (!token) {
+    return inspectionUnavailable({
+      sourceSlug: input.sourceSlug,
+      pageUrl,
+      inspectedAt,
+      detail: "Search Console authorization did not return an access token.",
+    });
+  }
+
+  let response: Response;
+  try {
+    response = await (options.fetchImpl || fetch)(
+      "https://searchconsole.googleapis.com/v1/urlInspection/index:inspect",
+      {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${token}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          inspectionUrl: pageUrl,
+          siteUrl: config.siteUrl,
+          languageCode: "en-US",
+        }),
+        cache: "no-store",
+        signal: AbortSignal.timeout(requestTimeoutMs),
+      },
+    );
+  } catch (error) {
+    return inspectionUnavailable({
+      sourceSlug: input.sourceSlug,
+      pageUrl,
+      inspectedAt,
+      detail: `URL Inspection query failed: ${error instanceof Error ? error.name : "network_error"}.`,
+    });
+  }
+  if (!response.ok) {
+    return inspectionUnavailable({
+      sourceSlug: input.sourceSlug,
+      pageUrl,
+      inspectedAt,
+      detail: `URL Inspection API returned ${response.status}.`,
+    });
+  }
+
+  let payload: unknown;
+  try {
+    payload = await response.json();
+  } catch {
+    return inspectionUnavailable({
+      sourceSlug: input.sourceSlug,
+      pageUrl,
+      inspectedAt,
+      detail: "URL Inspection API returned invalid JSON.",
+    });
+  }
+  const inspectionResult = (
+    payload &&
+    typeof payload === "object" &&
+    !Array.isArray(payload) &&
+    "inspectionResult" in payload
+  )
+    ? (payload as { inspectionResult?: unknown }).inspectionResult
+    : null;
+  const indexStatusResult = (
+    inspectionResult &&
+    typeof inspectionResult === "object" &&
+    !Array.isArray(inspectionResult) &&
+    "indexStatusResult" in inspectionResult
+  )
+    ? (inspectionResult as { indexStatusResult?: unknown }).indexStatusResult
+    : null;
+  const parsed = parseInspectionIndexStatus(
+    indexStatusResult,
+    new URL(pageUrl).origin,
+  );
+  if (!parsed.value) {
+    return inspectionUnavailable({
+      sourceSlug: input.sourceSlug,
+      pageUrl,
+      inspectedAt,
+      detail: parsed.detail || "URL Inspection API returned an invalid index-status result.",
+    });
+  }
+
+  return {
+    state: "observed",
+    sourceSlug: input.sourceSlug,
+    pageUrl,
+    inspectedAt,
+    ...parsed.value,
+    detail: [
+      "Observed Google's indexed-version URL Inspection result for this exact canonical page; this is not a live-page test.",
+      parsed.detail,
+    ].filter(Boolean).join(" "),
   };
 }
 

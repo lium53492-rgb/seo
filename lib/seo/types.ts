@@ -374,16 +374,71 @@ export type SearchConsolePerformanceSnapshot = {
   detail: string;
 };
 
+export type SearchConsoleUrlInspectionSnapshot = {
+  state: "observed" | "unavailable";
+  sourceSlug: string;
+  pageUrl: string;
+  inspectedAt: string;
+  verdict: "VERDICT_UNSPECIFIED" | "PASS" | "PARTIAL" | "FAIL" | "NEUTRAL" | null;
+  coverageState: string | null;
+  robotsTxtState:
+    | "ROBOTS_TXT_STATE_UNSPECIFIED"
+    | "ALLOWED"
+    | "DISALLOWED"
+    | null;
+  indexingState:
+    | "INDEXING_STATE_UNSPECIFIED"
+    | "INDEXING_ALLOWED"
+    | "BLOCKED_BY_META_TAG"
+    | "BLOCKED_BY_HTTP_HEADER"
+    | "BLOCKED_BY_ROBOTS_TXT"
+    | null;
+  pageFetchState:
+    | "PAGE_FETCH_STATE_UNSPECIFIED"
+    | "SUCCESSFUL"
+    | "SOFT_404"
+    | "BLOCKED_ROBOTS_TXT"
+    | "NOT_FOUND"
+    | "ACCESS_DENIED"
+    | "SERVER_ERROR"
+    | "REDIRECT_ERROR"
+    | "ACCESS_FORBIDDEN"
+    | "BLOCKED_4XX"
+    | "INTERNAL_CRAWL_ERROR"
+    | "INVALID_URL"
+    | null;
+  lastCrawlTime: string | null;
+  googleCanonical: string | null;
+  userCanonical: string | null;
+  crawledAs: "CRAWLING_USER_AGENT_UNSPECIFIED" | "DESKTOP" | "MOBILE" | null;
+  sitemap: string[];
+  detail: string;
+};
+
+export type PublicGrowthMetric = {
+  status: "observed" | "unavailable";
+  value: number | null;
+  source: "vercel_analytics" | "seo_redirect";
+  detail: string;
+};
+
 export type GrowthPortfolioReport = {
   sourceSlug: string;
-  funnel: SeoGrowthFunnel;
-  pageviews: number | null;
-  outboundRequests: number | null;
-  purchaseEvents: number | null;
-  orphanCallbacks: number | null;
-  revenueByCurrency: Record<string, number>;
-  ctaLocations: Record<string, number>;
-  searchPerformance?: SearchConsolePerformanceSnapshot;
+  metrics: {
+    landingUv: PublicGrowthMetric;
+    qualifiedOutboundClicks: PublicGrowthMetric;
+  };
+  searchPerformance: SearchConsolePerformanceSnapshot;
+  urlInspection: SearchConsoleUrlInspectionSnapshot;
+  decisionState: {
+    landingUvReady: boolean;
+    qualifiedOutboundReady: boolean;
+    searchPerformanceReady: boolean;
+    urlInspectionReady: boolean;
+    attributionJoinChecked: boolean;
+    attributionJoinBlocked: boolean;
+    samePageSearchValidated: boolean;
+  };
 };
 
 export type GrowthPortfolioEntry =
@@ -403,19 +458,22 @@ export type GrowthPortfolioEntry =
     };
 
 export type GrowthPortfolioSnapshot = {
-  schemaVersion: 1;
+  schemaVersion: 2;
+  privacyClass: "public_growth_evidence";
   generatedAt: string;
   periodBasis: "complete_shanghai_calendar_days";
   reportingWindowDays?: number;
   reportingLagDays?: number;
   aggregationKey: "source_slug+reporting_period";
-  conversionJoinKey: "seo_click_id";
   periodStart: string;
   periodEnd: string;
   summary: {
     publishedPages: number;
     collectedPages: number;
     unavailablePages: number;
+    attributionJoinReady: boolean;
+    attributionJoinBlocked: boolean;
+    hasSearchValidatedLandingPage: boolean;
   };
   entries: GrowthPortfolioEntry[];
 };
@@ -424,6 +482,8 @@ export type GrowthPortfolioDecision = {
   schemaVersion: 1;
   action: RecommendedAction;
   targetSlug: string | null;
+  sourceSlug?: string;
+  overlapQueries?: string[];
   rationale: string;
   evidenceSlugs: string[];
 };

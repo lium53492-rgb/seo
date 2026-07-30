@@ -10,7 +10,7 @@ export function CinematicExperiencePage({ page, relatedPages }: SeoPageViewProps
         {Array.from({ length: 18 }, (_, index) => <i key={index} />)}
       </div>
       <nav className={styles.nav} aria-label="Primary navigation">
-        <a className={styles.brand} href="/"><span>N</span>NovelAI Stories</a>
+        <span className={styles.brand}><span>N</span>NovelAI Stories</span>
         <TrackedNovelAiHomeLink className={styles.navAction} sourceSlug={page.slug} location="header">
           Explore NovelAI <span aria-hidden="true">↗</span>
         </TrackedNovelAiHomeLink>

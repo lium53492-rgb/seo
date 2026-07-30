@@ -6,7 +6,7 @@ import styles from "./inventory.module.css";
 export function InventoryCatalogPage({ page, relatedPages }: SeoPageViewProps) {
   return (
     <main className={styles.shell}>
-      <nav className={styles.nav} aria-label="Primary navigation"><a href="/"><span>N</span>ORIGINAL STORY INDEX</a><small>CATALOG / 2026</small></nav>
+      <nav className={styles.nav} aria-label="Primary navigation"><span className={styles.brand}><span>N</span>ORIGINAL STORY INDEX</span><small>CATALOG / 2026</small></nav>
       <header className={styles.hero}><div className={styles.catalogBubbles} aria-hidden="true"><i /><i /><i /><i /></div><div><span>FIRST-PARTY STORY NOTES</span><h1>{page.h1}</h1></div><p>{page.heroMarkdown}</p></header>
       <section className={styles.catalog} aria-label="Original story content index">
         <header><span>INDEX</span><span>{String(page.sections.length).padStart(2, "0")} ENTRIES</span></header>

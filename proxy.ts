@@ -15,9 +15,8 @@ export function proxy(request: NextRequest) {
   const password = process.env.WORKBENCH_PASSWORD;
   if (!password) {
     if (
-      process.env.NODE_ENV === "production" &&
-      (request.nextUrl.pathname.startsWith("/workbench/preview") ||
-        request.nextUrl.pathname.startsWith("/workbench/attribution"))
+      request.nextUrl.pathname === "/workbench" ||
+      request.nextUrl.pathname.startsWith("/workbench/")
     ) {
       return new NextResponse(null, {
         status: 404,
@@ -25,8 +24,8 @@ export function proxy(request: NextRequest) {
       });
     }
     if (
-      process.env.NODE_ENV === "production" &&
-      request.nextUrl.pathname.startsWith("/api/workbench")
+      request.nextUrl.pathname === "/api/workbench" ||
+      request.nextUrl.pathname.startsWith("/api/workbench/")
     ) {
       return new NextResponse(null, {
         status: 503,

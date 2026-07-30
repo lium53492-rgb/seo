@@ -2,8 +2,11 @@ import { readAttributionAggregate, type AttributionAggregate } from "./attributi
 import { normalizeShanghaiReportingPeriod } from "./reporting-period";
 import {
   readSearchConsolePagePerformance,
+  readSearchConsoleUrlInspection,
   type SearchConsolePagePerformance,
+  type SearchConsoleUrlInspection,
 } from "./search-console";
+import { absoluteSiteUrl } from "./site";
 import type { ObservedMetric, SeoGrowthFunnel } from "./types";
 import { readLandingUv, type LandingUvResult } from "./vercel-analytics";
 
@@ -43,6 +46,7 @@ export type LiveGrowthFunnel = {
   revenueByCurrency: Record<string, number>;
   ctaLocations: Record<string, number>;
   searchPerformance: SearchConsolePagePerformance;
+  urlInspection: SearchConsoleUrlInspection;
 };
 
 export async function readLiveGrowthFunnel(input: {
@@ -53,10 +57,11 @@ export async function readLiveGrowthFunnel(input: {
 }): Promise<LiveGrowthFunnel> {
   const period = normalizeShanghaiReportingPeriod(input);
   const reportingInput = { ...input, ...period };
-  const [aggregate, landing, searchPerformance] = await Promise.all([
+  const [aggregate, landing, searchPerformance, urlInspection] = await Promise.all([
     readAttributionAggregate(reportingInput),
     readLandingUv(reportingInput),
     readSearchConsolePagePerformance(reportingInput),
+    readSearchConsoleUrlInspection({ sourceSlug: input.sourceSlug }),
   ]);
   const currencies = Object.keys(aggregate.revenueByCurrency).sort();
   const currency = currencies.length === 1 ? currencies[0] : undefined;
@@ -112,6 +117,7 @@ export async function readLiveGrowthFunnel(input: {
     revenueByCurrency: aggregate.revenueByCurrency,
     ctaLocations: aggregate.ctaLocations,
     searchPerformance,
+    urlInspection,
   };
 }
 
@@ -157,6 +163,23 @@ export function unavailableLiveGrowthFunnel(input: {
       impressions: null,
       ctr: null,
       position: null,
+      detail: input.detail,
+    },
+    urlInspection: {
+      state: "unavailable",
+      sourceSlug: input.sourceSlug,
+      pageUrl: absoluteSiteUrl(`/${input.sourceSlug}`),
+      inspectedAt: new Date().toISOString(),
+      verdict: null,
+      coverageState: null,
+      robotsTxtState: null,
+      indexingState: null,
+      pageFetchState: null,
+      lastCrawlTime: null,
+      googleCanonical: null,
+      userCanonical: null,
+      crawledAs: null,
+      sitemap: [],
       detail: input.detail,
     },
   };

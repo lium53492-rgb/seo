@@ -83,7 +83,6 @@ type PageRankingRow = {
   clicks: number | null;
   landingUv: number | null;
   qualifiedOutbound: number | null;
-  paidConversions: number | null;
   detail: string;
 };
 
@@ -100,7 +99,6 @@ function createPageRankingRow(entry: GrowthPortfolioEntry): PageRankingRow {
       clicks: null,
       landingUv: null,
       qualifiedOutbound: null,
-      paidConversions: null,
       detail: entry.reason,
     };
   }
@@ -108,18 +106,16 @@ function createPageRankingRow(entry: GrowthPortfolioEntry): PageRankingRow {
   const searchPerformance = entry.report.searchPerformance;
   const impressions = searchPerformance?.state === "observed" ? searchPerformance.impressions : null;
   const clicks = searchPerformance?.state === "observed" ? searchPerformance.clicks : null;
-  const landingUv = observedNumber(entry.report.funnel.metrics.landingUv);
-  const qualifiedOutbound = observedNumber(entry.report.funnel.metrics.qualifiedOutboundClicks);
-  const paidConversions = observedNumber(entry.report.funnel.metrics.paidConversions);
-  const values = [impressions, clicks, landingUv, qualifiedOutbound, paidConversions];
+  const landingUv = observedNumber(entry.report.metrics.landingUv);
+  const qualifiedOutbound = observedNumber(entry.report.metrics.qualifiedOutboundClicks);
+  const values = [impressions, clicks, landingUv, qualifiedOutbound];
   const availability = values.every((value) => value !== null) ? "observed" : "partial";
   const missingDetails = [
     impressions === null || clicks === null
       ? searchPerformance?.detail ?? "exact-page Search Console 数据不可用"
       : null,
-    landingUv === null ? entry.report.funnel.metrics.landingUv.detail : null,
-    qualifiedOutbound === null ? entry.report.funnel.metrics.qualifiedOutboundClicks.detail : null,
-    paidConversions === null ? entry.report.funnel.metrics.paidConversions.detail : null,
+    landingUv === null ? entry.report.metrics.landingUv.detail : null,
+    qualifiedOutbound === null ? entry.report.metrics.qualifiedOutboundClicks.detail : null,
   ].filter((detail): detail is string => Boolean(detail));
 
   return {
@@ -129,8 +125,7 @@ function createPageRankingRow(entry: GrowthPortfolioEntry): PageRankingRow {
     clicks,
     landingUv,
     qualifiedOutbound,
-    paidConversions,
-    detail: missingDetails.length ? missingDetails.join("；") : "五项页面级指标均为已观测数据。",
+    detail: missingDetails.length ? missingDetails.join("；") : "四项公开决策指标均为已观测数据。",
   };
 }
 
@@ -155,7 +150,6 @@ function comparePageRanking(left: PageRankingRow, right: PageRankingRow) {
     [left.clicks, right.clicks],
     [left.landingUv, right.landingUv],
     [left.qualifiedOutbound, right.qualifiedOutbound],
-    [left.paidConversions, right.paidConversions],
   ] as const) {
     const difference = compareNullableDescending(leftValue, rightValue);
     if (difference) return difference;
@@ -395,22 +389,22 @@ export default async function WorkbenchPage() {
                 <article><p>已发布页面</p><strong>{portfolio.summary.publishedPages}</strong><span>快照必须覆盖全部页面</span></article>
                 <article><p>已采集页面</p><strong>{portfolio.summary.collectedPages}</strong><span>返回真实页面级漏斗</span></article>
                 <article><p>不可用页面</p><strong>{portfolio.summary.unavailablePages}</strong><span>缺失数据保留原因，不换算为 0</span></article>
-                <article><p>发布反馈门</p><strong>{portfolio.entries.some((entry) => entry.state === "collected" && (entry.report.orphanCallbacks ?? 0) > 0) ? "阻断" : "正常"}</strong><span>孤立回调必须先修复</span></article>
+                <article><p>发布反馈门</p><strong>{portfolio.summary.attributionJoinBlocked ? "阻断" : portfolio.summary.attributionJoinReady ? "正常" : "待验证"}</strong><span>公开日报只保留归因连接的布尔状态</span></article>
               </div>
               {portfolioDecision ? <div className="wb-empty-state"><strong>{portfolioDecision.action}</strong>：{portfolioDecision.rationale}</div> : null}
             </>
-          ) : <div className="wb-empty-state">运行 growth:collect 后，工作台会逐页显示真实 UV、出站、付费与归因质量；没有凭证时只显示不可用原因。</div>}
+          ) : <div className="wb-empty-state">运行 growth:collect 后，工作台会逐页显示 exact-page GSC、URL Inspection、UV、合格出站与布尔门槛；没有凭证时只显示不可用原因。</div>}
         </section>
 
         <section className="wb-section" id="ranking">
           <div className="wb-section-heading">
             <div><p className="wb-kicker">SEO PAGE LEADERBOARD</p><h2>SEO 页面榜单</h2></div>
-            <span className="wb-data-note">先按观测可用状态，再按 exact-page GSC 曝光、点击、UV、合格出站、付费次数降序；“—”代表不可用，不代表 0。</span>
+            <span className="wb-data-note">先按观测可用状态，再按 exact-page GSC 曝光、点击、UV、合格出站降序；“—”代表不可用，不代表 0。</span>
           </div>
           {rankedPortfolioRows.length ? (
             <div className="wb-table-wrap wb-ranking-table">
               <table>
-                <thead><tr><th>页面</th><th>数据状态</th><th>GSC 曝光</th><th>GSC 点击</th><th>落地 UV</th><th>合格出站</th><th>付费次数</th><th>状态说明</th></tr></thead>
+                <thead><tr><th>页面</th><th>数据状态</th><th>GSC 曝光</th><th>GSC 点击</th><th>落地 UV</th><th>合格出站</th><th>状态说明</th></tr></thead>
                 <tbody>{rankedPortfolioRows.map((row, index) => (
                   <tr key={row.entry.sourceSlug}>
                     <td><span className="wb-rank">{String(index + 1).padStart(2, "0")}</span><strong><a href={row.entry.path}>{row.entry.keyword}</a></strong><small>{row.entry.path}</small></td>
@@ -419,7 +413,6 @@ export default async function WorkbenchPage() {
                     <td title={row.clicks === null ? row.detail : undefined}>{rankingValue(row.clicks)}</td>
                     <td title={row.landingUv === null ? row.detail : undefined}>{rankingValue(row.landingUv)}</td>
                     <td title={row.qualifiedOutbound === null ? row.detail : undefined}>{rankingValue(row.qualifiedOutbound)}</td>
-                    <td title={row.paidConversions === null ? row.detail : undefined}>{rankingValue(row.paidConversions)}</td>
                     <td className="wb-ranking-detail">{row.detail}</td>
                   </tr>
                 ))}</tbody>

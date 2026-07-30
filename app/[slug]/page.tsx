@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArticleJsonLd, FAQJsonLd } from "next-seo";
 import { listPublishedPages, readPublishedPage } from "@/lib/seo/page-store";
-import { resolveSeoPageFamily } from "@/lib/seo/page-presentation";
+import {
+  resolveRelatedSeoPages,
+  resolveSeoPageFamily,
+} from "@/lib/seo/page-presentation";
 import { absoluteSiteUrl } from "@/lib/seo/site";
 import { CinematicExperiencePage } from "./CinematicExperiencePage";
 import { DecisionMapPage } from "./DecisionMapPage";
@@ -42,11 +45,7 @@ export default async function PublishedSeoPage({ params }: PageProps) {
   if (!page) notFound();
 
   const publishedPages = await listPublishedPages();
-  const relatedPages = page.internalLinks.flatMap((link) => {
-    if (link.href === "/" || link.href === page.path) return [];
-    const target = publishedPages.find((candidate) => candidate.path === link.href);
-    return target ? [{ ...link, target }] : [];
-  });
+  const relatedPages = resolveRelatedSeoPages(page, publishedPages);
 
   const canonicalUrl = absoluteSiteUrl(page.path);
 

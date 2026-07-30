@@ -33,7 +33,6 @@ const recommendedActions = new Set(["create_page", "improve_page", "consolidate"
 const priorities = new Set(["P0", "P1", "P2"]);
 const integrationStates = new Set(["connected", "configured", "replaced", "missing", "error"]);
 const metricSources = new Set(["search_console", "vercel_analytics", "seo_redirect", "product_analytics", "payments"]);
-const ctaLocations = new Set(["seo_page", "hero", "header", "inline", "final_cta", "companion"]);
 const googleTrendsDirections = new Set(["rising", "flat", "falling", "unknown"]);
 const googleTrendsFields = new Set([
   "keyword",
@@ -311,11 +310,6 @@ function isNullableMetric(value: unknown) {
   return value === null || isFiniteMetric(value);
 }
 
-function isMetricRecord(value: unknown, isAllowedKey: (key: string) => boolean) {
-  return isRecord(value) && Object.entries(value).every(([key, metric]) =>
-    isAllowedKey(key) && isFiniteMetric(metric));
-}
-
 function isSearchPerformance(value: unknown, sourceSlug: string) {
   if (!isRecord(value) ||
     (value.state !== "observed" && value.state !== "unavailable") ||
@@ -336,8 +330,72 @@ function isSearchPerformance(value: unknown, sourceSlug: string) {
     isNullableMetric(value.position);
 }
 
+function isSafePublicCanonical(value: unknown, pageUrl: URL) {
+  if (value === null) return true;
+  if (!isString(value)) return false;
+  try {
+    const canonical = new URL(value);
+    return ["http:", "https:"].includes(canonical.protocol) &&
+      canonical.origin === pageUrl.origin &&
+      canonical.username === "" &&
+      canonical.password === "" &&
+      canonical.search === "" &&
+      canonical.hash === "";
+  } catch {
+    return false;
+  }
+}
+
+function isUrlInspection(value: unknown, sourceSlug: string) {
+  if (!isRecord(value) ||
+    (value.state !== "observed" && value.state !== "unavailable") ||
+    value.sourceSlug !== sourceSlug ||
+    !isString(value.pageUrl) || !value.pageUrl.startsWith("https://") ||
+    !isString(value.inspectedAt) || !Number.isFinite(Date.parse(value.inspectedAt)) ||
+    !Array.isArray(value.sitemap) ||
+    value.sitemap.length !== 0 ||
+    !isString(value.detail)) return false;
+  let pageUrl;
+  try {
+    pageUrl = new URL(value.pageUrl);
+  } catch {
+    return false;
+  }
+  const nullableFields = [
+    "verdict",
+    "coverageState",
+    "robotsTxtState",
+    "indexingState",
+    "pageFetchState",
+    "lastCrawlTime",
+    "googleCanonical",
+    "userCanonical",
+    "crawledAs",
+  ];
+  if (nullableFields.some((field) =>
+    value[field] !== null && !isString(value[field]))) return false;
+  if (value.lastCrawlTime !== null &&
+    (!isString(value.lastCrawlTime) || !Number.isFinite(Date.parse(value.lastCrawlTime)))) return false;
+  if (
+    !isSafePublicCanonical(value.googleCanonical, pageUrl) ||
+    !isSafePublicCanonical(value.userCanonical, pageUrl)
+  ) return false;
+  if (value.state === "unavailable") {
+    return nullableFields.every((field) => value[field] === null) &&
+      value.sitemap.length === 0;
+  }
+  return nullableFields.some((field) => value[field] !== null);
+}
+
+function isPublicGrowthMetric(value: unknown, source: "vercel_analytics" | "seo_redirect") {
+  return isObservedMetric(value) &&
+    isRecord(value) &&
+    value.source === source;
+}
+
 function isGrowthPortfolio(value: unknown) {
-  if (!isRecord(value) || value.schemaVersion !== 1 ||
+  if (!isRecord(value) || value.schemaVersion !== 2 ||
+    value.privacyClass !== "public_growth_evidence" ||
     value.periodBasis !== "complete_shanghai_calendar_days" ||
     (value.reportingWindowDays !== undefined &&
       (!Number.isInteger(value.reportingWindowDays) ||
@@ -348,7 +406,6 @@ function isGrowthPortfolio(value: unknown) {
         Number(value.reportingLagDays) < 0 ||
         Number(value.reportingLagDays) > 14)) ||
     value.aggregationKey !== "source_slug+reporting_period" ||
-    value.conversionJoinKey !== "seo_click_id" ||
     !isString(value.generatedAt) || !Number.isFinite(Date.parse(value.generatedAt)) ||
     !isString(value.periodStart) || !Number.isFinite(Date.parse(value.periodStart)) ||
     !isString(value.periodEnd) || !Number.isFinite(Date.parse(value.periodEnd)) ||
@@ -358,10 +415,16 @@ function isGrowthPortfolio(value: unknown) {
     !Number.isInteger(value.summary.publishedPages) || Number(value.summary.publishedPages) < 0 ||
     !Number.isInteger(value.summary.collectedPages) || Number(value.summary.collectedPages) < 0 ||
     !Number.isInteger(value.summary.unavailablePages) || Number(value.summary.unavailablePages) < 0 ||
+    typeof value.summary.attributionJoinReady !== "boolean" ||
+    typeof value.summary.attributionJoinBlocked !== "boolean" ||
+    typeof value.summary.hasSearchValidatedLandingPage !== "boolean" ||
     !Array.isArray(value.entries)) return false;
 
   const slugs = new Set<string>();
   let collectedPages = 0;
+  let attributionJoinBlocked = false;
+  let attributionJoinReady = true;
+  let hasSearchValidatedLandingPage = false;
   for (const entry of value.entries) {
     if (!isRecord(entry) || !isString(entry.sourceSlug) || !isString(entry.path) || !isString(entry.keyword) ||
       !safeSlug.test(entry.sourceSlug) || entry.path !== `/${entry.sourceSlug}` ||
@@ -372,32 +435,84 @@ function isGrowthPortfolio(value: unknown) {
       continue;
     }
     if (entry.state !== "collected" || !isRecord(entry.report) ||
-      entry.report.sourceSlug !== entry.sourceSlug || !isFunnel(entry.report.funnel) ||
-      entry.report.funnel.periodStart !== value.periodStart ||
-      entry.report.funnel.periodEnd !== value.periodEnd ||
-      !isNullableMetric(entry.report.pageviews) ||
-      !isNullableMetric(entry.report.outboundRequests) ||
-      !isNullableMetric(entry.report.purchaseEvents) ||
-      !isNullableMetric(entry.report.orphanCallbacks) ||
-      !isMetricRecord(entry.report.revenueByCurrency, (key) => /^[A-Z]{3}$/.test(key)) ||
-      !isMetricRecord(entry.report.ctaLocations, (key) => ctaLocations.has(key)) ||
-      (entry.report.searchPerformance !== undefined &&
-        !isSearchPerformance(entry.report.searchPerformance, entry.sourceSlug))) return false;
+      entry.report.sourceSlug !== entry.sourceSlug ||
+      !isRecord(entry.report.metrics) ||
+      !isPublicGrowthMetric(entry.report.metrics.landingUv, "vercel_analytics") ||
+      !isPublicGrowthMetric(entry.report.metrics.qualifiedOutboundClicks, "seo_redirect") ||
+      !isSearchPerformance(entry.report.searchPerformance, entry.sourceSlug) ||
+      !isUrlInspection(entry.report.urlInspection, entry.sourceSlug) ||
+      !isRecord(entry.report.decisionState)) return false;
+    const state = entry.report.decisionState;
+    const landingUv = entry.report.metrics.landingUv as {
+      status: "observed" | "unavailable";
+      value: number | null;
+    };
+    const qualifiedOutboundClicks = entry.report.metrics.qualifiedOutboundClicks as {
+      status: "observed" | "unavailable";
+      value: number | null;
+    };
+    const searchPerformance = entry.report.searchPerformance as {
+      state: "observed" | "unavailable";
+      impressions: number | null;
+    };
+    const urlInspection = entry.report.urlInspection as {
+      state: "observed" | "unavailable";
+    };
+    const booleanFields = [
+      "landingUvReady",
+      "qualifiedOutboundReady",
+      "searchPerformanceReady",
+      "urlInspectionReady",
+      "attributionJoinChecked",
+      "attributionJoinBlocked",
+      "samePageSearchValidated",
+    ];
+    if (booleanFields.some((field) => typeof state[field] !== "boolean") ||
+      (state.attributionJoinBlocked && !state.attributionJoinChecked) ||
+      state.landingUvReady !== (landingUv.status === "observed") ||
+      state.qualifiedOutboundReady !==
+        (qualifiedOutboundClicks.status === "observed") ||
+      state.searchPerformanceReady !== (searchPerformance.state === "observed") ||
+      state.urlInspectionReady !== (urlInspection.state === "observed") ||
+      state.samePageSearchValidated !== (
+        landingUv.status === "observed" &&
+        Number(landingUv.value) > 0 &&
+        searchPerformance.state === "observed" &&
+        Number(searchPerformance.impressions) > 0
+      )) return false;
+    attributionJoinBlocked ||= state.attributionJoinBlocked === true;
+    attributionJoinReady &&= state.attributionJoinChecked === true;
+    hasSearchValidatedLandingPage ||= state.samePageSearchValidated === true;
     collectedPages += 1;
   }
+  attributionJoinReady &&= collectedPages === value.entries.length;
   return value.summary.publishedPages === value.entries.length &&
     value.summary.collectedPages === collectedPages &&
-    value.summary.unavailablePages === value.entries.length - collectedPages;
+    value.summary.unavailablePages === value.entries.length - collectedPages &&
+    value.summary.attributionJoinReady === attributionJoinReady &&
+    value.summary.attributionJoinBlocked === attributionJoinBlocked &&
+    value.summary.hasSearchValidatedLandingPage === hasSearchValidatedLandingPage;
 }
 
 function isPortfolioDecision(value: unknown) {
-  return isRecord(value) &&
+  if (!(isRecord(value) &&
     value.schemaVersion === 1 &&
     isString(value.action) && recommendedActions.has(value.action) &&
     (value.targetSlug === null || isString(value.targetSlug)) &&
     isString(value.rationale) &&
     isStringArray(value.evidenceSlugs) &&
-    new Set(value.evidenceSlugs).size === value.evidenceSlugs.length;
+    new Set(value.evidenceSlugs).size === value.evidenceSlugs.length)) return false;
+  if (value.action !== "consolidate") {
+    return value.sourceSlug === undefined && value.overlapQueries === undefined;
+  }
+  return isString(value.sourceSlug) &&
+    value.sourceSlug !== value.targetSlug &&
+    isStringArray(value.overlapQueries) &&
+    value.overlapQueries.length > 0 &&
+    new Set(value.overlapQueries).size === value.overlapQueries.length &&
+    value.evidenceSlugs.includes(value.sourceSlug) &&
+    isString(value.targetSlug) &&
+    value.evidenceSlugs.includes(value.targetSlug);
 }
 
 function isBrief(value: unknown) {

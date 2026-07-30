@@ -10,9 +10,9 @@
   font-family: Georgia, "Times New Roman", serif;
 }
 .masthead { min-height: 80px; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 0 clamp(20px, 5vw, 72px); border-top: 8px solid var(--oxblood); border-bottom: 1px solid var(--ink); font-family: var(--font-geist-sans), sans-serif; }
-.masthead a { display: flex; align-items: baseline; gap: 9px; color: inherit; text-decoration: none; }
-.masthead a span { color: var(--oxblood); font-size: .58rem; font-weight: 900; letter-spacing: .16em; }
-.masthead a strong { font-size: 1rem; letter-spacing: .04em; }
+.brand { display: flex; align-items: baseline; gap: 9px; color: inherit; }
+.brand span { color: var(--oxblood); font-size: .58rem; font-weight: 900; letter-spacing: .16em; }
+.brand strong { font-size: 1rem; letter-spacing: .04em; }
 .masthead p { margin: 0; font-size: .62rem; font-weight: 800; letter-spacing: .1em; }
 .hero { padding: 96px clamp(20px, 6vw, 104px) 72px; border-bottom: 1px solid var(--ink); }
 .sectionLabel, .questions header > span, .readingList > span, .finalCta > p { margin: 0 0 20px; color: var(--oxblood); font-family: var(--font-geist-sans), sans-serif; font-size: .66rem; font-weight: 900; letter-spacing: .15em; }

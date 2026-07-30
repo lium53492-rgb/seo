@@ -1,4 +1,7 @@
-import { isWorkbenchAuthorized } from "@/lib/seo/auth";
+import {
+  isPrivateAttributionAccessConfigured,
+  isPrivateAttributionRequestAuthorized,
+} from "@/lib/seo/auth";
 import { readLiveGrowthFunnel } from "@/lib/seo/growth-funnel";
 import { readPublishedPage } from "@/lib/seo/page-store";
 import { privateJson } from "@/lib/seo/private-response";
@@ -12,10 +15,10 @@ function defaultPeriod() {
 }
 
 export async function GET(request: Request) {
-  if (!process.env.WORKBENCH_PASSWORD) {
+  if (!isPrivateAttributionAccessConfigured()) {
     return privateJson({ error: "Private attribution reporting is not configured" }, { status: 503 });
   }
-  if (!isWorkbenchAuthorized(request)) {
+  if (!isPrivateAttributionRequestAuthorized(request)) {
     return privateJson({ error: "Unauthorized" }, { status: 401 });
   }
   const url = new URL(request.url);

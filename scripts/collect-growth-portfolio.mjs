@@ -33,7 +33,7 @@ const pages = existsSync(pagesDirectory)
 
 const snapshot = await collectGrowthPortfolio({
   pages,
-  password: process.env.WORKBENCH_PASSWORD,
+  automationToken: process.env.SEO_AUTOMATION_TOKEN,
   siteUrl: process.env.SEO_REPORT_SITE_URL,
   days,
   reportingLagDays,

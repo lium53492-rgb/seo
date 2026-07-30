@@ -14,6 +14,19 @@ const publisherPath = join(repoRoot, "scripts", "publish-reviewed-page.mjs");
 
 const unavailable = (source, detail) => ({ status: "unavailable", value: null, source, detail });
 
+function nestedKeys(value, keys = []) {
+  if (Array.isArray(value)) {
+    for (const item of value) nestedKeys(item, keys);
+    return keys;
+  }
+  if (!value || typeof value !== "object") return keys;
+  for (const [key, child] of Object.entries(value)) {
+    keys.push(key);
+    nestedKeys(child, keys);
+  }
+  return keys;
+}
+
 test("report generation cannot publish before a separate approval artifact", async () => {
   const workspace = await mkdtemp(join(tmpdir(), "seo-workflow-"));
   try {
@@ -301,13 +314,34 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.equal(isReportDraft(reportBeforeReview.draft), true);
     assert.equal(reportBeforeReview.publication.status, "ready_for_review");
     assert.equal(reportBeforeReview.publicationMode, "create");
-    assert.equal(reportBeforeReview.funnel.aggregationKey, "source_slug+reporting_period");
-    assert.equal(reportBeforeReview.funnel.conversionJoinKey, "seo_click_id");
-    assert.equal(reportBeforeReview.funnel.joinKey, undefined);
+    assert.equal(reportBeforeReview.funnel, undefined);
+    assert.equal(reportBeforeReview.portfolioFunnels.schemaVersion, 2);
+    assert.equal(reportBeforeReview.portfolioFunnels.privacyClass, "public_growth_evidence");
+    assert.equal(reportBeforeReview.portfolioFunnels.conversionJoinKey, undefined);
     assert.equal(reportBeforeReview.portfolioFunnels.summary.publishedPages, 0);
     assert.equal(reportBeforeReview.portfolioFunnels.periodBasis, "complete_shanghai_calendar_days");
     assert.equal(reportBeforeReview.portfolioFunnels.reportingWindowDays, 28);
     assert.equal(reportBeforeReview.portfolioFunnels.reportingLagDays, 3);
+    const privateOutcomeKeys = new Set([
+      "conversionJoinKey",
+      "funnel",
+      "trialStarts",
+      "signups",
+      "paidConversions",
+      "revenueMinor",
+      "currency",
+      "purchaseEvents",
+      "orphanCallbacks",
+      "revenueByCurrency",
+      "pageviews",
+      "outboundRequests",
+      "ctaLocations",
+    ]);
+    assert.deepEqual(
+      nestedKeys(reportBeforeReview.portfolioFunnels)
+        .filter((key) => privateOutcomeKeys.has(key)),
+      [],
+    );
     assert.equal(reportBeforeReview.portfolioDecision.action, "create_page");
     assert.equal(reportBeforeReview.trendSignals[0].relativeInterest, 67);
     assert.equal(reportBeforeReview.trendSignals[0].source, "google_trends");

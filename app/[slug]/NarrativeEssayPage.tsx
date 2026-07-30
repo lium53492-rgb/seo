@@ -7,7 +7,7 @@ export function NarrativeEssayPage({ page, relatedPages }: SeoPageViewProps) {
   return (
     <main className={styles.shell}>
       <nav className={styles.masthead} aria-label="Primary navigation">
-        <a href="/"><span>THE</span><strong>STORY ROLEPLAY REVIEW</strong></a>
+        <span className={styles.brand}><span>THE</span><strong>STORY ROLEPLAY REVIEW</strong></span>
         <p>ESSAY No. 04 · NOVELAI STORY GUIDE</p>
       </nav>
 

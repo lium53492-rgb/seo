@@ -7,7 +7,12 @@ This is the active zero-additional-API-cost production protocol. It uses public 
 1. Read `AGENTS.md`, `data/config/seo-policy.json`, `data/config/product-facts.json`, this file, the content-production SOP, pending feedback, and every unconsumed feedback item.
 2. Inspect `git status`, all current published pages, the current-day growth/research/report/review/page/PDF paths, and the latest report.
 3. Stop rather than overwrite another task's same-day artifact or unrelated local work.
-4. Record Search Console, Vercel UV, outbound, trial, signup, payment, and revenue as observed or unavailable. Never convert unavailable data to zero.
+4. Check the complete commercial funnel only through the private API and in
+   process memory. The committable growth snapshot records exact-page Search
+   Console, URL Inspection, aggregate landing UV, aggregate qualified outbound,
+   and boolean readiness/blocking state only. Never copy trial, signup, payment,
+   revenue, currency, purchase-event, callback-count, click-ID, or cohort detail
+   into `data/growth` or `data/reports`.
 5. Run `npm.cmd run growth:probe` from the NovelAI server environment after callback deployment or secret rotation, then run `npm.cmd run growth:check`. Full-loop readiness requires observed Search Console, Vercel landing UV, and attribution-store probes plus a recent signed NovelAI callback handshake.
 6. Run `npm.cmd run growth:collect` before researching candidates. It uses the official Search Console and Vercel APIs over the configured 28-day finalized-data window, currently ending three complete Shanghai days before the run. Read the resulting all-page snapshot and stop blind new-page production when the configured cold-start allowance is exhausted unless one published page has both non-zero landing UV and non-zero exact-page Search Console impressions. Direct or internal UV alone never unlocks expansion.
 
@@ -37,9 +42,20 @@ The research input uses `policyVersion: 4` and includes:
   `improve_page`, `consolidate`, or `observe`, an evidence-led rationale,
   cited published slugs, and a target slug when the action changes an existing
   page;
-- a schema-version 1 funnel snapshot using `source_slug+reporting_period` for search/UV aggregation and `seo_click_id` for outbound-to-revenue conversion joins.
+- a schema-version 2 public growth snapshot using
+  `source_slug+reporting_period`; legacy schema-version 1 snapshots remain
+  readable only as migration input and are projected to schema v2 before a
+  report is written.
 
 The English draft remains 600-1,000 words, has at least four sections and three FAQs, records its generation model and timestamp, uses only approved fact IDs, contains one real CTA, avoids prohibited claims and third-party IP, and links a relevant published first-party page when one exists. The builder owns the final route slug and binds it to the reviewed draft digest.
+
+A `consolidate` decision is evidence-gated and does not itself create a
+redirect. It must name distinct published `sourceSlug` and `targetSlug` values,
+record at least one `overlapQueries` value observed for both exact pages, and
+show at least 20 exact-page impressions for each page over the same finalized
+period. The target also needs an observed URL Inspection result with successful
+fetch, indexing allowed, and same-site self-referencing user and Google
+canonicals. Otherwise record `observe`; the builder rejects consolidation.
 
 ## Build, review, publish
 
@@ -50,7 +66,21 @@ npm run research:publish -- data/reports/YYYY-MM-DD.json data/reviews/YYYY-MM-DD
 npm run verify
 ```
 
-The readiness command probes the live private data path and exits non-zero while the full loop is incomplete. The growth command writes `data/growth/YYYY-MM-DD.json` and refuses to overwrite it. The research input embeds that snapshot or references it with `portfolioSnapshot`; the builder verifies that every published page is represented over one complete Shanghai-day period and the policy-defined reporting lag. The research command writes a review-required report and cannot write `data/pages`. Before publication, an independent editor creates a review artifact with an identified reviewer, timestamp, substantive notes, and passed checks for search intent, product truth, conversion path, and source accuracy. A Codex review must identify itself as `codex_editor`; it must never be labelled human.
+The readiness command probes the live private data path and exits non-zero while
+the full loop is incomplete. The growth command writes a privacy-classified
+schema-v2 `data/growth/YYYY-MM-DD.json` and refuses to overwrite it. The
+collector holds the full private response only long enough to derive the safe
+public fields and booleans. The research input embeds that snapshot or
+references it with `portfolioSnapshot`; the builder verifies that every
+published page is represented over one complete Shanghai-day period and the
+policy-defined reporting lag. A legacy schema-v1 input is accepted for
+migration, but the builder never copies its private outcome fields into the
+daily report. The research command writes a review-required report and cannot
+write `data/pages`. Before publication, an independent editor creates a review
+artifact with an identified reviewer, timestamp, substantive notes, and passed
+checks for search intent, product truth, conversion path, and source accuracy.
+A Codex review must identify itself as `codex_editor`; it must never be labelled
+human.
 
 The publisher enforces one page per report/day, writes schema-version 2 page data, attaches the approval record, and updates the report to `published`. Existing schema-version 1 pages remain readable but all new pages use version 2.
 

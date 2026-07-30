@@ -7,7 +7,7 @@ export function TaskGuidePage({ page, relatedPages }: SeoPageViewProps) {
   return (
     <main className={styles.shell} id="top">
       <nav className={styles.nav} aria-label="Primary navigation">
-        <a href="/" className={styles.brand}><span>N</span><strong>Role Selection Field Guide</strong></a>
+        <span className={styles.brand}><span>N</span><strong>Role Selection Field Guide</strong></span>
         <span>Director&apos;s copy · 01</span>
       </nav>
 

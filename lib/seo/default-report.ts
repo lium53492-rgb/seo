@@ -81,6 +81,9 @@ export function redactPrivateReportData(report: DailySeoReport): DailySeoReport 
           publishedPages: report.portfolioFunnels.entries.length,
           collectedPages: 0,
           unavailablePages: report.portfolioFunnels.entries.length,
+          attributionJoinReady: false,
+          attributionJoinBlocked: false,
+          hasSearchValidatedLandingPage: false,
         },
         entries: report.portfolioFunnels.entries.map((entry) => ({
           sourceSlug: entry.sourceSlug,

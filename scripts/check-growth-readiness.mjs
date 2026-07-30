@@ -1,16 +1,16 @@
 import "./load-env.mjs";
 
 const siteUrl = (process.env.SEO_REPORT_SITE_URL || "https://seo-pi-fawn.vercel.app").replace(/\/$/, "");
-const password = process.env.WORKBENCH_PASSWORD;
+const automationToken = process.env.SEO_AUTOMATION_TOKEN;
 
-if (!password) {
-  throw new Error("WORKBENCH_PASSWORD is required to check private growth readiness");
+if (!automationToken || Buffer.byteLength(automationToken, "utf8") < 32) {
+  throw new Error("SEO_AUTOMATION_TOKEN must contain at least 32 bytes to check private growth readiness");
 }
 
 const endpoint = new URL("/api/attribution/readiness", siteUrl);
 const response = await fetch(endpoint, {
   headers: {
-    authorization: `Basic ${Buffer.from(`seo:${password}`).toString("base64")}`,
+    authorization: `Bearer ${automationToken}`,
   },
   signal: AbortSignal.timeout(15_000),
 });

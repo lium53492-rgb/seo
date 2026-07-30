@@ -62,8 +62,8 @@ and service-account authorization before daily query/page metrics can be read.
 
 Search Console, Vercel Analytics, Upstash, and the NovelAI conversion callback
 are explicit data connections. Missing connections stay `unavailable`; they
-never become synthetic zeroes. Without a workbench password, private page-level
-funnel data and run endpoints stay protected.
+never become synthetic zeroes. Automated collection uses a dedicated bearer
+token; it does not reuse the interactive workbench password.
 
 Copy `.env.example` to `.env.local` and configure only the integrations you have. Never commit `.env.local`.
 
@@ -75,6 +75,7 @@ Copy `.env.example` to `.env.local` and configure only the integrations you have
 ### Private data and provider variables
 
 - `WORKBENCH_PASSWORD`
+- `SEO_AUTOMATION_TOKEN`
 - `ATTRIBUTION_SECRET`
 - `CRON_SECRET`
 - `UPSTASH_REDIS_REST_URL`
@@ -88,8 +89,11 @@ Copy `.env.example` to `.env.local` and configure only the integrations you have
 
 The Google service account must be added as a user on the Search Console
 property. The GitHub token should be fine-grained and limited to Contents access
-on this repository. Run `npm run growth:check` after changing any analytics or
-callback credential.
+on this repository. Generate `SEO_AUTOMATION_TOKEN` from at least 32 random
+bytes and configure the same value in Vercel and the trusted automation
+environment; `WORKBENCH_PASSWORD` is optional and only for
+interactive human access. Run `npm run growth:check` after changing any analytics
+or callback credential.
 
 ## Deployment
 
