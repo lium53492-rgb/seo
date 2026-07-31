@@ -735,6 +735,10 @@ const persistedGrowthForbiddenKeys = new Set([
   "ctaLocations",
 ]);
 
+function isRecord(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
 function findForbiddenGrowthKey(value) {
   if (Array.isArray(value)) {
     for (const item of value) {

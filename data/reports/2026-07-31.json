@@ -1,0 +1,1145 @@
+{
+  "id": "seo-2026-07-31",
+  "date": "2026-07-31",
+  "policyVersion": 4,
+  "publicationMode": "create",
+  "generatedAt": "2026-07-31T03:18:00.000Z",
+  "mode": "partial",
+  "headline": "Today's revenue-first priority: create a new page",
+  "summary": {
+    "candidatesAnalyzed": 5,
+    "publishableOpportunities": 2,
+    "totalClicks": 0,
+    "totalImpressions": 0,
+    "averageCtr": 0
+  },
+  "opportunities": [
+    {
+      "keyword": "how to start ai roleplay",
+      "seed": "ai roleplay first scene",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 72,
+      "volume": 0,
+      "difficulty": 43,
+      "cpc": 0,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 100,
+      "originality": 90,
+      "conversionIntent": 100,
+      "trialIntent": 100,
+      "revenueIntent": 55,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 10,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "rpdate-start-roleplay",
+          "charaverse-beginner-guide"
+        ],
+        "searcherJob": "Begin an AI roleplay now with a concrete first scene and decide whether a story-led roleplay experience is worth trying.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection",
+          "interactive-fiction-history"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection",
+          "interactive_fiction"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking",
+          "action_language"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Two current public beginner guides explicitly frame how to start AI roleplay as an immediate, step-based reader task.",
+          "difficulty": "Visible search results are dominated by product-led guides, so the proxy assumes moderate competition rather than an observed keyword metric.",
+          "productFit": "The approved story premise, role selection, voice-roleplay format, and interactive-fiction background answer the first-scene task without extra claims.",
+          "trialIntent": "The wording asks how to begin now, and both supporting guides lead readers through a first interaction or first message.",
+          "revenueIntent": "A searcher comparing ways to start is solution-aware and may evaluate an experience before deciding whether to continue using it.",
+          "intentSpecificity": "The query names a defined action, AI roleplay format, beginner audience, and the narrow first-start modifier.",
+          "originality": "Existing pages explain the format or role choice; this page supplies a distinct first-scene checklist and recovery rule.",
+          "ipRisk": "The phrase is generic and the planned examples use original situations only, with no named entertainment properties.",
+          "cannibalizationRisk": "The nearest pages describe premise and role selection, but none answers the procedural first-scene job from start to first reply."
+        }
+      },
+      "score": 83,
+      "action": "create_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; specific searcher job; strong approved-product fit; evidence-derived revenue-first opportunity score 83."
+    },
+    {
+      "keyword": "ai roleplay beginner guide",
+      "seed": "ai roleplay beginner",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 68,
+      "volume": 0,
+      "difficulty": 51,
+      "cpc": 0,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 80,
+      "originality": 90,
+      "conversionIntent": 100,
+      "trialIntent": 100,
+      "revenueIntent": 55,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 10,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "charaverse-beginner-guide",
+          "intimeros-beginner-guide"
+        ],
+        "searcherJob": "Understand the beginner steps for AI roleplay and choose a concrete story-led first experience to try today.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking",
+          "action_language"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Independent current beginner guides use AI roleplay beginner framing and organize the subject around first-use questions.",
+          "difficulty": "Several editorial explainers rank for the broad phrase, producing a moderate proxy rather than a provider-derived metric.",
+          "productFit": "An existing plot and available role give a beginner a constrained start that fits the approved product direction.",
+          "trialIntent": "Beginner-guide wording seeks immediate orientation before a first try and therefore maps to a trial-stage visitor.",
+          "revenueIntent": "A beginner evaluating formats is solution-aware and may compare a story-led experience with other ways to begin.",
+          "intentSpecificity": "The phrase names a guide task, AI roleplay format, beginner audience, and a narrow onboarding context.",
+          "originality": "A future page could use a decision map, but it overlaps the selected procedural start guide for this daily slot.",
+          "ipRisk": "The query is generic and allows original instructional examples without brands, characters, or fictional universes.",
+          "cannibalizationRisk": "It is adjacent to the selected start guide and existing introductions, so it is not the distinct page selected today."
+        }
+      },
+      "score": 78,
+      "action": "create_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; specific searcher job; evidence-derived revenue-first opportunity score 78."
+    },
+    {
+      "keyword": "ai roleplay first message",
+      "seed": "roleplay opener",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 64,
+      "volume": 0,
+      "difficulty": 47,
+      "cpc": 0,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 80,
+      "originality": 70,
+      "conversionIntent": 100,
+      "trialIntent": 100,
+      "revenueIntent": 55,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 45,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "rpdate-start-roleplay",
+          "charaverse-beginner-guide"
+        ],
+        "searcherJob": "Write a first AI roleplay message that starts an original scene and decide whether to enter a story-led role now.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking",
+          "action_language"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "adjacent_intent",
+        "nearestExistingSlug": "interactive-voice-story",
+        "rationale": {
+          "demand": "The RPDATE guide focuses on first-message structure while Charaverse explicitly lists writing a first message as a start step.",
+          "difficulty": "Editorial opener advice is common in visible results, so this is a moderate public-web competition proxy only.",
+          "productFit": "A prepared story and selected role can give a first message a truthful situation and point of view.",
+          "trialIntent": "First-message language signals an immediate hands-on attempt rather than a distant informational research task.",
+          "revenueIntent": "The visitor is solution-aware and may compare entry experiences before choosing where to begin roleplay.",
+          "intentSpecificity": "It specifies the first-message task, AI roleplay format, new-user audience, and a narrow opening-turn modifier.",
+          "originality": "An opener diagnostic could be useful, but it is less distinct than today's complete start-to-first-reply checklist.",
+          "ipRisk": "The query is generic and can be answered with original scene structures that name no franchise or trademark.",
+          "cannibalizationRisk": "Its opener step materially overlaps interactive voice story's opening-scene explanation and the selected start guide."
+        }
+      },
+      "existingUrl": "/interactive-voice-story",
+      "score": 70,
+      "action": "improve_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; specific searcher job; evidence-derived revenue-first opportunity score 70."
+    },
+    {
+      "keyword": "how to set up an ai roleplay scene",
+      "seed": "roleplay scene setup",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 60,
+      "volume": 0,
+      "difficulty": 45,
+      "cpc": 0,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 80,
+      "originality": 70,
+      "conversionIntent": 100,
+      "trialIntent": 100,
+      "revenueIntent": 55,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 45,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "rpdate-start-roleplay",
+          "airoleplays-start-flow"
+        ],
+        "searcherJob": "Set up a focused AI roleplay scene with context and a role, then enter an original story experience rather than a blank prompt.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking",
+          "action_language"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "adjacent_intent",
+        "nearestExistingSlug": "story-based-ai-roleplay",
+        "rationale": {
+          "demand": "One guide details scene setup before typing and another presents a scenario-context-start roleplay flow.",
+          "difficulty": "The phrase has several generic guide competitors, so the value is a conservative public-web proxy.",
+          "productFit": "Approved facts support beginning from an existing plot and selecting an available role within that plot.",
+          "trialIntent": "Set-up wording asks for an immediate action that naturally precedes a first trial of a roleplay experience.",
+          "revenueIntent": "A solution-aware setup searcher can compare entry formats before deciding to continue with an experience.",
+          "intentSpecificity": "The query names a setup task, AI roleplay format, beginner actor, and the narrow scene modifier.",
+          "originality": "A scene setup card would add utility, but it substantially overlaps today's start guide and existing premise explanation.",
+          "ipRisk": "It permits fully original scenes and contains no reference to an entertainment property or recognizable fictional world.",
+          "cannibalizationRisk": "Scene setup is close to the existing story-premise page and should not receive a second page today."
+        }
+      },
+      "existingUrl": "/story-based-ai-roleplay",
+      "score": 70,
+      "action": "improve_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; specific searcher job; evidence-derived revenue-first opportunity score 70."
+    },
+    {
+      "keyword": "ai roleplay scenario guide",
+      "seed": "ai roleplay scenarios",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 58,
+      "volume": 0,
+      "difficulty": 56,
+      "cpc": 0,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 80,
+      "originality": 70,
+      "conversionIntent": 100,
+      "trialIntent": 100,
+      "revenueIntent": 55,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 45,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "rpdate-start-roleplay",
+          "intimeros-beginner-guide"
+        ],
+        "searcherJob": "Choose a safe original AI roleplay scenario framework and decide whether to try a story-led role in a prepared premise.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking",
+          "action_language"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "adjacent_intent",
+        "nearestExistingSlug": "ai-voice-roleplay-story",
+        "rationale": {
+          "demand": "Public guides discuss scenario selection and roleplay types, indicating a visible but broad discovery task.",
+          "difficulty": "Scenario queries attract many template and platform pages, so the public-web proxy is higher than the selected task guide.",
+          "productFit": "An existing plot and available role are truthful ways to orient an original scenario without claiming an unapproved inventory.",
+          "trialIntent": "Scenario-guide visitors seek material to begin an experience and can immediately use an original scene framework.",
+          "revenueIntent": "The visitor may compare available roleplay formats while choosing a scenario suitable for continued use.",
+          "intentSpecificity": "It identifies a guide task, AI roleplay format, scenario-seeking audience, and a narrow preparation modifier.",
+          "originality": "A real approved original-story inventory could later support this topic, but no such inventory is currently approved.",
+          "ipRisk": "The phrase is generic, although any eventual scenario examples must remain original and avoid named franchises.",
+          "cannibalizationRisk": "Without an approved inventory, this is adjacent to the broad story-roleplay overview and is not selected for publication."
+        }
+      },
+      "existingUrl": "/ai-voice-roleplay-story",
+      "score": 69,
+      "action": "improve_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; specific searcher job; evidence-derived revenue-first opportunity score 69."
+    }
+  ],
+  "performance": [],
+  "trendSignals": [
+    {
+      "keyword": "how to start ai roleplay",
+      "source": "google_trends",
+      "sourceUrl": "https://trends.google.com/trends/explore?date=today%2012-m&q=how%20to%20start%20ai%20roleplay",
+      "state": "unavailable",
+      "relativeInterest": null,
+      "direction": "unknown",
+      "geo": "Worldwide",
+      "period": "today 12-m",
+      "collectedAt": "2026-07-31T03:16:00.000Z",
+      "detail": "The official Google Trends UI returned an internal error in this run, so no relative-interest value or direction was inferred."
+    }
+  ],
+  "feedbackDecisions": [],
+  "portfolioFunnels": {
+    "schemaVersion": 2,
+    "privacyClass": "public_growth_evidence",
+    "generatedAt": "2026-07-31T02:51:49.544Z",
+    "periodBasis": "complete_shanghai_calendar_days",
+    "reportingWindowDays": 28,
+    "reportingLagDays": 3,
+    "aggregationKey": "source_slug+reporting_period",
+    "periodStart": "2026-06-29T16:00:00.000Z",
+    "periodEnd": "2026-07-27T16:00:00.000Z",
+    "summary": {
+      "publishedPages": 4,
+      "collectedPages": 4,
+      "unavailablePages": 0,
+      "attributionJoinReady": true,
+      "attributionJoinBlocked": false,
+      "hasSearchValidatedLandingPage": false
+    },
+    "entries": [
+      {
+        "sourceSlug": "ai-voice-roleplay-story",
+        "path": "/ai-voice-roleplay-story",
+        "keyword": "ai voice roleplay story",
+        "state": "collected",
+        "report": {
+          "sourceSlug": "ai-voice-roleplay-story",
+          "metrics": {
+            "landingUv": {
+              "status": "observed",
+              "value": 3,
+              "source": "vercel_analytics",
+              "detail": "Observed the exact landing page's aggregate UV through Vercel Web Analytics for this reporting period."
+            },
+            "qualifiedOutboundClicks": {
+              "status": "observed",
+              "value": 0,
+              "source": "seo_redirect",
+              "detail": "Observed the page-level qualified outbound aggregate through the private attribution service for this reporting period."
+            }
+          },
+          "searchPerformance": {
+            "state": "observed",
+            "sourceSlug": "ai-voice-roleplay-story",
+            "pageUrl": "https://seo-pi-fawn.vercel.app/ai-voice-roleplay-story",
+            "startDate": "2026-06-30",
+            "endDate": "2026-07-27",
+            "clicks": 0,
+            "impressions": 0,
+            "ctr": 0,
+            "position": null,
+            "detail": "Search Console final-data query succeeded for 2026-06-30 through 2026-07-27 and returned no row for this exact page."
+          },
+          "urlInspection": {
+            "state": "observed",
+            "sourceSlug": "ai-voice-roleplay-story",
+            "pageUrl": "https://seo-pi-fawn.vercel.app/ai-voice-roleplay-story",
+            "inspectedAt": "2026-07-31T02:51:51.135Z",
+            "verdict": "NEUTRAL",
+            "coverageState": "URL is unknown to Google",
+            "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+            "indexingState": "INDEXING_STATE_UNSPECIFIED",
+            "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+            "lastCrawlTime": null,
+            "googleCanonical": null,
+            "userCanonical": null,
+            "crawledAs": null,
+            "sitemap": [],
+            "detail": "Observed Google's indexed-version URL Inspection result for this exact canonical page; this is not a live-page test."
+          },
+          "decisionState": {
+            "landingUvReady": true,
+            "qualifiedOutboundReady": true,
+            "searchPerformanceReady": true,
+            "urlInspectionReady": true,
+            "attributionJoinChecked": true,
+            "attributionJoinBlocked": false,
+            "samePageSearchValidated": false
+          }
+        }
+      },
+      {
+        "sourceSlug": "choose-a-role-ai-story",
+        "path": "/choose-a-role-ai-story",
+        "keyword": "choose a role ai story",
+        "state": "collected",
+        "report": {
+          "sourceSlug": "choose-a-role-ai-story",
+          "metrics": {
+            "landingUv": {
+              "status": "observed",
+              "value": 2,
+              "source": "vercel_analytics",
+              "detail": "Observed the exact landing page's aggregate UV through Vercel Web Analytics for this reporting period."
+            },
+            "qualifiedOutboundClicks": {
+              "status": "observed",
+              "value": 0,
+              "source": "seo_redirect",
+              "detail": "Observed the page-level qualified outbound aggregate through the private attribution service for this reporting period."
+            }
+          },
+          "searchPerformance": {
+            "state": "observed",
+            "sourceSlug": "choose-a-role-ai-story",
+            "pageUrl": "https://seo-pi-fawn.vercel.app/choose-a-role-ai-story",
+            "startDate": "2026-06-30",
+            "endDate": "2026-07-27",
+            "clicks": 0,
+            "impressions": 0,
+            "ctr": 0,
+            "position": null,
+            "detail": "Search Console final-data query succeeded for 2026-06-30 through 2026-07-27 and returned no row for this exact page."
+          },
+          "urlInspection": {
+            "state": "observed",
+            "sourceSlug": "choose-a-role-ai-story",
+            "pageUrl": "https://seo-pi-fawn.vercel.app/choose-a-role-ai-story",
+            "inspectedAt": "2026-07-31T02:51:51.004Z",
+            "verdict": "NEUTRAL",
+            "coverageState": "URL is unknown to Google",
+            "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+            "indexingState": "INDEXING_STATE_UNSPECIFIED",
+            "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+            "lastCrawlTime": null,
+            "googleCanonical": null,
+            "userCanonical": null,
+            "crawledAs": null,
+            "sitemap": [],
+            "detail": "Observed Google's indexed-version URL Inspection result for this exact canonical page; this is not a live-page test."
+          },
+          "decisionState": {
+            "landingUvReady": true,
+            "qualifiedOutboundReady": true,
+            "searchPerformanceReady": true,
+            "urlInspectionReady": true,
+            "attributionJoinChecked": true,
+            "attributionJoinBlocked": false,
+            "samePageSearchValidated": false
+          }
+        }
+      },
+      {
+        "sourceSlug": "interactive-voice-story",
+        "path": "/interactive-voice-story",
+        "keyword": "interactive voice story",
+        "state": "collected",
+        "report": {
+          "sourceSlug": "interactive-voice-story",
+          "metrics": {
+            "landingUv": {
+              "status": "observed",
+              "value": 4,
+              "source": "vercel_analytics",
+              "detail": "Observed the exact landing page's aggregate UV through Vercel Web Analytics for this reporting period."
+            },
+            "qualifiedOutboundClicks": {
+              "status": "observed",
+              "value": 0,
+              "source": "seo_redirect",
+              "detail": "Observed the page-level qualified outbound aggregate through the private attribution service for this reporting period."
+            }
+          },
+          "searchPerformance": {
+            "state": "observed",
+            "sourceSlug": "interactive-voice-story",
+            "pageUrl": "https://seo-pi-fawn.vercel.app/interactive-voice-story",
+            "startDate": "2026-06-30",
+            "endDate": "2026-07-27",
+            "clicks": 0,
+            "impressions": 0,
+            "ctr": 0,
+            "position": null,
+            "detail": "Search Console final-data query succeeded for 2026-06-30 through 2026-07-27 and returned no row for this exact page."
+          },
+          "urlInspection": {
+            "state": "observed",
+            "sourceSlug": "interactive-voice-story",
+            "pageUrl": "https://seo-pi-fawn.vercel.app/interactive-voice-story",
+            "inspectedAt": "2026-07-31T02:51:51.230Z",
+            "verdict": "NEUTRAL",
+            "coverageState": "URL is unknown to Google",
+            "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+            "indexingState": "INDEXING_STATE_UNSPECIFIED",
+            "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+            "lastCrawlTime": null,
+            "googleCanonical": null,
+            "userCanonical": null,
+            "crawledAs": null,
+            "sitemap": [],
+            "detail": "Observed Google's indexed-version URL Inspection result for this exact canonical page; this is not a live-page test."
+          },
+          "decisionState": {
+            "landingUvReady": true,
+            "qualifiedOutboundReady": true,
+            "searchPerformanceReady": true,
+            "urlInspectionReady": true,
+            "attributionJoinChecked": true,
+            "attributionJoinBlocked": false,
+            "samePageSearchValidated": false
+          }
+        }
+      },
+      {
+        "sourceSlug": "story-based-ai-roleplay",
+        "path": "/story-based-ai-roleplay",
+        "keyword": "story based ai roleplay",
+        "state": "collected",
+        "report": {
+          "sourceSlug": "story-based-ai-roleplay",
+          "metrics": {
+            "landingUv": {
+              "status": "observed",
+              "value": 2,
+              "source": "vercel_analytics",
+              "detail": "Observed the exact landing page's aggregate UV through Vercel Web Analytics for this reporting period."
+            },
+            "qualifiedOutboundClicks": {
+              "status": "observed",
+              "value": 0,
+              "source": "seo_redirect",
+              "detail": "Observed the page-level qualified outbound aggregate through the private attribution service for this reporting period."
+            }
+          },
+          "searchPerformance": {
+            "state": "observed",
+            "sourceSlug": "story-based-ai-roleplay",
+            "pageUrl": "https://seo-pi-fawn.vercel.app/story-based-ai-roleplay",
+            "startDate": "2026-06-30",
+            "endDate": "2026-07-27",
+            "clicks": 0,
+            "impressions": 0,
+            "ctr": 0,
+            "position": null,
+            "detail": "Search Console final-data query succeeded for 2026-06-30 through 2026-07-27 and returned no row for this exact page."
+          },
+          "urlInspection": {
+            "state": "observed",
+            "sourceSlug": "story-based-ai-roleplay",
+            "pageUrl": "https://seo-pi-fawn.vercel.app/story-based-ai-roleplay",
+            "inspectedAt": "2026-07-31T02:51:51.477Z",
+            "verdict": "NEUTRAL",
+            "coverageState": "URL is unknown to Google",
+            "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+            "indexingState": "INDEXING_STATE_UNSPECIFIED",
+            "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+            "lastCrawlTime": null,
+            "googleCanonical": null,
+            "userCanonical": null,
+            "crawledAs": null,
+            "sitemap": [],
+            "detail": "Observed Google's indexed-version URL Inspection result for this exact canonical page; this is not a live-page test."
+          },
+          "decisionState": {
+            "landingUvReady": true,
+            "qualifiedOutboundReady": true,
+            "searchPerformanceReady": true,
+            "urlInspectionReady": true,
+            "attributionJoinChecked": true,
+            "attributionJoinBlocked": false,
+            "samePageSearchValidated": false
+          }
+        }
+      }
+    ]
+  },
+  "portfolioDecision": {
+    "schemaVersion": 1,
+    "action": "create_page",
+    "targetSlug": null,
+    "rationale": "All four published pages have collected same-period exact-page Search Console evidence, but each has zero impressions and no query rows. Their URL Inspection results are observed but Google reports each URL as unknown, so neither an evidence-led update nor a consolidation is permitted. The portfolio has observed landing UV and no attribution-join blocker. The selected first-scene task is distinct from the existing format and role-selection explanations, has public evidence across independent domains, meets policy-v4 product, trial, revenue, specificity, originality, IP, and cannibalization gates, and does not rely on the retired UV/GSC expansion gate.",
+    "evidenceSlugs": [
+      "ai-voice-roleplay-story",
+      "interactive-voice-story",
+      "choose-a-role-ai-story",
+      "story-based-ai-roleplay"
+    ]
+  },
+  "publication": {
+    "status": "published",
+    "slug": "how-to-start-ai-roleplay",
+    "path": "/how-to-start-ai-roleplay",
+    "slot": "morning",
+    "publishedAt": "2026-07-31T07:10:56.939Z",
+    "draftDigest": "f8b97ad0ea81adbf6bd7e0efa65f6cb5acfb674c4b7c91672fa12fe3be1684c5",
+    "reason": "Approved by codex_editor Codex editorial review after automated and editorial gates passed."
+  },
+  "publications": [
+    {
+      "status": "published",
+      "slug": "how-to-start-ai-roleplay",
+      "path": "/how-to-start-ai-roleplay",
+      "slot": "morning",
+      "publishedAt": "2026-07-31T07:10:56.939Z",
+      "draftDigest": "f8b97ad0ea81adbf6bd7e0efa65f6cb5acfb674c4b7c91672fa12fe3be1684c5",
+      "reason": "Approved by codex_editor Codex editorial review after automated and editorial gates passed."
+    }
+  ],
+  "actions": [
+    {
+      "priority": "P0",
+      "action": "create a new page",
+      "why": "All four published pages have collected same-period exact-page Search Console evidence, but each has zero impressions and no query rows. Their URL Inspection results are observed but Google reports each URL as unknown, so neither an evidence-led update nor a consolidation is permitted. The portfolio has observed landing UV and no attribution-join blocker. The selected first-scene task is distinct from the existing format and role-selection explanations, has public evidence across independent domains, meets policy-v4 product, trial, revenue, specificity, originality, IP, and cannibalization gates, and does not rely on the retired UV/GSC expansion gate.",
+      "expectedImpact": "Target a specific searcher who is close to trial or purchase."
+    },
+    {
+      "priority": "P1",
+      "action": "Verify evidence, intent, and conversion hypothesis",
+      "why": "Research proxies rank options; they do not replace observed search or revenue data.",
+      "expectedImpact": "Prevent broad traffic from displacing qualified product demand."
+    },
+    {
+      "priority": "P2",
+      "action": "Build and publish /how-to-start-ai-roleplay",
+      "why": "Approved by codex_editor Codex editorial review after automated and editorial gates passed.",
+      "expectedImpact": "Release one reviewed, measurable page."
+    }
+  ],
+  "brief": {
+    "keyword": "how to start ai roleplay",
+    "slug": "/how-to-start-ai-roleplay",
+    "pageType": "guide",
+    "searchIntent": "mixed",
+    "title": "How To Start Ai Roleplay | Enter a Story and Choose a Role",
+    "description": "Explore how to start ai roleplay through an existing story plot and an available role.",
+    "h1": "How To Start Ai Roleplay",
+    "primaryCta": "Explore stories on NovelAI",
+    "sections": [
+      "Answer the searcher job",
+      "Show the story entry path",
+      "Explain role selection",
+      "Resolve the decision barrier",
+      "Offer a measured next step"
+    ],
+    "evidenceRequired": [
+      "Public evidence for the intent",
+      "Approved product facts",
+      "Original non-infringing material",
+      "Verified CTA and attribution route"
+    ],
+    "qualityGate": [
+      "One intent and one H1",
+      "Trial and revenue gates passed",
+      "No unlicensed third-party IP",
+      "Independent editorial review",
+      "Render, link, and index checks"
+    ]
+  },
+  "draft": {
+    "slot": "morning",
+    "keyword": "how to start ai roleplay",
+    "language": "en",
+    "model": "codex",
+    "generatedAt": "2026-07-31T03:15:00.000Z",
+    "reviewRequired": true,
+    "factIdsUsed": [
+      "voice-roleplay-format",
+      "existing-story",
+      "role-selection",
+      "interactive-fiction-history"
+    ],
+    "title": "How to Start AI Roleplay | Begin with a Story and a Role",
+    "metaDescription": "Use a five-step way to start AI roleplay from an existing story, choose an available role, and enter the first scene with a clear response.",
+    "h1": "How to Start AI Roleplay",
+    "heroMarkdown": "Start AI roleplay by entering a situation that already has something happening. Choose an available role, notice one concrete detail in the opening, leave one question unresolved, and answer from that character's point of view. That gives you a scene to perform in instead of an empty prompt that asks you to invent everything at once.",
+    "primaryCta": "Explore stories on NovelAI",
+    "sections": [
+      {
+        "heading": "1. Begin with the immediate situation",
+        "bodyMarkdown": "The easiest way to start is to look for the moment already in motion. What has just happened? What does the room, path, message, or silence make someone notice? You only need enough context for a character to react. A useful opening does not need a long history or a map of an entire fictional world. It needs a present tense problem, surprise, invitation, or question. This is why a story-led entry can feel more approachable than a blank chat box: the plot gives the first line somewhere to land. The product is an AI voice cosplay and roleplay experience built around acting inside a story, so the starting point is a scene rather than a request to design every detail yourself."
+      },
+      {
+        "heading": "2. Choose the role whose view interests you",
+        "bodyMarkdown": "Next, choose from the characters available in the story and decide whose view you want to perform. Do not try to write a complete biography. Ask a smaller question: what might this person want, fear, protect, or discover in this exact moment? That one choice gives your response a direction. Each playable experience starts from an existing story plot, and the available characters belong to that plot. Selecting a role is therefore not a detached profile exercise. It is a way to stand somewhere inside the situation already on the page. If you want the broader explanation of this format, the AI voice roleplay story overview shows how plot, character choice, and performance connect."
+      },
+      {
+        "heading": "3. Add one detail and one open question",
+        "bodyMarkdown": "A first scene becomes easier to answer when it includes one detail that can be noticed and one question that remains open. The detail can be simple and original: an unsigned note on a table, footsteps stopping outside a door, or a lantern that has gone out too early. The question creates a reason to respond: Who left it? Why did the sound stop? What does the selected role know that others do not? Keep the scene general and original; you do not need a famous world, character, or borrowed storyline. The goal is not to write a perfect script. It is to offer a specific cue that lets the role react in character."
+      },
+      {
+        "heading": "4. Respond from the role, not from a planning meeting",
+        "bodyMarkdown": "When you are ready, answer as the chosen role would meet the immediate situation. A short reaction, question, or decision is enough. You can listen for the tension in the scene and let that shape the next line. Voice roleplay is about acting inside the fiction, not about making promises for a particular voice technology. The team behind the experience has previously built AI interactive-fiction and simulator projects, which supports a format where context, role selection, and participation belong together. Let the opening plot give you a cue, then use the role's perspective to make the scene yours."
+      },
+      {
+        "heading": "5. Reset one ingredient if the opener feels flat",
+        "bodyMarkdown": "A flat opener does not mean you need to abandon the story. Change one ingredient instead of rewriting everything. Add a clearer place, introduce a small interruption, or replace a vague greeting with a question the role cannot ignore. Then return to the same character and the same immediate situation. This recovery move keeps the scene understandable while giving the next response a new point of pressure. Once you have a premise, a role, a detail, and an open question, you have enough to enter an original story and see how the format feels in practice."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "Do I need to invent the whole story before I start AI roleplay?",
+        "answerMarkdown": "No. Start with the opening situation in an existing story, choose an available character, and respond from that role. A complete fictional history is not required for the first scene."
+      },
+      {
+        "question": "What should my first AI roleplay response include?",
+        "answerMarkdown": "Use the selected role's point of view, one concrete detail from the situation, and a question or action that leaves the scene moving. A short in-character response is enough to begin."
+      },
+      {
+        "question": "What if my first scene feels generic?",
+        "answerMarkdown": "Keep the role and plot, then change one element: make the setting more specific, add a small interruption, or introduce an unresolved question that requires a response."
+      }
+    ],
+    "internalLinks": [
+      {
+        "anchor": "AI voice roleplay story overview",
+        "href": "/ai-voice-roleplay-story"
+      },
+      {
+        "anchor": "interactive voice story guide",
+        "href": "/interactive-voice-story"
+      }
+    ],
+    "assetBriefs": [
+      "Use an original first-scene visual: an unsigned note, a doorway, or a lantern—never a recognizable franchise setting or character.",
+      "Show a generic role-choice card only after product review confirms it reflects an available story role.",
+      "Keep any visual focused on premise, role, detail, and response; do not imply unapproved technical capabilities."
+    ],
+    "quality": {
+      "passed": true,
+      "wordCount": 803,
+      "checks": [
+        {
+          "id": "distinct-intent",
+          "label": "Answers a distinct first-scene task",
+          "passed": true,
+          "detail": "The checklist moves a beginner from situation to first response rather than repeating a format overview."
+        },
+        {
+          "id": "no-third-party-ip",
+          "label": "Avoids third-party IP",
+          "passed": true,
+          "detail": "All examples are generic original situations with no named characters, worlds, or trademarks."
+        },
+        {
+          "id": "no-invented-claims",
+          "label": "Avoids unsupported claims",
+          "passed": true,
+          "detail": "The draft makes no availability, price, privacy, latency, safety, multiplayer, or technical-voice claims."
+        },
+        {
+          "id": "approved-facts",
+          "label": "Uses approved product facts",
+          "passed": true,
+          "detail": "4 approved fact IDs"
+        },
+        {
+          "id": "content-structure",
+          "label": "Has required sections and FAQs",
+          "passed": true,
+          "detail": "5 sections; 3 FAQs"
+        },
+        {
+          "id": "conversion-path",
+          "label": "Has a concrete CTA",
+          "passed": true,
+          "detail": "Explore stories on NovelAI"
+        },
+        {
+          "id": "minimum-depth",
+          "label": "600-1000 English words",
+          "passed": true,
+          "detail": "803 words"
+        }
+      ]
+    },
+    "status": "ready_for_review",
+    "slug": "/how-to-start-ai-roleplay"
+  },
+  "drafts": [
+    {
+      "slot": "morning",
+      "keyword": "how to start ai roleplay",
+      "language": "en",
+      "model": "codex",
+      "generatedAt": "2026-07-31T03:15:00.000Z",
+      "reviewRequired": true,
+      "factIdsUsed": [
+        "voice-roleplay-format",
+        "existing-story",
+        "role-selection",
+        "interactive-fiction-history"
+      ],
+      "title": "How to Start AI Roleplay | Begin with a Story and a Role",
+      "metaDescription": "Use a five-step way to start AI roleplay from an existing story, choose an available role, and enter the first scene with a clear response.",
+      "h1": "How to Start AI Roleplay",
+      "heroMarkdown": "Start AI roleplay by entering a situation that already has something happening. Choose an available role, notice one concrete detail in the opening, leave one question unresolved, and answer from that character's point of view. That gives you a scene to perform in instead of an empty prompt that asks you to invent everything at once.",
+      "primaryCta": "Explore stories on NovelAI",
+      "sections": [
+        {
+          "heading": "1. Begin with the immediate situation",
+          "bodyMarkdown": "The easiest way to start is to look for the moment already in motion. What has just happened? What does the room, path, message, or silence make someone notice? You only need enough context for a character to react. A useful opening does not need a long history or a map of an entire fictional world. It needs a present tense problem, surprise, invitation, or question. This is why a story-led entry can feel more approachable than a blank chat box: the plot gives the first line somewhere to land. The product is an AI voice cosplay and roleplay experience built around acting inside a story, so the starting point is a scene rather than a request to design every detail yourself."
+        },
+        {
+          "heading": "2. Choose the role whose view interests you",
+          "bodyMarkdown": "Next, choose from the characters available in the story and decide whose view you want to perform. Do not try to write a complete biography. Ask a smaller question: what might this person want, fear, protect, or discover in this exact moment? That one choice gives your response a direction. Each playable experience starts from an existing story plot, and the available characters belong to that plot. Selecting a role is therefore not a detached profile exercise. It is a way to stand somewhere inside the situation already on the page. If you want the broader explanation of this format, the AI voice roleplay story overview shows how plot, character choice, and performance connect."
+        },
+        {
+          "heading": "3. Add one detail and one open question",
+          "bodyMarkdown": "A first scene becomes easier to answer when it includes one detail that can be noticed and one question that remains open. The detail can be simple and original: an unsigned note on a table, footsteps stopping outside a door, or a lantern that has gone out too early. The question creates a reason to respond: Who left it? Why did the sound stop? What does the selected role know that others do not? Keep the scene general and original; you do not need a famous world, character, or borrowed storyline. The goal is not to write a perfect script. It is to offer a specific cue that lets the role react in character."
+        },
+        {
+          "heading": "4. Respond from the role, not from a planning meeting",
+          "bodyMarkdown": "When you are ready, answer as the chosen role would meet the immediate situation. A short reaction, question, or decision is enough. You can listen for the tension in the scene and let that shape the next line. Voice roleplay is about acting inside the fiction, not about making promises for a particular voice technology. The team behind the experience has previously built AI interactive-fiction and simulator projects, which supports a format where context, role selection, and participation belong together. Let the opening plot give you a cue, then use the role's perspective to make the scene yours."
+        },
+        {
+          "heading": "5. Reset one ingredient if the opener feels flat",
+          "bodyMarkdown": "A flat opener does not mean you need to abandon the story. Change one ingredient instead of rewriting everything. Add a clearer place, introduce a small interruption, or replace a vague greeting with a question the role cannot ignore. Then return to the same character and the same immediate situation. This recovery move keeps the scene understandable while giving the next response a new point of pressure. Once you have a premise, a role, a detail, and an open question, you have enough to enter an original story and see how the format feels in practice."
+        }
+      ],
+      "faqs": [
+        {
+          "question": "Do I need to invent the whole story before I start AI roleplay?",
+          "answerMarkdown": "No. Start with the opening situation in an existing story, choose an available character, and respond from that role. A complete fictional history is not required for the first scene."
+        },
+        {
+          "question": "What should my first AI roleplay response include?",
+          "answerMarkdown": "Use the selected role's point of view, one concrete detail from the situation, and a question or action that leaves the scene moving. A short in-character response is enough to begin."
+        },
+        {
+          "question": "What if my first scene feels generic?",
+          "answerMarkdown": "Keep the role and plot, then change one element: make the setting more specific, add a small interruption, or introduce an unresolved question that requires a response."
+        }
+      ],
+      "internalLinks": [
+        {
+          "anchor": "AI voice roleplay story overview",
+          "href": "/ai-voice-roleplay-story"
+        },
+        {
+          "anchor": "interactive voice story guide",
+          "href": "/interactive-voice-story"
+        }
+      ],
+      "assetBriefs": [
+        "Use an original first-scene visual: an unsigned note, a doorway, or a lantern—never a recognizable franchise setting or character.",
+        "Show a generic role-choice card only after product review confirms it reflects an available story role.",
+        "Keep any visual focused on premise, role, detail, and response; do not imply unapproved technical capabilities."
+      ],
+      "quality": {
+        "passed": true,
+        "wordCount": 803,
+        "checks": [
+          {
+            "id": "distinct-intent",
+            "label": "Answers a distinct first-scene task",
+            "passed": true,
+            "detail": "The checklist moves a beginner from situation to first response rather than repeating a format overview."
+          },
+          {
+            "id": "no-third-party-ip",
+            "label": "Avoids third-party IP",
+            "passed": true,
+            "detail": "All examples are generic original situations with no named characters, worlds, or trademarks."
+          },
+          {
+            "id": "no-invented-claims",
+            "label": "Avoids unsupported claims",
+            "passed": true,
+            "detail": "The draft makes no availability, price, privacy, latency, safety, multiplayer, or technical-voice claims."
+          },
+          {
+            "id": "approved-facts",
+            "label": "Uses approved product facts",
+            "passed": true,
+            "detail": "4 approved fact IDs"
+          },
+          {
+            "id": "content-structure",
+            "label": "Has required sections and FAQs",
+            "passed": true,
+            "detail": "5 sections; 3 FAQs"
+          },
+          {
+            "id": "conversion-path",
+            "label": "Has a concrete CTA",
+            "passed": true,
+            "detail": "Explore stories on NovelAI"
+          },
+          {
+            "id": "minimum-depth",
+            "label": "600-1000 English words",
+            "passed": true,
+            "detail": "803 words"
+          }
+        ]
+      },
+      "status": "ready_for_review",
+      "slug": "/how-to-start-ai-roleplay"
+    }
+  ],
+  "contentStrategy": {
+    "searcherJob": "Start an AI roleplay today with a usable first scene, without inventing a whole world or relying on a borrowed franchise.",
+    "oneSentenceAnswer": "Start with an existing story situation, choose an available role, add one concrete detail and one unresolved question, then answer from that character's point of view.",
+    "originalContribution": "A five-step first-scene checklist and a recovery rule for an opener that feels flat, tailored to story-first role selection rather than a blank chat prompt.",
+    "pagePattern": "task_guide",
+    "productBridge": "The task maps directly to the approved format: an existing plot provides the situation, an available character provides the perspective, and the reader can enter the story to perform inside it.",
+    "contextualNextStep": "Readers who want the broader format can follow the crawlable AI voice roleplay story overview after using the first-scene checklist.",
+    "evidenceBoundary": "Public sources support the searcher task only; product statements use only voice-roleplay-format, existing-story, role-selection, and interactive-fiction-history. No availability, price, privacy, latency, safety, multiplayer, or technical-voice claims are made.",
+    "conversionHypothesis": "A reader who arrives with an immediate how-to job is more likely to use an attributed story-entry CTA after receiving a short first-scene method than after a broad category explanation.",
+    "primaryConversion": "trial_start",
+    "measurementPlan": "Use the 28-complete-Shanghai-day portfolio for exact-page Search Console, source-slug landing UV, and aggregate qualified outbound. Keep downstream conversion outcomes in the protected service; treat no query rows as unavailable and do not infer zero."
+  },
+  "integrations": [
+    {
+      "id": "semrush",
+      "name": "SEO Research Tools",
+      "state": "configured",
+      "detail": "The shared GURU/PRO account is used for human-assisted keyword and competitor research; provider metrics must be labelled as observed when copied into evidence."
+    },
+    {
+      "id": "codex_research",
+      "name": "Codex Research",
+      "state": "connected",
+      "detail": "5 public evidence links support 5 candidates.",
+      "lastCheckedAt": "2026-07-31T03:17:01.845Z"
+    },
+    {
+      "id": "search_console",
+      "name": "Google Search Console",
+      "state": "missing",
+      "detail": "No visible Search Console rows were available; no metrics were inferred.",
+      "href": "https://search.google.com/search-console",
+      "actionLabel": "Open Search Console"
+    },
+    {
+      "id": "ai_gateway",
+      "name": "Codex Content",
+      "state": "connected",
+      "detail": "A fact-constrained draft is ready for a separate editorial review."
+    },
+    {
+      "id": "github",
+      "name": "GitHub Reports",
+      "state": "configured",
+      "detail": "Daily reports and approved pages are committed only after verification.",
+      "href": "https://github.com/lium53492-rgb/seo/tree/main/data/reports",
+      "actionLabel": "Open report history"
+    },
+    {
+      "id": "product_analytics",
+      "name": "Revenue Attribution",
+      "state": "missing",
+      "detail": "Private downstream attribution was checked; only boolean readiness and blocking state are retained in this public report.",
+      "href": "https://vercel.com/elser1/seo/analytics",
+      "actionLabel": "Open analytics"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "rpdate-start-roleplay",
+      "title": "How to Start an AI Roleplay: First Message, Scene Setup, Common Mistakes",
+      "url": "https://rpdate.com/en/blog/how-to-start-ai-roleplay",
+      "source": "RPDATE",
+      "collectedAt": "2026-07-31T03:08:00.000Z",
+      "supports": [
+        "how to start ai roleplay",
+        "ai roleplay first message",
+        "how to set up an ai roleplay scene",
+        "ai roleplay scenario guide"
+      ]
+    },
+    {
+      "id": "charaverse-beginner-guide",
+      "title": "AI Roleplay 101: A Complete Beginner's Guide",
+      "url": "https://blog.charaverse.ai/posts/ai-roleplay-101-complete-beginners-guide/",
+      "source": "Charaverse Blog",
+      "collectedAt": "2026-07-31T03:09:00.000Z",
+      "supports": [
+        "how to start ai roleplay",
+        "ai roleplay beginner guide",
+        "ai roleplay first message",
+        "how to set up an ai roleplay scene"
+      ]
+    },
+    {
+      "id": "intimeros-beginner-guide",
+      "title": "AI Roleplay: What It Is, What to Expect and How to Stay Safe",
+      "url": "https://www.intimeros.com/guides/ai-roleplay-beginner-guide/",
+      "source": "Intimeros",
+      "collectedAt": "2026-07-31T03:10:00.000Z",
+      "supports": [
+        "ai roleplay beginner guide",
+        "ai roleplay scenario guide"
+      ]
+    },
+    {
+      "id": "airoleplays-start-flow",
+      "title": "AI Roleplays: How to Start a Roleplay",
+      "url": "https://airoleplays.com/",
+      "source": "AI Roleplays",
+      "collectedAt": "2026-07-31T03:11:00.000Z",
+      "supports": [
+        "how to set up an ai roleplay scene",
+        "ai roleplay scenario guide"
+      ]
+    },
+    {
+      "id": "google-helpful-content",
+      "title": "Creating helpful, reliable, people-first content",
+      "url": "https://developers.google.com/search/docs/fundamentals/creating-helpful-content",
+      "source": "Google Search Central",
+      "collectedAt": "2026-07-31T03:12:00.000Z",
+      "supports": [
+        "how to start ai roleplay",
+        "ai roleplay beginner guide"
+      ]
+    }
+  ],
+  "caveats": [
+    "Product fit, trial intent, revenue intent, specificity, originality, IP risk, and cannibalization risk are derived from policy-versioned evidence signals rather than AI-supplied scores.",
+    "Demand and difficulty remain transparent 0-100 research proxies and require candidate-level rationales and evidence references unless an evidence record explicitly names an observed provider metric.",
+    "Google Trends relative interest is a normalized 0-100 signal for the selected geography and period, not search volume; unavailable access remains explicit.",
+    "Every locally unconsumed workbench instruction is preserved verbatim with an adopted or rejected decision before it may be marked consumed.",
+    "Missing Search Console, UV, trial, payment, or revenue data stays unavailable rather than being converted to zero.",
+    "The report builder never publishes a page; scripts/publish-reviewed-page.mjs requires a separate approval record.",
+    "Publication required a separate editorial approval artifact."
+  ]
+}

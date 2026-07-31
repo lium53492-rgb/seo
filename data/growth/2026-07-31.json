@@ -1,0 +1,265 @@
+{
+  "schemaVersion": 2,
+  "privacyClass": "public_growth_evidence",
+  "generatedAt": "2026-07-31T02:51:49.544Z",
+  "periodBasis": "complete_shanghai_calendar_days",
+  "reportingWindowDays": 28,
+  "reportingLagDays": 3,
+  "aggregationKey": "source_slug+reporting_period",
+  "periodStart": "2026-06-29T16:00:00.000Z",
+  "periodEnd": "2026-07-27T16:00:00.000Z",
+  "summary": {
+    "publishedPages": 4,
+    "collectedPages": 4,
+    "unavailablePages": 0,
+    "attributionJoinReady": true,
+    "attributionJoinBlocked": false,
+    "hasSearchValidatedLandingPage": false
+  },
+  "entries": [
+    {
+      "sourceSlug": "ai-voice-roleplay-story",
+      "path": "/ai-voice-roleplay-story",
+      "keyword": "ai voice roleplay story",
+      "state": "collected",
+      "report": {
+        "sourceSlug": "ai-voice-roleplay-story",
+        "metrics": {
+          "landingUv": {
+            "status": "observed",
+            "value": 3,
+            "source": "vercel_analytics",
+            "detail": "Observed the exact landing page's aggregate UV through Vercel Web Analytics for this reporting period."
+          },
+          "qualifiedOutboundClicks": {
+            "status": "observed",
+            "value": 0,
+            "source": "seo_redirect",
+            "detail": "Observed the page-level qualified outbound aggregate through the private attribution service for this reporting period."
+          }
+        },
+        "searchPerformance": {
+          "state": "observed",
+          "sourceSlug": "ai-voice-roleplay-story",
+          "pageUrl": "https://seo-pi-fawn.vercel.app/ai-voice-roleplay-story",
+          "startDate": "2026-06-30",
+          "endDate": "2026-07-27",
+          "clicks": 0,
+          "impressions": 0,
+          "ctr": 0,
+          "position": null,
+          "detail": "Search Console final-data query succeeded for 2026-06-30 through 2026-07-27 and returned no row for this exact page."
+        },
+        "urlInspection": {
+          "state": "observed",
+          "sourceSlug": "ai-voice-roleplay-story",
+          "pageUrl": "https://seo-pi-fawn.vercel.app/ai-voice-roleplay-story",
+          "inspectedAt": "2026-07-31T02:51:51.135Z",
+          "verdict": "NEUTRAL",
+          "coverageState": "URL is unknown to Google",
+          "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+          "indexingState": "INDEXING_STATE_UNSPECIFIED",
+          "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+          "lastCrawlTime": null,
+          "googleCanonical": null,
+          "userCanonical": null,
+          "crawledAs": null,
+          "sitemap": [],
+          "detail": "Observed Google's indexed-version URL Inspection result for this exact canonical page; this is not a live-page test."
+        },
+        "decisionState": {
+          "landingUvReady": true,
+          "qualifiedOutboundReady": true,
+          "searchPerformanceReady": true,
+          "urlInspectionReady": true,
+          "attributionJoinChecked": true,
+          "attributionJoinBlocked": false,
+          "samePageSearchValidated": false
+        }
+      }
+    },
+    {
+      "sourceSlug": "choose-a-role-ai-story",
+      "path": "/choose-a-role-ai-story",
+      "keyword": "choose a role ai story",
+      "state": "collected",
+      "report": {
+        "sourceSlug": "choose-a-role-ai-story",
+        "metrics": {
+          "landingUv": {
+            "status": "observed",
+            "value": 2,
+            "source": "vercel_analytics",
+            "detail": "Observed the exact landing page's aggregate UV through Vercel Web Analytics for this reporting period."
+          },
+          "qualifiedOutboundClicks": {
+            "status": "observed",
+            "value": 0,
+            "source": "seo_redirect",
+            "detail": "Observed the page-level qualified outbound aggregate through the private attribution service for this reporting period."
+          }
+        },
+        "searchPerformance": {
+          "state": "observed",
+          "sourceSlug": "choose-a-role-ai-story",
+          "pageUrl": "https://seo-pi-fawn.vercel.app/choose-a-role-ai-story",
+          "startDate": "2026-06-30",
+          "endDate": "2026-07-27",
+          "clicks": 0,
+          "impressions": 0,
+          "ctr": 0,
+          "position": null,
+          "detail": "Search Console final-data query succeeded for 2026-06-30 through 2026-07-27 and returned no row for this exact page."
+        },
+        "urlInspection": {
+          "state": "observed",
+          "sourceSlug": "choose-a-role-ai-story",
+          "pageUrl": "https://seo-pi-fawn.vercel.app/choose-a-role-ai-story",
+          "inspectedAt": "2026-07-31T02:51:51.004Z",
+          "verdict": "NEUTRAL",
+          "coverageState": "URL is unknown to Google",
+          "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+          "indexingState": "INDEXING_STATE_UNSPECIFIED",
+          "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+          "lastCrawlTime": null,
+          "googleCanonical": null,
+          "userCanonical": null,
+          "crawledAs": null,
+          "sitemap": [],
+          "detail": "Observed Google's indexed-version URL Inspection result for this exact canonical page; this is not a live-page test."
+        },
+        "decisionState": {
+          "landingUvReady": true,
+          "qualifiedOutboundReady": true,
+          "searchPerformanceReady": true,
+          "urlInspectionReady": true,
+          "attributionJoinChecked": true,
+          "attributionJoinBlocked": false,
+          "samePageSearchValidated": false
+        }
+      }
+    },
+    {
+      "sourceSlug": "interactive-voice-story",
+      "path": "/interactive-voice-story",
+      "keyword": "interactive voice story",
+      "state": "collected",
+      "report": {
+        "sourceSlug": "interactive-voice-story",
+        "metrics": {
+          "landingUv": {
+            "status": "observed",
+            "value": 4,
+            "source": "vercel_analytics",
+            "detail": "Observed the exact landing page's aggregate UV through Vercel Web Analytics for this reporting period."
+          },
+          "qualifiedOutboundClicks": {
+            "status": "observed",
+            "value": 0,
+            "source": "seo_redirect",
+            "detail": "Observed the page-level qualified outbound aggregate through the private attribution service for this reporting period."
+          }
+        },
+        "searchPerformance": {
+          "state": "observed",
+          "sourceSlug": "interactive-voice-story",
+          "pageUrl": "https://seo-pi-fawn.vercel.app/interactive-voice-story",
+          "startDate": "2026-06-30",
+          "endDate": "2026-07-27",
+          "clicks": 0,
+          "impressions": 0,
+          "ctr": 0,
+          "position": null,
+          "detail": "Search Console final-data query succeeded for 2026-06-30 through 2026-07-27 and returned no row for this exact page."
+        },
+        "urlInspection": {
+          "state": "observed",
+          "sourceSlug": "interactive-voice-story",
+          "pageUrl": "https://seo-pi-fawn.vercel.app/interactive-voice-story",
+          "inspectedAt": "2026-07-31T02:51:51.230Z",
+          "verdict": "NEUTRAL",
+          "coverageState": "URL is unknown to Google",
+          "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+          "indexingState": "INDEXING_STATE_UNSPECIFIED",
+          "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+          "lastCrawlTime": null,
+          "googleCanonical": null,
+          "userCanonical": null,
+          "crawledAs": null,
+          "sitemap": [],
+          "detail": "Observed Google's indexed-version URL Inspection result for this exact canonical page; this is not a live-page test."
+        },
+        "decisionState": {
+          "landingUvReady": true,
+          "qualifiedOutboundReady": true,
+          "searchPerformanceReady": true,
+          "urlInspectionReady": true,
+          "attributionJoinChecked": true,
+          "attributionJoinBlocked": false,
+          "samePageSearchValidated": false
+        }
+      }
+    },
+    {
+      "sourceSlug": "story-based-ai-roleplay",
+      "path": "/story-based-ai-roleplay",
+      "keyword": "story based ai roleplay",
+      "state": "collected",
+      "report": {
+        "sourceSlug": "story-based-ai-roleplay",
+        "metrics": {
+          "landingUv": {
+            "status": "observed",
+            "value": 2,
+            "source": "vercel_analytics",
+            "detail": "Observed the exact landing page's aggregate UV through Vercel Web Analytics for this reporting period."
+          },
+          "qualifiedOutboundClicks": {
+            "status": "observed",
+            "value": 0,
+            "source": "seo_redirect",
+            "detail": "Observed the page-level qualified outbound aggregate through the private attribution service for this reporting period."
+          }
+        },
+        "searchPerformance": {
+          "state": "observed",
+          "sourceSlug": "story-based-ai-roleplay",
+          "pageUrl": "https://seo-pi-fawn.vercel.app/story-based-ai-roleplay",
+          "startDate": "2026-06-30",
+          "endDate": "2026-07-27",
+          "clicks": 0,
+          "impressions": 0,
+          "ctr": 0,
+          "position": null,
+          "detail": "Search Console final-data query succeeded for 2026-06-30 through 2026-07-27 and returned no row for this exact page."
+        },
+        "urlInspection": {
+          "state": "observed",
+          "sourceSlug": "story-based-ai-roleplay",
+          "pageUrl": "https://seo-pi-fawn.vercel.app/story-based-ai-roleplay",
+          "inspectedAt": "2026-07-31T02:51:51.477Z",
+          "verdict": "NEUTRAL",
+          "coverageState": "URL is unknown to Google",
+          "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+          "indexingState": "INDEXING_STATE_UNSPECIFIED",
+          "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+          "lastCrawlTime": null,
+          "googleCanonical": null,
+          "userCanonical": null,
+          "crawledAs": null,
+          "sitemap": [],
+          "detail": "Observed Google's indexed-version URL Inspection result for this exact canonical page; this is not a live-page test."
+        },
+        "decisionState": {
+          "landingUvReady": true,
+          "qualifiedOutboundReady": true,
+          "searchPerformanceReady": true,
+          "urlInspectionReady": true,
+          "attributionJoinChecked": true,
+          "attributionJoinBlocked": false,
+          "samePageSearchValidated": false
+        }
+      }
+    }
+  ]
+}

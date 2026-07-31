@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 2,
+  "status": "published",
+  "slug": "how-to-start-ai-roleplay",
+  "path": "/how-to-start-ai-roleplay",
+  "keyword": "how to start ai roleplay",
+  "publishedAt": "2026-07-31T07:10:56.939Z",
+  "updatedAt": "2026-07-31T07:10:56.939Z",
+  "generatedFromReport": "seo-2026-07-31",
+  "draftDigest": "f8b97ad0ea81adbf6bd7e0efa65f6cb5acfb674c4b7c91672fa12fe3be1684c5",
+  "pagePattern": "task_guide",
+  "title": "How to Start AI Roleplay | Begin with a Story and a Role",
+  "metaDescription": "Use a five-step way to start AI roleplay from an existing story, choose an available role, and enter the first scene with a clear response.",
+  "h1": "How to Start AI Roleplay",
+  "heroMarkdown": "Start AI roleplay by entering a situation that already has something happening. Choose an available role, notice one concrete detail in the opening, leave one question unresolved, and answer from that character's point of view. That gives you a scene to perform in instead of an empty prompt that asks you to invent everything at once.",
+  "primaryCta": "Explore stories on NovelAI",
+  "sections": [
+    {
+      "heading": "1. Begin with the immediate situation",
+      "bodyMarkdown": "The easiest way to start is to look for the moment already in motion. What has just happened? What does the room, path, message, or silence make someone notice? You only need enough context for a character to react. A useful opening does not need a long history or a map of an entire fictional world. It needs a present tense problem, surprise, invitation, or question. This is why a story-led entry can feel more approachable than a blank chat box: the plot gives the first line somewhere to land. The product is an AI voice cosplay and roleplay experience built around acting inside a story, so the starting point is a scene rather than a request to design every detail yourself."
+    },
+    {
+      "heading": "2. Choose the role whose view interests you",
+      "bodyMarkdown": "Next, choose from the characters available in the story and decide whose view you want to perform. Do not try to write a complete biography. Ask a smaller question: what might this person want, fear, protect, or discover in this exact moment? That one choice gives your response a direction. Each playable experience starts from an existing story plot, and the available characters belong to that plot. Selecting a role is therefore not a detached profile exercise. It is a way to stand somewhere inside the situation already on the page. If you want the broader explanation of this format, the AI voice roleplay story overview shows how plot, character choice, and performance connect."
+    },
+    {
+      "heading": "3. Add one detail and one open question",
+      "bodyMarkdown": "A first scene becomes easier to answer when it includes one detail that can be noticed and one question that remains open. The detail can be simple and original: an unsigned note on a table, footsteps stopping outside a door, or a lantern that has gone out too early. The question creates a reason to respond: Who left it? Why did the sound stop? What does the selected role know that others do not? Keep the scene general and original; you do not need a famous world, character, or borrowed storyline. The goal is not to write a perfect script. It is to offer a specific cue that lets the role react in character."
+    },
+    {
+      "heading": "4. Respond from the role, not from a planning meeting",
+      "bodyMarkdown": "When you are ready, answer as the chosen role would meet the immediate situation. A short reaction, question, or decision is enough. You can listen for the tension in the scene and let that shape the next line. Voice roleplay is about acting inside the fiction, not about making promises for a particular voice technology. The team behind the experience has previously built AI interactive-fiction and simulator projects, which supports a format where context, role selection, and participation belong together. Let the opening plot give you a cue, then use the role's perspective to make the scene yours."
+    },
+    {
+      "heading": "5. Reset one ingredient if the opener feels flat",
+      "bodyMarkdown": "A flat opener does not mean you need to abandon the story. Change one ingredient instead of rewriting everything. Add a clearer place, introduce a small interruption, or replace a vague greeting with a question the role cannot ignore. Then return to the same character and the same immediate situation. This recovery move keeps the scene understandable while giving the next response a new point of pressure. Once you have a premise, a role, a detail, and an open question, you have enough to enter an original story and see how the format feels in practice."
+    }
+  ],
+  "faqs": [
+    {
+      "question": "Do I need to invent the whole story before I start AI roleplay?",
+      "answerMarkdown": "No. Start with the opening situation in an existing story, choose an available character, and respond from that role. A complete fictional history is not required for the first scene."
+    },
+    {
+      "question": "What should my first AI roleplay response include?",
+      "answerMarkdown": "Use the selected role's point of view, one concrete detail from the situation, and a question or action that leaves the scene moving. A short in-character response is enough to begin."
+    },
+    {
+      "question": "What if my first scene feels generic?",
+      "answerMarkdown": "Keep the role and plot, then change one element: make the setting more specific, add a small interruption, or introduce an unresolved question that requires a response."
+    }
+  ],
+  "factIdsUsed": [
+    "voice-roleplay-format",
+    "existing-story",
+    "role-selection",
+    "interactive-fiction-history"
+  ],
+  "internalLinks": [
+    {
+      "anchor": "AI voice roleplay story overview",
+      "href": "/ai-voice-roleplay-story"
+    },
+    {
+      "anchor": "interactive voice story guide",
+      "href": "/interactive-voice-story"
+    }
+  ],
+  "assetBriefs": [
+    "Use an original first-scene visual: an unsigned note, a doorway, or a lantern—never a recognizable franchise setting or character.",
+    "Show a generic role-choice card only after product review confirms it reflects an available story role.",
+    "Keep any visual focused on premise, role, detail, and response; do not imply unapproved technical capabilities."
+  ],
+  "quality": {
+    "passed": true,
+    "wordCount": 803,
+    "checks": [
+      {
+        "id": "distinct-intent",
+        "label": "Answers a distinct first-scene task",
+        "passed": true,
+        "detail": "The checklist moves a beginner from situation to first response rather than repeating a format overview."
+      },
+      {
+        "id": "no-third-party-ip",
+        "label": "Avoids third-party IP",
+        "passed": true,
+        "detail": "All examples are generic original situations with no named characters, worlds, or trademarks."
+      },
+      {
+        "id": "no-invented-claims",
+        "label": "Avoids unsupported claims",
+        "passed": true,
+        "detail": "The draft makes no availability, price, privacy, latency, safety, multiplayer, or technical-voice claims."
+      },
+      {
+        "id": "approved-facts",
+        "label": "Uses approved product facts",
+        "passed": true,
+        "detail": "4 approved fact IDs"
+      },
+      {
+        "id": "content-structure",
+        "label": "Has required sections and FAQs",
+        "passed": true,
+        "detail": "5 sections; 3 FAQs"
+      },
+      {
+        "id": "conversion-path",
+        "label": "Has a concrete CTA",
+        "passed": true,
+        "detail": "Explore stories on NovelAI"
+      },
+      {
+        "id": "minimum-depth",
+        "label": "600-1000 English words",
+        "passed": true,
+        "detail": "803 words"
+      }
+    ]
+  },
+  "editorialReview": {
+    "schemaVersion": 1,
+    "reportId": "seo-2026-07-31",
+    "slug": "how-to-start-ai-roleplay",
+    "decision": "approved",
+    "reviewerType": "codex_editor",
+    "reviewer": "Codex editorial review",
+    "reviewedAt": "2026-07-31T07:10:56.939Z",
+    "notes": "Independent editorial review confirmed that the draft answers a distinct first-scene task, uses only the four approved product facts, keeps public sources separate from product proof, avoids unsupported capabilities and third-party IP, and maps the CTA to the attributed NovelAI redirect.",
+    "draftDigest": "f8b97ad0ea81adbf6bd7e0efa65f6cb5acfb674c4b7c91672fa12fe3be1684c5",
+    "checks": [
+      {
+        "id": "search-intent",
+        "passed": true,
+        "detail": "The page answers the distinct trial-ready job of moving from an existing story situation and role choice to a usable first response."
+      },
+      {
+        "id": "product-truth",
+        "passed": true,
+        "detail": "Every product statement maps to voice-roleplay-format, existing-story, role-selection, or interactive-fiction-history; no unapproved availability or technology claim appears."
+      },
+      {
+        "id": "conversion-path",
+        "passed": true,
+        "detail": "The CTA is concrete and the published template binds it to /go/novelai/how-to-start-ai-roleplay with the approved NovelAI destination allowlist."
+      },
+      {
+        "id": "source-accuracy",
+        "passed": true,
+        "detail": "RPDATE and Charaverse directly support the first-message and beginner-start search intent, while external evidence is not presented as proof of product capabilities."
+      }
+    ]
+  },
+  "research": {
+    "opportunityScore": 83,
+    "demandProxy": 72,
+    "competitionProxy": 43,
+    "evidenceCount": 5,
+    "trialIntent": 100,
+    "revenueIntent": 55,
+    "intentSpecificity": 100,
+    "funnelStage": "trial",
+    "conversionGoal": "trial_start",
+    "scoreBasis": "evidence_signals_v1",
+    "evidenceRefs": [
+      "rpdate-start-roleplay",
+      "charaverse-beginner-guide"
+    ],
+    "productFactIds": [
+      "voice-roleplay-format",
+      "existing-story",
+      "role-selection",
+      "interactive-fiction-history"
+    ]
+  }
+}

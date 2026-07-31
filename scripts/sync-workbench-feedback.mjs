@@ -5,6 +5,7 @@ import {
   renameSync,
   writeFileSync,
 } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { dirname, resolve } from "node:path";
 
 const repository = process.env.GITHUB_REPORTS_REPO || "lium53492-rgb/seo";
@@ -36,6 +37,40 @@ async function githubFetch(url) {
     cache: "no-store",
     signal: AbortSignal.timeout(15_000),
   });
+}
+
+function gitOutput(args) {
+  try {
+    return execFileSync("git", args, {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+  } catch {
+    return null;
+  }
+}
+
+function fetchedOriginFeedbackFiles() {
+  const originUrl = gitOutput(["remote", "get-url", "origin"]);
+  const normalizedOrigin = String(originUrl || "")
+    .toLowerCase()
+    .replace(/^git@/, "")
+    .replace(/:/, "/")
+    .replace(/\.git$/, "");
+  if (!normalizedOrigin.endsWith(`github.com/${repository.toLowerCase()}`)) return null;
+  const ref = `refs/remotes/origin/${branch}`;
+  if (!gitOutput(["rev-parse", "--verify", ref])) return null;
+  const names = gitOutput(["ls-tree", "-r", "--name-only", ref, "--", inboxPrefix]);
+  if (names === null) return null;
+  return names
+    .split(/\r?\n/)
+    .filter((path) => /^data\/seo-feedback\/inbox\/\d{4}-\d{2}-\d{2}\.json$/.test(path))
+    .sort()
+    .map((path) => {
+      const raw = gitOutput(["show", `${ref}:${path}`]);
+      if (raw === null) throw new Error(`Fetched origin feedback read failed: ${path}`);
+      return { path, raw };
+    });
 }
 
 function parseDocument(raw, date, source) {
@@ -140,6 +175,34 @@ if (listingResponse.status === 404) {
   process.exitCode = 0;
 } else {
   if (!listingResponse.ok) {
+    const fallbackFiles = listingResponse.status === 403
+      ? fetchedOriginFeedbackFiles()
+      : null;
+    if (fallbackFiles !== null) {
+      let remoteEntries = 0;
+      let writtenFiles = 0;
+      for (const { path, raw } of fallbackFiles) {
+        const name = path.slice(path.lastIndexOf("/") + 1);
+        const date = name.slice(0, 10);
+        const remote = parseDocument(raw, date, path);
+        const localPath = resolve("data", "seo-feedback", "inbox", name);
+        const local = existsSync(localPath)
+          ? parseDocument(readFileSync(localPath, "utf8"), date, localPath)
+          : { date, entries: [] };
+        const merged = mergeDocuments(local, remote, path);
+        remoteEntries += remote.entries.length;
+        const nextRaw = `${JSON.stringify(merged, null, 2)}\n`;
+        const previousRaw = existsSync(localPath) ? readFileSync(localPath, "utf8") : "";
+        if (nextRaw !== previousRaw) {
+          writeJsonAtomic(localPath, merged);
+          writtenFiles += 1;
+        }
+      }
+      process.stdout.write(
+        `Feedback sync complete from fetched origin after GitHub API 403: ${remoteEntries} remote entries, ${writtenFiles} local files updated.\n`,
+      );
+      process.exit(0);
+    }
     throw new Error(`GitHub feedback list failed: ${listingResponse.status}`);
   }
   const listing = await listingResponse.json();

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "reportId": "seo-2026-07-31",
+  "slug": "how-to-start-ai-roleplay",
+  "decision": "approved",
+  "reviewerType": "codex_editor",
+  "reviewer": "Codex editorial review",
+  "reviewedAt": "2026-07-31T07:10:56.939Z",
+  "notes": "Independent editorial review confirmed that the draft answers a distinct first-scene task, uses only the four approved product facts, keeps public sources separate from product proof, avoids unsupported capabilities and third-party IP, and maps the CTA to the attributed NovelAI redirect.",
+  "draftDigest": "f8b97ad0ea81adbf6bd7e0efa65f6cb5acfb674c4b7c91672fa12fe3be1684c5",
+  "checks": [
+    {
+      "id": "search-intent",
+      "passed": true,
+      "detail": "The page answers the distinct trial-ready job of moving from an existing story situation and role choice to a usable first response."
+    },
+    {
+      "id": "product-truth",
+      "passed": true,
+      "detail": "Every product statement maps to voice-roleplay-format, existing-story, role-selection, or interactive-fiction-history; no unapproved availability or technology claim appears."
+    },
+    {
+      "id": "conversion-path",
+      "passed": true,
+      "detail": "The CTA is concrete and the published template binds it to /go/novelai/how-to-start-ai-roleplay with the approved NovelAI destination allowlist."
+    },
+    {
+      "id": "source-accuracy",
+      "passed": true,
+      "detail": "RPDATE and Charaverse directly support the first-message and beginner-start search intent, while external evidence is not presented as proof of product capabilities."
+    }
+  ]
+}
