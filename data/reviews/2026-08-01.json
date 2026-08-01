@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "reportId": "seo-2026-08-01",
+  "slug": "ai-roleplay-prompt-vs-existing-story",
+  "draftDigest": "c2a5d23a16d4333047d3ef4224283f1fcc51be91510fc1294709a11e4bc77308",
+  "reviewerType": "codex_editor",
+  "reviewer": "Codex SEO editorial reviewer",
+  "reviewedAt": "2026-08-01T01:31:00.000Z",
+  "decision": "approved",
+  "notes": "Independent review confirms that this is a pre-entry format-choice page, not a rewrite of the published first-scene, role-selection, or format-overview pages. The article uses only the four approved facts, limits external evidence to the searcher task, keeps all examples generic and original, preserves the attributed NovelAI CTA route supplied by the renderer, and provides crawlable contextual links to two published first-party pages.",
+  "checks": [
+    {
+      "id": "search-intent",
+      "passed": true,
+      "detail": "The page answers the distinct decision of authoring a prompt versus entering a prepared story before the existing start guide applies."
+    },
+    {
+      "id": "product-truth",
+      "passed": true,
+      "detail": "Every product statement is limited to approved story, role-selection, voice-roleplay-format, and interactive-fiction-history facts."
+    },
+    {
+      "id": "conversion-path",
+      "passed": true,
+      "detail": "The approved primary CTA is rendered by the existing attributed /go/novelai/ route and the draft includes clear contextual next steps."
+    },
+    {
+      "id": "source-accuracy",
+      "passed": true,
+      "detail": "The reviewed public sources support prompt construction, concrete opening scenes, and story-entry formats; no external feature or product claim was imported."
+    }
+  ]
+}
