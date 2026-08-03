@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "reportId": "seo-2026-08-03",
+  "decision": "approved",
+  "slug": "how-to-choose-an-ai-roleplay-app",
+  "draftDigest": "d8aaf31baae265f0e8c4c44a3037b40bb55e7f1a72c6a971464060f78a92d9f9",
+  "reviewerType": "codex_editor",
+  "reviewer": "Codex SEO editor",
+  "reviewedAt": "2026-08-03T06:40:00.000Z",
+  "notes": "Reviewed the exact builder-bound draft independently. The app-selection rubric answers a distinct pre-trial job, keeps all examples original and generic, confines product statements to the approved fact catalog, and retains an attributed CTA plus contextual links.",
+  "checks": [
+    {"id":"search-intent","passed":true,"detail":"The page answers how to select a story-led AI roleplay app before a reader starts a scene."},
+    {"id":"product-truth","passed":true,"detail":"All product statements map to the four approved fact IDs; no unsupported capability appears."},
+    {"id":"conversion-path","passed":true,"detail":"The draft has a real NovelAI CTA and crawlable links to relevant published guides."},
+    {"id":"source-accuracy","passed":true,"detail":"Public sources support the category and comparison intent; no competitor fact is asserted as a product claim."}
+  ]
+}

@@ -1,0 +1,1539 @@
+{
+  "id": "seo-2026-08-03",
+  "date": "2026-08-03",
+  "policyVersion": 4,
+  "publicationMode": "create",
+  "generatedAt": "2026-08-03T06:38:00.000Z",
+  "mode": "partial",
+  "headline": "Today's revenue-first priority: create a new page",
+  "summary": {
+    "candidatesAnalyzed": 8,
+    "publishableOpportunities": 1,
+    "totalClicks": 0,
+    "totalImpressions": 0,
+    "averageCtr": 0
+  },
+  "opportunities": [
+    {
+      "keyword": "how to choose an ai roleplay app",
+      "seed": "story-led app selection",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 64,
+      "volume": 0,
+      "difficulty": 58,
+      "cpc": 0,
+      "intent": "commercial",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 100,
+      "originality": 90,
+      "conversionIntent": 100,
+      "trialIntent": 100,
+      "revenueIntent": 70,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 10,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "personachat-app-choice",
+          "velvet-app-comparison",
+          "arepee-story-roleplay"
+        ],
+        "searcherJob": "Evaluate story-led AI roleplay app options before trying one, using a clear original selection rule instead of an undifferentiated feature list.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection",
+          "interactive-fiction-history"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection",
+          "interactive_fiction"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking",
+          "action_language"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking",
+          "recurring_use"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Several public roleplay-app comparison and selection pages make this a transparent, moderate public-web demand proxy.",
+          "difficulty": "The results include established comparison and product pages, so this is a moderate public-web difficulty proxy.",
+          "productFit": "All four approved facts directly support criteria about story premise, role choice, participation, and interactive-fiction background.",
+          "trialIntent": "A solution-aware searcher wants to choose an experience now and the query uses direct action language.",
+          "revenueIntent": "Comparing alternatives before recurring use is a commercial decision signal, without making price or competitor claims.",
+          "intentSpecificity": "The task, AI roleplay format, app-seeking audience, and story-led modifier are all explicit.",
+          "originality": "This is an app-selection rubric, not another explanation of how to start a scene or write a prompt.",
+          "ipRisk": "The phrase and all worked examples are original and generic, without named characters, worlds, or trademarks.",
+          "cannibalizationRisk": "Existing pages explain formats and first scenes; this page answers the earlier, distinct selection task of choosing an app by story-entry criteria."
+        }
+      },
+      "score": 83,
+      "action": "create_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; meaningful payment intent; specific searcher job; evidence-derived revenue-first opportunity score 83."
+    },
+    {
+      "keyword": "story-based ai roleplay app comparison",
+      "seed": "story-based purchase comparison",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 52,
+      "volume": 0,
+      "difficulty": 61,
+      "cpc": 0,
+      "intent": "commercial",
+      "funnelStage": "purchase",
+      "conversionGoal": "purchase",
+      "trend": [],
+      "productFit": 100,
+      "originality": 70,
+      "conversionIntent": 100,
+      "trialIntent": 85,
+      "revenueIntent": 100,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 45,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "velvet-app-comparison",
+          "arepee-story-roleplay",
+          "roleloom-original-stories"
+        ],
+        "searcherJob": "Compare story-based AI roleplay app approaches before committing to a recurring entertainment format.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection",
+          "interactive-fiction-history"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection",
+          "interactive_fiction"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking",
+          "purchase_language",
+          "recurring_use"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "adjacent_intent",
+        "nearestExistingSlug": "story-based-ai-roleplay",
+        "rationale": {
+          "demand": "Public story-roleplay and comparison pages provide only a transparent category-demand proxy.",
+          "difficulty": "This comparison term competes with broad product roundups, making difficulty relatively high.",
+          "productFit": "All approved product facts support truthful selection criteria for a story-based format.",
+          "trialIntent": "The searcher is solution-aware and close to trying an experience after comparing approaches.",
+          "revenueIntent": "The comparison includes purchase and recurring-use language, creating strong commercial proximity.",
+          "intentSpecificity": "It identifies comparison task, story roleplay format, app audience, and AI modifier.",
+          "originality": "It can add a selection framework but overlaps the current story-based explanation.",
+          "ipRisk": "The generic phrase does not require any protected entertainment property.",
+          "cannibalizationRisk": "The published story-based page is the nearest topic, so this is only adjacent and not selected."
+        }
+      },
+      "existingUrl": "/story-based-ai-roleplay",
+      "score": 75,
+      "action": "improve_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; meaningful payment intent; specific searcher job; evidence-derived revenue-first opportunity score 75."
+    },
+    {
+      "keyword": "interactive story roleplay app",
+      "seed": "interactive story category",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 57,
+      "volume": 0,
+      "difficulty": 59,
+      "cpc": 0,
+      "intent": "commercial",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 100,
+      "originality": 70,
+      "conversionIntent": 85,
+      "trialIntent": 85,
+      "revenueIntent": 55,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 45,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "roleloom-original-stories",
+          "playrp-interactive-scenarios"
+        ],
+        "searcherJob": "Evaluate an interactive-story roleplay app for participating in a plotted scene from a chosen perspective.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection",
+          "interactive-fiction-history"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection",
+          "interactive_fiction"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "adjacent_intent",
+        "nearestExistingSlug": "interactive-voice-story",
+        "rationale": {
+          "demand": "Independent interactive-story product pages visibly address the searcher's public category.",
+          "difficulty": "This broad category faces product pages, so difficulty is a moderate proxy.",
+          "productFit": "Approved interactive-fiction, story-premise, role-selection, and voice-roleplay facts are directly relevant.",
+          "trialIntent": "The searcher is evaluating a format to try, with an immediate experience-seeking intent.",
+          "revenueIntent": "Comparing category alternatives is a commercial signal but is not presented as pricing evidence.",
+          "intentSpecificity": "The phrase fixes an interactive-story task, roleplay format, app audience, and AI context.",
+          "originality": "It frames the category as an evaluation task rather than repeating the existing experience overview.",
+          "ipRisk": "The term is generic and can use original examples only.",
+          "cannibalizationRisk": "It is adjacent to the interactive voice story overview and therefore cannot be the priority today."
+        }
+      },
+      "existingUrl": "/interactive-voice-story",
+      "score": 69,
+      "action": "improve_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; specific searcher job; strong approved-product fit; evidence-derived revenue-first opportunity score 69."
+    },
+    {
+      "keyword": "ai roleplay app with story scenarios",
+      "seed": "scenario-led app discovery",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 61,
+      "volume": 0,
+      "difficulty": 56,
+      "cpc": 0,
+      "intent": "commercial",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 80,
+      "originality": 70,
+      "conversionIntent": 85,
+      "trialIntent": 85,
+      "revenueIntent": 55,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 45,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "arepee-story-roleplay",
+          "rubychat-scenarios"
+        ],
+        "searcherJob": "Find an AI roleplay app where a ready scenario provides a concrete first situation before the reader begins participating.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "adjacent_intent",
+        "nearestExistingSlug": "story-based-ai-roleplay",
+        "rationale": {
+          "demand": "Public scenario-first roleplay pages visibly serve this discovery phrase, making demand a transparent proxy.",
+          "difficulty": "Commercial app pages compete for the phrase, so difficulty is a moderate public-web proxy.",
+          "productFit": "Approved story premise, role selection, and voice-roleplay facts answer the scenario-entry job.",
+          "trialIntent": "The searcher is looking for a ready experience they can try immediately.",
+          "revenueIntent": "App discovery and alternatives are commercial signals without any claim about prices.",
+          "intentSpecificity": "It identifies a scenario task, AI roleplay format, app audience, and story modifier.",
+          "originality": "The job is discovery of scenario-led entry rather than a general explanation of story roleplay.",
+          "ipRisk": "No named franchise, character, or trademark is needed for the generic scenario discussion.",
+          "cannibalizationRisk": "It is adjacent to the story-based page but asks where to find a scenario-led app."
+        }
+      },
+      "existingUrl": "/story-based-ai-roleplay",
+      "score": 66,
+      "action": "improve_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; specific searcher job; evidence-derived revenue-first opportunity score 66."
+    },
+    {
+      "keyword": "ai roleplay scenario app",
+      "seed": "scenario-first roleplay",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 58,
+      "volume": 0,
+      "difficulty": 54,
+      "cpc": 0,
+      "intent": "commercial",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 80,
+      "originality": 70,
+      "conversionIntent": 85,
+      "trialIntent": 85,
+      "revenueIntent": 55,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 45,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "rubychat-scenarios",
+          "playrp-interactive-scenarios"
+        ],
+        "searcherJob": "Locate an AI roleplay app that starts from a scenario rather than requiring the user to create every first-scene detail.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "adjacent_intent",
+        "nearestExistingSlug": "how-to-start-ai-roleplay",
+        "rationale": {
+          "demand": "Public scenario pages directly show this category, so demand is recorded only as a proxy.",
+          "difficulty": "The phrase has multiple app competitors but remains narrower than a generic AI roleplay query.",
+          "productFit": "Existing-plot and role-selection facts directly address the scenario-first entry task.",
+          "trialIntent": "This is a direct search for an experience that can be entered immediately.",
+          "revenueIntent": "App discovery and alternative seeking provide commercial proximity without price claims.",
+          "intentSpecificity": "The keyword fixes the scenario task, roleplay format, app audience, and AI modifier.",
+          "originality": "It is a product-discovery job distinct from the subsequent first-scene instructions.",
+          "ipRisk": "The scenario can be wholly original and contains no protected setting or character.",
+          "cannibalizationRisk": "It is adjacent to the first-start guide but asks for the entry format, not the steps after entry."
+        }
+      },
+      "existingUrl": "/how-to-start-ai-roleplay",
+      "score": 66,
+      "action": "improve_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; specific searcher job; evidence-derived revenue-first opportunity score 66."
+    },
+    {
+      "keyword": "ai roleplay app comparison for storytelling",
+      "seed": "storytelling app comparison",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 60,
+      "volume": 0,
+      "difficulty": 63,
+      "cpc": 0,
+      "intent": "commercial",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 80,
+      "originality": 70,
+      "conversionIntent": 85,
+      "trialIntent": 85,
+      "revenueIntent": 55,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 45,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "velvet-app-comparison",
+          "roleloom-original-stories"
+        ],
+        "searcherJob": "Compare AI roleplay app approaches for storytelling and decide which story-entry workflow is worth trying.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "adjacent_intent",
+        "nearestExistingSlug": "ai-roleplay-prompt-vs-existing-story",
+        "rationale": {
+          "demand": "Public comparison pages provide directly relevant public evidence for this transparent proxy.",
+          "difficulty": "Multiple comparison pages target broad app terms, making the public-web difficulty proxy relatively high.",
+          "productFit": "The approved facts provide a truthful story-first evaluation criterion rather than a feature claim.",
+          "trialIntent": "The comparison precedes an immediate app-choice and trial decision.",
+          "revenueIntent": "The query expressly compares alternatives in a commercial category.",
+          "intentSpecificity": "It names comparison, storytelling format, app audience, and AI roleplay context.",
+          "originality": "It focuses on evaluating app workflows, not choosing between a prompt and existing story alone.",
+          "ipRisk": "The comparison criteria and examples can remain generic and original.",
+          "cannibalizationRisk": "It borders the existing format-comparison page, so it is scored as adjacent rather than new."
+        }
+      },
+      "existingUrl": "/ai-roleplay-prompt-vs-existing-story",
+      "score": 65,
+      "action": "improve_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; specific searcher job; evidence-derived revenue-first opportunity score 65."
+    },
+    {
+      "keyword": "ai roleplay app for original stories",
+      "seed": "original story discovery",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 55,
+      "volume": 0,
+      "difficulty": 57,
+      "cpc": 0,
+      "intent": "commercial",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 80,
+      "originality": 70,
+      "conversionIntent": 85,
+      "trialIntent": 85,
+      "revenueIntent": 55,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 45,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "roleloom-original-stories",
+          "personachat-app-choice"
+        ],
+        "searcherJob": "Find an AI roleplay app for original story participation without using a protected franchise, character, or world.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "adjacent_intent",
+        "nearestExistingSlug": "story-based-ai-roleplay",
+        "rationale": {
+          "demand": "Original-story roleplay product pages give public evidence for this narrower discovery proxy.",
+          "difficulty": "Several roleplay products address original stories, yielding moderate public-web competition.",
+          "productFit": "Story premise, role selection, and voice roleplay are approved facts relevant to original participation.",
+          "trialIntent": "The searcher seeks a specific original experience to try without a lengthy setup.",
+          "revenueIntent": "Finding an app and comparing alternatives indicates commercial proximity without price assertions.",
+          "intentSpecificity": "It states a discovery task, roleplay format, app audience, and original-story restriction.",
+          "originality": "The IP-safe selection emphasis is distinct from a general description of story-based roleplay.",
+          "ipRisk": "The explicit original-story framing avoids franchise or character references.",
+          "cannibalizationRisk": "It remains adjacent to the story-based landing page and is not the highest priority."
+        }
+      },
+      "existingUrl": "/story-based-ai-roleplay",
+      "score": 65,
+      "action": "improve_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; specific searcher job; evidence-derived revenue-first opportunity score 65."
+    },
+    {
+      "keyword": "choose character in ai roleplay app",
+      "seed": "character selection workflow",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 53,
+      "volume": 0,
+      "difficulty": 49,
+      "cpc": 0,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 80,
+      "originality": 30,
+      "conversionIntent": 100,
+      "trialIntent": 100,
+      "revenueIntent": 55,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 90,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "arepee-story-roleplay",
+          "rubychat-scenarios"
+        ],
+        "searcherJob": "Choose a character role in an AI roleplay app after understanding how that choice connects to an existing story premise.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking",
+          "action_language"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "same_intent",
+        "nearestExistingSlug": "choose-a-role-ai-story",
+        "rationale": {
+          "demand": "Public role-selection pages make this a documented task, but only a public proxy.",
+          "difficulty": "The phrase is narrow and faces fewer broad comparison pages, producing a lower proxy.",
+          "productFit": "Existing story and role-selection facts directly answer the role-choice task.",
+          "trialIntent": "The imperative choice task signals immediate participation in a roleplay experience.",
+          "revenueIntent": "Seeking app alternatives before participating is a commercial but modest signal.",
+          "intentSpecificity": "The task, roleplay format, app audience, and character modifier are explicit.",
+          "originality": "It has little new contribution because the same role-choice job is already published.",
+          "ipRisk": "The keyword is generic and requires no third-party character.",
+          "cannibalizationRisk": "The existing choose-a-role page already answers this same task, so consolidation or observation is appropriate."
+        }
+      },
+      "existingUrl": "/choose-a-role-ai-story",
+      "score": 58,
+      "action": "consolidate",
+      "gate": {
+        "passed": false,
+        "blockers": [
+          "an existing page already owns this intent"
+        ]
+      },
+      "reason": "Blocked: an existing page already owns this intent; evidence-derived revenue-first opportunity score 58."
+    }
+  ],
+  "performance": [],
+  "trendSignals": [
+    {
+      "keyword": "how to choose an ai roleplay app",
+      "source": "google_trends",
+      "sourceUrl": "https://trends.google.com/trends/explore?date=today%2012-m&q=how%20to%20choose%20an%20ai%20roleplay%20app",
+      "state": "unavailable",
+      "relativeInterest": null,
+      "direction": "unknown",
+      "geo": "Worldwide",
+      "period": "today 12-m",
+      "collectedAt": "2026-08-03T06:36:00.000Z",
+      "detail": "The official Google Trends UI was not available to this run, so no relative-interest value or direction was inferred."
+    }
+  ],
+  "feedbackDecisions": [],
+  "portfolioFunnels": {
+    "schemaVersion": 2,
+    "privacyClass": "public_growth_evidence",
+    "generatedAt": "2026-08-03T06:32:30.522Z",
+    "periodBasis": "complete_shanghai_calendar_days",
+    "reportingWindowDays": 28,
+    "reportingLagDays": 3,
+    "aggregationKey": "source_slug+reporting_period",
+    "periodStart": "2026-07-02T16:00:00.000Z",
+    "periodEnd": "2026-07-30T16:00:00.000Z",
+    "summary": {
+      "publishedPages": 6,
+      "collectedPages": 6,
+      "unavailablePages": 0,
+      "attributionJoinReady": true,
+      "attributionJoinBlocked": false,
+      "hasSearchValidatedLandingPage": false
+    },
+    "entries": [
+      {
+        "sourceSlug": "ai-roleplay-prompt-vs-existing-story",
+        "path": "/ai-roleplay-prompt-vs-existing-story",
+        "keyword": "ai roleplay prompt vs existing story",
+        "state": "collected",
+        "report": {
+          "sourceSlug": "ai-roleplay-prompt-vs-existing-story",
+          "metrics": {
+            "landingUv": {
+              "status": "observed",
+              "value": 0,
+              "source": "vercel_analytics",
+              "detail": "Observed the exact landing page's aggregate UV through Vercel Web Analytics for this reporting period."
+            },
+            "qualifiedOutboundClicks": {
+              "status": "observed",
+              "value": 0,
+              "source": "seo_redirect",
+              "detail": "Observed the page-level qualified outbound aggregate through the private attribution service for this reporting period."
+            }
+          },
+          "searchPerformance": {
+            "state": "observed",
+            "sourceSlug": "ai-roleplay-prompt-vs-existing-story",
+            "pageUrl": "https://seo-pi-fawn.vercel.app/ai-roleplay-prompt-vs-existing-story",
+            "startDate": "2026-07-03",
+            "endDate": "2026-07-30",
+            "clicks": 0,
+            "impressions": 0,
+            "ctr": 0,
+            "position": null,
+            "detail": "Search Console final-data query succeeded for 2026-07-03 through 2026-07-30 and returned no row for this exact page."
+          },
+          "urlInspection": {
+            "state": "observed",
+            "sourceSlug": "ai-roleplay-prompt-vs-existing-story",
+            "pageUrl": "https://seo-pi-fawn.vercel.app/ai-roleplay-prompt-vs-existing-story",
+            "inspectedAt": "2026-08-03T06:32:30.999Z",
+            "verdict": "NEUTRAL",
+            "coverageState": "URL is unknown to Google",
+            "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+            "indexingState": "INDEXING_STATE_UNSPECIFIED",
+            "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+            "lastCrawlTime": null,
+            "googleCanonical": null,
+            "userCanonical": null,
+            "crawledAs": null,
+            "sitemap": [],
+            "detail": "Observed Google's indexed-version URL Inspection result for this exact canonical page; this is not a live-page test."
+          },
+          "decisionState": {
+            "landingUvReady": true,
+            "qualifiedOutboundReady": true,
+            "searchPerformanceReady": true,
+            "urlInspectionReady": true,
+            "attributionJoinChecked": true,
+            "attributionJoinBlocked": false,
+            "samePageSearchValidated": false
+          }
+        }
+      },
+      {
+        "sourceSlug": "ai-voice-roleplay-story",
+        "path": "/ai-voice-roleplay-story",
+        "keyword": "ai voice roleplay story",
+        "state": "collected",
+        "report": {
+          "sourceSlug": "ai-voice-roleplay-story",
+          "metrics": {
+            "landingUv": {
+              "status": "observed",
+              "value": 4,
+              "source": "vercel_analytics",
+              "detail": "Observed the exact landing page's aggregate UV through Vercel Web Analytics for this reporting period."
+            },
+            "qualifiedOutboundClicks": {
+              "status": "observed",
+              "value": 0,
+              "source": "seo_redirect",
+              "detail": "Observed the page-level qualified outbound aggregate through the private attribution service for this reporting period."
+            }
+          },
+          "searchPerformance": {
+            "state": "observed",
+            "sourceSlug": "ai-voice-roleplay-story",
+            "pageUrl": "https://seo-pi-fawn.vercel.app/ai-voice-roleplay-story",
+            "startDate": "2026-07-03",
+            "endDate": "2026-07-30",
+            "clicks": 0,
+            "impressions": 0,
+            "ctr": 0,
+            "position": null,
+            "detail": "Search Console final-data query succeeded for 2026-07-03 through 2026-07-30 and returned no row for this exact page."
+          },
+          "urlInspection": {
+            "state": "observed",
+            "sourceSlug": "ai-voice-roleplay-story",
+            "pageUrl": "https://seo-pi-fawn.vercel.app/ai-voice-roleplay-story",
+            "inspectedAt": "2026-08-03T06:32:31.727Z",
+            "verdict": "NEUTRAL",
+            "coverageState": "URL is unknown to Google",
+            "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+            "indexingState": "INDEXING_STATE_UNSPECIFIED",
+            "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+            "lastCrawlTime": null,
+            "googleCanonical": null,
+            "userCanonical": null,
+            "crawledAs": null,
+            "sitemap": [],
+            "detail": "Observed Google's indexed-version URL Inspection result for this exact canonical page; this is not a live-page test."
+          },
+          "decisionState": {
+            "landingUvReady": true,
+            "qualifiedOutboundReady": true,
+            "searchPerformanceReady": true,
+            "urlInspectionReady": true,
+            "attributionJoinChecked": true,
+            "attributionJoinBlocked": false,
+            "samePageSearchValidated": false
+          }
+        }
+      },
+      {
+        "sourceSlug": "choose-a-role-ai-story",
+        "path": "/choose-a-role-ai-story",
+        "keyword": "choose a role ai story",
+        "state": "collected",
+        "report": {
+          "sourceSlug": "choose-a-role-ai-story",
+          "metrics": {
+            "landingUv": {
+              "status": "observed",
+              "value": 3,
+              "source": "vercel_analytics",
+              "detail": "Observed the exact landing page's aggregate UV through Vercel Web Analytics for this reporting period."
+            },
+            "qualifiedOutboundClicks": {
+              "status": "observed",
+              "value": 0,
+              "source": "seo_redirect",
+              "detail": "Observed the page-level qualified outbound aggregate through the private attribution service for this reporting period."
+            }
+          },
+          "searchPerformance": {
+            "state": "observed",
+            "sourceSlug": "choose-a-role-ai-story",
+            "pageUrl": "https://seo-pi-fawn.vercel.app/choose-a-role-ai-story",
+            "startDate": "2026-07-03",
+            "endDate": "2026-07-30",
+            "clicks": 0,
+            "impressions": 0,
+            "ctr": 0,
+            "position": null,
+            "detail": "Search Console final-data query succeeded for 2026-07-03 through 2026-07-30 and returned no row for this exact page."
+          },
+          "urlInspection": {
+            "state": "observed",
+            "sourceSlug": "choose-a-role-ai-story",
+            "pageUrl": "https://seo-pi-fawn.vercel.app/choose-a-role-ai-story",
+            "inspectedAt": "2026-08-03T06:32:31.022Z",
+            "verdict": "NEUTRAL",
+            "coverageState": "URL is unknown to Google",
+            "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+            "indexingState": "INDEXING_STATE_UNSPECIFIED",
+            "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+            "lastCrawlTime": null,
+            "googleCanonical": null,
+            "userCanonical": null,
+            "crawledAs": null,
+            "sitemap": [],
+            "detail": "Observed Google's indexed-version URL Inspection result for this exact canonical page; this is not a live-page test."
+          },
+          "decisionState": {
+            "landingUvReady": true,
+            "qualifiedOutboundReady": true,
+            "searchPerformanceReady": true,
+            "urlInspectionReady": true,
+            "attributionJoinChecked": true,
+            "attributionJoinBlocked": false,
+            "samePageSearchValidated": false
+          }
+        }
+      },
+      {
+        "sourceSlug": "how-to-start-ai-roleplay",
+        "path": "/how-to-start-ai-roleplay",
+        "keyword": "how to start ai roleplay",
+        "state": "collected",
+        "report": {
+          "sourceSlug": "how-to-start-ai-roleplay",
+          "metrics": {
+            "landingUv": {
+              "status": "observed",
+              "value": 0,
+              "source": "vercel_analytics",
+              "detail": "Observed the exact landing page's aggregate UV through Vercel Web Analytics for this reporting period."
+            },
+            "qualifiedOutboundClicks": {
+              "status": "observed",
+              "value": 0,
+              "source": "seo_redirect",
+              "detail": "Observed the page-level qualified outbound aggregate through the private attribution service for this reporting period."
+            }
+          },
+          "searchPerformance": {
+            "state": "observed",
+            "sourceSlug": "how-to-start-ai-roleplay",
+            "pageUrl": "https://seo-pi-fawn.vercel.app/how-to-start-ai-roleplay",
+            "startDate": "2026-07-03",
+            "endDate": "2026-07-30",
+            "clicks": 0,
+            "impressions": 0,
+            "ctr": 0,
+            "position": null,
+            "detail": "Search Console final-data query succeeded for 2026-07-03 through 2026-07-30 and returned no row for this exact page."
+          },
+          "urlInspection": {
+            "state": "observed",
+            "sourceSlug": "how-to-start-ai-roleplay",
+            "pageUrl": "https://seo-pi-fawn.vercel.app/how-to-start-ai-roleplay",
+            "inspectedAt": "2026-08-03T06:32:31.600Z",
+            "verdict": "NEUTRAL",
+            "coverageState": "URL is unknown to Google",
+            "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+            "indexingState": "INDEXING_STATE_UNSPECIFIED",
+            "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+            "lastCrawlTime": null,
+            "googleCanonical": null,
+            "userCanonical": null,
+            "crawledAs": null,
+            "sitemap": [],
+            "detail": "Observed Google's indexed-version URL Inspection result for this exact canonical page; this is not a live-page test."
+          },
+          "decisionState": {
+            "landingUvReady": true,
+            "qualifiedOutboundReady": true,
+            "searchPerformanceReady": true,
+            "urlInspectionReady": true,
+            "attributionJoinChecked": true,
+            "attributionJoinBlocked": false,
+            "samePageSearchValidated": false
+          }
+        }
+      },
+      {
+        "sourceSlug": "interactive-voice-story",
+        "path": "/interactive-voice-story",
+        "keyword": "interactive voice story",
+        "state": "collected",
+        "report": {
+          "sourceSlug": "interactive-voice-story",
+          "metrics": {
+            "landingUv": {
+              "status": "observed",
+              "value": 5,
+              "source": "vercel_analytics",
+              "detail": "Observed the exact landing page's aggregate UV through Vercel Web Analytics for this reporting period."
+            },
+            "qualifiedOutboundClicks": {
+              "status": "observed",
+              "value": 0,
+              "source": "seo_redirect",
+              "detail": "Observed the page-level qualified outbound aggregate through the private attribution service for this reporting period."
+            }
+          },
+          "searchPerformance": {
+            "state": "observed",
+            "sourceSlug": "interactive-voice-story",
+            "pageUrl": "https://seo-pi-fawn.vercel.app/interactive-voice-story",
+            "startDate": "2026-07-03",
+            "endDate": "2026-07-30",
+            "clicks": 0,
+            "impressions": 0,
+            "ctr": 0,
+            "position": null,
+            "detail": "Search Console final-data query succeeded for 2026-07-03 through 2026-07-30 and returned no row for this exact page."
+          },
+          "urlInspection": {
+            "state": "observed",
+            "sourceSlug": "interactive-voice-story",
+            "pageUrl": "https://seo-pi-fawn.vercel.app/interactive-voice-story",
+            "inspectedAt": "2026-08-03T06:32:31.143Z",
+            "verdict": "NEUTRAL",
+            "coverageState": "URL is unknown to Google",
+            "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+            "indexingState": "INDEXING_STATE_UNSPECIFIED",
+            "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+            "lastCrawlTime": null,
+            "googleCanonical": null,
+            "userCanonical": null,
+            "crawledAs": null,
+            "sitemap": [],
+            "detail": "Observed Google's indexed-version URL Inspection result for this exact canonical page; this is not a live-page test."
+          },
+          "decisionState": {
+            "landingUvReady": true,
+            "qualifiedOutboundReady": true,
+            "searchPerformanceReady": true,
+            "urlInspectionReady": true,
+            "attributionJoinChecked": true,
+            "attributionJoinBlocked": false,
+            "samePageSearchValidated": false
+          }
+        }
+      },
+      {
+        "sourceSlug": "story-based-ai-roleplay",
+        "path": "/story-based-ai-roleplay",
+        "keyword": "story based ai roleplay",
+        "state": "collected",
+        "report": {
+          "sourceSlug": "story-based-ai-roleplay",
+          "metrics": {
+            "landingUv": {
+              "status": "observed",
+              "value": 4,
+              "source": "vercel_analytics",
+              "detail": "Observed the exact landing page's aggregate UV through Vercel Web Analytics for this reporting period."
+            },
+            "qualifiedOutboundClicks": {
+              "status": "observed",
+              "value": 0,
+              "source": "seo_redirect",
+              "detail": "Observed the page-level qualified outbound aggregate through the private attribution service for this reporting period."
+            }
+          },
+          "searchPerformance": {
+            "state": "observed",
+            "sourceSlug": "story-based-ai-roleplay",
+            "pageUrl": "https://seo-pi-fawn.vercel.app/story-based-ai-roleplay",
+            "startDate": "2026-07-03",
+            "endDate": "2026-07-30",
+            "clicks": 0,
+            "impressions": 0,
+            "ctr": 0,
+            "position": null,
+            "detail": "Search Console final-data query succeeded for 2026-07-03 through 2026-07-30 and returned no row for this exact page."
+          },
+          "urlInspection": {
+            "state": "observed",
+            "sourceSlug": "story-based-ai-roleplay",
+            "pageUrl": "https://seo-pi-fawn.vercel.app/story-based-ai-roleplay",
+            "inspectedAt": "2026-08-03T06:32:30.906Z",
+            "verdict": "NEUTRAL",
+            "coverageState": "URL is unknown to Google",
+            "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+            "indexingState": "INDEXING_STATE_UNSPECIFIED",
+            "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED",
+            "lastCrawlTime": null,
+            "googleCanonical": null,
+            "userCanonical": null,
+            "crawledAs": null,
+            "sitemap": [],
+            "detail": "Observed Google's indexed-version URL Inspection result for this exact canonical page; this is not a live-page test."
+          },
+          "decisionState": {
+            "landingUvReady": true,
+            "qualifiedOutboundReady": true,
+            "searchPerformanceReady": true,
+            "urlInspectionReady": true,
+            "attributionJoinChecked": true,
+            "attributionJoinBlocked": false,
+            "samePageSearchValidated": false
+          }
+        }
+      }
+    ]
+  },
+  "portfolioDecision": {
+    "schemaVersion": 1,
+    "action": "create_page",
+    "targetSlug": null,
+    "rationale": "The current finalized portfolio covers every published page. Exact-page Search Console results are observed zeros, while indexed-version inspection returns unknown URLs; there is no evidence for a page update or consolidation. Landing UV and qualified outbound are observed safely by source slug, and the attribution join is checked without a blocker. The selected app-choice job is a distinct pre-trial selection task and passes policy-v4 evidence, product, trial, revenue, specificity, originality, IP, and cannibalization gates without relying on page count, UV, or GSC impressions.",
+    "evidenceSlugs": [
+      "ai-roleplay-prompt-vs-existing-story",
+      "ai-voice-roleplay-story",
+      "choose-a-role-ai-story",
+      "how-to-start-ai-roleplay",
+      "interactive-voice-story",
+      "story-based-ai-roleplay"
+    ]
+  },
+  "publication": {
+    "status": "published",
+    "slug": "how-to-choose-an-ai-roleplay-app",
+    "path": "/how-to-choose-an-ai-roleplay-app",
+    "slot": "morning",
+    "publishedAt": "2026-08-03T06:40:00.000Z",
+    "draftDigest": "d8aaf31baae265f0e8c4c44a3037b40bb55e7f1a72c6a971464060f78a92d9f9",
+    "reason": "Approved by codex_editor Codex SEO editor after automated and editorial gates passed."
+  },
+  "publications": [
+    {
+      "status": "published",
+      "slug": "how-to-choose-an-ai-roleplay-app",
+      "path": "/how-to-choose-an-ai-roleplay-app",
+      "slot": "morning",
+      "publishedAt": "2026-08-03T06:40:00.000Z",
+      "draftDigest": "d8aaf31baae265f0e8c4c44a3037b40bb55e7f1a72c6a971464060f78a92d9f9",
+      "reason": "Approved by codex_editor Codex SEO editor after automated and editorial gates passed."
+    }
+  ],
+  "actions": [
+    {
+      "priority": "P0",
+      "action": "create a new page",
+      "why": "The current finalized portfolio covers every published page. Exact-page Search Console results are observed zeros, while indexed-version inspection returns unknown URLs; there is no evidence for a page update or consolidation. Landing UV and qualified outbound are observed safely by source slug, and the attribution join is checked without a blocker. The selected app-choice job is a distinct pre-trial selection task and passes policy-v4 evidence, product, trial, revenue, specificity, originality, IP, and cannibalization gates without relying on page count, UV, or GSC impressions.",
+      "expectedImpact": "Target a specific searcher who is close to trial or purchase."
+    },
+    {
+      "priority": "P1",
+      "action": "Verify evidence, intent, and conversion hypothesis",
+      "why": "Research proxies rank options; they do not replace observed search or revenue data.",
+      "expectedImpact": "Prevent broad traffic from displacing qualified product demand."
+    },
+    {
+      "priority": "P2",
+      "action": "Build and publish /how-to-choose-an-ai-roleplay-app",
+      "why": "Approved by codex_editor Codex SEO editor after automated and editorial gates passed.",
+      "expectedImpact": "Release one reviewed, measurable page."
+    }
+  ],
+  "brief": {
+    "keyword": "how to choose an ai roleplay app",
+    "slug": "/how-to-choose-an-ai-roleplay-app",
+    "pageType": "guide",
+    "searchIntent": "commercial",
+    "title": "How To Choose An Ai Roleplay App | Enter a Story and Choose a Role",
+    "description": "Explore how to choose an ai roleplay app through an existing story plot and an available role.",
+    "h1": "How To Choose An Ai Roleplay App",
+    "primaryCta": "Explore stories on NovelAI",
+    "sections": [
+      "Answer the searcher job",
+      "Show the story entry path",
+      "Explain role selection",
+      "Resolve the decision barrier",
+      "Offer a measured next step"
+    ],
+    "evidenceRequired": [
+      "Public evidence for the intent",
+      "Approved product facts",
+      "Original non-infringing material",
+      "Verified CTA and attribution route"
+    ],
+    "qualityGate": [
+      "One intent and one H1",
+      "Trial and revenue gates passed",
+      "No unlicensed third-party IP",
+      "Independent editorial review",
+      "Render, link, and index checks"
+    ]
+  },
+  "draft": {
+    "slot": "morning",
+    "keyword": "how to choose an ai roleplay app",
+    "language": "en",
+    "model": "codex",
+    "generatedAt": "2026-08-03T06:37:00.000Z",
+    "reviewRequired": true,
+    "factIdsUsed": [
+      "voice-roleplay-format",
+      "existing-story",
+      "role-selection",
+      "interactive-fiction-history"
+    ],
+    "title": "How to Choose an AI Roleplay App | Start With the Story",
+    "metaDescription": "Choose an AI roleplay app by checking how its story, available roles, and first scene help you begin with a clear reason to participate.",
+    "h1": "How to Choose an AI Roleplay App",
+    "heroMarkdown": "Choose an AI roleplay app by looking at the beginning it gives you. A useful story-led option starts with an original situation, lets you select an available character, and gives that character a reason to respond. This is not a promise that one format fits everyone. It is a practical way to decide whether you want to invent every detail yourself or step into a story that is already moving.",
+    "primaryCta": "Explore stories on NovelAI",
+    "sections": [
+      {
+        "heading": "Start with the job you want the app to do",
+        "bodyMarkdown": "Before comparing a long list of labels, decide what you want from the first minute. Some people want to author the whole premise: the setting, the cast, the conflict, and the opening line. Others want help getting past a blank start. Those are different jobs, and they lead to different ways of evaluating an AI roleplay app. If your goal is to participate quickly, look for a story entry that gives you a situation before asking you to perform. A useful opening contains something a character can notice, question, protect, or change. Keep the decision grounded in original material. You do not need a borrowed fictional world or famous character to know whether a beginning gives you enough to do."
+      },
+      {
+        "heading": "Check whether the story begins with a real premise",
+        "bodyMarkdown": "A premise is more than a genre label. It tells you what is happening now and why the first response matters. When you are evaluating a story-led path, ask three simple questions. Is there an existing plot rather than only an empty chat? Does the opening situation contain a pressure, question, or decision? Can you describe the first moment in one sentence without inventing the entire world? The approved format here begins each playable experience from an existing story plot. That fact matters because an existing plot can supply context before you choose what to say. It does not mean every story will suit every mood, and it does not claim a catalog size, a genre list, or an availability promise. It is simply a test for whether the product gives you a place to enter."
+      },
+      {
+        "heading": "See how a role changes the first scene",
+        "bodyMarkdown": "The next test is perspective. A good roleplay beginning gives you a role that belongs to the featured story, not just an abstract personality label. In the approved experience, players choose which available story character they want to perform as. That choice turns a general situation into a personal question: what does this character know, want, fear, or need to decide? Look for a role that makes the opening more specific, not more complicated. You might choose the person arriving late, the person holding a secret, or the person who needs an answer. These are original examples, not promised characters or scenarios. The point is to test whether a selected perspective gives you a natural first response."
+      },
+      {
+        "heading": "Use a three-question selection rule",
+        "bodyMarkdown": "Use this short rule before you try a story-led experience. First: do I want to create the premise, or do I want a premise that is already in motion? Second: can I choose a point of view that belongs to that situation? Third: after reading the opening, do I know one thing my role could say, ask, or do? Three yes answers suggest that a prepared story may be a better fit than another blank chat. A no answer is still useful information: perhaps you want a prompt-first creative session instead. The product is an AI voice cosplay and roleplay experience built around acting inside a story. That is the relevant bridge here: evaluate the entry path for participation, rather than assuming a broad feature list will tell you how the first scene feels."
+      },
+      {
+        "heading": "Take the next step with an original scene mindset",
+        "bodyMarkdown": "Once you choose a story-first route, begin small. Read the opening situation, select the available character whose perspective interests you, and respond to one immediate detail. You do not need a polished script or an elaborate biography. The team behind this experience has previously built AI interactive-fiction and simulator experiences, which supports a format where plot, role choice, and participation meet in the same first scene. That background is not a claim about any unlisted feature. It is a reason to keep the selection rule focused on story context and role performance. If you want a more detailed checklist for the first response, continue to the related how to start AI roleplay guide, then return to the story with one clear question in mind."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "What should I compare first in an AI roleplay app?",
+        "answerMarkdown": "Start with the entry experience: whether a story provides a clear situation, whether an available role supplies a point of view, and whether you can imagine one immediate response."
+      },
+      {
+        "question": "Do I need to invent a whole story before roleplaying?",
+        "answerMarkdown": "Not if you prefer a prepared premise. In the approved story-led format, each playable experience begins from an existing plot before you choose an available character to perform."
+      },
+      {
+        "question": "How can I tell whether a role is useful for the first scene?",
+        "answerMarkdown": "Choose a role that gives you a concrete perspective on the opening situation. Ask what that character notices, wants, fears, or needs to decide before you make a first response."
+      }
+    ],
+    "internalLinks": [
+      {
+        "anchor": "how to start AI roleplay guide",
+        "href": "/how-to-start-ai-roleplay"
+      },
+      {
+        "anchor": "AI roleplay prompt versus existing story guide",
+        "href": "/ai-roleplay-prompt-vs-existing-story"
+      }
+    ],
+    "assetBriefs": [
+      "Use an original story-opening card with an abstract role card; do not depict any franchise character or copied interface.",
+      "Show the three-question selection rule as generic text, without promising product features or availability."
+    ],
+    "quality": {
+      "passed": true,
+      "wordCount": 912,
+      "checks": [
+        {
+          "id": "distinct-intent",
+          "label": "Answers an app-selection task",
+          "passed": true,
+          "detail": "The selection rubric is a pre-trial comparison job and does not repeat a first-scene tutorial."
+        },
+        {
+          "id": "no-third-party-ip",
+          "label": "Avoids third-party IP",
+          "passed": true,
+          "detail": "All examples and selection criteria are generic and original."
+        },
+        {
+          "id": "no-invented-claims",
+          "label": "Avoids unsupported claims",
+          "passed": true,
+          "detail": "The draft makes no pricing, safety, availability, privacy, latency, or multiplayer claim."
+        },
+        {
+          "id": "approved-facts",
+          "label": "Uses approved product facts",
+          "passed": true,
+          "detail": "4 approved fact IDs"
+        },
+        {
+          "id": "content-structure",
+          "label": "Has required sections and FAQs",
+          "passed": true,
+          "detail": "5 sections; 3 FAQs"
+        },
+        {
+          "id": "conversion-path",
+          "label": "Has a concrete CTA",
+          "passed": true,
+          "detail": "Explore stories on NovelAI"
+        },
+        {
+          "id": "minimum-depth",
+          "label": "600-1000 English words",
+          "passed": true,
+          "detail": "912 words"
+        }
+      ]
+    },
+    "status": "ready_for_review",
+    "slug": "/how-to-choose-an-ai-roleplay-app"
+  },
+  "drafts": [
+    {
+      "slot": "morning",
+      "keyword": "how to choose an ai roleplay app",
+      "language": "en",
+      "model": "codex",
+      "generatedAt": "2026-08-03T06:37:00.000Z",
+      "reviewRequired": true,
+      "factIdsUsed": [
+        "voice-roleplay-format",
+        "existing-story",
+        "role-selection",
+        "interactive-fiction-history"
+      ],
+      "title": "How to Choose an AI Roleplay App | Start With the Story",
+      "metaDescription": "Choose an AI roleplay app by checking how its story, available roles, and first scene help you begin with a clear reason to participate.",
+      "h1": "How to Choose an AI Roleplay App",
+      "heroMarkdown": "Choose an AI roleplay app by looking at the beginning it gives you. A useful story-led option starts with an original situation, lets you select an available character, and gives that character a reason to respond. This is not a promise that one format fits everyone. It is a practical way to decide whether you want to invent every detail yourself or step into a story that is already moving.",
+      "primaryCta": "Explore stories on NovelAI",
+      "sections": [
+        {
+          "heading": "Start with the job you want the app to do",
+          "bodyMarkdown": "Before comparing a long list of labels, decide what you want from the first minute. Some people want to author the whole premise: the setting, the cast, the conflict, and the opening line. Others want help getting past a blank start. Those are different jobs, and they lead to different ways of evaluating an AI roleplay app. If your goal is to participate quickly, look for a story entry that gives you a situation before asking you to perform. A useful opening contains something a character can notice, question, protect, or change. Keep the decision grounded in original material. You do not need a borrowed fictional world or famous character to know whether a beginning gives you enough to do."
+        },
+        {
+          "heading": "Check whether the story begins with a real premise",
+          "bodyMarkdown": "A premise is more than a genre label. It tells you what is happening now and why the first response matters. When you are evaluating a story-led path, ask three simple questions. Is there an existing plot rather than only an empty chat? Does the opening situation contain a pressure, question, or decision? Can you describe the first moment in one sentence without inventing the entire world? The approved format here begins each playable experience from an existing story plot. That fact matters because an existing plot can supply context before you choose what to say. It does not mean every story will suit every mood, and it does not claim a catalog size, a genre list, or an availability promise. It is simply a test for whether the product gives you a place to enter."
+        },
+        {
+          "heading": "See how a role changes the first scene",
+          "bodyMarkdown": "The next test is perspective. A good roleplay beginning gives you a role that belongs to the featured story, not just an abstract personality label. In the approved experience, players choose which available story character they want to perform as. That choice turns a general situation into a personal question: what does this character know, want, fear, or need to decide? Look for a role that makes the opening more specific, not more complicated. You might choose the person arriving late, the person holding a secret, or the person who needs an answer. These are original examples, not promised characters or scenarios. The point is to test whether a selected perspective gives you a natural first response."
+        },
+        {
+          "heading": "Use a three-question selection rule",
+          "bodyMarkdown": "Use this short rule before you try a story-led experience. First: do I want to create the premise, or do I want a premise that is already in motion? Second: can I choose a point of view that belongs to that situation? Third: after reading the opening, do I know one thing my role could say, ask, or do? Three yes answers suggest that a prepared story may be a better fit than another blank chat. A no answer is still useful information: perhaps you want a prompt-first creative session instead. The product is an AI voice cosplay and roleplay experience built around acting inside a story. That is the relevant bridge here: evaluate the entry path for participation, rather than assuming a broad feature list will tell you how the first scene feels."
+        },
+        {
+          "heading": "Take the next step with an original scene mindset",
+          "bodyMarkdown": "Once you choose a story-first route, begin small. Read the opening situation, select the available character whose perspective interests you, and respond to one immediate detail. You do not need a polished script or an elaborate biography. The team behind this experience has previously built AI interactive-fiction and simulator experiences, which supports a format where plot, role choice, and participation meet in the same first scene. That background is not a claim about any unlisted feature. It is a reason to keep the selection rule focused on story context and role performance. If you want a more detailed checklist for the first response, continue to the related how to start AI roleplay guide, then return to the story with one clear question in mind."
+        }
+      ],
+      "faqs": [
+        {
+          "question": "What should I compare first in an AI roleplay app?",
+          "answerMarkdown": "Start with the entry experience: whether a story provides a clear situation, whether an available role supplies a point of view, and whether you can imagine one immediate response."
+        },
+        {
+          "question": "Do I need to invent a whole story before roleplaying?",
+          "answerMarkdown": "Not if you prefer a prepared premise. In the approved story-led format, each playable experience begins from an existing plot before you choose an available character to perform."
+        },
+        {
+          "question": "How can I tell whether a role is useful for the first scene?",
+          "answerMarkdown": "Choose a role that gives you a concrete perspective on the opening situation. Ask what that character notices, wants, fears, or needs to decide before you make a first response."
+        }
+      ],
+      "internalLinks": [
+        {
+          "anchor": "how to start AI roleplay guide",
+          "href": "/how-to-start-ai-roleplay"
+        },
+        {
+          "anchor": "AI roleplay prompt versus existing story guide",
+          "href": "/ai-roleplay-prompt-vs-existing-story"
+        }
+      ],
+      "assetBriefs": [
+        "Use an original story-opening card with an abstract role card; do not depict any franchise character or copied interface.",
+        "Show the three-question selection rule as generic text, without promising product features or availability."
+      ],
+      "quality": {
+        "passed": true,
+        "wordCount": 912,
+        "checks": [
+          {
+            "id": "distinct-intent",
+            "label": "Answers an app-selection task",
+            "passed": true,
+            "detail": "The selection rubric is a pre-trial comparison job and does not repeat a first-scene tutorial."
+          },
+          {
+            "id": "no-third-party-ip",
+            "label": "Avoids third-party IP",
+            "passed": true,
+            "detail": "All examples and selection criteria are generic and original."
+          },
+          {
+            "id": "no-invented-claims",
+            "label": "Avoids unsupported claims",
+            "passed": true,
+            "detail": "The draft makes no pricing, safety, availability, privacy, latency, or multiplayer claim."
+          },
+          {
+            "id": "approved-facts",
+            "label": "Uses approved product facts",
+            "passed": true,
+            "detail": "4 approved fact IDs"
+          },
+          {
+            "id": "content-structure",
+            "label": "Has required sections and FAQs",
+            "passed": true,
+            "detail": "5 sections; 3 FAQs"
+          },
+          {
+            "id": "conversion-path",
+            "label": "Has a concrete CTA",
+            "passed": true,
+            "detail": "Explore stories on NovelAI"
+          },
+          {
+            "id": "minimum-depth",
+            "label": "600-1000 English words",
+            "passed": true,
+            "detail": "912 words"
+          }
+        ]
+      },
+      "status": "ready_for_review",
+      "slug": "/how-to-choose-an-ai-roleplay-app"
+    }
+  ],
+  "contentStrategy": {
+    "searcherJob": "Choose an AI roleplay app for an original, story-led experience without relying on an empty chat or a named entertainment franchise.",
+    "oneSentenceAnswer": "Choose by the starting experience: a clear original premise, an available role, and a reason to participate in the first scene are more useful selection criteria than a generic feature list.",
+    "originalContribution": "A story-entry selection rubric separates a blank-chat workflow from a prepared-premise workflow, then gives an original three-question test readers can use before trying a story-led roleplay experience.",
+    "pagePattern": "decision_page",
+    "productBridge": "Approved facts support the story-first criteria: the format is AI voice cosplay and roleplay, experiences begin from an existing plot, and players select an available story character to perform.",
+    "contextualNextStep": "Readers who choose the prepared-story path can follow the crawlable how-to-start AI roleplay guide for a practical first-scene checklist.",
+    "evidenceBoundary": "Public pages establish that people compare AI roleplay apps, scenarios, and interactive-story formats. This page uses only approved product facts and makes no competitor, price, availability, privacy, safety, latency, multiplayer, or voice-technology claim.",
+    "conversionHypothesis": "A comparison searcher who receives a concrete story-entry test is more likely to use an attributed CTA than one who sees only a broad category explanation.",
+    "primaryConversion": "trial_start",
+    "measurementPlan": "Use the current finalized 28-day growth snapshot for exact-page Search Console, source-slug landing UV, and aggregate qualified outbound. Keep downstream trial, payment, and revenue data only in the protected service."
+  },
+  "integrations": [
+    {
+      "id": "semrush",
+      "name": "SEO Research Tools",
+      "state": "configured",
+      "detail": "The shared GURU/PRO account is used for human-assisted keyword and competitor research; provider metrics must be labelled as observed when copied into evidence."
+    },
+    {
+      "id": "codex_research",
+      "name": "Codex Research",
+      "state": "connected",
+      "detail": "6 public evidence links support 8 candidates.",
+      "lastCheckedAt": "2026-08-03T06:38:15.923Z"
+    },
+    {
+      "id": "search_console",
+      "name": "Google Search Console",
+      "state": "missing",
+      "detail": "No visible Search Console rows were available; no metrics were inferred.",
+      "href": "https://search.google.com/search-console",
+      "actionLabel": "Open Search Console"
+    },
+    {
+      "id": "ai_gateway",
+      "name": "Codex Content",
+      "state": "connected",
+      "detail": "A fact-constrained draft is ready for a separate editorial review."
+    },
+    {
+      "id": "github",
+      "name": "GitHub Reports",
+      "state": "configured",
+      "detail": "Daily reports and approved pages are committed only after verification.",
+      "href": "https://github.com/lium53492-rgb/seo/tree/main/data/reports",
+      "actionLabel": "Open report history"
+    },
+    {
+      "id": "product_analytics",
+      "name": "Revenue Attribution",
+      "state": "missing",
+      "detail": "Private downstream attribution was checked; only boolean readiness and blocking state are retained in this public report.",
+      "href": "https://vercel.com/elser1/seo/analytics",
+      "actionLabel": "Open analytics"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "personachat-app-choice",
+      "title": "PersonaChat — AI Character Chat & Roleplay App",
+      "url": "https://personachat.app/",
+      "source": "PersonaChat",
+      "collectedAt": "2026-08-03T06:35:00.000Z",
+      "supports": [
+        "how to choose an ai roleplay app",
+        "ai roleplay app with story scenarios",
+        "ai roleplay app comparison for storytelling",
+        "interactive story roleplay app",
+        "choose character in ai roleplay app",
+        "ai roleplay app for original stories"
+      ]
+    },
+    {
+      "id": "arepee-story-roleplay",
+      "title": "Immersive AI Roleplay - Live the story as any character",
+      "url": "https://www.arepee.com/",
+      "source": "Arepee",
+      "collectedAt": "2026-08-03T06:35:00.000Z",
+      "supports": [
+        "how to choose an ai roleplay app",
+        "ai roleplay app with story scenarios",
+        "ai roleplay scenario app",
+        "interactive story roleplay app",
+        "choose character in ai roleplay app",
+        "story-based ai roleplay app comparison"
+      ]
+    },
+    {
+      "id": "roleloom-original-stories",
+      "title": "Roleloom - AI Character Chat & AI Roleplay for Original Stories",
+      "url": "https://www.roleloom.com/",
+      "source": "Roleloom",
+      "collectedAt": "2026-08-03T06:35:00.000Z",
+      "supports": [
+        "how to choose an ai roleplay app",
+        "ai roleplay app with story scenarios",
+        "ai roleplay app comparison for storytelling",
+        "interactive story roleplay app",
+        "ai roleplay app for original stories",
+        "story-based ai roleplay app comparison"
+      ]
+    },
+    {
+      "id": "velvet-app-comparison",
+      "title": "Best AI Roleplay Apps & Platforms in 2026",
+      "url": "https://meetvelvet.io/best-ai-roleplay-apps",
+      "source": "Velvet",
+      "collectedAt": "2026-08-03T06:35:00.000Z",
+      "supports": [
+        "how to choose an ai roleplay app",
+        "ai roleplay app comparison for storytelling",
+        "ai roleplay scenario app",
+        "ai roleplay app for original stories",
+        "story-based ai roleplay app comparison"
+      ]
+    },
+    {
+      "id": "rubychat-scenarios",
+      "title": "AI Roleplay - Interactive Stories With AI Characters",
+      "url": "https://rubychat.app/ai-roleplay",
+      "source": "Ruby Chat",
+      "collectedAt": "2026-08-03T06:35:00.000Z",
+      "supports": [
+        "how to choose an ai roleplay app",
+        "ai roleplay app with story scenarios",
+        "ai roleplay scenario app",
+        "interactive story roleplay app",
+        "choose character in ai roleplay app",
+        "story-based ai roleplay app comparison"
+      ]
+    },
+    {
+      "id": "playrp-interactive-scenarios",
+      "title": "PlayRP - Live the Drama, Make the Choice",
+      "url": "https://letsplayrp.com/",
+      "source": "PlayRP",
+      "collectedAt": "2026-08-03T06:35:00.000Z",
+      "supports": [
+        "ai roleplay app with story scenarios",
+        "ai roleplay scenario app",
+        "interactive story roleplay app",
+        "choose character in ai roleplay app",
+        "ai roleplay app for original stories"
+      ]
+    }
+  ],
+  "caveats": [
+    "Product fit, trial intent, revenue intent, specificity, originality, IP risk, and cannibalization risk are derived from policy-versioned evidence signals rather than AI-supplied scores.",
+    "Demand and difficulty remain transparent 0-100 research proxies and require candidate-level rationales and evidence references unless an evidence record explicitly names an observed provider metric.",
+    "Google Trends relative interest is a normalized 0-100 signal for the selected geography and period, not search volume; unavailable access remains explicit.",
+    "Every locally unconsumed workbench instruction is preserved verbatim with an adopted or rejected decision before it may be marked consumed.",
+    "Missing Search Console, UV, trial, payment, or revenue data stays unavailable rather than being converted to zero.",
+    "The report builder never publishes a page; scripts/publish-reviewed-page.mjs requires a separate approval record.",
+    "Publication required a separate editorial approval artifact."
+  ]
+}
