@@ -1,9 +1,14 @@
 import { TrackedNovelAiHomeLink } from "@/app/components/TrackedNovelAiHomeLink";
 import type { SeoPageViewProps } from "./page-family-types";
 import { StoryMotionGallery } from "./StoryMotionGallery";
+import { StageDecisionPage } from "./StageDecisionPage";
 import styles from "./decision.module.css";
 
 export function DecisionMapPage({ page, relatedPages }: SeoPageViewProps) {
+  if (page.slug === "ai-roleplay-prompt-vs-existing-story") {
+    return <StageDecisionPage page={page} relatedPages={relatedPages} />;
+  }
+
   const routeStops = page.sections.slice(0, 4);
 
   return (

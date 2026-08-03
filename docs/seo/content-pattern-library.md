@@ -1,6 +1,6 @@
 # Content Pattern Library
 
-Updated: 2026-07-22
+Updated: 2026-08-03
 
 This is a reusable pattern library for the story-led voice-roleplay SEO system. It records what was learned from public pages without copying their wording, visual identity, proprietary examples, or unverified claims. Every daily page must still use the approved product-fact allowlist.
 
@@ -10,6 +10,53 @@ This is a reusable pattern library for the story-led voice-roleplay SEO system. 
 - A path/referrer query found direct or unlabelled traffic and Vercel-originated verification traffic, but no search-engine referrer in that window.
 - Therefore the current question is not yet "how do we optimize a proven winner?" It is "how do we create useful, indexable entry pages and earn the first real search impressions?"
 - Primary growth sequence: Google impressions -> organic entrances -> useful next-page clicks -> NovelAI CTA clicks. Bounce rate remains descriptive until the sample is materially larger.
+
+## Intent-to-experience design matrix
+
+Every new brief must choose a design direction from the searcher's pain point,
+not reuse the visual treatment of the previous page. The aesthetic is a way to
+make the answer easier to scan and remember; it must never hide the H1, answer,
+approved product facts, internal links, FAQ, or CTA from the initial HTML.
+
+| Searcher pain point | Page pattern | Design language | Signature useful module | Content layers |
+| --- | --- | --- | --- | --- |
+| “Which starting route fits me?” | `decision_page` | dark cinematic decision map or a restrained control-room interface | choice lens with clear tradeoffs and anchored routes | direct answer -> routes -> tradeoffs -> edge cases -> next step |
+| “What is this and how does it work?” | `experience_explainer` | product field manual or annotated system diagram | story -> role -> performance anatomy | definition -> visual loop -> approved product explanation -> limits -> CTA |
+| “How do I begin or get unstuck?” | `task_guide` | retro-futuristic mission briefing or practical field notebook | scene-entry kit, recovery path, or checkpoint list | answer -> first move -> steps -> mistakes/recovery -> FAQ -> CTA |
+| “What could I try for fun?” | `original_inventory` | playful zine, story deck, or discovery shelf | original scenario selector or browseable prompt deck | invitation -> choices -> original examples -> how to enter -> related discovery |
+| “Why does this format matter?” | `narrative_essay` | editorial magazine, annotated essay, or quiet literary archive | argument compass or premise map | thesis -> evidence-led chapters -> implications -> counterpoint -> FAQ -> CTA |
+
+### Rotation rules
+
+- Do not assign a visual language just because it has not been used recently.
+  First prove that it clarifies the page's particular job.
+- Consecutive pages may not repeat both the same primary pain point and the
+  same design language. A new colour alone is not a new experience.
+- “Dark”, “sci-fi”, and “product manual” are complete directions only when
+  typography, navigation, section rhythm, colours, and the signature module
+  all support that direction.
+- Keep one dominant visual world per page. Avoid mixing unrelated aesthetics
+  or turning a serious comparison into decorative spectacle.
+- Treat `original_inventory` as an exception: it still requires a real,
+  approved original-content inventory. Never invent scenarios merely to fill a
+  playful layout.
+
+### Required brief additions
+
+Alongside the existing mandatory page contract, every new brief records:
+
+1. **Primary pain point:** comparison, explanation, starting/playing,
+   discovery/fun, or a sustained concept question.
+2. **Design direction:** the chosen visual world and why it helps this reader.
+3. **Signature module:** one server-rendered, useful object such as a route
+   map, annotated loop, recovery checklist, scenario selector, or argument
+   compass. It must answer part of the query, not decorate the page.
+4. **Content-layer plan:** the ordered progression from the quick answer to
+   detail, objections, and the contextual next step.
+
+The editorial review verifies that these four additions are distinct from the
+nearest published page and that the module remains meaningful with JavaScript
+disabled.
 
 ## Reusable patterns observed
 

@@ -60,6 +60,16 @@ Maintain a pattern library of publicly observed layouts and interactions: intent
 
 Use `docs/seo/content-pattern-library.md` as the current reusable library. A new brief must name its searcher job, one-sentence answer, original contribution, page pattern, product bridge, contextual next step, and evidence boundary before drafting begins. Block a page that differs from an existing page only by a close keyword variation or cannot add an original checklist, decision tool, worked example, diagnostic, or approved product explanation.
 
+The brief must also name the primary pain point, a coherent design direction,
+one useful server-rendered signature module, and an ordered content-layer plan.
+Rotate the design language with the intent: for example, a dark decision map,
+a retro-futuristic mission guide, a product field manual, a playful discovery
+deck, and an editorial concept essay solve different reading jobs. Do not
+repeat the same visual language and pain point on consecutive pages merely by
+changing a keyword or palette. The signature module must make the answer more
+useful and remain accessible in the initial HTML; it is not permission for
+client-only content or unsupported product claims.
+
 When a draft includes a contextual internal link, the published template must render it as a standard crawlable `<a href="...">` with a descriptive anchor in the initial HTML. Storing `internalLinks` in a JSON artifact without rendering them does not satisfy this rule.
 
 ## 6. Measurement and iteration
