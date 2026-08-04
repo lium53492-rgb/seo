@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { TrackedNovelAiHomeLink } from "@/app/components/TrackedNovelAiHomeLink";
 import type { SeoPageViewProps } from "./page-family-types";
+import { StageStarterSelector } from "./StageStarterSelector";
 import styles from "./stage-decision.module.css";
 
 export function StageDecisionPage({ page, relatedPages }: SeoPageViewProps) {
@@ -26,13 +27,15 @@ export function StageDecisionPage({ page, relatedPages }: SeoPageViewProps) {
           <h1>{page.h1}</h1>
           <p className={styles.answer}>{page.heroMarkdown}</p>
           <div className={styles.fork} aria-label="Jump to a comparison route">
-            <a href="#route-stop-2"><span>01</span> Invent the premise</a>
+            <a href="#starter-selector"><span>01</span> Find your cue</a>
             <a href="#route-stop-3"><span>02</span> Perform the scene</a>
           </div>
           <TrackedNovelAiHomeLink className={styles.heroCta} sourceSlug={page.slug} location="hero">Take the stage <span aria-hidden="true">↗</span></TrackedNovelAiHomeLink>
         </div>
         <p className={styles.cue} aria-hidden="true">SCENE CUE — A beginning is already moving.</p>
       </header>
+
+      <StageStarterSelector sourceSlug={page.slug} />
 
       <section className={styles.decision} id="decision" aria-labelledby="decision-heading">
         <header>
