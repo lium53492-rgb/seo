@@ -75,10 +75,12 @@ Before a new page or update:
 - Keep the H1, main answer, sections, FAQ, CTA, and canonical metadata in the
   initial rendered HTML. Verify the current template rather than assuming an
   old workflow still matches it.
-- The present information architecture is `SEO landing page -> attributed
-  redirect -> NovelAI`: the bare homepage redirects to the approved NovelAI
-  destination and SEO CTAs use `/go/novelai/{slug}` in a new tab. Confirm the live destination on each production
-  run; do not restore the legacy story-share redirect path without approval.
+- The bare homepage is a crawlable first-party guide hub and must return its
+  own content without automatically redirecting visitors off-site. The
+  conversion path is `SEO landing page -> user-initiated attributed redirect
+  -> NovelAI`; SEO CTAs use `/go/novelai/{slug}` in a new tab. Confirm the live
+  destination on each production run; do not restore the bare-homepage or
+  legacy story-share redirect paths without approval.
 
 ## Daily production and release boundary
 

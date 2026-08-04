@@ -47,6 +47,33 @@ for (const fragment of [
   }
 }
 
+const homepagePath = resolve(buildDirectory, "index.html");
+if (!existsSync(homepagePath)) throw new Error("The production build did not emit the homepage HTML.");
+const homepage = readFileSync(homepagePath, "utf8");
+for (const [fragment, label] of [
+  ["<h1>Enter a story.", "rendered H1"],
+  ["<em>Choose your role.</em>", "complete H1"],
+  [`rel="canonical" href="${siteUrl}"`, "canonical URL"],
+  ['id="guide-library"', "guide library"],
+  ['"@type":"FAQPage"', "FAQ JSON-LD"],
+]) {
+  if (!homepage.includes(fragment)) throw new Error(`The homepage is missing ${label} in initial HTML.`);
+}
+if (/NEXT_REDIRECT|http-equiv="refresh"/i.test(homepage)) {
+  throw new Error("The homepage must render first-party content instead of redirecting visitors.");
+}
+if (/<a\b[^>]*href="https:\/\/(?:www\.)?novelai\.ai/i.test(homepage)) {
+  throw new Error("The homepage must keep navigation on the SEO site.");
+}
+for (const page of pages) {
+  if (!homepage.includes(`href="/${page.slug}"`)) {
+    throw new Error(`The homepage is missing a crawlable link to /${page.slug}.`);
+  }
+}
+if (!sitemap.includes(`<loc>${siteUrl}</loc>`)) {
+  throw new Error("The homepage is missing from the built sitemap.");
+}
+
 for (const page of pages) {
   const htmlPath = resolve(buildDirectory, `${page.slug}.html`);
   if (!existsSync(htmlPath)) throw new Error(`Production HTML is missing for /${page.slug}.`);
@@ -72,9 +99,6 @@ for (const page of pages) {
   if (!sitemap.includes(`<loc>${canonical}</loc>`)) {
     throw new Error(`/${page.slug} is missing from the built sitemap.`);
   }
-  if (/<a\b[^>]*\bhref="\/"/i.test(html)) {
-    throw new Error(`/${page.slug} contains a misleading link to the redirecting homepage.`);
-  }
   for (const target of pages) {
     if (target.slug === page.slug) continue;
     if (!html.includes(`href="/${target.slug}"`)) {
@@ -83,4 +107,4 @@ for (const page of pages) {
   }
 }
 
-process.stdout.write(`Verified ${pages.length} built SEO pages, their metadata, CTA routes, cross-links, robots, and sitemap entries.\n`);
+process.stdout.write(`Verified the homepage and ${pages.length} built SEO pages, their metadata, CTA routes, cross-links, robots, and sitemap entries.\n`);

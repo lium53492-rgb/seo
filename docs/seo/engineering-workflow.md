@@ -7,13 +7,17 @@ This repository has one production path. It targets an independent English searc
 ```text
 Independent trial-ready search intent
 -> indexable SEO landing page
--> /go/novelai/{slug}
+-> user clicks /go/novelai/{slug}
 -> NovelAI with UTM + seo_click_id
 -> trial / signup / purchase callback
 -> daily funnel report
 ```
 
-The SEO site is not a second product and the bare homepage is not a topic hub. Each content page must answer a useful search question on its own. Its primary business job is to send a qualified reader into the approved NovelAI experience.
+The bare homepage is a crawlable first-party guide hub. It returns its own 200
+page, links to the published SEO guides, and must never automatically redirect
+a visitor off-site. Each content page still answers a useful search question on
+its own. The attributed conversion path begins only when a visitor intentionally
+clicks a NovelAI CTA on an SEO page.
 
 ## Single source of truth
 

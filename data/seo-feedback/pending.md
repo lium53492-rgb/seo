@@ -1,6 +1,6 @@
 # Pending SEO feedback
 
-Last updated: 2026-08-03 (Asia/Shanghai)
+Last updated: 2026-08-04 (Asia/Shanghai)
 
 ## Operating constraints
 
@@ -17,6 +17,11 @@ Last updated: 2026-08-03 (Asia/Shanghai)
 - Keep a source URL and freshness date for every trend or hot signal. Use official Google sources for Google-policy claims; third-party articles are workflow inspiration, not policy evidence.
 - AI may collect, structure, draft, and check. The final release decision must verify product facts, originality, IP risk, page-specific usefulness, and user feedback.
 - Learn landing-page patterns as reusable structure only; do not copy copywriting, imagery, or third-party intellectual property.
+
+## User feedback adopted 2026-08-04
+
+- Verbatim: “seo的这个网址  前面是点开之后会直接跳转到novel.ai，  现在说不让这样了  这个你重新修改一下”
+- Decision: adopted. The bare homepage now renders a first-party guide hub and keeps its navigation on this site. NovelAI redirects remain available only after an intentional CTA click from a published SEO page.
 
 ## User feedback awaiting intake
 

@@ -453,7 +453,7 @@ export default async function WorkbenchPage() {
         <section className="wb-section" id="cluster">
           <div className="wb-section-heading"><div><p className="wb-kicker">INTENT ARCHITECTURE</p><h2>一个日报，一篇页面，一条可归因链路。</h2></div><span className="wb-data-note">每日新增上限 1；改旧页与新建页分开决策。</span></div>
           <div className="wb-cluster-flow"><div><b>独立搜索意图</b><span>{top?.keyword ?? "待研究"}</span></div><i>→</i><div><b>SEO 落地页</b><span>{publications[0]?.path ?? "待审稿"}</span></div><i>→</i><div><b>试玩与付费</b><span>seo_click_id</span></div></div>
-          <p className="wb-cluster-note">新增页必须回答新的搜索者任务，并至少链接一个真正相关的已发布页面。裸首页只负责跳转，不再冒充主题枢纽。</p>
+          <p className="wb-cluster-note">新增页必须回答新的搜索者任务，并至少链接一个真正相关的已发布页面。裸首页作为本站指南入口，不自动跳转；NovelAI 跳转只由 SEO 页面上的用户点击触发。</p>
           <div className="wb-publication-list">{publications.length ? publications.map((item, index) => <article key={`${item.slug ?? item.slot}-${index}`}><strong>每日页面</strong><span>{item.status === "published" ? "已发布" : item.status === "ready_for_review" ? "待独立审稿" : "未发布"}</span><p>{item.path ?? item.reason}</p></article>) : <div className="wb-empty-state">本日报尚未记录可发布页面。</div>}</div>
         </section>
 
