@@ -6,14 +6,16 @@
       "createdAt": "2026-08-06T06:53:13.971Z",
       "message": "为什么这个页面还是和以前的差不多啊  这样怎么可能会有流量啊   是要和以前的完全不同的  包含文案内容  页面风格  配色  也不一定每篇页面下面都有小宠物啊  ",
       "source": "codex_chat",
-      "kind": "content_guidance"
+      "kind": "content_guidance",
+      "consumedAt": "2026-08-06T18:42:26.9098898+08:00"
     },
     {
       "id": "feedback-2026-08-06-content-architecture",
       "createdAt": "2026-08-06T06:53:13.972Z",
       "message": "不能每次都是我一次一次的跟你说  内容不能太相似  你先设置一下项目的架构 分层设计  尤其是内容部分的  ",
       "source": "codex_chat",
-      "kind": "content_guidance"
+      "kind": "content_guidance",
+      "consumedAt": "2026-08-06T18:42:26.9098898+08:00"
     }
   ]
 }

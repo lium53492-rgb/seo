@@ -6,21 +6,24 @@
       "createdAt": "2026-08-03T00:00:00.000Z",
       "message": "后面的页面设计  可以把风格铺开  比如 暗黑风 科幻风 产品说明风 都错开做一做  然后痛点也都分散开 比如对比 说明 玩法 趣味性 作好内容分层",
       "source": "codex_chat",
-      "kind": "content_guidance"
+      "kind": "content_guidance",
+      "consumedAt": "2026-08-06T18:42:26.9098898+08:00"
     },
     {
       "id": "feedback-2026-08-03-current-direction-better",
       "createdAt": "2026-08-03T00:01:00.000Z",
       "message": "这个就比上一个好点了",
       "source": "codex_chat",
-      "kind": "content_guidance"
+      "kind": "content_guidance",
+      "consumedAt": "2026-08-06T18:42:26.9098898+08:00"
     },
     {
       "id": "feedback-2026-08-03-release-third-first",
       "createdAt": "2026-08-03T00:02:00.000Z",
       "message": "都喜欢 先上线第三个吧  前面的后续慢慢上线",
       "source": "codex_chat",
-      "kind": "content_guidance"
+      "kind": "content_guidance",
+      "consumedAt": "2026-08-06T18:42:26.9098898+08:00"
     }
   ]
 }

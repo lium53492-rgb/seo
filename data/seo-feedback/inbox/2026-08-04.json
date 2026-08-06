@@ -6,7 +6,8 @@
       "createdAt": "2026-08-04T00:00:00.000Z",
       "message": "后续可以试试法语的seo",
       "source": "codex_chat",
-      "kind": "content_guidance"
+      "kind": "content_guidance",
+      "consumedAt": "2026-08-06T18:42:26.9098898+08:00"
     }
   ]
 }

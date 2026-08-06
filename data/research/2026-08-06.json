@@ -57,7 +57,50 @@
       "detail": "The official Google Trends UI was unavailable to this run, so no relative-interest value or direction was inferred."
     }
   ],
-  "feedbackDecisions": [],
+  "feedbackDecisions": [
+    {
+      "id": "feedback-2026-08-03-design-content-layering",
+      "date": "2026-08-03",
+      "message": "\u540e\u9762\u7684\u9875\u9762\u8bbe\u8ba1  \u53ef\u4ee5\u628a\u98ce\u683c\u94fa\u5f00  \u6bd4\u5982 \u6697\u9ed1\u98ce \u79d1\u5e7b\u98ce \u4ea7\u54c1\u8bf4\u660e\u98ce \u90fd\u9519\u5f00\u505a\u4e00\u505a  \u7136\u540e\u75db\u70b9\u4e5f\u90fd\u5206\u6563\u5f00 \u6bd4\u5982\u5bf9\u6bd4 \u8bf4\u660e \u73a9\u6cd5 \u8da3\u5473\u6027 \u4f5c\u597d\u5185\u5bb9\u5206\u5c42",
+      "decision": "adopted",
+      "rationale": "Future briefs must vary visual systems, pain points, and content layers; this page used a retro-futuristic task-guide direction."
+    },
+    {
+      "id": "feedback-2026-08-03-current-direction-better",
+      "date": "2026-08-03",
+      "message": "\u8fd9\u4e2a\u5c31\u6bd4\u4e0a\u4e00\u4e2a\u597d\u70b9\u4e86",
+      "decision": "adopted",
+      "rationale": "The improved direction is retained through evidence-led structure and independent review, rather than treated as permission to reuse prior copy."
+    },
+    {
+      "id": "feedback-2026-08-03-release-third-first",
+      "date": "2026-08-03",
+      "message": "\u90fd\u559c\u6b22 \u5148\u4e0a\u7ebf\u7b2c\u4e09\u4e2a\u5427  \u524d\u9762\u7684\u540e\u7eed\u6162\u6162\u4e0a\u7ebf",
+      "decision": "rejected",
+      "rationale": "The earlier proposal ordering is no longer actionable; this Shanghai day already has its only independently approved page."
+    },
+    {
+      "id": "feedback-2026-08-04-french-seo",
+      "date": "2026-08-04",
+      "message": "\u540e\u7eed\u53ef\u4ee5\u8bd5\u8bd5\u6cd5\u8bed\u7684seo",
+      "decision": "rejected",
+      "rationale": "This unattended release is explicitly limited to one new English page; French content needs a separately authorized language strategy."
+    },
+    {
+      "id": "feedback-2026-08-06-page-distinctness",
+      "date": "2026-08-06",
+      "message": "\u4e3a\u4ec0\u4e48\u8fd9\u4e2a\u9875\u9762\u8fd8\u662f\u548c\u4ee5\u524d\u7684\u5dee\u4e0d\u591a\u554a  \u8fd9\u6837\u600e\u4e48\u53ef\u80fd\u4f1a\u6709\u6d41\u91cf\u554a   \u662f\u8981\u548c\u4ee5\u524d\u7684\u5b8c\u5168\u4e0d\u540c\u7684  \u5305\u542b\u6587\u6848\u5185\u5bb9  \u9875\u9762\u98ce\u683c  \u914d\u8272  \u4e5f\u4e0d\u4e00\u5b9a\u6bcf\u7bc7\u9875\u9762\u4e0b\u9762\u90fd\u6709\u5c0f\u5ba0\u7269\u554a  ",
+      "decision": "adopted",
+      "rationale": "The permanent novelty gate now requires distinct copy, structure, visual system, palette, and explicit no-default-pet or gallery behavior."
+    },
+    {
+      "id": "feedback-2026-08-06-content-architecture",
+      "date": "2026-08-06",
+      "message": "\u4e0d\u80fd\u6bcf\u6b21\u90fd\u662f\u6211\u4e00\u6b21\u4e00\u6b21\u7684\u8ddf\u4f60\u8bf4  \u5185\u5bb9\u4e0d\u80fd\u592a\u76f8\u4f3c  \u4f60\u5148\u8bbe\u7f6e\u4e00\u4e0b\u9879\u76ee\u7684\u67b6\u6784 \u5206\u5c42\u8bbe\u8ba1  \u5c24\u5176\u662f\u5185\u5bb9\u90e8\u5206\u7684  ",
+      "decision": "adopted",
+      "rationale": "Content-strategy schema 2, mapped section and FAQ layers, signature modules, and presentation recipes are now permanent pre-draft gates."
+    }
+  ],
   "evidence": [
     {
       "id": "rpdate-first-message",
