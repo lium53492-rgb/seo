@@ -242,6 +242,37 @@ test("local feedback remains verbatim, consumption is idempotent, and GET is pro
   }
 });
 
+test("Codex chat guidance is a first-class pending feedback source", async () => {
+  const originalCwd = process.cwd();
+  const environment = snapshotEnvironment();
+  const workspace = await mkdtemp(join(tmpdir(), "seo-codex-feedback-"));
+  try {
+    process.chdir(workspace);
+    process.env.NODE_ENV = "test";
+    const date = "2026-08-06";
+    const inbox = join(workspace, "data", "seo-feedback", "inbox");
+    await mkdir(inbox, { recursive: true });
+    await writeFile(join(inbox, `${date}.json`), `${JSON.stringify({
+      date,
+      entries: [{
+        id: "feedback-codex-chat-fixture",
+        createdAt: "2026-08-06T06:53:13.971Z",
+        message: "内容不能太相似，先设置项目的内容分层架构。",
+        source: "codex_chat",
+        kind: "content_guidance",
+      }],
+    }, null, 2)}\n`);
+    const queue = await listUnconsumedFeedback();
+    assert.equal(queue.pendingCount, 1);
+    assert.equal(queue.entries[0].source, "codex_chat");
+    assert.equal(queue.entries[0].message, "内容不能太相似，先设置项目的内容分层架构。");
+  } finally {
+    process.chdir(originalCwd);
+    restoreEnvironment(environment);
+    await rm(workspace, { recursive: true, force: true });
+  }
+});
+
 test("GitHub optimistic retry merges a concurrent entry instead of losing it", async () => {
   const environment = snapshotEnvironment();
   const originalFetch = globalThis.fetch;

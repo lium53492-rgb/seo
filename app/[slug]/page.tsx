@@ -4,6 +4,8 @@ import { ArticleJsonLd, FAQJsonLd } from "next-seo";
 import { listPublishedPages, readPublishedPage } from "@/lib/seo/page-store";
 import {
   resolveRelatedSeoPages,
+  resolveCompanionPolicy,
+  resolvePagePresentation,
   resolveSeoPageFamily,
 } from "@/lib/seo/page-presentation";
 import { absoluteSiteUrl } from "@/lib/seo/site";
@@ -13,6 +15,7 @@ import { InventoryCatalogPage } from "./InventoryCatalogPage";
 import { NarrativeEssayPage } from "./NarrativeEssayPage";
 import { TaskGuidePage } from "./TaskGuidePage";
 import { StoryCompanion } from "./StoryCompanion";
+import { StructuredContentPage } from "./StructuredContentPage";
 
 type PageProps = { params: Promise<{ slug: string }> };
 
@@ -49,8 +52,10 @@ export default async function PublishedSeoPage({ params }: PageProps) {
 
   const canonicalUrl = absoluteSiteUrl(page.path);
 
+  const presentation = resolvePagePresentation(page);
+  const companionPolicy = resolveCompanionPolicy(page, presentation);
   const family = resolveSeoPageFamily(page);
-  const view = (() => {
+  const legacyView = (() => {
     switch (family) {
       case "task_guide": return <TaskGuidePage page={page} relatedPages={relatedPages} />;
       case "decision_page": return <DecisionMapPage page={page} relatedPages={relatedPages} />;
@@ -59,6 +64,9 @@ export default async function PublishedSeoPage({ params }: PageProps) {
       case "experience_explainer": return <CinematicExperiencePage page={page} relatedPages={relatedPages} />;
     }
   })();
+  const view = presentation
+    ? <StructuredContentPage page={page} recipe={presentation} relatedPages={relatedPages} />
+    : legacyView;
 
   return (
     <>
@@ -80,7 +88,9 @@ export default async function PublishedSeoPage({ params }: PageProps) {
         scriptId={`faq-jsonld-${page.slug}`}
       />
       {view}
-      <StoryCompanion sourceSlug={page.slug} />
+      {companionPolicy === "story_companion"
+        ? <StoryCompanion sourceSlug={page.slug} />
+        : null}
     </>
   );
 }

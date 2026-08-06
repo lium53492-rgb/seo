@@ -97,7 +97,7 @@ function parseDocument(raw, date, source) {
       !Number.isFinite(Date.parse(entry.createdAt)) ||
       typeof entry.message !== "string" ||
       !entry.message.trim() ||
-      entry.source !== "workbench" ||
+      (entry.source !== "workbench" && entry.source !== "codex_chat") ||
       entry.kind !== "content_guidance"
     ) {
       throw new Error(`Invalid feedback entry: ${source}`);

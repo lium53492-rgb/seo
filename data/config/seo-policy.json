@@ -82,8 +82,16 @@
     "minWords": 600,
     "maxWords": 1000,
     "minSections": 4,
-    "minFaqs": 3,
-    "maxSimilarity": 0.72
+    "minFaqs": 3
+  },
+  "contentArchitecture": {
+    "schemaVersion": 1,
+    "draftSchemaVersion": 2,
+    "publishedPageSchemaVersion": 3,
+    "enforcedFromReportDate": "2026-08-07",
+    "architecturePolicy": "data/config/content-architecture.json",
+    "presentationRecipes": "data/config/presentation-recipes.json",
+    "legacyPageSchemas": [1, 2]
   },
   "allowedPagePatterns": [
     "task_guide",

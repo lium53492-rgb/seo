@@ -1,4 +1,10 @@
-import type { ContentStrategy, PublishedSeoPage } from "./types";
+import type { ContentStrategy, PageArchitecture, PublishedSeoPage } from "./types";
+import presentationCatalog from "@/data/config/presentation-recipes.json";
+import architecturePolicy from "@/data/config/content-architecture.json";
+import seoPolicy from "@/data/config/seo-policy.json";
+import { validateSeoArchitectureBridge } from "./content-contract.mjs";
+
+validateSeoArchitectureBridge(seoPolicy, architecturePolicy);
 
 export type SeoPageFamily = ContentStrategy["pagePattern"];
 
@@ -7,6 +13,23 @@ export type RelatedSeoPage = {
   href: string;
   target: PublishedSeoPage;
 };
+
+export type PresentationRecipe = {
+  id: string;
+  rendererId: PageArchitecture["presentation"]["rendererId"];
+  companion: PageArchitecture["presentation"]["companion"];
+  gallery: "none";
+};
+
+const rendererIds: ReadonlyArray<PresentationRecipe["rendererId"]> = [
+  "rehearsal_slate",
+  "nocturne_decision_grid",
+  "product_field_manual",
+  "editorial_argument",
+  "specimen_catalog",
+  "orbital_mission_log",
+  "playful_story_workshop",
+];
 
 export function resolveRelatedSeoPages(
   page: PublishedSeoPage,
@@ -27,16 +50,35 @@ export function resolveRelatedSeoPages(
     linkedPaths.add(link.href);
   }
 
-  for (const target of targetsByPath.values()) {
-    if (linkedPaths.has(target.path)) continue;
-    relatedPages.push({
-      anchor: target.h1,
-      href: target.path,
-      target,
-    });
-  }
-
   return relatedPages;
+}
+
+export function resolvePagePresentation(page: PublishedSeoPage): PresentationRecipe | null {
+  if (page.schemaVersion !== seoPolicy.contentArchitecture.publishedPageSchemaVersion || !page.architecture) return null;
+  const recipe = presentationCatalog.recipes.find(
+    (recipe) => recipe.id === page.architecture?.presentation.recipeId,
+  );
+  if (!recipe || !rendererIds.includes(recipe.rendererId as PresentationRecipe["rendererId"]) ||
+    (recipe.companion !== "none" && recipe.companion !== "story_companion") || recipe.gallery !== "none") {
+    return null;
+  }
+  return {
+    id: recipe.id,
+    rendererId: recipe.rendererId as PresentationRecipe["rendererId"],
+    companion: recipe.companion,
+    gallery: recipe.gallery,
+  };
+}
+
+const legacyCompanionBySlug: Readonly<Record<string, "story_companion">> = {
+  "interactive-voice-story": "story_companion",
+};
+
+export function resolveCompanionPolicy(
+  page: PublishedSeoPage,
+  recipe: PresentationRecipe | null,
+): "none" | "story_companion" {
+  return recipe?.companion ?? legacyCompanionBySlug[page.slug] ?? "none";
 }
 
 const legacyFamilyBySlug: Record<string, SeoPageFamily> = {

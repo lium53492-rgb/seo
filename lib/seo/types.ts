@@ -6,7 +6,7 @@ export type WorkbenchFeedbackEntry = {
   id: string;
   createdAt: string;
   message: string;
-  source: "workbench";
+  source: "workbench" | "codex_chat";
   kind: "content_guidance";
   consumedAt?: string;
   decision?: WorkbenchFeedbackDecision;
@@ -210,7 +210,191 @@ export type DraftQualityCheck = {
   detail: string;
 };
 
+export type ContentArchetype =
+  | "procedure"
+  | "comparison"
+  | "diagnostic"
+  | "worked_examples"
+  | "reference"
+  | "argument";
+
+export type ContentOpeningMove =
+  | "direct_answer"
+  | "before_after_contrast"
+  | "diagnostic_question"
+  | "worked_example"
+  | "counterintuitive_claim"
+  | "scenario_in_progress";
+
+export type ContentSectionRole =
+  | "direct_answer"
+  | "failure_analysis"
+  | "framework"
+  | "worked_example"
+  | "comparison"
+  | "exercise"
+  | "decision_rule"
+  | "evidence"
+  | "next_step";
+
+export type ContentSectionFormat =
+  | "prose"
+  | "steps"
+  | "examples"
+  | "comparison"
+  | "checklist"
+  | "callout";
+
+export type ContentFaqJob =
+  | "definition"
+  | "setup"
+  | "decision"
+  | "constraint"
+  | "troubleshooting";
+
+export type SignatureModuleType =
+  | "worked_example"
+  | "comparison"
+  | "checklist"
+  | "diagnostic"
+  | "scenario"
+  | "inventory"
+  | "timeline"
+  | "myth_fact";
+
+export type PageSurfaceCopy = {
+  eyebrow: string;
+  shortAnswerLabel: string;
+  contentsLabel: string;
+  sectionLabel: string;
+  faqEyebrow: string;
+  faqHeading: string;
+  relatedHeading: string;
+  finalCtaEyebrow: string;
+  finalCtaHeading: string;
+  finalCtaBody: string;
+  backToTop: string;
+};
+
+export type PageArchitecture = {
+  schemaVersion: 1;
+  intent: {
+    searcherJob: string;
+    painPointId:
+      | "blank_start"
+      | "choice_uncertainty"
+      | "context_gap"
+      | "stalled_exchange"
+      | "format_confusion"
+      | "discovery_need"
+      | "quality_repair"
+      | "product_fit_uncertainty";
+    decisionToEnable: string;
+    oneSentenceAnswer: string;
+    nonGoals: string[];
+  };
+  content: {
+    archetype: ContentArchetype;
+    thesis: string;
+    originalContribution: string;
+    tone: string;
+    openingMove: ContentOpeningMove;
+    avoidPhrases: string[];
+    sections: Array<{
+      id: string;
+      role: ContentSectionRole;
+      format: ContentSectionFormat;
+      readerQuestion: string;
+      uniqueTakeaway: string;
+    }>;
+    faqs: Array<{
+      id: string;
+      job: ContentFaqJob;
+      readerObstacle: string;
+      answerBoundary: string;
+    }>;
+    signature: {
+      id: string;
+      type: SignatureModuleType;
+      readerAction: string;
+      afterSectionId: string;
+    };
+  };
+  differentiation: {
+    against: Array<{
+      slug: string;
+      intentDelta: string;
+      answerDelta: string;
+      structureDelta: string;
+      faqDelta: string;
+      visualDelta: string;
+    }>;
+  };
+  presentation: {
+    recipeId: string;
+    rendererId:
+      | "rehearsal_slate"
+      | "nocturne_decision_grid"
+      | "product_field_manual"
+      | "editorial_argument"
+      | "specimen_catalog"
+      | "orbital_mission_log"
+      | "playful_story_workshop";
+    visualSystemId: string;
+    layoutId: string;
+    paletteId: string;
+    typographyId: string;
+    motifId: string;
+    companion: "none" | "story_companion";
+    gallery: "none";
+    surfaceCopy: PageSurfaceCopy;
+  };
+};
+
+export type SignatureModule = {
+  id: string;
+  type: SignatureModuleType;
+  title: string;
+  intro: string;
+  items: Array<{
+    label: string;
+    title: string;
+    bodyMarkdown: string;
+  }>;
+};
+
+export type NoveltyAudit = {
+  schemaVersion: 1;
+  passed: boolean;
+  corpusDigest: string;
+  nearest: Array<{
+    slug: string;
+    wholeTextCosine: number;
+    heroCosine: number;
+    maxSectionPairCosine: number;
+    maxFaqPairCosine: number;
+    matchedFaqPairs: number;
+    fiveWordShingleContainment: number;
+    repeatedSentenceCount: number;
+    repeatedSentences: string[];
+  }>;
+  internal: {
+    maxSectionPairCosine: number;
+    maxFaqPairCosine: number;
+    repeatedSentenceCount: number;
+  };
+  violations: Array<{
+    code: string;
+    detail: string;
+    slug?: string;
+    value?: number;
+    threshold?: number;
+  }>;
+};
+
 export type GeneratedPageDraft = {
+  /** Schema 2 binds content architecture and presentation to editorial review. */
+  schemaVersion?: 1 | 2;
   keyword: string;
   slug: string;
   language: "en";
@@ -224,13 +408,20 @@ export type GeneratedPageDraft = {
   heroMarkdown: string;
   primaryCta: string;
   sections: Array<{
+    id?: string;
+    role?: ContentSectionRole;
+    format?: ContentSectionFormat;
     heading: string;
     bodyMarkdown: string;
   }>;
   faqs: Array<{
+    id?: string;
+    job?: ContentFaqJob;
     question: string;
     answerMarkdown: string;
   }>;
+  architecture?: PageArchitecture;
+  signatureModule?: SignatureModule;
   factIdsUsed: string[];
   internalLinks: Array<{
     anchor: string;
@@ -241,6 +432,7 @@ export type GeneratedPageDraft = {
     passed: boolean;
     wordCount: number;
     checks: DraftQualityCheck[];
+    novelty?: NoveltyAudit;
   };
   usage: {
     inputTokens: number;
@@ -250,7 +442,7 @@ export type GeneratedPageDraft = {
 };
 
 export type PublishedSeoPage = {
-  schemaVersion: 1 | 2;
+  schemaVersion: 1 | 2 | 3;
   status: "published";
   slug: string;
   path: string;
@@ -259,7 +451,10 @@ export type PublishedSeoPage = {
   updatedAt: string;
   generatedFromReport: string;
   draftDigest?: string;
+  servedContentDigest?: string;
   pagePattern?: ContentStrategy["pagePattern"];
+  architecture?: PageArchitecture;
+  signatureModule?: SignatureModule;
   title: string;
   metaDescription: string;
   h1: string;
@@ -299,7 +494,13 @@ export type ReportPublication = {
 };
 
 export type ContentStrategy = {
+  /** Schema 2 separates reader intent, content architecture, and presentation. */
+  schemaVersion: 2;
   searcherJob: string;
+  painPointId: PageArchitecture["intent"]["painPointId"];
+  readerStateBefore: string;
+  readerOutcome: string;
+  primaryPainPoint: string;
   oneSentenceAnswer: string;
   originalContribution: string;
   pagePattern:

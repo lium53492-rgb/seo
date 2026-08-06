@@ -1,6 +1,5 @@
 import { TrackedNovelAiHomeLink } from "@/app/components/TrackedNovelAiHomeLink";
 import type { SeoPageViewProps } from "./page-family-types";
-import { StoryMotionGallery } from "./StoryMotionGallery";
 import styles from "./guide.module.css";
 
 export function TaskGuidePage({ page, relatedPages }: SeoPageViewProps) {
@@ -45,8 +44,6 @@ export function TaskGuidePage({ page, relatedPages }: SeoPageViewProps) {
           </div>
         </div>
       </section>
-
-      <StoryMotionGallery />
 
       <section className={styles.questions} aria-labelledby="guide-faq-heading">
         <div className={styles.questionHeading}><span>BACK POCKET NOTES</span><h2 id="guide-faq-heading">Questions worth checking before you begin</h2></div>

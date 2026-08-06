@@ -1,156 +1,154 @@
 # Content Pattern Library
 
-Updated: 2026-08-03
+Updated: 2026-08-06
 
-This is a reusable pattern library for the story-led voice-roleplay SEO system. It records what was learned from public pages without copying their wording, visual identity, proprietary examples, or unverified claims. Every daily page must still use the approved product-fact allowlist.
+This library records reusable answer mechanics, not reusable pages. It may
+help research and briefing, but it never selects a layout, palette, mascot, or
+set of headings. New production work is governed by
+`data/config/content-architecture.json`,
+`data/config/presentation-recipes.json`, and
+`docs/seo/content-architecture.md`.
 
-## Current growth baseline
+## Four decisions that must stay separate
 
-- Vercel Analytics showed 4 visitors, 45 page views, and a 25% bounce rate in the small visible sample.
-- A path/referrer query found direct or unlabelled traffic and Vercel-originated verification traffic, but no search-engine referrer in that window.
-- Therefore the current question is not yet "how do we optimize a proven winner?" It is "how do we create useful, indexable entry pages and earn the first real search impressions?"
-- Primary growth sequence: Google impressions -> organic entrances -> useful next-page clicks -> NovelAI CTA clicks. Bounce rate remains descriptive until the sample is materially larger.
+1. `pagePattern` names the broad search experience: task guide, experience
+   explainer, decision page, original inventory, or narrative essay.
+2. `painPointId` names the obstacle being removed. A cooldown prevents the
+   same obstacle from becoming the default topic on consecutive pages.
+3. The content architecture chooses an archetype, opening move, section jobs,
+   section formats, FAQ jobs, and a signature module. These choices determine
+   how the answer works.
+4. A registered presentation recipe chooses the visual world and renderer.
+   It must be compatible with the answer, pass its own cooldown, and contain
+   page-specific interface copy.
 
-## Intent-to-experience design matrix
+No item determines another automatically. In particular, `decision_page`
+does not mean dark UI, `task_guide` does not mean numbered cards, and
+`original_inventory` does not authorize invented product inventory.
 
-Every new brief must choose a design direction from the searcher's pain point,
-not reuse the visual treatment of the previous page. The aesthetic is a way to
-make the answer easier to scan and remember; it must never hide the H1, answer,
-approved product facts, internal links, FAQ, or CTA from the initial HTML.
+## Pain point and answer matrix
 
-| Searcher pain point | Page pattern | Design language | Signature useful module | Content layers |
-| --- | --- | --- | --- | --- |
-| “Which starting route fits me?” | `decision_page` | dark cinematic decision map or a restrained control-room interface | choice lens with clear tradeoffs and anchored routes | direct answer -> routes -> tradeoffs -> edge cases -> next step |
-| “What is this and how does it work?” | `experience_explainer` | product field manual or annotated system diagram | story -> role -> performance anatomy | definition -> visual loop -> approved product explanation -> limits -> CTA |
-| “How do I begin or get unstuck?” | `task_guide` | retro-futuristic mission briefing or practical field notebook | scene-entry kit, recovery path, or checkpoint list | answer -> first move -> steps -> mistakes/recovery -> FAQ -> CTA |
-| “What could I try for fun?” | `original_inventory` | playful zine, story deck, or discovery shelf | original scenario selector or browseable prompt deck | invitation -> choices -> original examples -> how to enter -> related discovery |
-| “Why does this format matter?” | `narrative_essay` | editorial magazine, annotated essay, or quiet literary archive | argument compass or premise map | thesis -> evidence-led chapters -> implications -> counterpoint -> FAQ -> CTA |
+| Pain point ID | Reader obstacle | Useful answer shapes | Shapes to avoid by default |
+| --- | --- | --- | --- |
+| `blank_start` | The reader cannot make the first move | procedure, worked example | generic inspiration list |
+| `choice_uncertainty` | Two or more routes appear interchangeable | comparison, diagnostic | universal ranking |
+| `context_gap` | The reader lacks the information needed to act | reference, diagnostic | broad beginner recap |
+| `stalled_exchange` | A scene or response has stopped creating a next beat | worked example, diagnostic | another setup guide |
+| `format_confusion` | The reader does not understand what the format does | reference, argument | feature-card summary |
+| `discovery_need` | The reader wants a useful set to browse | reference, original inventory | fabricated catalog |
+| `quality_repair` | The reader has an attempt but cannot improve it | diagnostic, worked example | start-from-zero tutorial |
+| `product_fit_uncertainty` | The reader cannot tell whether the experience fits | comparison, argument | unsupported product claims |
 
-### Rotation rules
+The ID is a stable production control, not a substitute for the specific
+`primaryPainPoint`, `readerStateBefore`, `readerOutcome`, or `searcherJob`.
 
-- Do not assign a visual language just because it has not been used recently.
-  First prove that it clarifies the page's particular job.
-- Consecutive pages may not repeat both the same primary pain point and the
-  same design language. A new colour alone is not a new experience.
-- “Dark”, “sci-fi”, and “product manual” are complete directions only when
-  typography, navigation, section rhythm, colours, and the signature module
-  all support that direction.
-- Keep one dominant visual world per page. Avoid mixing unrelated aesthetics
-  or turning a serious comparison into decorative spectacle.
-- Treat `original_inventory` as an exception: it still requires a real,
-  approved original-content inventory. Never invent scenarios merely to fill a
-  playful layout.
+## Content layer rules
 
-### Required brief additions
+Every section maps one-to-one to an architecture entry with:
 
-Alongside the existing mandatory page contract, every new brief records:
+- one reader question;
+- one unique takeaway;
+- a section role that is not merely its visual label; and
+- a semantic format.
 
-1. **Primary pain point:** comparison, explanation, starting/playing,
-   discovery/fun, or a sustained concept question.
-2. **Design direction:** the chosen visual world and why it helps this reader.
-3. **Signature module:** one server-rendered, useful object such as a route
-   map, annotated loop, recovery checklist, scenario selector, or argument
-   compass. It must answer part of the query, not decorate the page.
-4. **Content-layer plan:** the ordered progression from the quick answer to
-   detail, objections, and the contextual next step.
+`steps`, `checklist`, `examples`, and `comparison` sections require at least
+two Markdown blocks. The renderer turns steps into an ordered list and
+checklists/examples into unordered semantic lists; a single prose paragraph
+cannot masquerade as a structured module. Each page also needs at least three
+distinct section roles and two distinct FAQ jobs.
 
-The editorial review verifies that these four additions are distinct from the
-nearest published page and that the module remains meaningful with JavaScript
-disabled.
+The signature module is part of the answer. Its ID is single-page, its type
+has a cooldown, and its placement is bound to a real section ID. Runtime
+semantics vary by type: comparison/diagnostic/myth-fact modules use definition
+groups, inventory/checklist modules use lists, and timeline/worked-example/
+scenario modules use ordered sequences.
 
-## Reusable patterns observed
+## Reusable answer mechanics
 
-### 1. Task-completion guide
+### Task completion
 
-Reference: [RPDATE: How to Start an AI Roleplay](https://rpdate.com/en/blog/how-to-start-ai-roleplay)
+- Give the direct answer before background.
+- Show the smallest successful action.
+- Include a failure diagnosis and a targeted repair.
+- End with a next step that follows from the completed task.
 
-Useful pattern:
+Good for a specific first move or repair job. It is not permission to repeat
+the same four headings, three steps, or FAQ wording.
 
-- Answer one concrete problem in the title and opening paragraph.
-- Show a weak example beside a stronger example.
-- Give a small framework the reader can apply immediately.
-- Include failure recovery, not only ideal steps.
-- State how the advice was tested and link to the next relevant guide.
+### Decision support
 
-Use for: first-scene guides, role-selection checklists, scene-opening mistakes, and story-entry tutorials.
+- Define the decision and the evidence that changes it.
+- Compare tradeoffs without declaring an unsupported universal winner.
+- Include boundary cases.
+- Produce a decision rule the reader can apply.
 
-Do not copy: its examples, taxonomy, editorial claims, or product-specific assertions.
+Good for route or fit uncertainty. A different keyword spelling is not a new
+decision.
 
-### 2. Show the experience before explaining it
+### Worked example
 
-References: [Arepee](https://www.arepee.com/) and [Interactable Stories](https://interactablestories.com/)
+- Use original, non-infringing material.
+- Annotate why each move works.
+- Contrast it with a failure mode.
+- Transfer the lesson to a second situation without repeating the example.
 
-Useful pattern:
+Good when the contribution is application rather than summary.
 
-- The first screen presents the actual loop: story or scene -> role or choice -> participation.
-- A visible scene, role card, decision, or product-state preview reduces abstraction.
-- A short numbered path appears before the long feature explanation.
-- The CTA matches what the visitor just saw rather than switching to a different promise.
+### Reference or inventory
 
-Use for: product-intent landing pages and explanatory pages where "voice roleplay" is unfamiliar.
+- Define the inclusion rule before listing items.
+- Give each item a distinct reader use.
+- Make the set browseable and crawlable.
+- Do not imply product availability or an owned catalog without evidence.
 
-Do not copy: third-party screenshots, fictional characters, prices, product capabilities, or interface styling.
+Good only when there is a genuine set to expose.
 
-### 3. Searchable original-content inventory
+### Sustained argument
 
-References: [AI Dungeon content discovery documentation](https://help.aidungeon.com/faq/can-i-search-for-content-on-ai-dungeon) and [Roleloom](https://www.roleloom.com/)
+- State a falsifiable thesis.
+- Build evidence-led chapters rather than steps.
+- Include a real counterpoint and evidence boundary.
+- Close by explaining what the argument enables the reader to decide.
 
-Useful pattern:
+Use `narrative_essay` only when the question needs a reading-led hierarchy.
 
-- An original scenario, character, or category can become a distinct discovery surface when it has genuine content value.
-- Descriptive titles, summaries, categories, and related entries make an inventory easier to browse and crawl.
-- Original scenarios avoid dependence on protected franchises and create a compounding first-party asset base.
+## Product and evidence boundary
 
-Use later: only when there is a real approved original-story inventory to expose. Do not create fake scenario pages or imply a library that has not been approved.
+- Use only approved product fact IDs.
+- Keep public-web demand proxies separate from observed Search Console data.
+- Never copy third-party examples, wording, interface identity, characters,
+  fictional worlds, prices, or unsupported capabilities.
+- A source can support search demand or an answer pattern without proving a
+  product claim.
+- Related links must be explicit, contextual, and crawlable. The renderer
+  does not manufacture a generic related-page block.
 
-Do not copy: third-party characters, comparisons, usage statistics, product claims, or keyword-stuffed sections.
+## Rotation and novelty gates
 
-### 4. People-first evidence and a clear next step
+The builder and publisher compare the draft with the complete published
+corpus. They independently gate title, meta description, H1, hero, section
+headings, section bodies, FAQ questions, FAQ answers, surface copy, long
+sentences, five-word shingles, structure fingerprints, pain point, opening
+move, archetype, signature ID/type, recipe, visual system, layout, and
+palette. The draft also has to explain concrete intent, answer, structure,
+FAQ, and visual differences from the nearest published pages.
 
-References: [Google people-first content guidance](https://developers.google.com/search/docs/fundamentals/creating-helpful-content) and [Google link best practices](https://developers.google.com/search/docs/crawling-indexing/links-crawlable)
+A palette change cannot clear a content gate. A wording change cannot clear a
+structure or presentation cooldown. Missing policy thresholds fail closed.
 
-Useful pattern:
+## Optional decoration
 
-- A page should leave the reader able to complete the task without searching again for the missing answer.
-- It should add something original rather than summarize several ranking pages.
-- Sources, limitations, and first-hand or product-approved evidence should be visible where useful.
-- Related pages must use ordinary crawlable links with concise, descriptive anchors.
+Decoration is never inherited from a page family. Every schema-3 recipe
+declares `companion` and `gallery` explicitly. The current gallery contract is
+`none` until a content-driven gallery schema exists. The story companion is
+allowed only by an explicit recipe; one legacy route retains it through an
+explicit slug policy so legacy pages do not all receive the same pet.
 
-## Mandatory page contract
+## Candidate jobs are hypotheses
 
-Before a new page can be drafted, its brief must name all seven items:
-
-1. **Searcher job:** the exact task or decision the visitor is trying to complete.
-2. **One-sentence answer:** the useful answer that appears in the initial rendered HTML.
-3. **Original contribution:** a checklist, decision rule, worked original scene, mistake/recovery pattern, or approved product explanation that is not a rewrite of source pages.
-4. **Page pattern:** `task_guide`, `experience_explainer`, `decision_page`, `narrative_essay`, or `original_inventory`. Use `narrative_essay` only when a concept needs a sustained argument and a reading-led hierarchy rather than a task checklist.
-5. **Product bridge:** why the answer naturally leads to story-first voice roleplay and the NovelAI CTA.
-6. **Contextual next step:** at least one relevant published first-party page when one truly helps; use a crawlable descriptive anchor.
-7. **Evidence boundary:** approved product facts, public sources, and explicit limitations. No unverified capabilities.
-
-A page is blocked when it targets only a keyword variation, repeats the same argument as an existing page, or cannot name an original contribution.
-
-## Nonlinear content loop
-
-Nonlinear growth does not mean publishing more near-duplicate pages. It means each good page increases the value and discoverability of other pages:
-
-1. Research a searcher job, not a token string.
-2. Publish one useful page with an original reusable module.
-3. Link it contextually into the existing topic graph.
-4. Turn the useful module into a shareable social post, short demo, or community answer without duplicating the full page.
-5. Observe Google impressions and entrances for 7, 14, and 28 days.
-6. Improve a winner from real query/page evidence, then create one adjacent page only when it answers a different next question.
-
-The compounding asset is the connected knowledge cluster plus the growing set of original examples and decision tools, not the raw URL count.
-
-## Candidate content jobs for future daily research
-
-These are research hypotheses, not publication promises:
-
-- How to start AI roleplay from an existing story: task guide with a five-part scene-entry checklist.
-- AI roleplay first-scene mistakes: diagnostic guide with weak/strong original examples and recovery moves.
-- How to choose a role in an interactive story: decision page based on motive, knowledge, and conflict position.
-- Story prompt versus existing plot for roleplay: comparison page that explains when each starting mode is useful without inventing product features.
-- Voice roleplay scene ideas: a small set of fully original, non-infringing scene structures connected to the story -> role -> performance loop.
-
-The daily research process may reject any of these if current evidence, duplication checks, product fit, or the approved facts do not support it.
+Possible research directions include first-response repair, choosing a role
+from motive/knowledge/conflict position, comparing prompt creation with
+supplied story context, or explaining the story-role-performance loop. The
+daily process must reject any direction that lacks current evidence, repeats
+an owned intent, violates the cold-start release gate, or cannot produce a
+concrete original contribution.

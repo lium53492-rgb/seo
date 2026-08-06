@@ -1,6 +1,5 @@
 import { TrackedNovelAiHomeLink } from "@/app/components/TrackedNovelAiHomeLink";
 import type { SeoPageViewProps } from "./page-family-types";
-import { StoryMotionGallery } from "./StoryMotionGallery";
 import { StageDecisionPage } from "./StageDecisionPage";
 import styles from "./decision.module.css";
 
@@ -44,8 +43,6 @@ export function DecisionMapPage({ page, relatedPages }: SeoPageViewProps) {
           {page.sections.map((section, index) => <article key={section.heading}><div className={styles.marker}>{String(index + 1).padStart(2, "0")}</div><div><h3>{section.heading}</h3><p>{section.bodyMarkdown}</p></div></article>)}
         </div>
       </section>
-
-      <StoryMotionGallery />
 
       <section className={styles.edgeCases} aria-labelledby="decision-faq-heading">
         <div><span>EDGE CASES</span><h2 id="decision-faq-heading">What if the route is not obvious?</h2></div>

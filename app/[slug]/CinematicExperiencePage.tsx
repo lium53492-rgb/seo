@@ -1,6 +1,5 @@
 import { TrackedNovelAiHomeLink } from "@/app/components/TrackedNovelAiHomeLink";
 import type { SeoPageViewProps } from "./page-family-types";
-import { StoryMotionGallery } from "./StoryMotionGallery";
 import styles from "./cinematic.module.css";
 
 export function CinematicExperiencePage({ page, relatedPages }: SeoPageViewProps) {
@@ -56,8 +55,6 @@ export function CinematicExperiencePage({ page, relatedPages }: SeoPageViewProps
           ))}
         </div>
       </section>
-
-      <StoryMotionGallery />
 
       <section className={styles.questions} aria-labelledby="cinematic-faq-heading">
         <div><p className={styles.eyebrow}>Before the first line</p><h2 id="cinematic-faq-heading">Questions from the wings</h2></div>

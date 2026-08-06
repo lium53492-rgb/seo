@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "requiredDraftSchemaVersion": 2,
+  "recentComparisonPages": 4,
+  "minimumDifferentiationPages": 2,
+  "archetypeCooldownPages": 2,
+  "openingMoveCooldownPages": 2,
+  "painPointCooldownPages": 2,
+  "signatureTypeCooldownPages": 2,
+  "presentationCooldownPages": 3,
+  "minimumDistinctSectionRoles": 3,
+  "minimumDistinctFaqJobs": 2,
+  "minimumSectionBodyWords": 45,
+  "minimumFaqAnswerWords": 18,
+  "minimumSignatureItemWords": 12,
+  "painPointIds": [
+    "blank_start",
+    "choice_uncertainty",
+    "context_gap",
+    "stalled_exchange",
+    "format_confusion",
+    "discovery_need",
+    "quality_repair",
+    "product_fit_uncertainty"
+  ],
+  "archetypes": [
+    "procedure",
+    "comparison",
+    "diagnostic",
+    "worked_examples",
+    "reference",
+    "argument"
+  ],
+  "openingMoves": [
+    "direct_answer",
+    "before_after_contrast",
+    "diagnostic_question",
+    "worked_example",
+    "counterintuitive_claim",
+    "scenario_in_progress"
+  ],
+  "sectionRoles": [
+    "direct_answer",
+    "failure_analysis",
+    "framework",
+    "worked_example",
+    "comparison",
+    "exercise",
+    "decision_rule",
+    "evidence",
+    "next_step"
+  ],
+  "sectionFormats": [
+    "prose",
+    "steps",
+    "examples",
+    "comparison",
+    "checklist",
+    "callout"
+  ],
+  "faqJobs": [
+    "definition",
+    "setup",
+    "decision",
+    "constraint",
+    "troubleshooting"
+  ],
+  "signatureTypes": [
+    "worked_example",
+    "comparison",
+    "checklist",
+    "diagnostic",
+    "scenario",
+    "inventory",
+    "timeline",
+    "myth_fact"
+  ],
+  "requiredSurfaceCopyFields": [
+    "eyebrow",
+    "shortAnswerLabel",
+    "contentsLabel",
+    "sectionLabel",
+    "faqEyebrow",
+    "faqHeading",
+    "relatedHeading",
+    "finalCtaEyebrow",
+    "finalCtaHeading",
+    "finalCtaBody",
+    "backToTop"
+  ],
+  "novelty": {
+    "maxWholeTextCosine": 0.6,
+    "maxTitleCosine": 0.8,
+    "maxMetaDescriptionCosine": 0.8,
+    "maxH1Cosine": 0.8,
+    "maxHeroCosine": 0.65,
+    "maxSectionHeadingCosine": 0.82,
+    "maxSectionPairCosine": 0.72,
+    "maxFaqQuestionCosine": 0.82,
+    "maxFaqPairCosine": 0.72,
+    "maxSurfaceCopyCosine": 0.9,
+    "maxFiveWordShingleContainment": 0.22,
+    "maxInternalSectionCosine": 0.72,
+    "maxInternalFaqCosine": 0.72,
+    "maxMatchedFaqPairs": 1,
+    "maxRepeatedSentences": 0,
+    "minimumRepeatedSentenceWords": 10
+  },
+  "requiredReviewChecks": [
+    "content-distinctness",
+    "presentation-distinctness",
+    "signature-module",
+    "rendered-preview"
+  ]
+}

@@ -2,6 +2,12 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, writeFile
 import { createHash } from "node:crypto";
 import { dirname, relative, resolve } from "node:path";
 import { scoreResearchCandidate } from "./lib/seo-policy.mjs";
+import { validatePageArchitecture, validateSeoArchitectureBridge } from "../lib/seo/content-contract.mjs";
+import {
+  analyzeContentNovelty,
+  visiblePageText,
+} from "../lib/seo/content-similarity.mjs";
+import { publishedArchitectureHistoryFromReports } from "../lib/seo/content-history.mjs";
 import {
   evaluateConsolidationEvidence,
   evaluateGrowthFeedbackGate,
@@ -15,7 +21,11 @@ const readJson = (path) => JSON.parse(readFileSync(resolve(path), "utf8"));
 const input = readJson(inputPath);
 const policy = readJson("data/config/seo-policy.json");
 const factCatalog = readJson("data/config/product-facts.json");
+const architecturePolicy = readJson("data/config/content-architecture.json");
+const presentationCatalog = readJson("data/config/presentation-recipes.json");
 const date = String(input.date || "");
+
+validateSeoArchitectureBridge(policy, architecturePolicy);
 
 if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error("date must be YYYY-MM-DD");
 if (Number(input.policyVersion) !== policy.policyVersion) {
@@ -32,8 +42,17 @@ function shanghaiCalendarDate(value) {
 }
 
 const contentStrategy = input.contentStrategy || null;
+if (contentStrategy?.schemaVersion !== 2) {
+  throw new Error("Content strategy must use schemaVersion 2");
+}
+if (!architecturePolicy.painPointIds.includes(contentStrategy.painPointId)) {
+  throw new Error("Content strategy needs an approved painPointId");
+}
 const requiredStrategyFields = [
   "searcherJob",
+  "readerStateBefore",
+  "readerOutcome",
+  "primaryPainPoint",
   "oneSentenceAnswer",
   "originalContribution",
   "productBridge",
@@ -348,23 +367,6 @@ for (const candidate of input.candidates) {
   }
 }
 
-function meaningfulWords(value) {
-  const stopWords = new Set(["a", "an", "and", "are", "as", "at", "be", "by", "for", "from", "how", "in", "inside", "is", "it", "of", "on", "or", "story", "that", "the", "this", "to", "voice", "what", "when", "with", "you", "your"]);
-  return new Set(String(value || "").toLowerCase().match(/[a-z0-9][a-z0-9'-]*/g)?.filter((word) => word.length > 2 && !stopWords.has(word)) ?? []);
-}
-
-function pageText(page) {
-  return [page.h1, page.heroMarkdown, ...(Array.isArray(page.sections) ? page.sections.flatMap((section) => [section.heading, section.bodyMarkdown]) : [])].join(" ");
-}
-
-function similarity(left, right) {
-  const leftWords = meaningfulWords(left);
-  const rightWords = meaningfulWords(right);
-  if (!leftWords.size || !rightWords.size) return 0;
-  const intersection = [...leftWords].filter((word) => rightWords.has(word)).length;
-  return intersection / new Set([...leftWords, ...rightWords]).size;
-}
-
 function existingPages() {
   const directory = resolve("data/pages");
   if (!existsSync(directory)) return [];
@@ -372,6 +374,14 @@ function existingPages() {
     .filter((name) => name.endsWith(".json"))
     .map((name) => readJson(resolve(directory, name)))
     .filter((page) => page.status === "published");
+}
+
+function existingReports() {
+  const directory = resolve("data/reports");
+  if (!existsSync(directory)) return [];
+  return readdirSync(directory)
+    .filter((name) => name.endsWith(".json"))
+    .map((name) => readJson(resolve(directory, name)));
 }
 
 function readPortfolioInput() {
@@ -417,7 +427,8 @@ function validateDraft(rawDraft, keyword) {
     throw new Error("Draft generatedAt must belong to the report date and not follow report generation");
   }
   const factIds = Array.isArray(rawDraft.factIdsUsed) ? rawDraft.factIdsUsed : [];
-  if (factIds.length < 2 || factIds.some((id) => !approvedFactIds.has(id))) {
+  if (new Set(factIds).size < 2 || new Set(factIds).size !== factIds.length ||
+    factIds.some((id) => !approvedFactIds.has(id))) {
     throw new Error("Draft uses an unapproved or missing product fact ID");
   }
   const sections = Array.isArray(rawDraft.sections) ? rawDraft.sections : [];
@@ -430,14 +441,11 @@ function validateDraft(rawDraft, keyword) {
       throw new Error(`Draft needs a specific ${field}`);
     }
   }
-  const publishableText = [
-    rawDraft.title,
-    rawDraft.metaDescription,
-    rawDraft.h1,
-    rawDraft.heroMarkdown,
-    ...sections.flatMap((section) => [section.heading, section.bodyMarkdown]),
-    ...faqs.flatMap((faq) => [faq.question, faq.answerMarkdown]),
-  ].join(" ");
+  if (sections.some((section) => typeof section?.heading !== "string" || typeof section?.bodyMarkdown !== "string") ||
+    faqs.some((faq) => typeof faq?.question !== "string" || typeof faq?.answerMarkdown !== "string")) {
+    throw new Error("Every draft section and FAQ needs visible text");
+  }
+  const publishableText = visiblePageText(rawDraft);
   const failedClaim = forbiddenClaims.find((pattern) => pattern.test(publishableText));
   if (failedClaim) throw new Error(`Draft contains an unsupported product claim: ${failedClaim}`);
   const wordCount = (publishableText.match(/[A-Za-z0-9][A-Za-z0-9']*/g) ?? []).length;
@@ -1077,6 +1085,7 @@ function validatePortfolioDecision(rawDecision, publishedPages) {
 }
 
 const pages = existingPages();
+const architectureHistory = publishedArchitectureHistoryFromReports(existingReports());
 const preparedCandidateInputs = input.candidates.map((candidate) => {
   const keyword = String(candidate.keyword || "").trim().toLowerCase();
   const decisionEvidence = candidate.decisionEvidence || {};
@@ -1164,21 +1173,58 @@ const preparedDrafts = rawDrafts.map((rawDraft, index) => {
   if (sameSlug && input.publicationMode !== "update" && sameSlug.generatedFromReport !== `seo-${date}`) {
     throw new Error(`Page /${pageSlug} already exists. Research a new opportunity or use publicationMode update.`);
   }
-  const allowedInternalHrefs = new Set(["/", ...pages.map((page) => page.path)]);
+  const contextualPages = pages.filter((page) => page.slug !== pageSlug);
+  const allowedInternalHrefs = new Set(["/", ...contextualPages.map((page) => page.path)]);
+  const internalHrefs = (draft.internalLinks || []).map((link) => link.href);
+  if (new Set(internalHrefs).size !== internalHrefs.length) {
+    throw new Error("Draft internal link targets must be unique");
+  }
   const invalidInternalLink = (draft.internalLinks || []).find((link) => !allowedInternalHrefs.has(link.href));
   if (invalidInternalLink) throw new Error(`Internal link target is not a published route: ${invalidInternalLink.href}`);
-  if (pages.length > 0 && !(draft.internalLinks || []).some((link) => link.href !== "/")) {
+  if (contextualPages.length > 0 && !(draft.internalLinks || []).some((link) => link.href !== "/")) {
     throw new Error("The new page needs at least one contextual link to a published first-party page");
   }
-  const nearest = pages
-    .filter((page) => page.slug !== pageSlug)
-    .map((page) => ({ slug: page.slug, score: similarity(pageText(page), pageText(draft)) }))
-    .sort((left, right) => right.score - left.score)[0];
-  if (nearest?.score >= policy.content.maxSimilarity) {
-    throw new Error(`Draft is too similar to /${nearest.slug} (${Math.round(nearest.score * 100)}%).`);
+  const preparedDraft = { ...draft, slug: `/${pageSlug}` };
+  const comparisonPages = pages.filter((page) => page.slug !== pageSlug);
+  validatePageArchitecture({
+    draft: preparedDraft,
+    contentStrategy,
+    candidate: opportunity,
+    pages: comparisonPages,
+    architecturePolicy,
+    presentationCatalog,
+  });
+  const novelty = analyzeContentNovelty({
+    draft: preparedDraft,
+    pages,
+    architectureHistory,
+    architecturePolicy,
+    presentationCatalog,
+    allowedPhrases: factCatalog.facts.map((fact) => fact.statement),
+  });
+  if (!novelty.passed) {
+    const first = novelty.violations[0];
+    throw new Error(`Content distinctness gate failed [${first.code}]: ${first.detail}`);
   }
+  const architectureChecks = [
+    { id: "content-contract", label: "Content layers match the reviewed architecture", passed: true, detail: `${preparedDraft.architecture.content.archetype}; ${preparedDraft.sections.length} mapped sections` },
+    { id: "content-distinctness", label: "Content is distinct from published pages", passed: true, detail: `${novelty.nearest.length} published comparisons; no text or structure violations` },
+    { id: "presentation-distinctness", label: "Presentation recipe passed its reuse policy", passed: true, detail: preparedDraft.architecture.presentation.recipeId },
+    { id: "optional-decoration", label: "Gallery and companion are explicit", passed: true, detail: `gallery=${preparedDraft.architecture.presentation.gallery}; companion=${preparedDraft.architecture.presentation.companion}` },
+  ];
+  const architectureCheckIds = new Set(architectureChecks.map((check) => check.id));
+  preparedDraft.quality = {
+    ...preparedDraft.quality,
+    passed: preparedDraft.quality.passed && novelty.passed,
+    checks: [
+      ...preparedDraft.quality.checks.filter((check) => !architectureCheckIds.has(check.id)),
+      ...architectureChecks,
+    ],
+    novelty,
+  };
+  preparedDraft.status = preparedDraft.quality.passed ? "ready_for_review" : "blocked";
   return {
-    draft: { ...draft, slug: `/${pageSlug}` },
+    draft: preparedDraft,
     opportunity,
     pageSlug,
   };
@@ -1259,7 +1305,7 @@ const reportId = `seo-${date}`;
 const publication = !draft
   ? { status: "not_requested", reason: "No draft was supplied for editorial review." }
   : draft.quality.passed
-    ? { status: "ready_for_review", slug: preparedDrafts[0].pageSlug, path: `/${preparedDrafts[0].pageSlug}`, draftDigest: sha256(draft), reason: "Automated gates passed. A separate editorial approval record bound to this draft digest is required before publication." }
+    ? { status: "ready_for_review", slug: preparedDrafts[0].pageSlug, path: `/${preparedDrafts[0].pageSlug}`, draftDigest: sha256({ draft, contentStrategy }), reason: "Automated gates passed. A separate editorial approval record bound to the content and presentation contract is required before publication." }
     : { status: "blocked", reason: "Draft did not pass all automated quality gates." };
 const phrase = titleCase(selectedOpportunity.keyword);
 const pageType = /how|what|ideas|guide/.test(selectedOpportunity.keyword) ? "guide" : /romance|fantasy|mystery|school|life/.test(selectedOpportunity.keyword) ? "scenario" : "product";
@@ -1311,13 +1357,13 @@ const report = {
       : `/${slugify(selectedOpportunity.keyword)}`,
     pageType,
     searchIntent: selectedOpportunity.intent,
-    title: `${phrase} | Enter a Story and Choose a Role`,
-    description: `Explore ${selectedOpportunity.keyword} through an existing story plot and an available role.`,
-    h1: phrase,
-    primaryCta: "Explore stories on NovelAI",
-    sections: ["Answer the searcher job", "Show the story entry path", "Explain role selection", "Resolve the decision barrier", "Offer a measured next step"],
+    title: draft?.title ?? `${phrase} | Enter a Story and Choose a Role`,
+    description: draft?.metaDescription ?? `Explore ${selectedOpportunity.keyword} through an existing story plot and an available role.`,
+    h1: draft?.h1 ?? phrase,
+    primaryCta: draft?.primaryCta ?? "Explore stories on NovelAI",
+    sections: draft?.architecture?.content?.sections?.map((section) => `${section.role}: ${section.uniqueTakeaway}`) ?? ["Define a distinct content architecture before drafting"],
     evidenceRequired: ["Public evidence for the intent", "Approved product facts", "Original non-infringing material", "Verified CTA and attribution route"],
-    qualityGate: ["One intent and one H1", "Trial and revenue gates passed", "No unlicensed third-party IP", "Independent editorial review", "Render, link, and index checks"],
+    qualityGate: ["One intent and one H1", "Content and presentation contracts passed", "No unlicensed third-party IP", "Independent editorial review", "Render, link, and index checks"],
   },
   draft,
   drafts: preparedDrafts.map((prepared) => prepared.draft),
@@ -1338,7 +1384,7 @@ const report = {
     "Product fit, trial intent, revenue intent, specificity, originality, IP risk, and cannibalization risk are derived from policy-versioned evidence signals rather than AI-supplied scores.",
     "Demand and difficulty remain transparent 0-100 research proxies and require candidate-level rationales and evidence references unless an evidence record explicitly names an observed provider metric.",
     "Google Trends relative interest is a normalized 0-100 signal for the selected geography and period, not search volume; unavailable access remains explicit.",
-    "Every locally unconsumed workbench instruction is preserved verbatim with an adopted or rejected decision before it may be marked consumed.",
+    "Every locally unconsumed editorial instruction is preserved verbatim with an adopted or rejected decision before it may be marked consumed.",
     "Missing Search Console, UV, trial, payment, or revenue data stays unavailable rather than being converted to zero.",
     "The report builder never publishes a page; scripts/publish-reviewed-page.mjs requires a separate approval record.",
   ],

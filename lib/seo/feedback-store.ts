@@ -148,7 +148,7 @@ function isFeedbackEntry(value: unknown): value is WorkbenchFeedbackEntry {
     Number.isFinite(Date.parse(entry.createdAt)) &&
     typeof entry.message === "string" &&
     entry.message.trim().length > 0 &&
-    entry.source === "workbench" &&
+    (entry.source === "workbench" || entry.source === "codex_chat") &&
     entry.kind === "content_guidance" &&
     consumptionFieldsAreValid
   );

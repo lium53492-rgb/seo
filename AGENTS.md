@@ -11,9 +11,10 @@ Resolve conflicts in this order:
 1. The current user request and any active automation instructions.
 2. This file and the current working tree, including `git status` and current
    routes/components.
-3. `data/config/seo-policy.json`, `data/config/product-facts.json`,
-   `docs/seo/content-production-sop.md`, `docs/seo/free-research-robot.md`,
-   and `data/seo-feedback/pending.md`.
+3. `data/config/seo-policy.json`, `data/config/content-architecture.json`,
+   `data/config/presentation-recipes.json`, `data/config/product-facts.json`,
+   `docs/seo/content-architecture.md`, `docs/seo/content-production-sop.md`,
+   `docs/seo/free-research-robot.md`, and `data/seo-feedback/pending.md`.
 4. Unconsumed files in `data/seo-feedback/inbox/`, then current
    `data/pages/`, research reports, and the active seven-day plan.
 5. Older READMEs, workflows, briefs, tracker rows, and historic plans only for
@@ -64,6 +65,18 @@ Before a new page or update:
 
 - One distinct search intent and one H1 per page. Select a new answer, not a
   near-duplicate keyword variant.
+- New work must use content-strategy schema 2 and draft schema 2. Define the
+  reader state, outcome, stable `painPointId`, specific pain point, answer archetype, opening move, ordered
+  section roles/formats, FAQ jobs, signature module, nearest-page differences,
+  and presentation recipe before writing prose. The builder must reject text,
+  structure, signature, or recipe reuse that violates the architecture policy.
+- `pagePattern` describes a content family only. It must not choose a visual
+  skin. All reader-visible template copy belongs to the reviewed draft, and
+  gallery/companion behavior is explicit per recipe with no global default.
+- Structured `steps`, `checklist`, `examples`, and `comparison` sections need
+  at least two semantic Markdown blocks. Do not label one prose paragraph as a
+  structured format. Fact IDs must be unique, and every visible architecture
+  field is subject to product-claim, word-count, and novelty gates.
 - New candidates must use policy version 4. Each candidate must cite at least
   two directly supporting evidence records from two independent domains and
   provide the required decision-evidence signals and rationales. The builder,
@@ -90,7 +103,8 @@ Before a new page or update:
   another task, stop and report the conflict instead of overwriting them.
 - The research builder may only create a `ready_for_review` report. A separate
   identified editorial approval in `data/reviews/` is mandatory before the
-  publisher writes a schema-version 2 page.
+  publisher writes a schema-version 3 page. The approval digest binds both the
+  draft and content strategy, including architecture and presentation.
 - Run the research builder, publisher, and `npm.cmd run verify` before release.
   Generate, render, and visually inspect the daily PDF when required.
 - A daily SEO commit may contain only that day's growth snapshot, research,

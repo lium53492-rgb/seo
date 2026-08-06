@@ -4,7 +4,7 @@ This is the active zero-additional-API-cost production protocol. It uses public 
 
 ## Preflight
 
-1. Read `AGENTS.md`, `data/config/seo-policy.json`, `data/config/product-facts.json`, this file, the content-production SOP, pending feedback, and every unconsumed feedback item.
+1. Read `AGENTS.md`, `data/config/seo-policy.json`, `data/config/content-architecture.json`, `data/config/presentation-recipes.json`, `data/config/product-facts.json`, `docs/seo/content-architecture.md`, this file, the content-production SOP, pending feedback, and every unconsumed feedback item.
 2. Inspect `git status`, all current published pages, the current-day growth/research/report/review/page/PDF paths, and the latest report.
 3. Stop rather than overwrite another task's same-day artifact or unrelated local work.
 4. Check the complete commercial funnel only through the private API and in
@@ -32,9 +32,9 @@ The builder derives `productFit`, `trialIntent`, `revenueIntent`, `intentSpecifi
 
 ## Content strategy and funnel
 
-The research input uses `policyVersion: 4` and includes:
+The research input uses `policyVersion: 4`, content-strategy schema 2, and includes:
 
-- `searcherJob`, `oneSentenceAnswer`, and `originalContribution`;
+- `searcherJob`, approved `painPointId`, `readerStateBefore`, `readerOutcome`, `primaryPainPoint`, `oneSentenceAnswer`, and `originalContribution`;
 - one approved `pagePattern`;
 - `productBridge`, `contextualNextStep`, and `evidenceBoundary`;
 - `conversionHypothesis`, `primaryConversion`, and `measurementPlan`;
@@ -47,7 +47,7 @@ The research input uses `policyVersion: 4` and includes:
   readable only as migration input and are projected to schema v2 before a
   report is written.
 
-The English draft remains 600-1,000 words, has at least four sections and three FAQs, records its generation model and timestamp, uses only approved fact IDs, contains one real CTA, avoids prohibited claims and third-party IP, and links a relevant published first-party page when one exists. The builder owns the final route slug and binds it to the reviewed draft digest.
+The English draft remains 600-1,000 words, has at least four sections and three FAQs, records its generation model and timestamp, uses only approved fact IDs, contains one real CTA, avoids prohibited claims and third-party IP, and links a relevant published first-party page when one exists. New drafts use schema 2 and include the complete architecture, mapped section/FAQ layers, signature module, resolved presentation contract, and page-specific surface copy. The builder owns the final route slug and binds both the draft and content strategy to the reviewed digest.
 
 A `consolidate` decision is evidence-gated and does not itself create a
 redirect. It must name distinct published `sourceSlug` and `targetSlug` values,
@@ -78,11 +78,13 @@ migration, but the builder never copies its private outcome fields into the
 daily report. The research command writes a review-required report and cannot
 write `data/pages`. Before publication, an independent editor creates a review
 artifact with an identified reviewer, timestamp, substantive notes, and passed
-checks for search intent, product truth, conversion path, and source accuracy.
+checks for search intent, product truth, conversion path, source accuracy,
+content distinctness, presentation distinctness, the signature module, and the
+rendered preview.
 A Codex review must identify itself as `codex_editor`; it must never be labelled
 human.
 
-The publisher enforces one page per report/day, writes schema-version 2 page data, attaches the approval record, and updates the report to `published`. Existing schema-version 1 pages remain readable but all new pages use version 2.
+The publisher enforces one page per report/day, reruns the novelty and recipe gates against the latest page corpus, writes schema-version 3 page data, attaches the approval record, and updates the report to `published`. Existing schema-version 1/2 pages remain readable through the isolated legacy path; all new pages use version 3.
 
 ## Release verification
 

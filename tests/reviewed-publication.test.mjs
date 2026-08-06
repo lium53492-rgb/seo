@@ -111,13 +111,23 @@ test("report generation cannot publish before a separate approval artifact", asy
       },
     }));
     const supports = [...keywords];
-    const paragraph = Array.from({ length: 5 }, (_, index) => `Step ${index + 1} keeps the reader inside an original plot, connects the selected role to a clear scene, and explains the next decision without inventing product capabilities or borrowing a familiar fictional world.`).join(" ");
+    const sectionBodies = [
+      "A useful entry decision begins by separating two very different jobs. A blank-prompt route asks the reader to supply a premise before anything can happen. A story-led route begins with an existing plot, so the first decision is whether that supplied situation already creates a reason to participate. Read the opening for one unresolved pressure, one available perspective, and one immediate consequence. That comparison prevents a generic greeting from standing in for a real choice. It also keeps the explanation inside approved product facts: the page can describe an existing story and role selection without promising a specific world, character, platform, price, response speed, or technical voice behavior.",
+      "Compare the routes with a small evidence grid rather than a feature checklist. In the first column, write what context the reader must invent. In the second, write what context is already present.\n\nThen note where the point of view comes from and what the reader can decide next. The story-led side should show that an available role narrows the perspective, while the blank side leaves that work open. Neither route is declared universally better. The grid exists to help a trial-ready searcher recognize which starting condition matches the action they want to take now, using original language and no borrowed fictional setting.",
+      "Use a three-question decision rule after the comparison. First, do you want to build the premise or respond to one that is already moving?\n\nSecond, do you want to invent a speaker or choose from the roles made available by the story?\n\nThird, can you name one scene-level action you would take after that choice? Three clear answers create a reasoned next step; uncertainty on any answer tells the reader what to inspect again. This rule is deliberately narrower than a broad beginner tutorial because it resolves one route choice before the reader reaches the opening scene.",
+      "When the route is clear, carry only the decision forward. Open the attributed destination intentionally in a new tab, inspect an existing premise, and choose an available role if the format fits. The page does not start a session, guarantee an outcome, or claim that every imagined scenario exists. Its job is to replace a vague product visit with a qualified one: the reader understands the story-led boundary, knows which perspective they would take, and can measure the next action through the approved redirect and downstream attribution chain without exposing protected commercial data in the public report.",
+    ];
     const input = {
       policyVersion: 4,
       date: "2099-01-01",
       generatedAt: "2099-01-01T09:15:00+08:00",
       contentStrategy: {
-        searcherJob: "Find an AI roleplay story that can be entered immediately through a concrete role.",
+        schemaVersion: 2,
+        searcherJob: candidates[0].decisionEvidence.searcherJob,
+        painPointId: "choice_uncertainty",
+        readerStateBefore: "The reader wants to participate now but has not decided whether to invent a prompt or enter an existing story.",
+        readerOutcome: "The reader can compare the two starting routes, choose one deliberately, and explain the next scene-level action.",
+        primaryPainPoint: "The reader is close to trying a product but cannot tell which starting route removes the right kind of setup work.",
         oneSentenceAnswer: "Begin with an original plot, choose an available role, and enter the opening scene.",
         originalContribution: "A decision sequence that maps search intent to plot, role choice, and a measured next step.",
         pagePattern: "decision_page",
@@ -205,6 +215,7 @@ test("report generation cannot publish before a separate approval artifact", asy
         entries: [],
       },
       draft: {
+        schemaVersion: 2,
         keyword: keywords[0],
         slug: "/play-an-ai-roleplay-story",
         model: "codex-test",
@@ -216,8 +227,88 @@ test("report generation cannot publish before a separate approval artifact", asy
         h1: "Play an AI Roleplay Story",
         heroMarkdown: "Start with an original story already in motion, choose an available role, and decide whether this story-led format matches the way you want to participate.",
         primaryCta: "Explore stories on NovelAI",
-        sections: Array.from({ length: 4 }, (_, index) => ({ heading: `Decision step ${index + 1}`, bodyMarkdown: paragraph })),
-        faqs: Array.from({ length: 3 }, (_, index) => ({ question: `How does decision ${index + 1} work?`, answerMarkdown: "Use the existing plot and the available role as the boundary for the next original response." })),
+        sections: [
+          { id: "separate-the-jobs", role: "direct_answer", format: "prose", heading: "Separate the two starting jobs", bodyMarkdown: sectionBodies[0] },
+          { id: "compare-the-routes", role: "comparison", format: "comparison", heading: "Compare what each route asks you to supply", bodyMarkdown: sectionBodies[1] },
+          { id: "apply-the-rule", role: "decision_rule", format: "checklist", heading: "Apply a three-question decision rule", bodyMarkdown: sectionBodies[2] },
+          { id: "carry-the-choice", role: "next_step", format: "callout", heading: "Carry one qualified choice forward", bodyMarkdown: sectionBodies[3] },
+        ],
+        faqs: [
+          { id: "faq-existing-plot", job: "definition", question: "What does an existing plot change about the start?", answerMarkdown: "It supplies an opening situation to inspect, so the reader can focus on choosing a perspective and responding to one immediate pressure instead of inventing an entire premise." },
+          { id: "faq-better-route", job: "decision", question: "Is a story-led route always better than a blank prompt?", answerMarkdown: "No. The comparison is about fit. Choose a story-led route when you want supplied context and an available role; choose another route when inventing the premise is the work you want to do." },
+          { id: "faq-product-boundary", job: "constraint", question: "What can this guide confirm about the product?", answerMarkdown: "It can use the approved story, role-selection, and experience facts. It cannot promise a particular scenario, platform, price, privacy property, response speed, or outcome." },
+        ],
+        architecture: {
+          schemaVersion: 1,
+          intent: {
+            searcherJob: candidates[0].decisionEvidence.searcherJob,
+            painPointId: "choice_uncertainty",
+            decisionToEnable: "Choose between inventing a blank prompt and entering a supplied story before visiting the product.",
+            oneSentenceAnswer: "Begin with an original plot, choose an available role, and enter the opening scene.",
+            nonGoals: ["Do not teach a full beginner roleplay workflow.", "Do not rank products or promise an outcome."],
+          },
+          content: {
+            archetype: "comparison",
+            thesis: "The useful decision is not which route is universally best, but which kind of setup work the reader wants to do.",
+            originalContribution: "A decision sequence that maps search intent to plot, role choice, and a measured next step.",
+            tone: "Precise and evaluative, like a late-night control-room route check.",
+            openingMove: "before_after_contrast",
+            avoidPhrases: ["unlock your imagination", "endless possibilities", "step into a world"],
+            sections: [
+              { id: "separate-the-jobs", role: "direct_answer", format: "prose", readerQuestion: "What decision am I actually making?", uniqueTakeaway: "The two routes require different kinds of setup work." },
+              { id: "compare-the-routes", role: "comparison", format: "comparison", readerQuestion: "What does each route ask me to supply?", uniqueTakeaway: "Compare context, perspective, and the next available action." },
+              { id: "apply-the-rule", role: "decision_rule", format: "checklist", readerQuestion: "How can I decide without a generic ranking?", uniqueTakeaway: "Three questions turn preferences into a route choice." },
+              { id: "carry-the-choice", role: "next_step", format: "callout", readerQuestion: "What should I do after the route is clear?", uniqueTakeaway: "Make one intentional, attributed visit with the boundary understood." },
+            ],
+            faqs: [
+              { id: "faq-existing-plot", job: "definition", readerObstacle: "The reader does not understand what supplied context changes.", answerBoundary: "Explain the setup difference without claiming story availability." },
+              { id: "faq-better-route", job: "decision", readerObstacle: "The reader expects a universal winner.", answerBoundary: "Frame the choice as fit, not a ranking." },
+              { id: "faq-product-boundary", job: "constraint", readerObstacle: "The reader may infer unsupported product capabilities.", answerBoundary: "Restate the approved-fact boundary." },
+            ],
+            signature: {
+              id: "route-evidence-switchboard",
+              type: "comparison",
+              readerAction: "Run the route check",
+              afterSectionId: "compare-the-routes"
+            }
+          },
+          differentiation: { against: [] },
+          presentation: {
+            recipeId: "nocturne-decision-grid-v1",
+            rendererId: "nocturne_decision_grid",
+            visualSystemId: "nocturne-control-room",
+            layoutId: "branching-decision-grid",
+            paletteId: "midnight-amber",
+            typographyId: "technical-grotesk-mono",
+            motifId: "illuminated-route-switch",
+            companion: "none",
+            gallery: "none",
+            surfaceCopy: {
+              eyebrow: "Route control / trial decision",
+              shortAnswerLabel: "Decision in one line",
+              contentsLabel: "Route checkpoints",
+              sectionLabel: "Signal",
+              faqEyebrow: "Control-room notes",
+              faqHeading: "Questions to clear before departure",
+              relatedHeading: "Continue from this decision",
+              finalCtaEyebrow: "Destination confirmed",
+              finalCtaHeading: "Carry the route choice into a story.",
+              finalCtaBody: "Use the attributed destination only after the supplied-context route matches the experience you want.",
+              backToTop: "Return to route control"
+            }
+          }
+        },
+        signatureModule: {
+          id: "route-evidence-switchboard",
+          type: "comparison",
+          title: "The route evidence switchboard",
+          intro: "Move across three signals before choosing a route. Each signal changes what the reader must supply and what can happen next.",
+          items: [
+            { label: "Signal 01", title: "Context", bodyMarkdown: "Decide whether you want to invent the premise or inspect an opening situation that already contains pressure." },
+            { label: "Signal 02", title: "Perspective", bodyMarkdown: "Decide whether you want to invent a speaker or narrow the response through an available story role." },
+            { label: "Signal 03", title: "Next action", bodyMarkdown: "Name one scene-level move that follows from the chosen context and perspective before continuing." }
+          ]
+        },
         factIdsUsed: ["voice-roleplay-format", "existing-story", "role-selection"],
         internalLinks: [],
         assetBriefs: ["Use only original story and role imagery."],
@@ -225,6 +316,27 @@ test("report generation cannot publish before a separate approval artifact", asy
       },
     };
     const inputPath = join(workspace, "data", "research", "2099-01-01.json");
+
+    const architectureClaimInput = structuredClone(input);
+    architectureClaimInput.contentStrategy.oneSentenceAnswer = "Use the real-time story route to make an immediate role decision before entering the scene.";
+    architectureClaimInput.draft.architecture.intent.oneSentenceAnswer = architectureClaimInput.contentStrategy.oneSentenceAnswer;
+    await writeFile(inputPath, `${JSON.stringify(architectureClaimInput, null, 2)}\n`);
+    const architectureClaimBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(architectureClaimBuild.status, 0);
+    assert.match(architectureClaimBuild.stderr, /unsupported product claim/);
+
+    const duplicateFactInput = structuredClone(input);
+    duplicateFactInput.draft.factIdsUsed = ["existing-story", "existing-story"];
+    await writeFile(inputPath, `${JSON.stringify(duplicateFactInput, null, 2)}\n`);
+    const duplicateFactBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(duplicateFactBuild.status, 0);
+    assert.match(duplicateFactBuild.stderr, /unapproved or missing product fact ID/);
 
     const unknownEvidenceInput = structuredClone(input);
     unknownEvidenceInput.candidates[0].decisionEvidence.evidenceRefs = [
@@ -371,6 +483,10 @@ test("report generation cannot publish before a separate approval artifact", asy
         { id: "product-truth", passed: true, detail: "Every capability statement maps to an approved fact ID." },
         { id: "conversion-path", passed: true, detail: "The CTA uses the attributed NovelAI redirect contract." },
         { id: "source-accuracy", passed: true, detail: "Evidence supports the intent and is not presented as product proof." },
+        { id: "content-distinctness", passed: true, detail: "The answer shape, section jobs, FAQ jobs, and wording passed the automated novelty audit." },
+        { id: "presentation-distinctness", passed: true, detail: "The nocturne decision grid is explicit and passes the recipe reuse policy." },
+        { id: "signature-module", passed: true, detail: "The route evidence switchboard is useful, original, and present in initial HTML." },
+        { id: "rendered-preview", passed: true, detail: "The structured renderer contract includes the hero, layers, signature, FAQ, CTA, and optional-decoration states." },
       ],
     };
     const reviewPath = join(workspace, "data", "reviews", "2099-01-01.json");
@@ -384,12 +500,22 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.notEqual(tamperedPublish.status, 0);
     assert.match(tamperedPublish.stderr, /SHA-256 digest/);
 
+    const tamperedStrategy = structuredClone(reportBeforeReview);
+    tamperedStrategy.contentStrategy.readerOutcome = "A different reader outcome inserted after editorial approval.";
+    await writeFile(reportPath, `${JSON.stringify(tamperedStrategy, null, 2)}\n`);
+    const tamperedStrategyPublish = spawnSync(process.execPath, [publisherPath, reportPath, reviewPath], { cwd: workspace, encoding: "utf8" });
+    assert.notEqual(tamperedStrategyPublish.status, 0);
+    assert.match(tamperedStrategyPublish.stderr, /SHA-256 digest/);
+
     await writeFile(reportPath, `${JSON.stringify(reportBeforeReview, null, 2)}\n`);
 
     const publish = spawnSync(process.execPath, [publisherPath, reportPath, reviewPath], { cwd: workspace, encoding: "utf8" });
     assert.equal(publish.status, 0, publish.stderr);
     const page = JSON.parse(await readFile(join(workspace, "data", "pages", "play-an-ai-roleplay-story.json"), "utf8"));
-    assert.equal(page.schemaVersion, 2);
+    assert.equal(page.schemaVersion, 3);
+    assert.equal(page.architecture.presentation.companion, "none");
+    assert.equal(page.architecture.presentation.recipeId, "nocturne-decision-grid-v1");
+    assert.equal(page.signatureModule.id, "route-evidence-switchboard");
     assert.equal(page.editorialReview.decision, "approved");
     assert.equal(page.draftDigest, review.draftDigest);
     const reportAfterReview = JSON.parse(await readFile(reportPath, "utf8"));
@@ -418,6 +544,8 @@ test("report generation cannot publish before a separate approval artifact", asy
         nearestExistingSlug: "play-an-ai-roleplay-story",
       },
     }));
+    updateInput.contentStrategy.searcherJob = updateInput.candidates[0].decisionEvidence.searcherJob;
+    updateInput.draft.architecture.intent.searcherJob = updateInput.candidates[0].decisionEvidence.searcherJob;
     updateInput.evidence = updateInput.evidence.map((item) => ({
       ...item,
       collectedAt: "2099-01-02T09:00:00+08:00",
@@ -467,6 +595,13 @@ test("report generation cannot publish before a separate approval artifact", asy
       href: "/play-an-ai-roleplay-story",
     }];
     const updateInputPath = join(workspace, "data", "research", "2099-01-02.json");
+    await writeFile(updateInputPath, `${JSON.stringify(updateInput, null, 2)}\n`);
+
+    const selfLinkUpdateBuild = spawnSync(process.execPath, [builderPath, updateInputPath], { cwd: workspace, encoding: "utf8" });
+    assert.notEqual(selfLinkUpdateBuild.status, 0);
+    assert.match(selfLinkUpdateBuild.stderr, /Internal link target is not a published route/);
+
+    updateInput.draft.internalLinks = [];
     await writeFile(updateInputPath, `${JSON.stringify(updateInput, null, 2)}\n`);
 
     const updateBuild = spawnSync(process.execPath, [builderPath, updateInputPath], { cwd: workspace, encoding: "utf8" });

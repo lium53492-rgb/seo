@@ -35,6 +35,9 @@ AI may prepare the source summary, outline, first draft, schema suggestions and 
 - remove unsupported promises, third-party IP, copied phrasing, and internal-process language;
 - approve the CTA and decide whether the page is ready to publish.
 - create a durable approval artifact; an in-memory judgment or a self-reported draft check is not publication approval.
+- verify the machine-produced novelty audit, content-layer mapping, signature
+  module, presentation recipe, and explicit decoration policy. The required
+  checks are not satisfied by saying that the page merely “looks different.”
 
 ### Conversion and page-quality baseline
 
@@ -69,6 +72,16 @@ repeat the same visual language and pain point on consecutive pages merely by
 changing a keyword or palette. The signature module must make the answer more
 useful and remain accessible in the initial HTML; it is not permission for
 client-only content or unsupported product claims.
+
+Follow `docs/seo/content-architecture.md` for every new draft. Use
+content-strategy schema 2 and draft schema 2; map every section and FAQ to its
+planned role, place one original signature module in the ordered content flow,
+and document intent/answer/structure/FAQ/visual differences from the nearest
+published pages. Select a registered presentation recipe only after the answer
+shape is fixed. A page pattern is not a presentation recipe.
+Record a stable `painPointId`, use at least three section roles and two FAQ
+jobs, and give structured formats at least two semantic Markdown blocks. The
+published schema-3 payload must retain a recomputable served-content digest.
 
 When a draft includes a contextual internal link, the published template must render it as a standard crawlable `<a href="...">` with a descriptive anchor in the initial HTML. Storing `internalLinks` in a JSON artifact without rendering them does not satisfy this rule.
 

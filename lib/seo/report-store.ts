@@ -3,8 +3,12 @@ import "server-only";
 import { readdir, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import seoPolicy from "@/data/config/seo-policy.json";
+import architecturePolicy from "@/data/config/content-architecture.json";
 import type { DailySeoReport } from "./types";
 import { isReportDraft } from "./report-draft-validation.mjs";
+import { validateSeoArchitectureBridge } from "./content-contract.mjs";
+
+validateSeoArchitectureBridge(seoPolicy, architecturePolicy);
 
 type GithubContent = {
   sha?: string;
@@ -554,10 +558,34 @@ function hasValidFeedbackDecisions(value: unknown) {
   });
 }
 
+function hasValidContentStrategy(value: unknown) {
+  if (!isRecord(value) || value.schemaVersion !== 2) return false;
+  const requiredFields = [
+    "searcherJob",
+    "readerStateBefore",
+    "readerOutcome",
+    "primaryPainPoint",
+    "oneSentenceAnswer",
+    "originalContribution",
+    "productBridge",
+    "contextualNextStep",
+    "evidenceBoundary",
+    "conversionHypothesis",
+    "measurementPlan",
+  ];
+  return requiredFields.every((field) => isString(value[field]) && value[field].trim().length >= 20) &&
+    ["blank_start", "choice_uncertainty", "context_gap", "stalled_exchange", "format_confusion",
+      "discovery_need", "quality_repair", "product_fit_uncertainty"].includes(String(value.painPointId)) &&
+    ["task_guide", "experience_explainer", "decision_page", "original_inventory", "narrative_essay"].includes(String(value.pagePattern)) &&
+    ["qualified_outbound_click", "trial_start", "purchase"].includes(String(value.primaryConversion));
+}
+
 export function parseReport(raw: string, source: string): DailySeoReport {
   const value = JSON.parse(raw) as unknown;
   const isStructuredPolicyReport = isRecord(value) &&
     (value.policyVersion === 3 || value.policyVersion === 4);
+  const requiresContentArchitecture = isRecord(value) && value.policyVersion === 4 &&
+    isString(value.date) && value.date >= seoPolicy.contentArchitecture.enforcedFromReportDate;
   const requiresDecisionEvidence = isRecord(value) && value.policyVersion === 4;
   if (!isRecord(value) ||
     (value.policyVersion !== undefined && value.policyVersion !== 3 && value.policyVersion !== 4) ||
@@ -584,11 +612,14 @@ export function parseReport(raw: string, source: string): DailySeoReport {
       !value.publications.every(isPublication)
     )) ||
     !isReportDraft(value.draft, { allowLegacyMetadata: !isStructuredPolicyReport }) ||
+    (requiresContentArchitecture && isRecord(value.draft) && value.draft.schemaVersion !== 2) ||
     (value.drafts !== undefined && (
       !Array.isArray(value.drafts) ||
       !value.drafts.every((draft) =>
-        isReportDraft(draft, { allowLegacyMetadata: !isStructuredPolicyReport }))
+        isReportDraft(draft, { allowLegacyMetadata: !isStructuredPolicyReport }) &&
+        (!requiresContentArchitecture || (isRecord(draft) && draft.schemaVersion === 2)))
     )) ||
+    (requiresContentArchitecture && !hasValidContentStrategy(value.contentStrategy)) ||
     (value.funnel !== undefined && !isFunnel(value.funnel)) ||
     (value.portfolioFunnels !== undefined && !isGrowthPortfolio(value.portfolioFunnels)) ||
     (value.portfolioDecision !== undefined && !isPortfolioDecision(value.portfolioDecision)) ||
