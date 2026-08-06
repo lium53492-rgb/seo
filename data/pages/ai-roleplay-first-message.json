@@ -1,0 +1,176 @@
+{
+  "schemaVersion": 2,
+  "status": "published",
+  "slug": "ai-roleplay-first-message",
+  "path": "/ai-roleplay-first-message",
+  "keyword": "ai roleplay first message",
+  "publishedAt": "2026-08-06T02:50:30.000Z",
+  "updatedAt": "2026-08-06T02:50:30.000Z",
+  "generatedFromReport": "seo-2026-08-06",
+  "draftDigest": "f3beb13d8847ea9c2a3fa912da477ca99e01937101198f42d6489dbdba0c9770",
+  "pagePattern": "task_guide",
+  "title": "AI Roleplay First Message: A Story-First Flight Plan",
+  "metaDescription": "Write an AI roleplay first message with one scene detail, one in-character move, and one hook that gives an existing story somewhere to go.",
+  "h1": "AI Roleplay First Message: Start With a Scene, Not a Script",
+  "heroMarkdown": "Your first AI roleplay message does not need to explain an entire character or invent a whole world. Start with one detail that is already present in the scene, make one small move as your chosen role, and leave one question or pressure point for the story to answer. That three-part move is enough to turn a prepared opening into a playable exchange. When you want to try a story-led route, use the CTA below intentionally; it opens the approved destination in a new tab.",
+  "primaryCta": "Explore story-led roleplay on NovelAI",
+  "sections": [
+    {
+      "heading": "Use the First-Reply Flight Plan",
+      "bodyMarkdown": "A first message works best when it gives the scene something concrete to react to. Use this original three-checkpoint Flight Plan. **Notice** one immediate detail: a door left open, a note on a table, or a voice that has gone quiet. **Move** in a small way as the role you chose: pause, look closer, ask for clarification, or protect something. **Leave a hook** by making the move matter. The hook can be a question, a choice, or a complication, but it should be small enough for the next turn to answer. This is not a formula that guarantees a result. It is a way to avoid the blank, context-free hello that leaves both sides with nothing to play."
+    },
+    {
+      "heading": "Let the existing story do the setup work",
+      "bodyMarkdown": "You do not have to construct a setting before you can reply. In the approved story-led format, each playable experience begins with an existing story plot rather than an empty chat box. Read the opening once and underline, mentally or on paper, the one thing that has changed or needs attention. It might be a missing object, an unexpected arrival, or a decision that cannot wait. Then make your first message respond to that one thing. Keep the example abstract and original: do not borrow a famous world, character, or scene to create momentum. The story premise supplies context; your reply supplies a point of view."
+    },
+    {
+      "heading": "Write from the role you selected",
+      "bodyMarkdown": "A first response becomes easier when it has an owner. Players choose which available story character they want to perform as, so use that choice to narrow the message. Ask three quick questions: What can this role notice first? What does this role want to protect, learn, or change? What is one modest action that fits that aim? You are not required to invent a complete biography. A role can begin with one credible priority inside the opening situation. For example, an original character who has been waiting for news might scan the room before speaking; another character might ask why a promised message never arrived. These are generic craft examples, not offered story content or product promises."
+    },
+    {
+      "heading": "Keep the first move small enough to answer",
+      "bodyMarkdown": "A useful opener creates room for the next turn. Avoid writing a long history, resolving the conflict yourself, or asking the scene to do every job at once. Instead, pair one action with one line of dialogue or one focused thought. The action grounds the reply in the immediate moment; the line or thought explains why the role cares. If the result still feels flat, recover by changing only one element: add a sensory detail, replace a general question with a specific observation, or choose a smaller consequence. The product is an AI voice cosplay and roleplay experience built around acting inside a story. That is the relevant boundary here: this guide explains a creative entry move, not any particular voice technology, speed, availability, or outcome."
+    },
+    {
+      "heading": "Turn the plan into a first scene",
+      "bodyMarkdown": "Use the Flight Plan in three steps. First, open a story and take in its existing premise. Second, select an available character whose perspective gives you a reason to care about the opening moment. Third, write a concise notice, move, and hook. The team has previously built AI interactive-fiction and simulator experiences, which is relevant background for a format that brings plot, role choice, and participation together. It is not a claim that every feature or scenario is available. If you want the wider route from choosing a story to entering a scene, continue with the related how to start AI roleplay guide. When you are ready to explore, use the attributed CTA rather than expecting this page itself to start a session."
+    }
+  ],
+  "faqs": [
+    {
+      "question": "What should an AI roleplay first message include?",
+      "answerMarkdown": "Include one detail from the opening situation, one small in-character move, and one hook for the scene to answer. You do not need a long backstory or a finished plot."
+    },
+    {
+      "question": "Do I need to make up the story before I reply?",
+      "answerMarkdown": "No. In the approved format, a playable experience starts from an existing story plot. Read the opening situation, choose an available role, and respond to one immediate detail."
+    },
+    {
+      "question": "How do I choose what my role does first?",
+      "answerMarkdown": "Use the role's perspective. Decide what that character notices, wants, fears, or needs to clarify in the opening moment, then choose one modest action that fits it."
+    }
+  ],
+  "factIdsUsed": [
+    "voice-roleplay-format",
+    "existing-story",
+    "role-selection",
+    "interactive-fiction-history"
+  ],
+  "internalLinks": [
+    {
+      "anchor": "how to start AI roleplay guide",
+      "href": "/how-to-start-ai-roleplay"
+    },
+    {
+      "anchor": "AI roleplay prompt versus existing story guide",
+      "href": "/ai-roleplay-prompt-vs-existing-story"
+    }
+  ],
+  "assetBriefs": [
+    "Render the First-Reply Flight Plan as an original accessible mission card with Notice, Move, and Hook labels; do not use third-party characters, worlds, or copied interfaces.",
+    "Use a retro-futuristic field-note treatment with legible text and no claim about product availability, technical voice behavior, or particular story content."
+  ],
+  "quality": {
+    "passed": true,
+    "wordCount": 876,
+    "checks": [
+      {
+        "id": "distinct-intent",
+        "label": "Answers a first-reply craft task",
+        "passed": true,
+        "detail": "The Flight Plan is a focused post-entry response tool, distinct from the existing broad start guide and app-selection page."
+      },
+      {
+        "id": "no-third-party-ip",
+        "label": "Avoids third-party IP",
+        "passed": true,
+        "detail": "All craft examples are generic and original; the draft names no external character, world, franchise, or trademark."
+      },
+      {
+        "id": "no-invented-claims",
+        "label": "Avoids unsupported claims",
+        "passed": true,
+        "detail": "The draft makes no pricing, privacy, safety, latency, platform, real-time, multiplayer, or capability claim."
+      },
+      {
+        "id": "approved-facts",
+        "label": "Uses approved product facts",
+        "passed": true,
+        "detail": "4 approved fact IDs"
+      },
+      {
+        "id": "content-structure",
+        "label": "Has required sections and FAQs",
+        "passed": true,
+        "detail": "5 sections; 3 FAQs"
+      },
+      {
+        "id": "conversion-path",
+        "label": "Has a concrete CTA",
+        "passed": true,
+        "detail": "Explore story-led roleplay on NovelAI"
+      },
+      {
+        "id": "minimum-depth",
+        "label": "600-1000 English words",
+        "passed": true,
+        "detail": "876 words"
+      }
+    ]
+  },
+  "editorialReview": {
+    "schemaVersion": 1,
+    "reportId": "seo-2026-08-06",
+    "slug": "ai-roleplay-first-message",
+    "draftDigest": "f3beb13d8847ea9c2a3fa912da477ca99e01937101198f42d6489dbdba0c9770",
+    "reviewerType": "codex_editor",
+    "reviewer": "Codex editorial review",
+    "reviewedAt": "2026-08-06T02:50:30.000Z",
+    "decision": "approved",
+    "notes": "Independent editorial review confirms the first-reply Flight Plan is a distinct post-entry task, uses only the approved fact catalog, retains the CTA as an intentional attributed outbound action, and carries forward the pending design-direction guidance through a retro-futuristic task-guide treatment rather than repeating the preceding comparison page.",
+    "checks": [
+      {
+        "id": "search-intent",
+        "passed": true,
+        "detail": "The page answers the narrow first-reply task after a story and role have been selected; it does not replace the broader starting guide."
+      },
+      {
+        "id": "product-truth",
+        "passed": true,
+        "detail": "All product references map to approved story-premise, role-selection, voice-roleplay, and interactive-fiction facts; unsupported capabilities are excluded."
+      },
+      {
+        "id": "conversion-path",
+        "passed": true,
+        "detail": "The draft uses a real attributed CTA label and directs readers to the approved NovelAI destination only after an intentional click."
+      },
+      {
+        "id": "source-accuracy",
+        "passed": true,
+        "detail": "The cited public sources support general first-message, scene-context, and roleplay-turn guidance; no external product claim is copied into the draft."
+      }
+    ]
+  },
+  "research": {
+    "opportunityScore": 73,
+    "demandProxy": 61,
+    "competitionProxy": 59,
+    "evidenceCount": 6,
+    "trialIntent": 85,
+    "revenueIntent": 55,
+    "intentSpecificity": 100,
+    "funnelStage": "trial",
+    "conversionGoal": "trial_start",
+    "scoreBasis": "evidence_signals_v1",
+    "evidenceRefs": [
+      "rpdate-first-message",
+      "evenfall-roleplay-guide",
+      "anione-beginner-guide"
+    ],
+    "productFactIds": [
+      "voice-roleplay-format",
+      "existing-story",
+      "role-selection"
+    ]
+  }
+}
