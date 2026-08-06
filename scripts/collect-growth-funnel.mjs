@@ -1,13 +1,17 @@
 import "./load-env.mjs";
 
 import { projectPrivateGrowthReport } from "./lib/growth-portfolio.mjs";
+import { configuredProductionSiteOrigin } from "./lib/site-origin.mjs";
 
 const [sourceSlug, periodStart, periodEnd] = process.argv.slice(2);
 if (!sourceSlug || !periodStart || !periodEnd) {
   throw new Error("Usage: node scripts/collect-growth-funnel.mjs <source-slug> <period-start> <period-end>");
 }
 
-const siteUrl = (process.env.SEO_REPORT_SITE_URL || "https://seo-pi-fawn.vercel.app").replace(/\/$/, "");
+const siteUrl = configuredProductionSiteOrigin(
+  process.env.SEO_REPORT_SITE_URL,
+  "SEO_REPORT_SITE_URL",
+);
 const automationToken = process.env.SEO_AUTOMATION_TOKEN;
 if (!automationToken || Buffer.byteLength(automationToken, "utf8") < 32) {
   throw new Error("SEO_AUTOMATION_TOKEN must contain at least 32 bytes to collect private attribution data");
@@ -30,6 +34,7 @@ const publicReport = projectPrivateGrowthReport(
   privateReport,
   { slug: sourceSlug, path: `/${sourceSlug}` },
   { periodStart, periodEnd },
+  siteUrl,
 );
 process.stdout.write(`${JSON.stringify({
   schemaVersion: 2,

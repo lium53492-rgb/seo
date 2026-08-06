@@ -31,6 +31,84 @@ function configureSearchConsole() {
   process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL = "https://seo.example.com";
 }
 
+test("Search Console defaults to the public LoreLens canonical property", () => {
+  const environment = environmentSnapshot();
+  try {
+    delete process.env.NEXT_PUBLIC_SITE_URL;
+    delete process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL;
+    process.env.GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL =
+      "seo-reader@example.iam.gserviceaccount.com";
+    process.env.GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY = "test-private-key";
+
+    assert.equal(
+      searchConsoleStatus().siteUrl,
+      "https://lorelens.novelai.ai/",
+    );
+  } finally {
+    restoreEnvironment(environment);
+  }
+});
+
+test("Search Console rejects a URL-prefix property from the legacy origin", async () => {
+  const environment = environmentSnapshot();
+  try {
+    delete process.env.NEXT_PUBLIC_SITE_URL;
+    process.env.GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL =
+      "seo-reader@example.iam.gserviceaccount.com";
+    process.env.GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY = "test-private-key";
+    process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL =
+      "https://seo-pi-fawn.vercel.app/";
+
+    assert.throws(
+      () => searchConsoleStatus(),
+      /URL-prefix property must match the public canonical origin/,
+    );
+
+    let requested = false;
+    await assert.rejects(
+      readSearchConsoleUrlInspection({ sourceSlug: "interactive-voice-story" }, {
+        getAccessToken: async () => "google-token",
+        fetchImpl: async () => {
+          requested = true;
+          return Response.json({});
+        },
+      }),
+      /URL-prefix property must match the public canonical origin/,
+    );
+    assert.equal(requested, false);
+  } finally {
+    restoreEnvironment(environment);
+  }
+});
+
+test("Search Console domain properties must cover the canonical hostname", () => {
+  const environment = environmentSnapshot();
+  try {
+    delete process.env.NEXT_PUBLIC_SITE_URL;
+    process.env.GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL =
+      "seo-reader@example.iam.gserviceaccount.com";
+    process.env.GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY = "test-private-key";
+
+    process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL = "sc-domain:novelai.ai";
+    assert.equal(searchConsoleStatus().siteUrl, "sc-domain:novelai.ai");
+
+    process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL =
+      "sc-domain:lorelens.novelai.ai.";
+    assert.equal(
+      searchConsoleStatus().siteUrl,
+      "sc-domain:lorelens.novelai.ai",
+    );
+
+    process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL = "sc-domain:example.com";
+    assert.throws(
+      () => searchConsoleStatus(),
+      /domain property must cover the public canonical hostname/,
+    );
+  } finally {
+    restoreEnvironment(environment);
+  }
+});
+
 test("URL Inspection reads only decision evidence for the canonical source slug", async () => {
   const environment = environmentSnapshot();
   try {

@@ -1,6 +1,10 @@
 import "./load-env.mjs";
+import { configuredProductionSiteOrigin } from "./lib/site-origin.mjs";
 
-const siteUrl = (process.env.SEO_REPORT_SITE_URL || "https://seo-pi-fawn.vercel.app").replace(/\/$/, "");
+const siteUrl = configuredProductionSiteOrigin(
+  process.env.SEO_REPORT_SITE_URL,
+  "SEO_REPORT_SITE_URL",
+);
 const automationToken = process.env.SEO_AUTOMATION_TOKEN;
 
 if (!automationToken || Buffer.byteLength(automationToken, "utf8") < 32) {

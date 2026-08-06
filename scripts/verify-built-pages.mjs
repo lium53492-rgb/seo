@@ -4,10 +4,21 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { renderedBodyCopyFragments, servedContentDigest } from "../lib/seo/served-content.mjs";
 import { normalizeContentText } from "../lib/seo/content-similarity.mjs";
+import {
+  canonicalSiteOrigin,
+  configuredProductionSiteOrigin,
+  legacySiteOrigins,
+} from "./lib/site-origin.mjs";
 
 const pageDirectory = resolve("data/pages");
 const buildDirectory = resolve(".next/server/app");
-const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://seo-pi-fawn.vercel.app").replace(/\/$/, "");
+const siteUrl = canonicalSiteOrigin;
+if (process.env.NEXT_PUBLIC_SITE_URL?.trim()) {
+  configuredProductionSiteOrigin(
+    process.env.NEXT_PUBLIC_SITE_URL,
+    "NEXT_PUBLIC_SITE_URL",
+  );
+}
 const allowedCtaLocations = new Set(["seo_page", "hero", "header", "inline", "final_cta", "companion"]);
 const seoPolicy = JSON.parse(readFileSync(resolve("data/config/seo-policy.json"), "utf8"));
 const currentPageSchema = seoPolicy.contentArchitecture.publishedPageSchemaVersion;
@@ -19,6 +30,50 @@ function escapeHtml(value) {
     .replaceAll("'", "&#x27;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
+}
+
+function metadataContent(html, attribute, value, label) {
+  const tagPattern = new RegExp(
+    `<(?:link|meta)\\b[^>]*\\b${attribute}="${value}"[^>]*>`,
+    "gi",
+  );
+  const tags = [...html.matchAll(tagPattern)].map((match) => match[0]);
+  if (tags.length !== 1) {
+    throw new Error(`${label} must contain exactly one ${value} metadata tag.`);
+  }
+  const content = tags[0].match(/\b(?:href|content)="([^"]+)"/i)?.[1];
+  if (!content) throw new Error(`${label} ${value} metadata is missing its URL.`);
+  return content;
+}
+
+function assertCanonicalMetadata(html, canonical, label, requireArticle = false) {
+  if (metadataContent(html, "rel", "canonical", label) !== canonical) {
+    throw new Error(`${label} canonical metadata does not match ${canonical}.`);
+  }
+  if (metadataContent(html, "property", "og:url", label) !== canonical) {
+    throw new Error(`${label} og:url metadata does not match ${canonical}.`);
+  }
+  if (!requireArticle) return;
+  const jsonLd = [...html.matchAll(
+    /<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi,
+  )].map((match) => JSON.parse(match[1]));
+  const articles = jsonLd.filter((value) => value?.["@type"] === "Article");
+  if (articles.length !== 1) {
+    throw new Error(`${label} must contain exactly one Article JSON-LD object.`);
+  }
+  if (
+    articles[0].url !== canonical ||
+    articles[0].mainEntityOfPage !== canonical
+  ) {
+    throw new Error(`${label} Article JSON-LD URL fields do not match ${canonical}.`);
+  }
+}
+
+function rejectLegacyOrigins(value, label) {
+  const legacyOrigin = legacySiteOrigins.find((origin) => value.includes(origin));
+  if (legacyOrigin) {
+    throw new Error(`${label} still contains legacy origin ${legacyOrigin}.`);
+  }
 }
 
 if (!existsSync(buildDirectory)) {
@@ -50,6 +105,10 @@ for (const fragment of [
     throw new Error(`The production robots.txt is missing ${fragment}.`);
   }
 }
+if (robots.split(`Sitemap: ${siteUrl}/sitemap.xml`).length !== 2) {
+  throw new Error("The production robots.txt must declare the canonical sitemap exactly once.");
+}
+rejectLegacyOrigins(robots, "The production robots.txt");
 
 const homepagePath = resolve(buildDirectory, "index.html");
 if (!existsSync(homepagePath)) throw new Error("The production build did not emit the homepage HTML.");
@@ -63,6 +122,8 @@ for (const [fragment, label] of [
 ]) {
   if (!homepage.includes(fragment)) throw new Error(`The homepage is missing ${label} in initial HTML.`);
 }
+assertCanonicalMetadata(homepage, siteUrl, "The homepage");
+rejectLegacyOrigins(homepage, "The homepage HTML");
 if (/NEXT_REDIRECT|http-equiv="refresh"/i.test(homepage)) {
   throw new Error("The homepage must render first-party content instead of redirecting visitors.");
 }
@@ -74,15 +135,27 @@ for (const page of pages) {
     throw new Error(`The homepage is missing a crawlable link to /${page.slug}.`);
   }
 }
-if (!sitemap.includes(`<loc>${siteUrl}</loc>`)) {
-  throw new Error("The homepage is missing from the built sitemap.");
+const sitemapLocations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)]
+  .map((match) => match[1]);
+const expectedSitemapLocations = [
+  siteUrl,
+  ...pages.map((page) => `${siteUrl}/${page.slug}`),
+].sort();
+if (
+  new Set(sitemapLocations).size !== sitemapLocations.length ||
+  JSON.stringify([...sitemapLocations].sort()) !== JSON.stringify(expectedSitemapLocations)
+) {
+  throw new Error("The built sitemap must contain exactly the homepage and every published canonical page once.");
 }
+rejectLegacyOrigins(sitemap, "The production sitemap");
 
 for (const page of pages) {
   const htmlPath = resolve(buildDirectory, `${page.slug}.html`);
   if (!existsSync(htmlPath)) throw new Error(`Production HTML is missing for /${page.slug}.`);
   const html = readFileSync(htmlPath, "utf8");
   const canonical = `${siteUrl}/${page.slug}`;
+  assertCanonicalMetadata(html, canonical, `/${page.slug}`, true);
+  rejectLegacyOrigins(html, `/${page.slug} HTML`);
   const titlePattern = new RegExp(`<title>${escapeRegex(escapeHtml(page.title))}[^<]*<\\/title>`);
   if (!titlePattern.test(html)) {
     throw new Error(`/${page.slug} is missing its reviewed title in initial HTML.`);
@@ -137,9 +210,6 @@ for (const page of pages) {
   if (!ctaLocations.length) throw new Error(`/${page.slug} is missing an attributed NovelAI CTA in initial HTML.`);
   const invalidCtaLocation = ctaLocations.find((location) => !allowedCtaLocations.has(location));
   if (invalidCtaLocation) throw new Error(`/${page.slug} contains an invalid CTA location: ${invalidCtaLocation}.`);
-  if (!sitemap.includes(`<loc>${canonical}</loc>`)) {
-    throw new Error(`/${page.slug} is missing from the built sitemap.`);
-  }
   for (const link of page.internalLinks || []) {
     if (link.href === "/" && page.schemaVersion !== currentPageSchema) continue;
     if (!html.includes(`href="${escapeHtml(link.href)}"`)) {

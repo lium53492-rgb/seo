@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next";
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://seo-pi-fawn.vercel.app";
+import { absoluteSiteUrl } from "@/lib/seo/site";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -9,6 +8,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/api/", "/go/", "/workbench/"],
     }],
-    sitemap: `${siteUrl}/sitemap.xml`,
+    sitemap: absoluteSiteUrl("/sitemap.xml"),
   };
 }

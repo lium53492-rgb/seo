@@ -34,7 +34,7 @@ On the NovelAI application:
 1. Read `seo_click_id`, `seo_source_slug`, and UTM values on first arrival.
 2. Store them with the anonymous session and carry them into the authenticated account when signup occurs.
 3. Create a unique `eventId` for every trial, signup, or payment event.
-4. POST the event server-to-server to `https://seo-pi-fawn.vercel.app/api/attribution/conversion` with `Authorization: Bearer <ATTRIBUTION_SECRET>`.
+4. POST the event server-to-server to `https://lorelens.novelai.ai/api/attribution/conversion` with `Authorization: Bearer <ATTRIBUTION_SECRET>`.
 5. Retry non-2xx responses and deduplicate by `eventId` in the durable analytics or payment sink.
 6. Do not send email, display name, raw payment identifiers, or other personal data.
 7. From the NovelAI server environment, run `npm run growth:probe` after deployment or secret rotation. It signs a non-business handshake to `/api/attribution/probe`; the probe never increments trial, signup, payment, revenue, or outbound metrics.

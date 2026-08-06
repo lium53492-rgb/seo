@@ -1,10 +1,12 @@
 import "./load-env.mjs";
 
 import { randomUUID } from "node:crypto";
+import { configuredProductionSiteOrigin } from "./lib/site-origin.mjs";
 
-const siteUrl = (
-  process.env.SEO_REPORT_SITE_URL || "https://seo-pi-fawn.vercel.app"
-).replace(/\/$/, "");
+const siteUrl = configuredProductionSiteOrigin(
+  process.env.SEO_REPORT_SITE_URL,
+  "SEO_REPORT_SITE_URL",
+);
 const secret = process.env.ATTRIBUTION_SECRET;
 
 if (!secret) {

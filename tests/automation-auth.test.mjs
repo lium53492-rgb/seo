@@ -191,4 +191,6 @@ test("growth command entry points use only the machine automation credential", a
   );
   assert.match(workflowSource, /secrets\.SEO_AUTOMATION_TOKEN/);
   assert.doesNotMatch(workflowSource, /secrets\.WORKBENCH_PASSWORD/);
+  assert.match(workflowSource, /https:\/\/lorelens\.novelai\.ai/);
+  assert.doesNotMatch(workflowSource, /seo-pi-fawn\.vercel\.app/);
 });

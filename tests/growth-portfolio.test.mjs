@@ -6,6 +6,7 @@ import {
   countSearchValidatedLandingPages,
   evaluateConsolidationEvidence,
   evaluateGrowthFeedbackGate,
+  projectPrivateGrowthReport,
   shanghaiDate,
 } from "../scripts/lib/growth-portfolio.mjs";
 
@@ -196,6 +197,91 @@ test("collector authenticates and keeps every page bound to the same reporting p
     assert.equal(request.url.searchParams.get("to"), period.periodEnd);
     assert.equal(request.authorization, "Bearer fixture-secret-with-at-least-32-bytes");
   }
+});
+
+test("collector accepts only Search Console evidence from the requested site origin", async () => {
+  const now = new Date("2026-07-23T03:30:00.000Z");
+  const period = completeShanghaiWindow(28, now);
+  const page = {
+    slug: "interactive-voice-story",
+    path: "/interactive-voice-story",
+    keyword: "interactive voice story",
+  };
+  const primaryOrigin = "https://lorelens.novelai.ai";
+  const legacyOrigin = "https://seo-pi-fawn.vercel.app";
+  const token = "fixture-secret-with-at-least-32-bytes";
+
+  function reportForOrigins(searchOrigin, inspectionOrigin) {
+    const report = collectedReport(page, period);
+    report.searchPerformance = {
+      ...report.searchPerformance,
+      state: "observed",
+      pageUrl: `${searchOrigin}/${page.slug}`,
+      clicks: 0,
+      impressions: 0,
+      ctr: 0,
+      position: null,
+      detail: "Search Console returned no row for this exact page.",
+    };
+    report.urlInspection = {
+      ...report.urlInspection,
+      pageUrl: `${inspectionOrigin}/${page.slug}`,
+      googleCanonical: `${inspectionOrigin}/${page.slug}`,
+      userCanonical: `${inspectionOrigin}/${page.slug}`,
+      sitemap: [`${inspectionOrigin}/sitemap.xml`],
+    };
+    return report;
+  }
+
+  async function collect(report) {
+    return collectGrowthPortfolio({
+      pages: [page],
+      automationToken: token,
+      siteUrl: `${primaryOrigin}/`,
+      now,
+      fetchImpl: async () => new Response(JSON.stringify(report), { status: 200 }),
+    });
+  }
+
+  const staleSearch = await collect(reportForOrigins(legacyOrigin, primaryOrigin));
+  assert.equal(staleSearch.entries[0].state, "unavailable");
+  assert.equal(Object.hasOwn(staleSearch.entries[0], "report"), false);
+
+  const staleInspection = await collect(reportForOrigins(primaryOrigin, legacyOrigin));
+  assert.equal(staleInspection.entries[0].state, "unavailable");
+  assert.equal(Object.hasOwn(staleInspection.entries[0], "report"), false);
+
+  const current = await collect(reportForOrigins(primaryOrigin, primaryOrigin));
+  assert.equal(current.entries[0].state, "collected");
+  assert.equal(current.entries[0].report.searchPerformance.state, "observed");
+  assert.equal(current.entries[0].report.searchPerformance.impressions, 0);
+  assert.equal(
+    current.entries[0].report.searchPerformance.pageUrl,
+    `${primaryOrigin}/${page.slug}`,
+  );
+  assert.equal(
+    current.entries[0].report.urlInspection.pageUrl,
+    `${primaryOrigin}/${page.slug}`,
+  );
+});
+
+test("direct growth projection keeps its optional-origin API and requires both evidence origins to agree", () => {
+  const page = {
+    slug: "interactive-voice-story",
+    path: "/interactive-voice-story",
+    keyword: "interactive voice story",
+  };
+  const period = completeShanghaiWindow(28, new Date("2026-07-23T03:30:00.000Z"));
+  const report = collectedReport(page, period);
+  assert.equal(projectPrivateGrowthReport(report, page, period).sourceSlug, page.slug);
+
+  const mismatched = structuredClone(report);
+  mismatched.urlInspection.pageUrl =
+    `https://seo-pi-fawn.vercel.app/${page.slug}`;
+  assert.throws(
+    () => projectPrivateGrowthReport(mismatched, page, period),
+    /mismatched URL Inspection evidence/,
+  );
 });
 
 test("collector rejects unsafe origins and malformed page metadata before fetching", async () => {

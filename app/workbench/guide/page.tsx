@@ -146,7 +146,7 @@ export default async function WorkbenchGuidePage() {
               <p className="wb-kicker">GOOGLE SEARCH CONSOLE</p>
               <h3>免费读取真实搜索曝光与点击</h3>
               <ol>
-                <li>网址前缀属性 <code>https://seo-pi-fawn.vercel.app/</code> 已完成验证。</li>
+                <li>请添加网址前缀属性 <code>https://lorelens.novelai.ai/</code> 并完成验证。</li>
                 <li>为该属性配置 Search Console API 服务账号，并把账号邮箱加入属性用户。</li>
                 <li>生产环境配置 client email、private key 和准确的 site URL；变更后运行 <code>growth:check</code>。</li>
                 <li>每日组合快照只读取最终数据，并按同一个完整上海日窗口覆盖所有已发布页面。</li>

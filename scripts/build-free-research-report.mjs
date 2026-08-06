@@ -619,12 +619,36 @@ function normalizedPublicCanonical(value, pageUrl) {
   }
 }
 
-function validateUrlInspection(value, sourceSlug, fallbackInspectedAt) {
+function validateUrlInspection(
+  value,
+  sourceSlug,
+  fallbackInspectedAt,
+  legacyPageUrl,
+) {
   if (value === undefined) {
+    if (legacyPageUrl === undefined) {
+      throw new Error(`Growth entry is missing URL Inspection evidence: ${sourceSlug}`);
+    }
+    let pageUrl;
+    try {
+      pageUrl = new URL(legacyPageUrl);
+    } catch {
+      throw new Error(`Legacy growth entry has an invalid page URL: ${sourceSlug}`);
+    }
+    if (
+      pageUrl.protocol !== "https:" ||
+      pageUrl.username ||
+      pageUrl.password ||
+      pageUrl.search ||
+      pageUrl.hash ||
+      pageUrl.pathname.replace(/\/$/, "") !== `/${sourceSlug}`
+    ) {
+      throw new Error(`Legacy growth entry is not for the exact HTTPS page: ${sourceSlug}`);
+    }
     return {
       state: "unavailable",
       sourceSlug,
-      pageUrl: `https://seo-pi-fawn.vercel.app/${sourceSlug}`,
+      pageUrl: pageUrl.toString(),
       inspectedAt: fallbackInspectedAt,
       verdict: null,
       coverageState: null,
@@ -801,6 +825,10 @@ function publicPortfolioReport(rawReport, page, rawPortfolio) {
 
   if (rawPortfolio.schemaVersion === 1) {
     const legacyFunnel = validateFunnel(rawReport.funnel);
+    const legacySearchPerformance = validateSearchPerformance(
+      rawReport.searchPerformance,
+      page.slug,
+    );
     if (
       legacyFunnel.periodStart !== rawPortfolio.periodStart ||
       legacyFunnel.periodEnd !== rawPortfolio.periodEnd
@@ -811,10 +839,12 @@ function publicPortfolioReport(rawReport, page, rawPortfolio) {
       {
         ...rawReport,
         funnel: legacyFunnel,
+        searchPerformance: legacySearchPerformance,
         urlInspection: validateUrlInspection(
           rawReport.urlInspection,
           page.slug,
           rawPortfolio.generatedAt,
+          legacySearchPerformance.pageUrl,
         ),
       },
       page,

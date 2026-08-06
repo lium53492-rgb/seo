@@ -1,3 +1,5 @@
+import { canonicalSiteOrigin } from "./site-origin.mjs";
+
 const dayMs = 86_400_000;
 const shanghaiOffsetMs = 8 * 60 * 60 * 1_000;
 
@@ -285,7 +287,7 @@ function publicMetric(rawMetric, source, observedDetail, unavailableDetail) {
   };
 }
 
-function publicSearchPerformance(value, page) {
+function publicSearchPerformance(value, page, expectedOrigin) {
   if (
     !isRecord(value) ||
     !["observed", "unavailable"].includes(value.state) ||
@@ -305,6 +307,7 @@ function publicSearchPerformance(value, page) {
   }
   if (
     pageUrl.protocol !== "https:" ||
+    pageUrl.origin !== expectedOrigin ||
     pageUrl.pathname.replace(/\/$/, "") !== page.path ||
     !/^\d{4}-\d{2}-\d{2}$/.test(value.startDate) ||
     !/^\d{4}-\d{2}-\d{2}$/.test(value.endDate)
@@ -361,7 +364,7 @@ function publicCanonical(value, pageUrl) {
   }
 }
 
-function publicUrlInspection(value, page) {
+function publicUrlInspection(value, page, expectedOrigin) {
   if (
     !isRecord(value) ||
     !["observed", "unavailable"].includes(value.state) ||
@@ -379,7 +382,11 @@ function publicUrlInspection(value, page) {
   } catch {
     throw new Error("The attribution endpoint returned an invalid URL Inspection page URL");
   }
-  if (pageUrl.protocol !== "https:" || pageUrl.pathname.replace(/\/$/, "") !== page.path) {
+  if (
+    pageUrl.protocol !== "https:" ||
+    pageUrl.origin !== expectedOrigin ||
+    pageUrl.pathname.replace(/\/$/, "") !== page.path
+  ) {
     throw new Error("The attribution endpoint returned mismatched URL Inspection evidence");
   }
   const nullableFields = [
@@ -444,8 +451,31 @@ function publicUrlInspection(value, page) {
   };
 }
 
-export function projectPrivateGrowthReport(report, page, period) {
+function resolveExpectedEvidenceOrigin(privateReport, expectedOrigin) {
+  if (expectedOrigin !== undefined) {
+    return normalizeSiteUrl(expectedOrigin).origin;
+  }
+  const pageUrl = privateReport?.searchPerformance?.pageUrl;
+  if (typeof pageUrl !== "string") {
+    throw new Error("The attribution endpoint returned invalid Search Console evidence");
+  }
+  try {
+    const origin = new URL(pageUrl);
+    if (origin.protocol !== "https:") {
+      throw new Error("Search Console evidence must use HTTPS");
+    }
+    return origin.origin;
+  } catch {
+    throw new Error("The attribution endpoint returned an invalid Search Console page URL");
+  }
+}
+
+export function projectPrivateGrowthReport(report, page, period, expectedOrigin) {
   const privateReport = validateCollectedReport(report, page, period);
+  const normalizedExpectedOrigin = resolveExpectedEvidenceOrigin(
+    privateReport,
+    expectedOrigin,
+  );
   const landingUv = publicMetric(
     privateReport.funnel.metrics?.landingUv,
     "vercel_analytics",
@@ -458,8 +488,16 @@ export function projectPrivateGrowthReport(report, page, period) {
     "Observed the page-level qualified outbound aggregate through the private attribution service for this reporting period.",
     "The page-level qualified outbound aggregate was unavailable from the private attribution service for this reporting period.",
   );
-  const searchPerformance = publicSearchPerformance(privateReport.searchPerformance, page);
-  const urlInspection = publicUrlInspection(privateReport.urlInspection, page);
+  const searchPerformance = publicSearchPerformance(
+    privateReport.searchPerformance,
+    page,
+    normalizedExpectedOrigin,
+  );
+  const urlInspection = publicUrlInspection(
+    privateReport.urlInspection,
+    page,
+    normalizedExpectedOrigin,
+  );
   const attributionJoinChecked =
     Number.isFinite(Number(privateReport.orphanCallbacks)) &&
     Number(privateReport.orphanCallbacks) >= 0;
@@ -494,7 +532,7 @@ export function projectPrivateGrowthReport(report, page, period) {
 export async function collectGrowthPortfolio({
   pages,
   automationToken,
-  siteUrl = "https://seo-pi-fawn.vercel.app",
+  siteUrl = canonicalSiteOrigin,
   days = 28,
   reportingLagDays = 3,
   now = new Date(),
@@ -536,7 +574,12 @@ export async function collectGrowthPortfolio({
       if (responseBody.length > 1_000_000) {
         throw new Error("Attribution report exceeded the 1 MB response limit");
       }
-      const report = projectPrivateGrowthReport(JSON.parse(responseBody), page, period);
+      const report = projectPrivateGrowthReport(
+        JSON.parse(responseBody),
+        page,
+        period,
+        normalizedSiteUrl.origin,
+      );
       return {
         sourceSlug: page.slug,
         path: page.path,

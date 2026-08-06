@@ -102,7 +102,11 @@ Deploy this repository as a Next.js project on Vercel.
 Current production domain:
 
 ```text
-https://seo-pi-fawn.vercel.app
+https://lorelens.novelai.ai
 ```
 
-If a custom domain is added later, set `NEXT_PUBLIC_SITE_URL` to that domain in Vercel and update the fallback URLs in the app metadata files.
+`data/config/site.json` is the source of truth for the canonical production
+origin. Keep the Vercel `NEXT_PUBLIC_SITE_URL`, Search Console property,
+automation endpoint, canonical metadata, robots file, and sitemap on this same
+origin. Generated `vercel.app` hosts are deployment aliases, not public SEO
+origins.

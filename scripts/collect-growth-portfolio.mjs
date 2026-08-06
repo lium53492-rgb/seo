@@ -13,6 +13,7 @@ import {
   collectGrowthPortfolio,
   shanghaiDate,
 } from "./lib/growth-portfolio.mjs";
+import { configuredProductionSiteOrigin } from "./lib/site-origin.mjs";
 
 const outputArgument = process.argv[2];
 const daysArgument = process.argv[3];
@@ -34,7 +35,10 @@ const pages = existsSync(pagesDirectory)
 const snapshot = await collectGrowthPortfolio({
   pages,
   automationToken: process.env.SEO_AUTOMATION_TOKEN,
-  siteUrl: process.env.SEO_REPORT_SITE_URL,
+  siteUrl: configuredProductionSiteOrigin(
+    process.env.SEO_REPORT_SITE_URL,
+    "SEO_REPORT_SITE_URL",
+  ),
   days,
   reportingLagDays,
 });

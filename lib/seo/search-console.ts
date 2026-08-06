@@ -4,13 +4,16 @@ import type {
   SearchConsolePerformanceSnapshot,
   SearchConsoleUrlInspectionSnapshot,
 } from "./types";
+// Node's native TypeScript test runner requires the explicit extension, while
+// this no-emit project intentionally leaves allowImportingTsExtensions off.
+// @ts-expect-error TS5097: the Next.js bundler and Node 24 both resolve this file.
+import { getSiteUrl } from "./site.ts";
 
 const searchConsoleScope = "https://www.googleapis.com/auth/webmasters.readonly";
 const requestTimeoutMs = 5_000;
 const urlInspectionRequestTimeoutMs = 15_000;
 const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const rfc3339Zulu = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?Z$/;
-const fallbackSiteUrl = "https://seo-pi-fawn.vercel.app";
 
 export type SearchConsolePagePerformance = SearchConsolePerformanceSnapshot;
 export type SearchConsoleUrlInspection = SearchConsoleUrlInspectionSnapshot;
@@ -28,24 +31,56 @@ function normalizePrivateKey(value: string) {
   return value.replace(/\\n/g, "\n").trim();
 }
 
-function publicSiteUrl() {
-  const url = new URL(process.env.NEXT_PUBLIC_SITE_URL || fallbackSiteUrl);
-  if (url.protocol !== "https:" && url.hostname !== "localhost") {
-    throw new Error("NEXT_PUBLIC_SITE_URL must use HTTPS outside local development");
-  }
-  return url;
-}
-
 function configuredSiteUrl() {
+  const publicSite = getSiteUrl();
   const value = process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL?.trim();
   if (value) {
-    if (value.startsWith("sc-domain:")) return value;
-    const site = new URL(value);
-    if (!site.pathname.endsWith("/")) site.pathname = `${site.pathname}/`;
-    return site.toString();
+    if (value.toLowerCase().startsWith("sc-domain:")) {
+      const domain = value.slice("sc-domain:".length)
+        .trim()
+        .toLowerCase()
+        .replace(/\.$/, "");
+      if (
+        !/^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$/.test(domain) ||
+        domain.includes("..") ||
+        domain.split(".").length < 2 ||
+        !(
+          publicSite.hostname === domain ||
+          publicSite.hostname.endsWith(`.${domain}`)
+        )
+      ) {
+        throw new Error(
+          "GOOGLE_SEARCH_CONSOLE_SITE_URL domain property must cover the public canonical hostname",
+        );
+      }
+      return `sc-domain:${domain}`;
+    }
+    let property: URL;
+    try {
+      property = new URL(value);
+    } catch {
+      throw new Error(
+        "GOOGLE_SEARCH_CONSOLE_SITE_URL must be a valid URL-prefix or sc-domain property",
+      );
+    }
+    if (property.username || property.password) {
+      throw new Error(
+        "GOOGLE_SEARCH_CONSOLE_SITE_URL must not contain credentials",
+      );
+    }
+    if (
+      property.origin !== publicSite.origin ||
+      property.pathname !== "/" ||
+      property.search ||
+      property.hash
+    ) {
+      throw new Error(
+        "GOOGLE_SEARCH_CONSOLE_SITE_URL URL-prefix property must match the public canonical origin",
+      );
+    }
+    return `${publicSite.origin}/`;
   }
-  const site = publicSiteUrl();
-  return `${site.origin}/`;
+  return `${publicSite.origin}/`;
 }
 
 function searchConsoleConfig(): SearchConsoleConfig | null {
@@ -408,7 +443,7 @@ export async function readSearchConsoleUrlInspection(input: {
     throw new Error("Search Console source slug is invalid");
   }
   const inspectedAt = (options.now?.() || new Date()).toISOString();
-  const pageUrl = new URL(`/${input.sourceSlug}`, publicSiteUrl()).toString();
+  const pageUrl = new URL(`/${input.sourceSlug}`, getSiteUrl()).toString();
   const config = searchConsoleConfig();
   if (!config) {
     return inspectionUnavailable({
@@ -543,7 +578,7 @@ export async function readSearchConsolePagePerformance(input: {
     throw new Error("Search Console source slug is invalid");
   }
   const { startDate, endDate } = reportingDates(input.periodStart, input.periodEnd);
-  const pageUrl = new URL(`/${input.sourceSlug}`, publicSiteUrl()).toString();
+  const pageUrl = new URL(`/${input.sourceSlug}`, getSiteUrl()).toString();
   const config = searchConsoleConfig();
   if (!config) {
     return unavailable({

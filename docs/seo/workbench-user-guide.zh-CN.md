@@ -38,14 +38,14 @@
 
 ### Google Search Console
 
-1. 添加网址前缀属性 `https://seo-pi-fawn.vercel.app/`。
+1. 添加网址前缀属性 `https://lorelens.novelai.ai/`。
 2. 使用仓库中的 HTML 文件完成站点验证。
 3. 在 Google Cloud 启用 Search Console API，创建服务账号和 JSON 密钥。
 4. 把服务账号邮箱添加到 Search Console 属性用户。
 5. 在 Vercel 的 Production 环境配置：
    - `GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL`
    - `GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY`
-   - `GOOGLE_SEARCH_CONSOLE_SITE_URL=https://seo-pi-fawn.vercel.app/`
+   - `GOOGLE_SEARCH_CONSOLE_SITE_URL=https://lorelens.novelai.ai/`
 6. 重新部署，随后在本地配置 `WORKBENCH_PASSWORD` 并运行 `npm run growth:check`。
 
 采集只读取 `dataState=final` 的最终数据。每日 28 天组合窗口默认延迟 3 个完整日，避免把 Google 尚未稳定的近几日数据误判为流量下降。

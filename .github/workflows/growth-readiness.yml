@@ -18,7 +18,7 @@ jobs:
     env:
       CI: "true"
       SEO_AUTOMATION_TOKEN: ${{ secrets.SEO_AUTOMATION_TOKEN }}
-      SEO_REPORT_SITE_URL: https://seo-pi-fawn.vercel.app
+      SEO_REPORT_SITE_URL: https://lorelens.novelai.ai
     steps:
       - name: Check out the exact commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -55,7 +55,7 @@ jobs:
             echo "## Production growth readiness"
             echo
             echo "- Exit code: \`${{ steps.readiness.outputs.exit_code }}\`"
-            echo "- Endpoint: \`https://seo-pi-fawn.vercel.app/api/attribution/readiness\`"
+            echo "- Endpoint: \`https://lorelens.novelai.ai/api/attribution/readiness\`"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Fail when the complete loop is not ready
