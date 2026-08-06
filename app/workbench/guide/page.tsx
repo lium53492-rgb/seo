@@ -19,13 +19,14 @@ const stateLabels: Record<IntegrationStatus["state"], string> = {
 };
 
 const dailySteps = [
-  ["09:15 收集真实信号", "先检查连接，再覆盖全部已发布页面读取 Search Console、Vercel Analytics 和可用的产品转化数据；没有数据就记录不可用原因。"],
+  ["09:15 主任务启动", "先识别当天流水线阶段并续跑，再覆盖全部已发布页面读取可用的真实信号；没有数据就记录不可用原因，不能把 unavailable 当成 0。"],
   ["研究高意图候选", "结合公开网页、授权 SEO 工具和可用的官方 Google Trends 相对热度，为候选词选择可审计证据；系统再按 policy v4 确定性计算试玩、付费、具体度、产品匹配和竞争代理分。"],
   ["处理内容反馈", "逐字读取所有未消费指导，为每条记录采用或拒绝及原因，再把决定带进选题和 Brief。"],
   ["硬门槛筛选", "系统先排除宽泛信息词、弱试玩意图、产品不匹配、第三方 IP、内容蚕食和重复答案。"],
   ["生成事实受控草稿", "第一名合格机会变成 Brief、英文内容和待审页面，但此时不会写入已发布目录。"],
   ["独立编辑审稿", "人工或标明身份的 Codex 编辑器检查搜索意图、产品事实、来源和转化路径，并生成批准记录。"],
   ["测试后发布", "审批脚本写入页面；测试、类型检查、构建、线上 H1/canonical/CTA/sitemap 全部通过后才报告上线。"],
+  ["18:30 / 21:30 自动恢复", "如果前序任务中断，恢复任务从共享检查点继续；如果当天页面已存在，只补 PDF 和部署验收，绝不生成第二篇。"],
   ["跟踪收录与授权分发", "上线、Vercel READY、Google indexed、backlink-live 分别记录；只在获授权渠道投放外链，不把提交收录误报为已收录。"],
   ["按营收反馈", "页面榜单比较 exact-page GSC、UV、出站和付费；用 seo_click_id 连接 NovelAI 事件，再反向调整下一轮选题。"],
 ];
@@ -64,15 +65,15 @@ export default async function WorkbenchGuidePage() {
         </nav>
         <div className="wb-sidebar-note">
           <span className="wb-dot partial" />
-          <p><strong>每日自动运行</strong><small>09:15 · Asia/Shanghai</small></p>
+          <p><strong>每日自动运行</strong><small>09:15 主任务 · 18:30 / 21:30 恢复</small></p>
         </div>
       </aside>
 
       <div className="wb-main wb-guide" id="guide">
         <header className="wb-guide-hero">
           <p className="wb-kicker">OPERATING MANUAL</p>
-          <h1>先看证据和阻断，再决定今天是否发布。</h1>
-          <p>每天沿同一条链路完成采集、研究、反馈、评分、写作、独立审稿和质检；只有全部闸门通过才发布。工作台会明确区分代理分、真实页面数据、部署、收录和外链状态。</p>
+          <h1>每天自动完成一篇，失败后从断点继续。</h1>
+          <p>每天沿同一条可恢复链路完成采集、研究、反馈、评分、写作、独立审稿和质检；候选失败会自动换下一个，任务中断会在晚间续跑。工作台会明确区分代理分、真实页面数据、部署、收录和外链状态。</p>
           <div className="wb-hero-actions">
             <a className="wb-primary-link" href="/workbench">打开今日任务</a>
             {report.publication?.status === "published" && report.publication.path ? (
@@ -106,7 +107,7 @@ export default async function WorkbenchGuidePage() {
           </ol>
           <div className="wb-guide-note">
             <strong>零额外 API 成本的运行条件：</strong>
-            每日研究与写作使用这台电脑上的 Codex 自动任务，因此 09:15 前后需要保持电脑和 Codex 应用在线。错过时可在 Codex 的自动化页面点一次“立即运行”；提交之后的 GitHub 构建、Vercel 上线和页面访问不依赖电脑在线。
+            每日研究与写作使用这台电脑上的 Codex 自动任务，因此 09:15、18:30 和 21:30 恢复窗口需要保持电脑与 Codex 应用在线。前序任务失败或超时后会由晚间任务自动续跑，不需要手动点“立即运行”；提交之后的 GitHub 构建、Vercel 上线和页面访问不依赖电脑在线。
           </div>
         </section>
 

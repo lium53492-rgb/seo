@@ -13,6 +13,8 @@ npm run dev
 npm run growth:check
 npm run growth:collect
 npm run feedback:sync
+npm run daily:state
+npm run daily:coord -- status
 npm run verify
 ```
 
@@ -38,8 +40,14 @@ Codex public-web research
 -> Vercel workbench refresh
 ```
 
-The Codex desktop automation runs every day at 09:15 Asia/Shanghai. It first
-collects one all-page growth snapshot, then researches the public web, writes a
+The primary Codex desktop automation runs every day at 09:15 Asia/Shanghai,
+with idempotent recovery passes at 18:30 and 21:30. `daily:state` resumes a consistent
+partial run and prevents a second page for the same Shanghai day. A shared
+`daily:coord` lease and checkpoint lets isolated automation worktrees hand off
+without racing. Lease transitions are immutable append-only states, and the
+publisher holds the same cross-worktree guard while rechecking the daily page
+count. The primary
+run collects one all-page growth snapshot, researches the public web, writes a
 review-required English draft, and builds a durable report. A separate approval
 artifact is mandatory before publication. The builder blocks unsupported
 product claims, weak trial/revenue intent, duplicate intent, unapproved facts,
@@ -47,7 +55,12 @@ and broken attribution joins. Page count, exact-page Search Console impressions,
 and landing UV remain prioritization evidence rather than a hard expansion
 gate. The workbench labels research values as proxy scores; they are not monthly
 search volume, CPC, Google data, or Semrush KD. See
-`docs/seo/free-research-robot.md` for the evidence and scoring protocol.
+`docs/seo/free-research-robot.md` for the evidence and scoring protocol and
+`docs/seo/unattended-daily-publishing.md` for retry, recovery, and exact-release
+verification.
+
+These schedules are local Codex jobs, so unattended production requires the
+computer and Codex application to remain online during a publishing window.
 
 The dashboard also keeps official Google Trends relative-interest signals
 separate from keyword volume, ranks published pages only with observed

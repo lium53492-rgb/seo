@@ -9,6 +9,11 @@ import {
 } from "../lib/seo/content-similarity.mjs";
 import { publishedArchitectureHistoryFromReports } from "../lib/seo/content-history.mjs";
 import {
+  analyzeCandidateIntentBatch,
+  findPublishedIntentMatch,
+  publishedIntentRecords,
+} from "./lib/intent-similarity.mjs";
+import {
   evaluateConsolidationEvidence,
   evaluateGrowthFeedbackGate,
   projectPrivateGrowthReport,
@@ -23,6 +28,7 @@ const policy = readJson("data/config/seo-policy.json");
 const factCatalog = readJson("data/config/product-facts.json");
 const architecturePolicy = readJson("data/config/content-architecture.json");
 const presentationCatalog = readJson("data/config/presentation-recipes.json");
+const unattendedPolicy = readJson("data/config/unattended-publishing.json");
 const date = String(input.date || "");
 
 validateSeoArchitectureBridge(policy, architecturePolicy);
@@ -73,8 +79,10 @@ if (!["qualified_outbound_click", "trial_start", "purchase"].includes(contentStr
   throw new Error("Content strategy needs a measurable primaryConversion");
 }
 
-if (!Array.isArray(input.candidates) || input.candidates.length < policy.candidateCount.min || input.candidates.length > policy.candidateCount.max) {
-  throw new Error(`Research requires ${policy.candidateCount.min}-${policy.candidateCount.max} candidates`);
+const minimumDailyCandidates = Math.max(policy.candidateCount.min, unattendedPolicy.candidateBatchSize.min);
+const maximumDailyCandidates = Math.min(policy.candidateCount.max, unattendedPolicy.candidateBatchSize.max);
+if (!Array.isArray(input.candidates) || input.candidates.length < minimumDailyCandidates || input.candidates.length > maximumDailyCandidates) {
+  throw new Error(`Research requires ${minimumDailyCandidates}-${maximumDailyCandidates} candidates`);
 }
 if (!Array.isArray(input.evidence) || input.evidence.length < policy.evidence.minLinks) {
   throw new Error(`Research requires at least ${policy.evidence.minLinks} evidence links`);
@@ -351,6 +359,28 @@ function validateFeedbackDecisions(rawDecisions, pendingFeedback) {
 const candidateKeywords = input.candidates.map((candidate) => String(candidate.keyword || "").trim().toLowerCase());
 if (new Set(candidateKeywords).size !== candidateKeywords.length) {
   throw new Error("Research candidates must use unique keywords");
+}
+const candidateSearcherJobs = input.candidates.map((candidate) =>
+  String(candidate?.decisionEvidence?.searcherJob || "").trim().toLowerCase());
+if (candidateSearcherJobs.some((job) => !job) ||
+  new Set(candidateSearcherJobs).size !== candidateSearcherJobs.length) {
+  throw new Error("Research candidates must use distinct non-empty searcher jobs");
+}
+const requiredDistinctIntents = policy.dailyPageLimit + unattendedPolicy.minimumFallbackIntents;
+const candidateIntentBatch = analyzeCandidateIntentBatch(input.candidates);
+if (candidateIntentBatch.distinctCount < requiredDistinctIntents) {
+  const example = candidateIntentBatch.collisions[0];
+  const duplicateDetail = example
+    ? ` Near-duplicate candidates: "${example.left.keyword}" and "${example.right.keyword}".`
+    : "";
+  throw new Error(
+    `Research requires at least ${requiredDistinctIntents} semantically distinct candidate intents ` +
+    `(${unattendedPolicy.minimumFallbackIntents} distinct fallbacks after today's page); ` +
+    `found ${candidateIntentBatch.distinctCount}.${duplicateDetail}`,
+  );
+}
+if (candidateIntentBatch.distinctCount - policy.dailyPageLimit < unattendedPolicy.minimumFallbackIntents) {
+  throw new Error(`Research must retain at least ${unattendedPolicy.minimumFallbackIntents} fallback intents`);
 }
 const trendSignals = validateTrendSignals(input.trendSignals, new Set(candidateKeywords));
 const feedbackDecisions = validateFeedbackDecisions(
@@ -1115,7 +1145,9 @@ function validatePortfolioDecision(rawDecision, publishedPages) {
 }
 
 const pages = existingPages();
-const architectureHistory = publishedArchitectureHistoryFromReports(existingReports());
+const reports = existingReports();
+const architectureHistory = publishedArchitectureHistoryFromReports(reports);
+const publishedIntents = publishedIntentRecords(pages, reports);
 const preparedCandidateInputs = input.candidates.map((candidate) => {
   const keyword = String(candidate.keyword || "").trim().toLowerCase();
   const decisionEvidence = candidate.decisionEvidence || {};
@@ -1154,18 +1186,48 @@ const preparedCandidateInputs = input.candidates.map((candidate) => {
   ) {
     throw new Error(`Unsupported capability keyword cannot claim product-fit signals: ${keyword}`);
   }
-  const cannibalizationClass = String(decisionEvidence.cannibalizationClass || "");
-  const nearestExistingSlug = decisionEvidence.nearestExistingSlug;
-  if (cannibalizationClass === "new_intent") {
+  const claimedCannibalizationClass = String(decisionEvidence.cannibalizationClass || "");
+  const claimedNearestExistingSlug = decisionEvidence.nearestExistingSlug;
+  const derivedIntentMatch = findPublishedIntentMatch(candidate, publishedIntents);
+  if (derivedIntentMatch) {
+    const derivedSlug = derivedIntentMatch.record.slug;
+    if (claimedCannibalizationClass === "new_intent" || claimedNearestExistingSlug !== derivedSlug) {
+      throw new Error(
+        `Candidate ${keyword} is a semantic near-duplicate of published /${derivedSlug} ` +
+        `(${derivedIntentMatch.candidateField.source} matched ${derivedIntentMatch.publishedField.source}) ` +
+        `and must use a non-new-intent binding with nearestExistingSlug ${derivedSlug}`,
+      );
+    }
+    const nearestPage = pages.find((page) => page.slug === derivedSlug);
+    if (!nearestPage) throw new Error(`Derived published intent has no page: ${derivedSlug}`);
+    if (candidate.existingUrl && candidate.existingUrl !== nearestPage.path) {
+      throw new Error(`Candidate ${keyword} existingUrl does not match derived nearestExistingSlug`);
+    }
+    const derivedCannibalizationClass = (
+      derivedIntentMatch.comparison.exactFingerprint ||
+      derivedIntentMatch.comparison.taskFingerprintMatch ||
+      derivedIntentMatch.comparison.similarity >= 0.84
+    ) ? "same_intent" : "adjacent_intent";
+    return {
+      ...candidate,
+      existingUrl: nearestPage.path,
+      decisionEvidence: {
+        ...decisionEvidence,
+        cannibalizationClass: derivedCannibalizationClass,
+        nearestExistingSlug: derivedSlug,
+      },
+    };
+  }
+  if (claimedCannibalizationClass === "new_intent") {
     if (candidate.existingUrl) {
       throw new Error(`A new_intent candidate cannot name an existingUrl: ${keyword}`);
     }
     return candidate;
   }
-  if (typeof nearestExistingSlug !== "string") return candidate;
-  const nearestPage = pages.find((page) => page.slug === nearestExistingSlug);
+  if (typeof claimedNearestExistingSlug !== "string") return candidate;
+  const nearestPage = pages.find((page) => page.slug === claimedNearestExistingSlug);
   if (!nearestPage) {
-    throw new Error(`Candidate ${keyword} names an unpublished nearestExistingSlug: ${nearestExistingSlug}`);
+    throw new Error(`Candidate ${keyword} names an unpublished nearestExistingSlug: ${claimedNearestExistingSlug}`);
   }
   if (candidate.existingUrl && candidate.existingUrl !== nearestPage.path) {
     throw new Error(`Candidate ${keyword} existingUrl does not match nearestExistingSlug`);
@@ -1178,6 +1240,17 @@ const opportunities = preparedCandidateInputs
   .map((candidate) => scoreResearchCandidate(candidate, policy))
   .sort((left, right) => right.score - left.score)
   .slice(0, policy.candidateCount.max);
+const eligibleCreateCandidates = opportunities.filter((candidate) =>
+  candidate.action === "create_page" && candidate.gate?.passed === true);
+const eligibleCreateBatch = analyzeCandidateIntentBatch(eligibleCreateCandidates);
+const eligibleCreateOpportunities = eligibleCreateBatch.clusters.map((cluster) =>
+  eligibleCreateCandidates[cluster.members[0].index]);
+if (input.publicationMode !== "update" && eligibleCreateOpportunities.length < requiredDistinctIntents) {
+  throw new Error(
+    `Research requires at least ${requiredDistinctIntents} semantically distinct candidates that passed all gates ` +
+    `with action=create_page; found ${eligibleCreateOpportunities.length}`,
+  );
+}
 const rawDrafts = Array.isArray(input.drafts) && input.drafts.length ? input.drafts : input.draft ? [input.draft] : [];
 if (rawDrafts.length > policy.dailyPageLimit) {
   throw new Error(`A daily report may contain at most ${policy.dailyPageLimit} publishable draft`);
@@ -1263,6 +1336,18 @@ const preparedDrafts = rawDrafts.map((rawDraft, index) => {
 const draft = preparedDrafts[0]?.draft ?? null;
 const selectedOpportunity = preparedDrafts[0]?.opportunity ?? opportunities.find((candidate) => candidate.action === "create_page") ?? opportunities[0];
 if (!selectedOpportunity) throw new Error("Research produced no scored opportunity");
+const selectedCreateKeyword = selectedOpportunity.action === "create_page"
+  ? selectedOpportunity.keyword
+  : null;
+const eligibleFallbacks = eligibleCreateOpportunities
+  .filter((candidate) => candidate.keyword !== selectedCreateKeyword)
+  .map((candidate, index) => ({
+    rank: index + 1,
+    keyword: candidate.keyword,
+    searcherJob: candidate.decisionEvidence.searcherJob,
+    score: candidate.score,
+    action: candidate.action,
+  }));
 const performance = Array.isArray(input.performance) ? input.performance.map((row, index) => {
   const normalized = {
     url: String(row.url || ""),
@@ -1362,10 +1447,20 @@ const report = {
   headline: `Today's revenue-first priority: ${portfolioAction}`,
   summary: {
     candidatesAnalyzed: input.candidates.length,
-    publishableOpportunities: opportunities.filter((row) => row.action === "create_page").length,
+    publishableOpportunities: eligibleCreateOpportunities.length,
+    eligibleFallbackIntents: eligibleFallbacks.length,
     totalClicks: totals.clicks,
     totalImpressions: totals.impressions,
     averageCtr: totals.impressions ? totals.clicks / totals.impressions : 0,
+  },
+  candidateIntentGate: {
+    schemaVersion: 1,
+    state: input.publicationMode === "update" ? "not_applicable_update" : "passed",
+    requiredDistinctCreateIntents: requiredDistinctIntents,
+    eligibleDistinctCreateIntents: eligibleCreateOpportunities.length,
+    selectedKeyword: selectedCreateKeyword,
+    eligibleFallbackCount: eligibleFallbacks.length,
+    eligibleFallbacks,
   },
   opportunities,
   performance,

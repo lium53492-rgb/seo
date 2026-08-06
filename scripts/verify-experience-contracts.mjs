@@ -105,6 +105,9 @@ for (const recipe of recipeCatalog.recipes || []) {
   }
 }
 for (const contractFragment of [
+  "listMarkdownRenderBlocks",
+  "parseMarkdownBlocks",
+  "<SemanticMarkdown",
   "data-content-role",
   "data-content-format",
   "data-signature-type",

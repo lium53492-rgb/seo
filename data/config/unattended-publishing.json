@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "timezone": "Asia/Shanghai",
+  "dailyPageTarget": 1,
+  "primarySchedule": "09:15",
+  "pdfFallbackSchedule": "18:30",
+  "finalRecoverySchedule": "21:30",
+  "publishCutoffLocalTime": "23:45",
+  "resumeConsistentPartialArtifacts": true,
+  "sharedCheckpoint": "git-common-dir",
+  "leaseStaleAfterMinutes": 60,
+  "heartbeatIntervalMinutes": 15,
+  "allowCreatePageWhenMetricsUnavailable": true,
+  "networkAttempts": 3,
+  "candidateBatchSize": {
+    "min": 8,
+    "max": 12
+  },
+  "minimumFallbackIntents": 7,
+  "releaseVerification": {
+    "origin": "https://lorelens.novelai.ai",
+    "expectedOriginRepository": "lium53492-rgb/seo",
+    "authoritativeDeploymentEvidence": "live_exact_git_revision",
+    "requireOriginMainTip": true,
+    "requireSameProjectReadyWhenAccessible": true,
+    "rejectReadyFromDifferentProject": true,
+    "revisionAttribute": "data-release-revision",
+    "revisionMetaName": "git-revision",
+    "requireH1": true,
+    "requireCanonical": true,
+    "requireAttributedCta": true,
+    "requireArticleJsonLd": true,
+    "requireFaqJsonLd": true,
+    "requireSitemapEntry": true
+  },
+  "terminalSuccess": [
+    "one_page_published_for_shanghai_day",
+    "origin_main_contains_release_commit",
+    "production_serves_exact_git_revision",
+    "live_page_contract_verified"
+  ],
+  "hardStops": [
+    "unrelated_user_work_would_be_overwritten",
+    "more_than_one_page_for_shanghai_day",
+    "orphan_attribution_callback_detected",
+    "unsupported_product_claim",
+    "third_party_ip",
+    "duplicate_or_cannibalizing_intent",
+    "editorial_review_failure",
+    "verification_failure",
+    "unresolvable_remote_conflict"
+  ]
+}

@@ -1,3 +1,8 @@
+// Node's native TypeScript test runner requires the explicit extension, while
+// this no-emit project intentionally leaves allowImportingTsExtensions off.
+// @ts-expect-error TS5097: the Next.js bundler and Node 24 both resolve this file.
+import { getSiteUrl } from "./site.ts";
+
 const defaultProjectId = "prj_Qd3p3ml63hElGzar9myWPNuT9wVJ";
 const defaultTeamId = "team_ciR2KmsqedGg5FIi1nqjSJCu";
 const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -54,7 +59,11 @@ export async function readLandingUv(input: {
   endpoint.searchParams.set("teamId", config.teamId);
   endpoint.searchParams.set("since", start.toISOString());
   endpoint.searchParams.set("until", end.toISOString());
-  endpoint.searchParams.set("filter", `requestPath eq '/${input.sourceSlug}'`);
+  const publicHostname = getSiteUrl().hostname;
+  endpoint.searchParams.set(
+    "filter",
+    `requestPath eq '/${input.sourceSlug}' and requestHostname eq '${publicHostname}'`,
+  );
 
   let response: Response;
   try {
@@ -96,6 +105,6 @@ export async function readLandingUv(input: {
     state: "observed",
     visitors,
     pageviews,
-    detail: `Observed /${input.sourceSlug} through Vercel Web Analytics for the requested period.`,
+    detail: `Observed ${publicHostname}/${input.sourceSlug} through Vercel Web Analytics for the requested period.`,
   };
 }

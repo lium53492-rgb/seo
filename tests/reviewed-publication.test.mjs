@@ -1,16 +1,41 @@
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
 import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
+import { registerHooks } from "node:module";
 import test from "node:test";
 
 import { isReportDraft } from "../lib/seo/report-draft-validation.mjs";
+import { listMarkdownRenderBlocks, parseMarkdownBlocks } from "../lib/seo/markdown-semantics.mjs";
+import { acquireDailyLease, coordinationOwner } from "../scripts/lib/daily-coordination.mjs";
 
 const repoRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const builderPath = join(repoRoot, "scripts", "build-free-research-report.mjs");
 const publisherPath = join(repoRoot, "scripts", "publish-reviewed-page.mjs");
+const emptyServerOnlyModule = "data:text/javascript,export {}";
+
+registerHooks({
+  resolve(specifier, context, nextResolve) {
+    if (specifier === "server-only") return { url: emptyServerOnlyModule, shortCircuit: true };
+    if (specifier.startsWith("@/")) {
+      const aliasedPath = specifier.slice(2);
+      const path = join(repoRoot, aliasedPath.endsWith(".json") ? aliasedPath : `${aliasedPath}.ts`);
+      return {
+        url: pathToFileURL(path).href,
+        ...(aliasedPath.endsWith(".json") ? { importAttributes: { type: "json" } } : {}),
+        shortCircuit: true,
+      };
+    }
+    if ((specifier.startsWith("./") || specifier.startsWith("../")) && context.parentURL?.startsWith("file:") && !/\.[cm]?[jt]sx?$/.test(specifier)) {
+      const candidate = fileURLToPath(new URL(`${specifier}.ts`, context.parentURL));
+      if (existsSync(candidate)) return { url: pathToFileURL(candidate).href, shortCircuit: true };
+    }
+    return nextResolve(specifier, context);
+  },
+});
 
 const unavailable = (source, detail) => ({ status: "unavailable", value: null, source, detail });
 
@@ -36,10 +61,23 @@ test("report generation cannot publish before a separate approval artifact", asy
 
     const keywords = [
       "play an ai roleplay story",
-      "start an ai voice story",
-      "try a story roleplay game",
-      "choose a role story game",
-      "interactive story roleplay trial",
+      "write an ai roleplay first reply",
+      "recover a stalled ai roleplay scene",
+      "stay in character during ai roleplay",
+      "set ai roleplay reply pacing",
+      "choose dialogue or action in ai roleplay",
+      "find an ai roleplay character motivation",
+      "make a consequential ai roleplay choice",
+    ];
+    const searcherJobs = [
+      "Compare authoring a blank roleplay prompt with entering a prepared AI story, then choose the starting route that fits this session.",
+      "Write one first AI roleplay reply from a supplied scene detail, a small in-character action, and a hook the next turn can answer.",
+      "Recover a stalled AI roleplay scene by adding one grounded observation, action, or decision that creates a clear next beat.",
+      "Maintain a chosen character perspective during an AI roleplay scene after the opening exchange has already begun.",
+      "Set the length and pacing of an AI roleplay reply so it matches how actively the chosen role should respond.",
+      "Decide whether an AI roleplay response should use dialogue, an action, or both for the current story beat.",
+      "Find one immediate motivation for a selected AI roleplay character so the next response has a coherent direction.",
+      "Choose an AI roleplay action with a visible consequence for the immediate scene instead of adding a disconnected line.",
     ];
     const decisionRationale = Object.fromEntries([
       "demand",
@@ -74,7 +112,7 @@ test("report generation cannot publish before a separate approval artifact", asy
       decisionEvidence: {
         schemaVersion: 1,
         evidenceRefs: ["evidence-1", "evidence-2"],
-        searcherJob: `Enter ${keyword} immediately and decide whether this product format is worth trying.`,
+        searcherJob: searcherJobs[index],
         productFactIds: [
           "voice-roleplay-format",
           "existing-story",
@@ -113,8 +151,8 @@ test("report generation cannot publish before a separate approval artifact", asy
     const supports = [...keywords];
     const sectionBodies = [
       "A useful entry decision begins by separating two very different jobs. A blank-prompt route asks the reader to supply a premise before anything can happen. A story-led route begins with an existing plot, so the first decision is whether that supplied situation already creates a reason to participate. Read the opening for one unresolved pressure, one available perspective, and one immediate consequence. That comparison prevents a generic greeting from standing in for a real choice. It also keeps the explanation inside approved product facts: the page can describe an existing story and role selection without promising a specific world, character, platform, price, response speed, or technical voice behavior.",
-      "Compare the routes with a small evidence grid rather than a feature checklist. In the first column, write what context the reader must invent. In the second, write what context is already present.\n\nThen note where the point of view comes from and what the reader can decide next. The story-led side should show that an available role narrows the perspective, while the blank side leaves that work open. Neither route is declared universally better. The grid exists to help a trial-ready searcher recognize which starting condition matches the action they want to take now, using original language and no borrowed fictional setting.",
-      "Use a three-question decision rule after the comparison. First, do you want to build the premise or respond to one that is already moving?\n\nSecond, do you want to invent a speaker or choose from the roles made available by the story?\n\nThird, can you name one scene-level action you would take after that choice? Three clear answers create a reasoned next step; uncertainty on any answer tells the reader what to inspect again. This rule is deliberately narrower than a broad beginner tutorial because it resolves one route choice before the reader reaches the opening scene.",
+      "Compare the routes with a small evidence grid rather than a feature checklist.\n1. In the first column, write what context the reader must invent.\n2. In the second column, write what context is already present.\nThen note where the point of view comes from and what the reader can decide next. The story-led side should show that an available role narrows the perspective, while the blank side leaves that work open. Neither route is declared universally better. The grid exists to help a trial-ready searcher recognize which starting condition matches the action they want to take now, using original language and no borrowed fictional setting.",
+      "Use a three-question decision rule after the comparison.\n- First, do you want to build the premise or respond to one that is already moving?\n- Second, do you want to invent a speaker or choose from the roles made available by the story?\n- Third, can you name one scene-level action you would take after that choice?\nThree clear answers create a reasoned next step; uncertainty on any answer tells the reader what to inspect again. This rule is deliberately narrower than a broad beginner tutorial because it resolves one route choice before the reader reaches the opening scene.",
       "When the route is clear, carry only the decision forward. Open the attributed destination intentionally in a new tab, inspect an existing premise, and choose an available role if the format fits. The page does not start a session, guarantee an outcome, or claim that every imagined scenario exists. Its job is to replace a vague product visit with a qualified one: the reader understands the story-led boundary, knows which perspective they would take, and can measure the next action through the approved redirect and downstream attribution chain without exposing protected commercial data in the public report.",
     ];
     const input = {
@@ -381,6 +419,45 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.notEqual(invalidTrendValueBuild.status, 0);
     assert.match(invalidTrendValueBuild.stderr, /relativeInterest must be an integer from 0 to 100/);
 
+    const undersizedCandidateInput = structuredClone(input);
+    undersizedCandidateInput.candidates = undersizedCandidateInput.candidates.slice(0, 7);
+    await writeFile(inputPath, `${JSON.stringify(undersizedCandidateInput, null, 2)}\n`);
+    const undersizedCandidateBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(undersizedCandidateBuild.status, 0);
+    assert.match(undersizedCandidateBuild.stderr, /Research requires 8-12 candidates/);
+
+    const nearDuplicateIntentInput = structuredClone(input);
+    nearDuplicateIntentInput.candidates[1].keyword = "enter a prepared ai roleplay story";
+    nearDuplicateIntentInput.candidates[1].decisionEvidence.searcherJob =
+      "Assess a self-authored prompt against a supplied AI story and select which starting route fits this session.";
+    await writeFile(inputPath, `${JSON.stringify(nearDuplicateIntentInput, null, 2)}\n`);
+    const nearDuplicateIntentBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(nearDuplicateIntentBuild.status, 0);
+    assert.match(nearDuplicateIntentBuild.stderr, /semantically distinct candidate intents/);
+    assert.match(nearDuplicateIntentBuild.stderr, /Near-duplicate candidates/);
+
+    const mostlyIneligibleInput = structuredClone(input);
+    mostlyIneligibleInput.candidates = mostlyIneligibleInput.candidates.map((candidate, index) => ({
+      ...candidate,
+      funnelStage: index === 0 ? candidate.funnelStage : "problem",
+    }));
+    await writeFile(inputPath, `${JSON.stringify(mostlyIneligibleInput, null, 2)}\n`);
+    const mostlyIneligibleBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(mostlyIneligibleBuild.status, 0);
+    assert.match(
+      mostlyIneligibleBuild.stderr,
+      /semantically distinct candidates that passed all gates with action=create_page; found 1/,
+    );
+
     await mkdir(join(workspace, "data", "seo-feedback", "inbox"), { recursive: true });
     const feedbackMessage = "  Keep the exact page intent narrow.\n\nDo not flatten this feedback.  ";
     await writeFile(
@@ -455,6 +532,17 @@ test("report generation cannot publish before a separate approval artifact", asy
       [],
     );
     assert.equal(reportBeforeReview.portfolioDecision.action, "create_page");
+    assert.equal(reportBeforeReview.candidateIntentGate.state, "passed");
+    assert.equal(reportBeforeReview.candidateIntentGate.requiredDistinctCreateIntents, 8);
+    assert.equal(reportBeforeReview.candidateIntentGate.eligibleDistinctCreateIntents, 8);
+    assert.equal(reportBeforeReview.candidateIntentGate.selectedKeyword, keywords[0]);
+    assert.equal(reportBeforeReview.candidateIntentGate.eligibleFallbackCount, 7);
+    assert.deepEqual(
+      reportBeforeReview.candidateIntentGate.eligibleFallbacks.map((fallback) => fallback.rank),
+      [1, 2, 3, 4, 5, 6, 7],
+    );
+    assert.ok(reportBeforeReview.candidateIntentGate.eligibleFallbacks.every((fallback) =>
+      fallback.action === "create_page" && fallback.keyword !== keywords[0]));
     assert.equal(reportBeforeReview.trendSignals[0].relativeInterest, 67);
     assert.equal(reportBeforeReview.trendSignals[0].source, "google_trends");
     assert.equal(reportBeforeReview.trendSignals[1].state, "unavailable");
@@ -509,7 +597,28 @@ test("report generation cannot publish before a separate approval artifact", asy
 
     await writeFile(reportPath, `${JSON.stringify(reportBeforeReview, null, 2)}\n`);
 
-    const publish = spawnSync(process.execPath, [publisherPath, reportPath, reviewPath], { cwd: workspace, encoding: "utf8" });
+    const coordinationRoot = join(workspace, ".daily-coordination");
+    const dailyRunId = "reviewed-publication-fixture";
+    const lease = acquireDailyLease({
+      coordinationRoot,
+      date: "2099-01-01",
+      owner: coordinationOwner(workspace, dailyRunId),
+      now: new Date("2099-01-01T12:30:00.000Z"),
+    });
+    assert.equal(lease.outcome, "acquired");
+
+    const publish = spawnSync(process.execPath, [publisherPath, reportPath, reviewPath], {
+      cwd: workspace,
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        NODE_ENV: "test",
+        SEO_TEST_PUBLICATION_NOW: "2099-01-01T12:30:00.000Z",
+        SEO_TEST_COORDINATION_ROOT: coordinationRoot,
+        SEO_DAILY_RUN_ID: dailyRunId,
+        CODEX_THREAD_ID: dailyRunId,
+      },
+    });
     assert.equal(publish.status, 0, publish.stderr);
     const page = JSON.parse(await readFile(join(workspace, "data", "pages", "play-an-ai-roleplay-story.json"), "utf8"));
     assert.equal(page.schemaVersion, 3);
@@ -518,8 +627,41 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.equal(page.signatureModule.id, "route-evidence-switchboard");
     assert.equal(page.editorialReview.decision, "approved");
     assert.equal(page.draftDigest, review.draftDigest);
+    assert.equal(page.publishedAt, "2099-01-01T12:30:00.000Z");
+    assert.deepEqual(parseMarkdownBlocks(page.sections[1].bodyMarkdown).map((block) => block.type), ["prose", "list", "prose"]);
+    assert.deepEqual(listMarkdownRenderBlocks(page.sections[2].bodyMarkdown, false).map((block) => block.type), ["prose", "list", "prose"]);
+    assert.match(page.sections[1].bodyMarkdown, /\n1\.[\s\S]*\n2\./);
+    assert.match(page.sections[2].bodyMarkdown, /\n- First[\s\S]*\n- Third/);
+    const originalCwd = process.cwd();
+    try {
+      process.chdir(workspace);
+      const { readPublishedPage } = await import("../lib/seo/page-store.ts?publisher-output");
+      const storedPage = await readPublishedPage("play-an-ai-roleplay-story");
+      assert.equal(storedPage?.schemaVersion, 3, "publisher output must remain readable through page-store");
+      assert.equal(storedPage?.sections[2].bodyMarkdown, page.sections[2].bodyMarkdown);
+    } finally {
+      process.chdir(originalCwd);
+    }
     const reportAfterReview = JSON.parse(await readFile(reportPath, "utf8"));
     assert.equal(reportAfterReview.publication.status, "published");
+
+    const falselyNewIntentInput = structuredClone(input);
+    falselyNewIntentInput.candidates[0].keyword = "enter a prepared ai roleplay story";
+    falselyNewIntentInput.candidates[0].decisionEvidence.searcherJob =
+      "Compare a self-authored prompt with entering a supplied AI story, then select the starting route that fits this session.";
+    falselyNewIntentInput.trendSignals[0].keyword = falselyNewIntentInput.candidates[0].keyword;
+    falselyNewIntentInput.evidence = falselyNewIntentInput.evidence.map((item) => ({
+      ...item,
+      supports: [...item.supports, falselyNewIntentInput.candidates[0].keyword],
+    }));
+    await writeFile(inputPath, `${JSON.stringify(falselyNewIntentInput, null, 2)}\n`);
+    const falselyNewIntentBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(falselyNewIntentBuild.status, 0);
+    assert.match(falselyNewIntentBuild.stderr, /semantic near-duplicate of published \/play-an-ai-roleplay-story/);
+    assert.match(falselyNewIntentBuild.stderr, /must use a non-new-intent binding/);
 
     const updateInput = structuredClone(input);
     delete updateInput.trendSignals;
@@ -528,20 +670,33 @@ test("report generation cannot publish before a separate approval artifact", asy
     updateInput.publicationMode = "update";
     const updateKeywords = [
       "personalize an ai roleplay story",
-      "improve an ai voice story",
-      "refine a story roleplay game",
-      "adjust a choose your role story",
-      "update an interactive roleplay story",
+      "audit an ai roleplay first reply",
+      "diagnose a stalled ai roleplay scene",
+      "check ai roleplay character continuity",
+      "tune ai roleplay reply pacing",
+      "balance ai roleplay dialogue and action",
+      "clarify an ai roleplay character motivation",
+      "strengthen an ai roleplay choice consequence",
+    ];
+    const updateSearcherJobs = [
+      "Improve the existing story-entry decision page by clarifying how a reader chooses between authoring a prompt and entering a prepared story.",
+      "Audit one first AI roleplay reply for a grounded scene detail, an in-character action, and a hook that another turn can answer.",
+      "Diagnose a stalled AI roleplay scene and identify the smallest observation, action, or decision that can restore momentum.",
+      "Check whether an AI roleplay response maintains the selected character perspective after the opening exchange has begun.",
+      "Tune the length and pacing of an AI roleplay reply to match the amount of movement required by the current scene.",
+      "Balance dialogue and action in an AI roleplay response without making either mode carry the entire story beat.",
+      "Clarify one immediate motivation for an AI roleplay character so the next response follows a coherent objective.",
+      "Strengthen one AI roleplay choice by naming a visible consequence that changes the immediate scene.",
     ];
     updateInput.candidates = updateInput.candidates.map((candidate, index) => ({
       ...candidate,
       keyword: updateKeywords[index],
-      existingUrl: "/play-an-ai-roleplay-story",
+      ...(index === 0 ? { existingUrl: "/play-an-ai-roleplay-story" } : {}),
       decisionEvidence: {
         ...candidate.decisionEvidence,
-        searcherJob: `Improve ${updateKeywords[index]} on the existing route using observed query evidence.`,
-        cannibalizationClass: "adjacent_intent",
-        nearestExistingSlug: "play-an-ai-roleplay-story",
+        searcherJob: updateSearcherJobs[index],
+        cannibalizationClass: index === 0 ? "adjacent_intent" : "new_intent",
+        nearestExistingSlug: index === 0 ? "play-an-ai-roleplay-story" : null,
       },
     }));
     updateInput.contentStrategy.searcherJob = updateInput.candidates[0].decisionEvidence.searcherJob;

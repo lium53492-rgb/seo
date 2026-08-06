@@ -44,6 +44,20 @@ function schemaThreePage() {
     ["faq-decision", "decision"],
     ["faq-constraint", "constraint"],
   ];
+  const semanticSectionBodies = {
+    compare: [
+      "This comparison layer starts with an explicit introduction that tells the reader why the route evidence belongs together.",
+      "1. Compare how much opening context each route supplies before the reader takes an action.",
+      "2. Compare where the available perspective comes from and which decision remains open afterward.",
+      "The unmarked conclusion remains part of the reviewed section and turns those two observations into one bounded route choice without adding an unsupported product claim.",
+    ].join("\n"),
+    rule: [
+      "This checklist layer introduces the evidence boundary before asking the reader to verify any individual condition.",
+      "- Confirm that the opening context matches the work the reader wants to avoid or perform.",
+      "- Confirm that an available perspective supports the immediate scene-level action the reader wants to take.",
+      "The closing instruction remains visible after the checklist: stop and inspect the route again when either condition is still unclear, instead of inventing a capability or outcome.",
+    ].join("\n"),
+  };
   const checks = [
     "search-intent",
     "product-truth",
@@ -75,7 +89,7 @@ function schemaThreePage() {
       role,
       format,
       heading: `Reviewed content layer ${index + 1}`,
-      bodyMarkdown: `This original layer ${index + 1} performs a separate reader job and stays within the approved story and role-selection facts. It identifies the exact choice in front of the visitor, explains what evidence belongs to that choice, and keeps each conclusion inside the documented boundary.\n\nThe layer then gives the reader a concrete way to apply the distinction in practice today without borrowing a character, promising a result, or repeating the job assigned to another section.`,
+      bodyMarkdown: semanticSectionBodies[id] ?? `This original layer ${index + 1} performs a separate reader job and stays within the approved story and role-selection facts. It identifies the exact choice in front of the visitor, explains what evidence belongs to that choice, and keeps each conclusion inside the documented boundary.\n\nThe layer then gives the reader a concrete way to apply the distinction in practice today without borrowing a character, promising a result, or repeating the job assigned to another section.`,
     })),
     faqs: faqPlans.map(([id, job], index) => ({
       id,
@@ -212,6 +226,8 @@ test("page store exposes a reviewed schema-version 3 route", async () => {
     const page = await readPublishedPage("schema-three-route");
     assert.equal(page?.schemaVersion, 3);
     assert.equal(page?.architecture?.presentation.recipeId, "nocturne-decision-grid-v1");
+    assert.match(page?.sections.find((section) => section.id === "compare")?.bodyMarkdown ?? "", /introduction[\s\S]*\n1\.[\s\S]*\n2\.[\s\S]*conclusion/);
+    assert.match(page?.sections.find((section) => section.id === "rule")?.bodyMarkdown ?? "", /boundary[\s\S]*\n- Confirm[\s\S]*\n- Confirm[\s\S]*closing instruction/);
 
     const malformedArchitecture = structuredClone(releasedPage);
     for (const section of malformedArchitecture.sections) section.role = "comparison";

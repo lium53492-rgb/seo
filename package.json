@@ -12,12 +12,15 @@
     "verify": "npm run test && npm run check:experience && npm run check && npm run build && npm run verify:pages",
     "check:experience": "node scripts/verify-experience-contracts.mjs",
     "verify:pages": "node scripts/verify-built-pages.mjs",
+    "daily:state": "node scripts/check-daily-run-state.mjs",
+    "daily:coord": "node scripts/run-node-supervised.mjs 600000 scripts/manage-daily-coordination.mjs",
+    "release:verify": "node scripts/verify-live-release.mjs",
     "growth:check": "node scripts/check-growth-readiness.mjs",
     "growth:probe": "node scripts/probe-novelai-callback.mjs",
     "growth:collect": "node scripts/collect-growth-portfolio.mjs",
     "feedback:sync": "node scripts/sync-workbench-feedback.mjs",
     "research:build": "npm run feedback:sync && node scripts/build-free-research-report.mjs",
-    "research:publish": "node scripts/publish-reviewed-page.mjs"
+    "research:publish": "node scripts/run-node-supervised.mjs 600000 scripts/publish-reviewed-page.mjs"
   },
   "dependencies": {
     "@streamdown/cjk": "^1.0.3",

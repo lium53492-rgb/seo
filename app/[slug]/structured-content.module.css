@@ -244,6 +244,9 @@
 .faq p { margin: 24px 0 0; color: var(--page-muted); font-size: 1.04rem; line-height: 1.8; }
 
 .comparisonBody { padding-left: 24px; border-left: 5px double var(--page-accent); }
+.comparisonBody ol,
+.comparisonBody ul { margin: 24px 0 0; padding-left: 1.4rem; color: var(--page-muted); line-height: 1.7; }
+.comparisonBody li + li { margin-top: 12px; }
 .checklistBody ul,
 .exampleBody ul,
 .stepsBody ol { display: grid; gap: 16px; margin: 26px 0 0; padding: 0; list-style: none; }

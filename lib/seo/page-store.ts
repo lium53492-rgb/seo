@@ -12,6 +12,7 @@ import {
   validateSeoArchitectureBridge,
 } from "./content-contract.mjs";
 import { visiblePageText } from "./content-similarity.mjs";
+import { markdownSemanticBlockCount } from "./markdown-semantics.mjs";
 import { servedContentDigest } from "./served-content.mjs";
 import type { PublishedSeoPage } from "./types";
 
@@ -81,7 +82,7 @@ function isPublishedPage(value: unknown): value is PublishedSeoPage {
       (!isCurrentSchema || (isNonEmptyString(section?.id) && isNonEmptyString(section?.role) && isNonEmptyString(section?.format) &&
         englishWordCount(section.bodyMarkdown) >= architecturePolicy.minimumSectionBodyWords &&
         (!["steps", "checklist", "examples", "comparison"].includes(section.format) ||
-          section.bodyMarkdown.split(/\n{2,}/).filter((block) => block.trim()).length >= 2))));
+          markdownSemanticBlockCount(section.bodyMarkdown) >= 2))));
   const faqsAreValid = Array.isArray(page.faqs) &&
     page.faqs.length >= seoPolicy.content.minFaqs &&
     page.faqs.every((faq) => isNonEmptyString(faq?.question) && isNonEmptyString(faq?.answerMarkdown) &&

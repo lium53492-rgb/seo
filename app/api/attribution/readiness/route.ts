@@ -17,6 +17,38 @@ import { vercelAnalyticsStatus } from "@/lib/seo/vercel-analytics";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+type ReadinessSourceStatus = {
+  configured: boolean;
+  provider: string;
+};
+
+function readSourceStatus<T extends ReadinessSourceStatus>(input: {
+  provider: string;
+  label: string;
+  read: () => T;
+}): T | (ReadinessSourceStatus & {
+  configured: false;
+  state: "unavailable";
+  reason: "status_check_failed";
+  detail: string;
+}) {
+  try {
+    return input.read();
+  } catch (error) {
+    return {
+      configured: false,
+      provider: input.provider,
+      state: "unavailable",
+      reason: "status_check_failed",
+      detail: `${input.label} status check failed: ${
+        error instanceof Error && error.message
+          ? error.message
+          : "Unknown configuration error"
+      }`,
+    };
+  }
+}
+
 export async function GET(request: Request) {
   if (!isPrivateAttributionAccessConfigured()) {
     return privateJson({ error: "Private growth readiness is not configured" }, { status: 503 });
@@ -69,9 +101,21 @@ export async function GET(request: Request) {
     }
   }
 
-  const searchConsole = searchConsoleStatus();
-  const landingUv = vercelAnalyticsStatus();
-  const attributionStore = attributionStoreStatus();
+  const searchConsole = readSourceStatus({
+    provider: "google_search_console",
+    label: "Search Console",
+    read: searchConsoleStatus,
+  });
+  const landingUv = readSourceStatus({
+    provider: "vercel_web_analytics",
+    label: "Vercel Web Analytics",
+    read: vercelAnalyticsStatus,
+  });
+  const attributionStore = readSourceStatus({
+    provider: "upstash_redis",
+    label: "Attribution store",
+    read: attributionStoreStatus,
+  });
   const callbackProbeMaxAgeHours = Number(seoPolicy.feedbackLoop.callbackProbeMaxAgeHours);
   let callbackHandshake;
   try {

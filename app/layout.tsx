@@ -6,6 +6,9 @@ import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { getSiteUrl } from "@/lib/seo/site";
+import { getReleaseRevision } from "@/lib/seo/release";
+
+const releaseRevision = getReleaseRevision();
 
 export const metadata: Metadata = {
   metadataBase: getSiteUrl(),
@@ -28,6 +31,9 @@ export const metadata: Metadata = {
     description:
       "Enter an existing story, choose an available role, and perform inside the scene.",
   },
+  ...(releaseRevision
+    ? { other: { "git-revision": releaseRevision } }
+    : {}),
 };
 
 export default function RootLayout({
@@ -43,7 +49,11 @@ export default function RootLayout({
       : "";
 
   return (
-    <html lang="en" className={cn(GeistSans.variable, GeistMono.variable)}>
+    <html
+      lang="en"
+      className={cn(GeistSans.variable, GeistMono.variable)}
+      data-release-revision={releaseRevision ?? undefined}
+    >
       <body className={GeistSans.className}>
         {children}
         {isVercel ? <Analytics /> : null}

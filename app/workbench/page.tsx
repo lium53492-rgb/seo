@@ -271,7 +271,7 @@ export default async function WorkbenchPage() {
         </nav>
         <div className="wb-sidebar-note">
           <span className={`wb-dot ${report.mode}`} />
-          <p><strong>{report.mode === "partial" ? "部分真实数据" : report.mode === "live" ? "真实数据" : "等待数据"}</strong><small>09:15 每日单页 · 独立审稿</small></p>
+          <p><strong>{report.mode === "partial" ? "部分真实数据" : report.mode === "live" ? "真实数据" : "等待数据"}</strong><small>09:15 主任务 · 18:30 / 21:30 自动续跑</small></p>
         </div>
       </aside>
 

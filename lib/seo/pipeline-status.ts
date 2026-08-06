@@ -2,6 +2,12 @@ import "server-only";
 
 import { access, readFile } from "node:fs/promises";
 import * as path from "node:path";
+import seoPolicy from "@/data/config/seo-policy.json";
+import architecturePolicy from "@/data/config/content-architecture.json";
+import {
+  repositoryPublicationStage,
+  validatePipelineReviewContract,
+} from "./pipeline-contract.mjs";
 import { parseReport } from "./report-store";
 
 type ArtifactKey = "growth" | "research" | "report" | "review" | "pdf";
@@ -16,6 +22,8 @@ export type DailyPipelineStatus = {
     | "research_ready"
     | "report_ready"
     | "review_ready"
+    | "repository_published"
+    /** @deprecated A report's local `published` state is not deployment evidence. */
     | "published"
     | "blocked";
   artifacts: Record<Exclude<ArtifactKey, "pdf">, boolean> & {
@@ -87,46 +95,6 @@ async function hasPublishedPageForReport(reportId: string, slug: string | null) 
     if (!isMissingFile(error)) throw error;
     return false;
   }
-}
-
-function validateReviewContract(
-  review: Record<string, unknown>,
-  reportId: string | null,
-  expectedDigest: string | null,
-  reportGeneratedAt: string | null,
-) {
-  const checks = Array.isArray(review.checks) ? review.checks : [];
-  const requiredChecks = new Set([
-    "search-intent",
-    "product-truth",
-    "conversion-path",
-    "source-accuracy",
-  ]);
-  const reviewIds = new Set(
-    checks
-      .filter((check): check is Record<string, unknown> =>
-        Boolean(check) && typeof check === "object"
-      )
-      .map((check) => String(check.id ?? "")),
-  );
-  return review.schemaVersion === 1 &&
-    review.decision === "approved" &&
-    (review.reviewerType === "codex_editor" || review.reviewerType === "human") &&
-    typeof review.reviewer === "string" && review.reviewer.trim().length > 0 &&
-    typeof review.reviewedAt === "string" && Number.isFinite(Date.parse(review.reviewedAt)) &&
-    typeof review.draftDigest === "string" && /^[a-f0-9]{64}$/.test(review.draftDigest) &&
-    (!expectedDigest || review.draftDigest === expectedDigest) &&
-    (!reportGeneratedAt || Date.parse(review.reviewedAt) >= Date.parse(reportGeneratedAt)) &&
-    typeof review.reportId === "string" &&
-    (!reportId || review.reportId === reportId) &&
-    checks.length >= 4 &&
-    [...requiredChecks].every((id) => reviewIds.has(id)) &&
-    checks.every((check) =>
-      check && typeof check === "object" &&
-      "passed" in check && check.passed === true &&
-      "id" in check && typeof check.id === "string" &&
-      "detail" in check && typeof check.detail === "string"
-    );
 }
 
 function validateResearchContract(research: Record<string, unknown>) {
@@ -222,6 +190,7 @@ export async function readDailyPipelineStatus(now = new Date()): Promise<DailyPi
   let currentDraftDigest: string | null = null;
   let currentReportGeneratedAt: string | null = null;
   let currentPublicationSlug: string | null = null;
+  let currentDraftSchemaVersion: number | null = null;
   if (reportSource) {
     try {
       const dailyReport = parseReport(
@@ -232,6 +201,11 @@ export async function readDailyPipelineStatus(now = new Date()): Promise<DailyPi
       currentReportGeneratedAt = dailyReport.generatedAt;
       currentDraftDigest = dailyReport.publication?.draftDigest ?? null;
       currentPublicationSlug = dailyReport.publication?.slug ?? null;
+      currentDraftSchemaVersion = dailyReport.draft &&
+          "schemaVersion" in dailyReport.draft &&
+          typeof dailyReport.draft.schemaVersion === "number"
+        ? dailyReport.draft.schemaVersion
+        : null;
       if (dailyReport.date !== date || dailyReport.policyVersion !== 4) {
         blockers.push("今日日报存在，但日期或 policy v4 绑定无效。");
       }
@@ -246,12 +220,17 @@ export async function readDailyPipelineStatus(now = new Date()): Promise<DailyPi
 
   if (reviewSource) {
     try {
-      if (!validateReviewContract(
-        readJson(reviewSource),
-        currentReportId,
-        currentDraftDigest,
-        currentReportGeneratedAt,
-      )) {
+      if (!validatePipelineReviewContract({
+        review: readJson(reviewSource),
+        reportId: currentReportId,
+        expectedSlug: currentPublicationSlug,
+        expectedDigest: currentDraftDigest,
+        reportGeneratedAt: currentReportGeneratedAt,
+        draftSchemaVersion: currentDraftSchemaVersion,
+        requiredDraftSchemaVersion: architecturePolicy.requiredDraftSchemaVersion,
+        baseRequiredChecks: seoPolicy.requiredReviewChecks,
+        architectureRequiredChecks: architecturePolicy.requiredReviewChecks,
+      })) {
         blockers.push("今日审稿文件存在，但批准记录结构或 reportId 绑定无效。");
       }
     } catch (error) {
@@ -290,7 +269,7 @@ export async function readDailyPipelineStatus(now = new Date()): Promise<DailyPi
   if (artifacts.research) stage = research.contractValid ? "research_ready" : "research_invalid";
   if (artifacts.report) stage = "report_ready";
   if (artifacts.review) stage = "review_ready";
-  if (currentPublicationStatus === "published") stage = "published";
+  stage = repositoryPublicationStage(currentPublicationStatus) ?? stage;
   if (blockers.length) stage = "blocked";
 
   return {

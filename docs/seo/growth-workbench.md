@@ -3,18 +3,23 @@
 ## Purpose
 
 The workbench turns research and observed performance into one auditable daily
-decision: create, improve, consolidate, or observe. It does not promise that a
-page will be published every day. Publication stops whenever the growth,
-evidence, editorial, repository, deployment, or live-page gate is incomplete.
+page release. The unattended contract targets exactly one distinct new page per
+Asia/Shanghai day, automatically evaluates fallback candidates, and resumes a
+consistent partial run. Missing metrics remain unavailable and do not by
+themselves block a new intent; truth, IP, originality, review, repository,
+deployment, and live-page gates remain mandatory.
 
 ## Actual architecture
 
-The production scheduler is the Codex desktop automation at 09:15
-Asia/Shanghai. Vercel serves the site and the read-only workbench; it does not
-run the research pipeline. `vercel.json` intentionally contains no cron job.
+The production scheduler uses a 09:15 primary Codex desktop automation and
+18:30 / 21:30 recovery passes. All runs use the same daily state contract, so the
+recovery run resumes an incomplete page and never creates a second page after
+the day is complete. Vercel serves the site and the read-only workbench; it does
+not run the research pipeline. `vercel.json` intentionally contains no cron job.
 
 ```text
 Codex desktop automation
+-> daily:state (start or resume)
 -> growth:check
 -> growth:collect (all published pages, one finalized Shanghai-day window)
 -> policy-v4 public-web and authorized-tool research
@@ -27,6 +32,7 @@ Codex desktop automation
 -> scoped Git commit and remote push
 -> Vercel READY
 -> live H1 / canonical / CTA / sitemap checks
+-> exact Git revision check on LoreLens
 -> indexing observation and authorized distribution follow-up
 ```
 

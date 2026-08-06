@@ -99,6 +99,21 @@ Before a new page or update:
 
 - Publish at most one new page per Shanghai day. A different keyword spelling
   is not a different intent, and an update is a separate evidence-led decision.
+- For scheduled production, follow `docs/seo/unattended-daily-publishing.md`.
+  Settle any previous-day release in flight, acquire the shared daily lease,
+  restore its latest checkpoint, save after
+  every durable stage, and reassert lease ownership before push.
+  Consistent same-day artifacts from the active daily chain are resumable; only
+  conflicting or unrelated artifacts trigger the no-overwrite stop. Once one
+  page exists for the Shanghai day, resumed runs verify and deliver that page
+  rather than creating a second one. Lease transitions are immutable append-
+  only states, and the publisher must hold the shared publication guard while
+  re-reading the page corpus and daily count. Do not start or release a page at
+  or after the configured 23:45 Asia/Shanghai cutoff.
+  Persist `release-start` for the exact local commit before push. If it first
+  verifies after midnight, that carryover occupies the new production day's
+  slot. Completion requires that exact revision to equal the fetched
+  `origin/main` tip.
 - If same-day growth, research, report, page, or PDF artifacts already exist from
   another task, stop and report the conflict instead of overwriting them.
 - The research builder may only create a `ready_for_review` report. A separate
@@ -107,12 +122,19 @@ Before a new page or update:
   draft and content strategy, including architecture and presentation.
 - Run the research builder, publisher, and `npm.cmd run verify` before release.
   Generate, render, and visually inspect the daily PDF when required.
+- The candidate batch must contain 8-12 semantically distinct searcher jobs and,
+  after scoring and current-corpus cannibalization derivation, at least the
+  daily target plus seven eligible `create_page` intents. Model-supplied
+  `new_intent` labels and keyword spelling differences are not evidence of a
+  distinct intent.
 - A daily SEO commit may contain only that day's growth snapshot, research,
   report, review, page, and requested PDF artifacts unless the user explicitly
   expands the scope. Do not push `main` when it would also publish unrelated
   local commits. Do not claim deployment until remote push, Vercel READY,
   rendered H1/canonical/CTA checks, and sitemap inclusion are all independently
-  verified.
+  verified. Permanent completion also requires the full release revision to be
+  present in `origin/main`, every daily artifact to match that revision, and two
+  complete LoreLens live-verification passes.
 
 ## Reporting and durable context
 

@@ -19,6 +19,7 @@ import {
 } from "../lib/seo/reporting-period.ts";
 
 const managedEnv = [
+  "NODE_ENV",
   "UPSTASH_REDIS_REST_URL",
   "UPSTASH_REDIS_REST_TOKEN",
   "KV_REST_API_URL",
@@ -166,6 +167,8 @@ test("durable cohorts and Vercel UV expose compatible live inputs", async () => 
   const environment = Object.fromEntries(managedEnv.map((key) => [key, process.env[key]]));
   const originalFetch = globalThis.fetch;
   try {
+    process.env.NODE_ENV = "production";
+    process.env.NEXT_PUBLIC_SITE_URL = "https://seo-pi-fawn.vercel.app/";
     process.env.UPSTASH_REDIS_REST_URL = "https://example.upstash.io";
     process.env.UPSTASH_REDIS_REST_TOKEN = "test-token";
     process.env.VERCEL_ANALYTICS_TOKEN = "vercel-token";
@@ -189,7 +192,7 @@ test("durable cohorts and Vercel UV expose compatible live inputs", async () => 
       assert.match(value, /web-analytics\/visits\/count/);
       assert.equal(
         new URL(value).searchParams.get("filter"),
-        "requestPath eq '/play-an-ai-roleplay-story'",
+        "requestPath eq '/play-an-ai-roleplay-story' and requestHostname eq 'lorelens.novelai.ai'",
       );
       return Response.json({ data: { visitors: 12, pageviews: 18 } });
     };
@@ -211,6 +214,7 @@ test("durable cohorts and Vercel UV expose compatible live inputs", async () => 
     assert.equal(uv.state, "observed");
     assert.equal(uv.visitors, 12);
     assert.equal(uv.pageviews, 18);
+    assert.match(uv.detail, /lorelens\.novelai\.ai/);
   } finally {
     globalThis.fetch = originalFetch;
     restoreEnvironment(environment);

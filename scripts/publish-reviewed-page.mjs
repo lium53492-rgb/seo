@@ -1,5 +1,6 @@
-import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
 import { dirname, resolve } from "node:path";
 import { validatePageArchitecture, validateSeoArchitectureBridge } from "../lib/seo/content-contract.mjs";
 import {
@@ -8,6 +9,11 @@ import {
 } from "../lib/seo/content-similarity.mjs";
 import { publishedArchitectureHistoryFromReports } from "../lib/seo/content-history.mjs";
 import { servedContentDigest } from "../lib/seo/served-content.mjs";
+import { validatePipelineReviewContract } from "../lib/seo/pipeline-contract.mjs";
+import {
+  coordinationOwner,
+  withDailyPublicationGuard,
+} from "./lib/daily-coordination.mjs";
 
 const reportPath = process.argv[2];
 const reviewPath = process.argv[3];
@@ -22,6 +28,7 @@ const policy = readJson("data/config/seo-policy.json");
 const factCatalog = readJson("data/config/product-facts.json");
 const architecturePolicy = readJson("data/config/content-architecture.json");
 const presentationCatalog = readJson("data/config/presentation-recipes.json");
+const unattendedPolicy = readJson("data/config/unattended-publishing.json");
 const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 validateSeoArchitectureBridge(policy, architecturePolicy);
@@ -33,7 +40,19 @@ function sha256(value) {
 function writeJsonAtomic(path, value) {
   const temporaryPath = `${path}.${process.pid}.tmp`;
   writeFileSync(temporaryPath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
-  renameSync(temporaryPath, path);
+  try {
+    for (let attempt = 0; ; attempt += 1) {
+      try {
+        renameSync(temporaryPath, path);
+        break;
+      } catch (error) {
+        if (!["EACCES", "EBUSY", "EPERM"].includes(error?.code) || attempt >= 24) throw error;
+        Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, Math.min(20 + attempt * 5, 100));
+      }
+    }
+  } finally {
+    if (existsSync(temporaryPath)) unlinkSync(temporaryPath);
+  }
 }
 
 function shanghaiDate(value) {
@@ -45,14 +64,51 @@ function shanghaiDate(value) {
   }).format(new Date(value));
 }
 
+function publicationClock() {
+  const testOverride = process.env.NODE_ENV === "test"
+    ? process.env.SEO_TEST_PUBLICATION_NOW
+    : null;
+  const value = testOverride ? new Date(testOverride) : new Date();
+  if (!Number.isFinite(value.getTime())) throw new Error("Publication clock is invalid");
+  return value;
+}
+
+function assertPublicationWindow(value) {
+  if (shanghaiDate(value) !== report.date) {
+    throw new Error(`The ${report.date} publishing window has closed in Asia/Shanghai`);
+  }
+  const match = String(unattendedPolicy.publishCutoffLocalTime || "").match(/^(\d{2}):(\d{2})$/);
+  if (!match) throw new Error("Unattended publishing cutoff is invalid");
+  const parts = Object.fromEntries(new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Shanghai",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(value).map((part) => [part.type, part.value]));
+  const currentMinute = Number(parts.hour) * 60 + Number(parts.minute);
+  const cutoffMinute = Number(match[1]) * 60 + Number(match[2]);
+  if (currentMinute >= cutoffMinute) {
+    throw new Error(`The ${report.date} publishing window closed at ${unattendedPolicy.publishCutoffLocalTime} Asia/Shanghai`);
+  }
+}
+
+function coordinationContext() {
+  const runId = process.env.CODEX_THREAD_ID || process.env.SEO_DAILY_RUN_ID;
+  const testRoot = process.env.NODE_ENV === "test" ? process.env.SEO_TEST_COORDINATION_ROOT : null;
+  const coordinationRoot = testRoot
+    ? resolve(testRoot)
+    : resolve(execFileSync("git", ["rev-parse", "--git-common-dir"], {
+        cwd: process.cwd(),
+        encoding: "utf8",
+      }).trim());
+  return {
+    coordinationRoot,
+    owner: coordinationOwner(process.cwd(), runId),
+  };
+}
+
 if (report.publication?.status !== "ready_for_review" || !report.draft?.quality?.passed) {
   throw new Error("Report does not contain a draft that passed automated gates");
-}
-if (review.schemaVersion !== 1 || review.reportId !== report.id || review.decision !== "approved") {
-  throw new Error("Approval record must explicitly approve this report");
-}
-if (!safeSlug.test(review.slug) || review.slug !== report.publication.slug) {
-  throw new Error("Approval slug must match the reviewed draft");
 }
 const draftDigest = report.draft?.schemaVersion === architecturePolicy.requiredDraftSchemaVersion
   ? sha256({ draft: report.draft, contentStrategy: report.contentStrategy })
@@ -62,30 +118,30 @@ if (!/^[a-f0-9]{64}$/.test(report.publication.draftDigest || "") ||
   draftDigest !== report.publication.draftDigest) {
   throw new Error("Approval must match the exact SHA-256 digest of the reviewed draft");
 }
-if (!["human", "codex_editor"].includes(review.reviewerType) || String(review.reviewer || "").trim().length < 2) {
-  throw new Error("Approval record needs an identified human or Codex editor");
-}
-if (!Number.isFinite(Date.parse(review.reviewedAt)) || String(review.notes || "").trim().length < 20) {
-  throw new Error("Approval record needs a timestamp and specific review notes");
-}
-if (!Number.isFinite(Date.parse(report.generatedAt)) || Date.parse(review.reviewedAt) < Date.parse(report.generatedAt)) {
-  throw new Error("Approval timestamp must be after report generation");
-}
-const checks = Array.isArray(review.checks) ? review.checks : [];
-const requiredReviewChecks = report.draft?.schemaVersion === architecturePolicy.requiredDraftSchemaVersion
-  ? [...policy.requiredReviewChecks, ...architecturePolicy.requiredReviewChecks]
-  : policy.requiredReviewChecks;
-for (const checkId of requiredReviewChecks) {
-  const check = checks.find((item) => item.id === checkId);
-  if (!check || check.passed !== true || String(check.detail || "").trim().length < 10) {
-    throw new Error(`Approval record is missing a passed ${checkId} check`);
-  }
+if (!safeSlug.test(review.slug) || !validatePipelineReviewContract({
+  review,
+  reportId: report.id,
+  expectedSlug: report.publication.slug,
+  expectedDigest: report.publication.draftDigest,
+  reportGeneratedAt: report.generatedAt,
+  draftSchemaVersion: report.draft?.schemaVersion ?? null,
+  requiredDraftSchemaVersion: architecturePolicy.requiredDraftSchemaVersion,
+  baseRequiredChecks: policy.requiredReviewChecks,
+  architectureRequiredChecks: architecturePolicy.requiredReviewChecks,
+})) {
+  throw new Error("Approval record does not satisfy the reviewed draft contract");
 }
 
 const pagesDirectory = resolve("data/pages");
-const pages = existsSync(pagesDirectory)
-  ? readdirSync(pagesDirectory).filter((name) => name.endsWith(".json")).map((name) => readJson(resolve(pagesDirectory, name))).filter((page) => page.status === "published")
-  : [];
+function publishedPagesFromDisk() {
+  return existsSync(pagesDirectory)
+    ? readdirSync(pagesDirectory)
+      .filter((name) => name.endsWith(".json"))
+      .map((name) => readJson(resolve(pagesDirectory, name)))
+      .filter((page) => page.status === "published")
+    : [];
+}
+const pages = publishedPagesFromDisk();
 const reportsDirectory = resolve("data/reports");
 const architectureHistory = publishedArchitectureHistoryFromReports(
   existsSync(reportsDirectory)
@@ -160,7 +216,10 @@ if (wordCount < policy.content.minWords || wordCount > policy.content.maxWords |
   draft.sections.length < policy.content.minSections || draft.faqs.length < policy.content.minFaqs) {
   throw new Error("Reviewed draft no longer passes the content depth gate");
 }
-const publishedAt = sameSlug?.publishedAt || review.reviewedAt;
+const publicationTime = publicationClock();
+assertPublicationWindow(publicationTime);
+const publicationTimestamp = publicationTime.toISOString();
+const publishedAt = sameSlug?.publishedAt || publicationTimestamp;
 const page = {
   schemaVersion: policy.contentArchitecture.publishedPageSchemaVersion,
   status: "published",
@@ -168,7 +227,7 @@ const page = {
   path: `/${review.slug}`,
   keyword: opportunity.keyword,
   publishedAt,
-  updatedAt: review.reviewedAt,
+  updatedAt: publicationTimestamp,
   generatedFromReport: report.id,
   draftDigest,
   pagePattern: report.contentStrategy.pagePattern,
@@ -208,24 +267,86 @@ const page = {
 page.servedContentDigest = servedContentDigest(page);
 
 const pagePath = resolve(`data/pages/${review.slug}.json`);
-mkdirSync(dirname(pagePath), { recursive: true });
-writeJsonAtomic(pagePath, page);
-
-const publication = {
-  status: "published",
+const { coordinationRoot, owner } = coordinationContext();
+withDailyPublicationGuard({
+  coordinationRoot,
+  date: report.date,
+  owner,
   slug: review.slug,
-  path: `/${review.slug}`,
-  slot: "morning",
-  publishedAt,
-  updatedAt: review.reviewedAt,
-  draftDigest,
-  reason: `Approved by ${review.reviewerType} ${review.reviewer} after automated and editorial gates passed.`,
-};
-report.publication = publication;
-report.publications = [publication];
-report.actions = report.actions.map((action) => action.priority === "P2"
-  ? { ...action, action: `Build and publish /${review.slug}`, why: publication.reason, expectedImpact: "Release one reviewed, measurable page." }
-  : action);
-report.caveats = [...new Set([...(report.caveats || []), "Publication required a separate editorial approval artifact."])];
-writeJsonAtomic(resolve(reportPath), report);
+  reportId: report.id,
+  now: publicationTime,
+}, (assertGuard) => {
+  const currentReport = readJson(reportPath);
+  const currentPages = publishedPagesFromDisk();
+  const currentSameSlug = currentPages.find((candidate) => candidate.slug === review.slug);
+  const currentDigest = currentReport.draft?.schemaVersion === architecturePolicy.requiredDraftSchemaVersion
+    ? sha256({ draft: currentReport.draft, contentStrategy: currentReport.contentStrategy })
+    : sha256(currentReport.draft);
+  if (currentReport.id !== report.id || currentReport.generatedAt !== report.generatedAt ||
+    currentReport.publication?.draftDigest !== draftDigest || currentDigest !== draftDigest) {
+    throw new Error("Reviewed report changed before the guarded publication write");
+  }
+  if (currentReport.publication?.status === "published") {
+    if (!currentSameSlug || currentSameSlug.generatedFromReport !== report.id ||
+      currentSameSlug.draftDigest !== draftDigest) {
+      throw new Error("Published report does not have a matching page artifact");
+    }
+    return;
+  }
+  if (currentReport.publication?.status !== "ready_for_review") {
+    throw new Error("Reviewed report is no longer ready for publication");
+  }
+
+  const guardedSameReportPages = currentPages.filter((candidate) =>
+    candidate.generatedFromReport === report.id && candidate.slug !== review.slug);
+  const guardedSameDayPages = currentPages.filter((candidate) =>
+    candidate.slug !== review.slug && shanghaiDate(candidate.publishedAt) === report.date);
+  if (guardedSameReportPages.length >= policy.dailyPageLimit) {
+    throw new Error(`Report ${report.id} already reached its ${policy.dailyPageLimit}-page publication limit`);
+  }
+  if (guardedSameDayPages.length >= policy.dailyPageLimit) {
+    throw new Error(`${report.date} already reached its ${policy.dailyPageLimit}-page publication limit`);
+  }
+  if (currentSameSlug && currentSameSlug.generatedFromReport !== report.id && report.publicationMode !== "update") {
+    throw new Error(`Page /${review.slug} already exists and this report is not an update`);
+  }
+
+  const guardedPublishedAt = currentSameSlug?.publishedAt || publicationTimestamp;
+  const guardedPage = {
+    ...page,
+    publishedAt: guardedPublishedAt,
+    updatedAt: publicationTimestamp,
+  };
+  guardedPage.servedContentDigest = servedContentDigest(guardedPage);
+  const pageAlreadyWritten = currentSameSlug?.generatedFromReport === report.id &&
+    currentSameSlug?.draftDigest === draftDigest &&
+    currentSameSlug?.servedContentDigest === guardedPage.servedContentDigest;
+  assertGuard(publicationClock());
+  if (!pageAlreadyWritten) {
+    mkdirSync(dirname(pagePath), { recursive: true });
+    writeJsonAtomic(pagePath, guardedPage);
+  }
+
+  const publication = {
+    status: "published",
+    slug: review.slug,
+    path: `/${review.slug}`,
+    slot: "morning",
+    publishedAt: guardedPublishedAt,
+    updatedAt: publicationTimestamp,
+    draftDigest,
+    reason: `Approved by ${review.reviewerType} ${review.reviewer} after automated and editorial gates passed.`,
+  };
+  const updatedReport = {
+    ...currentReport,
+    publication,
+    publications: [publication],
+    actions: currentReport.actions.map((action) => action.priority === "P2"
+      ? { ...action, action: `Build and publish /${review.slug}`, why: publication.reason, expectedImpact: "Release one reviewed, measurable page." }
+      : action),
+    caveats: [...new Set([...(currentReport.caveats || []), "Publication required a separate editorial approval artifact."])],
+  };
+  assertGuard(publicationClock());
+  writeJsonAtomic(resolve(reportPath), updatedReport);
+});
 process.stdout.write(`${pagePath}\n`);

@@ -1,4 +1,5 @@
 import { TrackedNovelAiHomeLink } from "@/app/components/TrackedNovelAiHomeLink";
+import { listMarkdownRenderBlocks, parseMarkdownBlocks } from "@/lib/seo/markdown-semantics.mjs";
 import type { PresentationRecipe } from "@/lib/seo/page-presentation";
 import type { SeoPageViewProps } from "./page-family-types";
 import styles from "./structured-content.module.css";
@@ -21,18 +22,21 @@ function RichText({ value }: { value: string }) {
   ));
 }
 
-function MarkdownItems({ value, ordered }: { value: string; ordered: boolean }) {
-  const markedItems = value.split(/\r?\n/)
-    .map((item) => item.trim())
-    .filter((item) => /^(?:[-*+]\s+|\d+[.)]\s+)/.test(item))
-    .map((item) => item.replace(/^(?:[-*+]\s+|\d+[.)]\s+)/, ""));
-  const items = markedItems.length >= 2
-    ? markedItems
-    : value.split(/\n{2,}/).map((item) => item.trim()).filter(Boolean);
-  const children = items.map((item, index) => (
-    <li key={`${item.slice(0, 24)}-${index}`}><InlineMarkdown value={item} /></li>
-  ));
-  return ordered ? <ol>{children}</ol> : <ul>{children}</ul>;
+function SemanticMarkdown({ value, listOrder }: { value: string; listOrder?: boolean }) {
+  const blocks = listOrder === undefined
+    ? parseMarkdownBlocks(value)
+    : listMarkdownRenderBlocks(value, listOrder);
+  return blocks.map((block, blockIndex) => {
+    if (block.type === "prose") {
+      return <p key={`prose-${block.text.slice(0, 24)}-${blockIndex}`}><InlineMarkdown value={block.text} /></p>;
+    }
+    const items = block.items.map((item, itemIndex) => (
+      <li key={`${item.slice(0, 24)}-${itemIndex}`}><InlineMarkdown value={item} /></li>
+    ));
+    return block.ordered
+      ? <ol key={`ordered-${blockIndex}`}>{items}</ol>
+      : <ul key={`unordered-${blockIndex}`}>{items}</ul>;
+  });
 }
 
 export function StructuredContentPage({ page, recipe, relatedPages }: StructuredContentPageProps) {
@@ -125,11 +129,11 @@ export function StructuredContentPage({ page, recipe, relatedPages }: Structured
   const layerBody = (section: (typeof page.sections)[number]) => {
     const text = <RichText value={section.bodyMarkdown} />;
     switch (section.format) {
-      case "comparison": return <div className={styles.comparisonBody}>{text}</div>;
-      case "checklist": return <div className={styles.checklistBody}><MarkdownItems value={section.bodyMarkdown} ordered={false} /></div>;
+      case "comparison": return <div className={styles.comparisonBody}><SemanticMarkdown value={section.bodyMarkdown} /></div>;
+      case "checklist": return <div className={styles.checklistBody}><SemanticMarkdown value={section.bodyMarkdown} listOrder={false} /></div>;
       case "callout": return <aside className={styles.calloutBody}>{text}</aside>;
-      case "examples": return <section className={styles.exampleBody} aria-label={`${section.heading} examples`}><MarkdownItems value={section.bodyMarkdown} ordered={false} /></section>;
-      case "steps": return <div className={styles.stepsBody}><MarkdownItems value={section.bodyMarkdown} ordered /></div>;
+      case "examples": return <section className={styles.exampleBody} aria-label={`${section.heading} examples`}><SemanticMarkdown value={section.bodyMarkdown} listOrder={false} /></section>;
+      case "steps": return <div className={styles.stepsBody}><SemanticMarkdown value={section.bodyMarkdown} listOrder={true} /></div>;
       default: return <div className={styles.proseBody}>{text}</div>;
     }
   };

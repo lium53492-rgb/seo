@@ -60,6 +60,8 @@ function snapshotEnvironment() {
       process.env.GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL,
     GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY:
       process.env.GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY,
+    GOOGLE_SEARCH_CONSOLE_SITE_URL:
+      process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL,
     KV_REST_API_TOKEN: process.env.KV_REST_API_TOKEN,
     KV_REST_API_URL: process.env.KV_REST_API_URL,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
@@ -162,6 +164,56 @@ test("private attribution routes fail closed and accept the separate machine bea
     assert.equal(isAutomationAuthHeaderAuthorized("Bearer too-short"), false);
     response = await reportRoute.GET(reportRequest("Bearer too-short"));
     assert.equal(response.status, 503);
+  } finally {
+    restoreEnvironment(environment);
+  }
+});
+
+test("readiness reports a source configuration failure without bypassing auth or returning 500", async () => {
+  const environment = snapshotEnvironment();
+  const machineToken = "machine-secret-with-at-least-32-bytes";
+  try {
+    process.env.NODE_ENV = "production";
+    process.env.SEO_AUTOMATION_TOKEN = machineToken;
+    delete process.env.WORKBENCH_PASSWORD;
+    process.env.GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL = "seo@example.invalid";
+    process.env.GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY = "not-a-real-private-key";
+    process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL = "https://seo-pi-fawn.vercel.app/";
+    delete process.env.VERCEL_ANALYTICS_TOKEN;
+    delete process.env.VERCEL_TOKEN;
+    delete process.env.KV_REST_API_TOKEN;
+    delete process.env.KV_REST_API_URL;
+    delete process.env.UPSTASH_REDIS_REST_TOKEN;
+    delete process.env.UPSTASH_REDIS_REST_URL;
+    delete process.env.ATTRIBUTION_SECRET;
+
+    let response = await readinessRoute.GET(
+      new Request("http://localhost/api/attribution/readiness", {
+        headers: { authorization: "Bearer wrong-secret" },
+      }),
+    );
+    assert.equal(response.status, 401);
+
+    response = await readinessRoute.GET(
+      new Request("http://localhost/api/attribution/readiness", {
+        headers: { authorization: `Bearer ${machineToken}` },
+      }),
+    );
+    assert.equal(response.status, 200);
+    const body = await response.json();
+    assert.deepEqual(body.sources.searchConsole, {
+      configured: false,
+      provider: "google_search_console",
+      state: "unavailable",
+      reason: "status_check_failed",
+      detail:
+        "Search Console status check failed: GOOGLE_SEARCH_CONSOLE_SITE_URL URL-prefix property must match the public canonical origin",
+    });
+    assert.equal(body.sources.landingUv.provider, "vercel_web_analytics");
+    assert.equal(body.sources.attributionStore.provider, "upstash_redis");
+    assert.equal(body.readyFor.searchEvidence, false);
+    assert.equal(body.readyFor.searchToUv, false);
+    assert.equal(body.readyFor.fullLoop, false);
   } finally {
     restoreEnvironment(environment);
   }
