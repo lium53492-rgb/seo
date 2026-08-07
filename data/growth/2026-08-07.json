@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 2,
+  "privacyClass": "public_growth_evidence",
+  "generatedAt": "2026-08-07T02:41:33.484Z",
+  "periodBasis": "complete_shanghai_calendar_days",
+  "reportingWindowDays": 28,
+  "reportingLagDays": 3,
+  "aggregationKey": "source_slug+reporting_period",
+  "periodStart": "2026-07-06T16:00:00.000Z",
+  "periodEnd": "2026-08-03T16:00:00.000Z",
+  "summary": {
+    "publishedPages": 8,
+    "collectedPages": 0,
+    "unavailablePages": 8,
+    "attributionJoinReady": false,
+    "attributionJoinBlocked": false,
+    "hasSearchValidatedLandingPage": false
+  },
+  "entries": [
+    {
+      "sourceSlug": "ai-roleplay-first-message",
+      "path": "/ai-roleplay-first-message",
+      "keyword": "ai roleplay first message",
+      "state": "unavailable",
+      "reason": "Private attribution evidence returned HTTP 503; no page metrics were persisted."
+    },
+    {
+      "sourceSlug": "ai-roleplay-prompt-vs-existing-story",
+      "path": "/ai-roleplay-prompt-vs-existing-story",
+      "keyword": "ai roleplay prompt vs existing story",
+      "state": "unavailable",
+      "reason": "Private attribution evidence returned HTTP 503; no page metrics were persisted."
+    },
+    {
+      "sourceSlug": "ai-voice-roleplay-story",
+      "path": "/ai-voice-roleplay-story",
+      "keyword": "ai voice roleplay story",
+      "state": "unavailable",
+      "reason": "Private attribution evidence returned HTTP 503; no page metrics were persisted."
+    },
+    {
+      "sourceSlug": "choose-a-role-ai-story",
+      "path": "/choose-a-role-ai-story",
+      "keyword": "choose a role ai story",
+      "state": "unavailable",
+      "reason": "Private attribution evidence returned HTTP 503; no page metrics were persisted."
+    },
+    {
+      "sourceSlug": "how-to-choose-an-ai-roleplay-app",
+      "path": "/how-to-choose-an-ai-roleplay-app",
+      "keyword": "how to choose an ai roleplay app",
+      "state": "unavailable",
+      "reason": "Private attribution evidence returned HTTP 503; no page metrics were persisted."
+    },
+    {
+      "sourceSlug": "how-to-start-ai-roleplay",
+      "path": "/how-to-start-ai-roleplay",
+      "keyword": "how to start ai roleplay",
+      "state": "unavailable",
+      "reason": "Private attribution evidence returned HTTP 503; no page metrics were persisted."
+    },
+    {
+      "sourceSlug": "interactive-voice-story",
+      "path": "/interactive-voice-story",
+      "keyword": "interactive voice story",
+      "state": "unavailable",
+      "reason": "Private attribution evidence returned HTTP 503; no page metrics were persisted."
+    },
+    {
+      "sourceSlug": "story-based-ai-roleplay",
+      "path": "/story-based-ai-roleplay",
+      "keyword": "story based ai roleplay",
+      "state": "unavailable",
+      "reason": "Private attribution evidence returned HTTP 503; no page metrics were persisted."
+    }
+  ]
+}

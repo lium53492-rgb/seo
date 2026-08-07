@@ -1,0 +1,478 @@
+{
+  "schemaVersion": 3,
+  "status": "published",
+  "slug": "ai-roleplay-scene-recovery",
+  "path": "/ai-roleplay-scene-recovery",
+  "keyword": "ai roleplay scene recovery",
+  "publishedAt": "2026-08-07T02:54:26.161Z",
+  "updatedAt": "2026-08-07T02:54:26.161Z",
+  "generatedFromReport": "seo-2026-08-07",
+  "draftDigest": "79de1d583d2bc79826927e01566a5e67502695c74f3b815aff0881aa9e123e4f",
+  "pagePattern": "original_inventory",
+  "architecture": {
+    "schemaVersion": 1,
+    "intent": {
+      "searcherJob": "Repair an AI roleplay scene that has gone flat by choosing one small, answerable change instead of restarting the whole exchange.",
+      "painPointId": "stalled_exchange",
+      "decisionToEnable": "Choose a precise recovery move that creates an answerable next turn without replacing the existing scene.",
+      "oneSentenceAnswer": "Recover a flat scene by naming the stalled beat, making one modest change, and leaving one concrete consequence open.",
+      "nonGoals": [
+        "Do not provide a generic beginner roleplay tutorial.",
+        "Do not promise that a repair guarantees a story outcome."
+      ]
+    },
+    "content": {
+      "archetype": "reference",
+      "thesis": "A scene recovers when one small correction restores an observable detail, limited action, or open consequence.",
+      "originalContribution": "The page offers an original Scene Recovery Specimen Index: three diagnostic labels that separate missing evidence, oversized action, and closed consequences without copying prompts or fictional settings.",
+      "tone": "Curatorial and practical, like labeled specimens on a cobalt field table rather than a generic advice column.",
+      "openingMove": "diagnostic_question",
+      "avoidPhrases": [
+        "endless possibilities",
+        "bring characters to life",
+        "start your journey"
+      ],
+      "sections": [
+        {
+          "id": "spot-the-stall",
+          "role": "failure_analysis",
+          "format": "prose",
+          "readerQuestion": "Which exact beat made the exchange stop moving?",
+          "uniqueTakeaway": "A flat scene has a specific stalled beat, not a missing universe."
+        },
+        {
+          "id": "use-the-index",
+          "role": "framework",
+          "format": "checklist",
+          "readerQuestion": "Which recovery label fits the stalled beat?",
+          "uniqueTakeaway": "Missing evidence, oversized action, and closed consequence require different small repairs."
+        },
+        {
+          "id": "test-a-small-repair",
+          "role": "worked_example",
+          "format": "examples",
+          "readerQuestion": "What does a repair look like without a total rewrite?",
+          "uniqueTakeaway": "One original detail or limited action can reopen an answerable scene."
+        },
+        {
+          "id": "keep-the-role-in-view",
+          "role": "decision_rule",
+          "format": "checklist",
+          "readerQuestion": "How should the chosen role determine the repair?",
+          "uniqueTakeaway": "Perspective turns a generic rewrite into one credible next choice."
+        },
+        {
+          "id": "carry-one-open-consequence",
+          "role": "next_step",
+          "format": "callout",
+          "readerQuestion": "When is the repair complete enough to send?",
+          "uniqueTakeaway": "Stop once another turn has one concrete consequence to answer."
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq-restart",
+          "job": "troubleshooting",
+          "readerObstacle": "The reader assumes a stalled exchange requires a complete restart.",
+          "answerBoundary": "Recommend a small craft repair without promising a guaranteed result."
+        },
+        {
+          "id": "faq-role",
+          "job": "decision",
+          "readerObstacle": "The reader does not know how a selected role changes a recovery move.",
+          "answerBoundary": "Explain perspective through approved role-selection context only."
+        },
+        {
+          "id": "faq-boundary",
+          "job": "constraint",
+          "readerObstacle": "The reader may turn a general craft example into a product capability claim.",
+          "answerBoundary": "Restate the approved-fact boundary without adding availability or technology claims."
+        }
+      ],
+      "signature": {
+        "id": "scene-recovery-specimen-index",
+        "type": "inventory",
+        "readerAction": "Label the stalled beat before changing it",
+        "afterSectionId": "use-the-index"
+      }
+    },
+    "differentiation": {
+      "against": [
+        {
+          "slug": "ai-roleplay-first-message",
+          "intentDelta": "The first-message page solves a blank opening before a scene begins; this page repairs a scene only after an exchange has already become flat.",
+          "answerDelta": "The Flight Plan creates an initial reply, while the Specimen Index identifies which existing beat needs a limited correction.",
+          "structureDelta": "The earlier guide is a mission-style task sequence; this page is a labeled reference inventory followed by diagnostic examples.",
+          "faqDelta": "Earlier FAQs clarify opening-message ingredients; these FAQs address restarting, role-led repair, and limits on recovery claims.",
+          "visualDelta": "The prior route uses a retro-futuristic mission treatment; this page uses cobalt catalog labels, indexed shelves, and no companion."
+        },
+        {
+          "slug": "how-to-start-ai-roleplay",
+          "intentDelta": "The start guide helps a new reader enter an experience; this page serves a participant who is already inside a scene and needs to restore movement.",
+          "answerDelta": "The start guide explains the broad route into a story, while this answer names three failure types in the last two turns.",
+          "structureDelta": "The beginner guide follows a broad onboarding path; this page groups recoveries as specimens and tests one precise repair.",
+          "faqDelta": "The start-page FAQs address getting started; these questions diagnose a stalled exchange and bound the repair advice.",
+          "visualDelta": "The older page uses its established layout; this catalog recipe presents accession-style labels and a museum-cobalt reading system."
+        }
+      ]
+    },
+    "presentation": {
+      "recipeId": "specimen-catalog-v1",
+      "rendererId": "specimen_catalog",
+      "visualSystemId": "specimen-catalog",
+      "layoutId": "indexed-specimen-shelves",
+      "paletteId": "museum-cobalt",
+      "typographyId": "catalog-serif-label",
+      "motifId": "evidence-specimen-tag",
+      "companion": "none",
+      "gallery": "none",
+      "surfaceCopy": {
+        "eyebrow": "Scene recovery catalog",
+        "shortAnswerLabel": "The repair label",
+        "contentsLabel": "Specimen index",
+        "sectionLabel": "Specimen",
+        "faqEyebrow": "Field notes",
+        "faqHeading": "Questions before the next beat",
+        "relatedHeading": "Continue from the catalog",
+        "finalCtaEyebrow": "Scene ready",
+        "finalCtaHeading": "Carry one open consequence into a story.",
+        "finalCtaBody": "Use the attributed destination when a story-led roleplay experience fits the scene you want to continue.",
+        "backToTop": "Return to the index"
+      }
+    }
+  },
+  "signatureModule": {
+    "id": "scene-recovery-specimen-index",
+    "type": "inventory",
+    "title": "Scene Recovery Specimen Index",
+    "intro": "Label the stalled beat before you rewrite anything. Each specimen isolates one repair job and keeps the next response small enough to answer.",
+    "items": [
+      {
+        "label": "Specimen A",
+        "title": "Missing evidence",
+        "bodyMarkdown": "Add one observable detail the selected role can notice so another turn has something concrete to respond to."
+      },
+      {
+        "label": "Specimen B",
+        "title": "Oversized action",
+        "bodyMarkdown": "Reduce the last move until it changes the moment but leaves the central question unresolved for another response."
+      },
+      {
+        "label": "Specimen C",
+        "title": "Closed consequence",
+        "bodyMarkdown": "Open one specific effect by showing who notices, what becomes harder, or what decision must happen next."
+      }
+    ]
+  },
+  "title": "AI Roleplay Scene Recovery: Diagnose the Stalled Beat",
+  "metaDescription": "Recover a flat AI roleplay scene by finding the stalled beat, changing one small detail, and leaving a concrete consequence for the next turn.",
+  "h1": "AI Roleplay Scene Recovery: Give the Next Turn a Job",
+  "heroMarkdown": "When a roleplay scene goes flat, do not restart the story or write a larger speech. Find the beat that stopped moving, make one modest correction, and leave something specific for the scene to answer.",
+  "primaryCta": "Explore story-led roleplay on NovelAI",
+  "sections": [
+    {
+      "id": "spot-the-stall",
+      "role": "failure_analysis",
+      "format": "prose",
+      "heading": "Find the exact beat that stopped moving",
+      "bodyMarkdown": "A stalled exchange usually has one of three problems. It has no observable change, so there is nothing for another turn to notice. It makes an action too large, so the response settles the question before anyone can react. Or it closes the consequence, which turns a scene into a report. Read the last two turns and circle the first place where a role could have noticed, chosen, asked, or resisted something but did not. That is the stalled beat. The approved format begins from an existing story plot, so repair it with a detail already present rather than a different world."
+    },
+    {
+      "id": "use-the-index",
+      "role": "framework",
+      "format": "checklist",
+      "heading": "Use the Scene Recovery Specimen Index",
+      "bodyMarkdown": "- **Specimen A: missing evidence.** Add one observable detail the chosen role can respond to: a pause, an object out of place, or an unanswered question.\n\n- **Specimen B: oversized action.** Shrink the last move until it changes the moment but cannot settle the conflict.\n\n- **Specimen C: closed consequence.** Reopen one effect: who notices, what becomes harder, or what must be decided next.\n\nSelect the label that matches the stall, make one correction, and let the next exchange do the rest."
+    },
+    {
+      "id": "test-a-small-repair",
+      "role": "worked_example",
+      "format": "examples",
+      "heading": "Test one small repair instead of rewriting the scene",
+      "bodyMarkdown": "Imagine an original scene in which a courier leaves a sealed parcel on a table and the chosen role says, “That is strange.” The line names a mood but gives no next job. A missing-evidence repair could be: “The seal is warm, although the room is cold. I move the parcel away from the window and ask who knew I would be here.”\n\nNow imagine a reply that opens the parcel, identifies the sender, solves the mystery, and leaves the room. That is an oversized action. A smaller repair turns the parcel over, notices an unfamiliar hand on the address, and hesitates before breaking the seal. These are original craft demonstrations, not a promised product scenario or protected fictional world."
+    },
+    {
+      "id": "keep-the-role-in-view",
+      "role": "decision_rule",
+      "format": "checklist",
+      "heading": "Let the selected role choose the recovery move",
+      "bodyMarkdown": "Players choose which available story character they want to perform as. Use that approved fact as a practical limit: the recovery should come from what this role can notice, protect, avoid, or ask about now.\n\n- If the role has a reason to be cautious, add a detail that invites verification.\n\n- If the role has a reason to act, choose a modest action with an unresolved effect.\n\n- If the role needs information, ask one question that is specific enough to change the next answer.\n\nThis prevents a generic narrator from taking over. The repair is not “make the story exciting”; it is one credible choice from one perspective."
+    },
+    {
+      "id": "carry-one-open-consequence",
+      "role": "next_step",
+      "format": "callout",
+      "heading": "Carry one open consequence into the next turn",
+      "bodyMarkdown": "Before sending a repaired reply, check one thing: can another turn answer it without inventing a separate plot? If yes, stop there. A scene can regain momentum through one visible detail, one limited move, and one consequence that remains open. The team has previously built AI interactive-fiction and simulator experiences, useful background for thinking in scenes and choices. It is not a claim about a particular feature or available story. When the story-led format fits, use the attributed CTA intentionally; this guide itself does not begin a session."
+    }
+  ],
+  "faqs": [
+    {
+      "id": "faq-restart",
+      "job": "troubleshooting",
+      "question": "Should I restart an AI roleplay when the scene feels flat?",
+      "answerMarkdown": "Usually, first try one smaller repair. Identify whether the scene lacks an observable detail, has an action that is too large, or has no open consequence. Change only that beat before replacing the premise."
+    },
+    {
+      "id": "faq-role",
+      "job": "decision",
+      "question": "How does the selected role help repair a scene?",
+      "answerMarkdown": "Use the role to decide what can be noticed, protected, avoided, or asked next. A credible small choice gives the response a perspective without requiring a long backstory or an invented character biography."
+    },
+    {
+      "id": "faq-boundary",
+      "job": "constraint",
+      "question": "What does this recovery guide confirm about the product?",
+      "answerMarkdown": "It uses only approved facts: the product is a story-led voice cosplay and roleplay direction, experiences begin from an existing plot, and players choose an available role. It does not promise particular stories, availability, privacy, speed, or outcomes."
+    }
+  ],
+  "factIdsUsed": [
+    "voice-roleplay-format",
+    "existing-story",
+    "role-selection",
+    "interactive-fiction-history"
+  ],
+  "internalLinks": [
+    {
+      "anchor": "AI roleplay first message guide",
+      "href": "/ai-roleplay-first-message"
+    },
+    {
+      "anchor": "how to start AI roleplay guide",
+      "href": "/how-to-start-ai-roleplay"
+    }
+  ],
+  "assetBriefs": [
+    "Render original cobalt specimen labels and abstract scene tokens only; do not use third-party characters, worlds, copied interfaces, or a companion.",
+    "Treat the Scene Recovery Specimen Index as an accessible server-rendered inventory, not a gallery or client-only interaction."
+  ],
+  "quality": {
+    "passed": true,
+    "wordCount": 991,
+    "checks": [
+      {
+        "id": "distinct-intent",
+        "label": "Answers a post-entry recovery job",
+        "passed": true,
+        "detail": "The page diagnoses a stalled exchange after entry rather than repeating a first-message or beginner-start answer."
+      },
+      {
+        "id": "no-third-party-ip",
+        "label": "Avoids third-party IP",
+        "passed": true,
+        "detail": "All examples are original and abstract; no character, world, franchise, celebrity, or trademark is named."
+      },
+      {
+        "id": "no-invented-claims",
+        "label": "Uses only approved product facts",
+        "passed": true,
+        "detail": "The draft makes no availability, price, privacy, safety, latency, platform, multiplayer, or technical voice claim."
+      },
+      {
+        "id": "approved-facts",
+        "label": "Uses approved product facts",
+        "passed": true,
+        "detail": "4 approved fact IDs"
+      },
+      {
+        "id": "content-structure",
+        "label": "Has required sections and FAQs",
+        "passed": true,
+        "detail": "5 sections; 3 FAQs"
+      },
+      {
+        "id": "conversion-path",
+        "label": "Has a concrete CTA",
+        "passed": true,
+        "detail": "Explore story-led roleplay on NovelAI"
+      },
+      {
+        "id": "minimum-depth",
+        "label": "600-1000 English words",
+        "passed": true,
+        "detail": "991 words"
+      },
+      {
+        "id": "content-contract",
+        "label": "Content layers match the reviewed architecture",
+        "passed": true,
+        "detail": "reference; 5 mapped sections"
+      },
+      {
+        "id": "content-distinctness",
+        "label": "Content is distinct from published pages",
+        "passed": true,
+        "detail": "4 published comparisons; no text or structure violations"
+      },
+      {
+        "id": "presentation-distinctness",
+        "label": "Presentation recipe passed its reuse policy",
+        "passed": true,
+        "detail": "specimen-catalog-v1"
+      },
+      {
+        "id": "optional-decoration",
+        "label": "Gallery and companion are explicit",
+        "passed": true,
+        "detail": "gallery=none; companion=none"
+      }
+    ],
+    "novelty": {
+      "schemaVersion": 1,
+      "passed": true,
+      "corpusDigest": "c4352c2f11f2ccfad4431de9a0185c910cda8d4f8250e6bd5dd4a01313e5d1c6",
+      "nearest": [
+        {
+          "slug": "ai-roleplay-first-message",
+          "wholeTextCosine": 0.42654211038164974,
+          "titleCosine": 0.23904572186687872,
+          "metaDescriptionCosine": 0.2581988897471611,
+          "h1Cosine": 0.4008918628686366,
+          "heroCosine": 0.22913326005048193,
+          "maxSectionHeadingCosine": 0.47140452079103173,
+          "maxSectionPairCosine": 0.4891748515594706,
+          "maxFaqQuestionCosine": 0.3380617018914066,
+          "maxFaqPairCosine": 0.2672612419124244,
+          "maxSurfaceCopyCosine": 0,
+          "matchedFaqPairs": 0,
+          "fiveWordShingleContainment": 0.023728813559322035,
+          "repeatedSentenceCount": 0,
+          "repeatedSentences": []
+        },
+        {
+          "slug": "how-to-start-ai-roleplay",
+          "wholeTextCosine": 0.388904381009742,
+          "titleCosine": 0.3086066999241838,
+          "metaDescriptionCosine": 0.1875,
+          "h1Cosine": 0.4082482904638631,
+          "heroCosine": 0.2211629342323457,
+          "maxSectionHeadingCosine": 0.3333333333333333,
+          "maxSectionPairCosine": 0.3488588343503088,
+          "maxFaqQuestionCosine": 0.4558423058385518,
+          "maxFaqPairCosine": 0.2645751311064591,
+          "maxSurfaceCopyCosine": 0,
+          "matchedFaqPairs": 0,
+          "fiveWordShingleContainment": 0.007425742574257425,
+          "repeatedSentenceCount": 0,
+          "repeatedSentences": []
+        },
+        {
+          "slug": "how-to-choose-an-ai-roleplay-app",
+          "wholeTextCosine": 0.3088359292420894,
+          "titleCosine": 0.3086066999241838,
+          "metaDescriptionCosine": 0.19364916731037085,
+          "h1Cosine": 0.35355339059327373,
+          "heroCosine": 0.12433397443204185,
+          "maxSectionHeadingCosine": 0.22360679774997896,
+          "maxSectionPairCosine": 0.4233243907726188,
+          "maxFaqQuestionCosine": 0.4629100498862757,
+          "maxFaqPairCosine": 0.3706246583305506,
+          "maxSurfaceCopyCosine": 0,
+          "matchedFaqPairs": 0,
+          "fiveWordShingleContainment": 0.017524644030668127,
+          "repeatedSentenceCount": 0,
+          "repeatedSentences": []
+        },
+        {
+          "slug": "ai-roleplay-prompt-vs-existing-story",
+          "wholeTextCosine": 0.24444239673666135,
+          "titleCosine": 0.2519763153394848,
+          "metaDescriptionCosine": 0.12126781251816648,
+          "h1Cosine": 0.2886751345948129,
+          "heroCosine": 0.0685591170191061,
+          "maxSectionHeadingCosine": 0.18257418583505536,
+          "maxSectionPairCosine": 0.31907224028301745,
+          "maxFaqQuestionCosine": 0.47809144373375745,
+          "maxFaqPairCosine": 0.3019405424385589,
+          "maxSurfaceCopyCosine": 0,
+          "matchedFaqPairs": 0,
+          "fiveWordShingleContainment": 0.007446808510638298,
+          "repeatedSentenceCount": 0,
+          "repeatedSentences": []
+        }
+      ],
+      "internal": {
+        "maxSectionPairCosine": 0.21087527060025527,
+        "maxFaqPairCosine": 0.11118739749916517,
+        "repeatedSentenceCount": 0
+      },
+      "violations": []
+    }
+  },
+  "editorialReview": {
+    "schemaVersion": 1,
+    "reportId": "seo-2026-08-07",
+    "slug": "ai-roleplay-scene-recovery",
+    "draftDigest": "79de1d583d2bc79826927e01566a5e67502695c74f3b815aff0881aa9e123e4f",
+    "reviewerType": "codex_editor",
+    "reviewer": "Codex editorial review",
+    "reviewedAt": "2026-08-07T02:54:00.000Z",
+    "decision": "approved",
+    "notes": "Independent codex_editor review approves the scene-recovery page as a distinct post-entry repair answer. It is bound to the report's schema-2 strategy and draft digest, uses only approved facts, keeps the NovelAI destination behind an intentional attributed CTA, and uses the unused specimen-catalog recipe with no companion or gallery.",
+    "checks": [
+      {
+        "id": "search-intent",
+        "passed": true,
+        "detail": "The page answers the narrow post-entry task of repairing a stalled exchange, not the existing beginner, first-message, role-choice, app-selection, or prompt-versus-story intent."
+      },
+      {
+        "id": "product-truth",
+        "passed": true,
+        "detail": "Every product statement maps to the approved existing-story, role-selection, voice-roleplay, or interactive-fiction fact; no availability, price, privacy, technical, platform, latency, group, or safety promise appears."
+      },
+      {
+        "id": "conversion-path",
+        "passed": true,
+        "detail": "The reviewed CTA is a user-initiated attributed NovelAI route for this exact slug, with the page itself making no claim that it starts a session."
+      },
+      {
+        "id": "source-accuracy",
+        "passed": true,
+        "detail": "Six current public evidence records from six domains support general continuity, action-beat, pacing, scene-context, and interactive-story craft; they are not used for unsupported product claims."
+      },
+      {
+        "id": "content-distinctness",
+        "passed": true,
+        "detail": "The builder passed complete-corpus text, structure, FAQ, shingle, repeated-sentence, pain-point, and nearest-page novelty checks; the answer diagnoses a later stalled beat."
+      },
+      {
+        "id": "presentation-distinctness",
+        "passed": true,
+        "detail": "The draft uses specimen-catalog-v1 with indexed shelves, museum cobalt, catalog typography, and explicit companion=none/gallery=none rather than a previously used visual system."
+      },
+      {
+        "id": "signature-module",
+        "passed": true,
+        "detail": "The Scene Recovery Specimen Index is a useful inventory with three original repair labels, a reader action, and a real placement after the diagnostic framework."
+      },
+      {
+        "id": "rendered-preview",
+        "passed": true,
+        "detail": "The schema-3 renderer contract has a server-rendered H1, hero, mapped sections, inventory signature, FAQs, related links, page-owned surface copy, and attributed CTA without client-only primary content."
+      }
+    ]
+  },
+  "research": {
+    "opportunityScore": 74,
+    "demandProxy": 62,
+    "competitionProxy": 50,
+    "evidenceCount": 6,
+    "trialIntent": 85,
+    "revenueIntent": 55,
+    "intentSpecificity": 100,
+    "funnelStage": "trial",
+    "conversionGoal": "trial_start",
+    "scoreBasis": "evidence_signals_v1",
+    "evidenceRefs": [
+      "evenfall-continuity",
+      "rpdate-craft-guide",
+      "reverie-pacing"
+    ],
+    "productFactIds": [
+      "voice-roleplay-format",
+      "existing-story",
+      "role-selection"
+    ]
+  },
+  "servedContentDigest": "039a07729964da3244b8d70daeed0d85cf17c9fc08b98d44de7224fbea017a71"
+}

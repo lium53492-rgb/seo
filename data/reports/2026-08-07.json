@@ -1,0 +1,1825 @@
+{
+  "id": "seo-2026-08-07",
+  "date": "2026-08-07",
+  "policyVersion": 4,
+  "publicationMode": "create",
+  "generatedAt": "2026-08-07T02:43:00.000Z",
+  "mode": "partial",
+  "headline": "Today's revenue-first priority: create a new page",
+  "summary": {
+    "candidatesAnalyzed": 8,
+    "publishableOpportunities": 8,
+    "eligibleFallbackIntents": 7,
+    "totalClicks": 0,
+    "totalImpressions": 0,
+    "averageCtr": 0
+  },
+  "candidateIntentGate": {
+    "schemaVersion": 1,
+    "state": "passed",
+    "requiredDistinctCreateIntents": 8,
+    "eligibleDistinctCreateIntents": 8,
+    "selectedKeyword": "ai roleplay scene recovery",
+    "eligibleFallbackCount": 7,
+    "eligibleFallbacks": [
+      {
+        "rank": 1,
+        "keyword": "ai roleplay dialogue vs action",
+        "searcherJob": "Decide whether the next AI roleplay response needs dialogue, an action, or both to change the current scene.",
+        "score": 73,
+        "action": "create_page"
+      },
+      {
+        "rank": 2,
+        "keyword": "ai roleplay dialogue subtext",
+        "searcherJob": "Write an AI roleplay line that implies a concrete pressure without explaining the entire scene in dialogue.",
+        "score": 72,
+        "action": "create_page"
+      },
+      {
+        "rank": 3,
+        "keyword": "ai roleplay pacing tips",
+        "searcherJob": "Match reply length and scene pace in an AI roleplay without rushing a consequence or freezing the exchange.",
+        "score": 72,
+        "action": "create_page"
+      },
+      {
+        "rank": 4,
+        "keyword": "ai roleplay character motivation",
+        "searcherJob": "Find one immediate motivation for a chosen AI roleplay character so the next response has a direction inside the scene.",
+        "score": 72,
+        "action": "create_page"
+      },
+      {
+        "rank": 5,
+        "keyword": "ai roleplay choice consequences",
+        "searcherJob": "Choose a next AI roleplay action that changes the immediate scene instead of adding a disconnected line.",
+        "score": 72,
+        "action": "create_page"
+      },
+      {
+        "rank": 6,
+        "keyword": "ai roleplay scene tension",
+        "searcherJob": "Add one answerable pressure to an AI roleplay scene without resolving the conflict or borrowing a familiar fictional setting.",
+        "score": 72,
+        "action": "create_page"
+      },
+      {
+        "rank": 7,
+        "keyword": "ai roleplay sensory details",
+        "searcherJob": "Choose one sensory anchor for an AI roleplay reply so the next message is grounded in the current moment instead of a summary.",
+        "score": 72,
+        "action": "create_page"
+      }
+    ]
+  },
+  "opportunities": [
+    {
+      "keyword": "ai roleplay scene recovery",
+      "seed": "repair a stalled scene",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 62,
+      "volume": 0,
+      "difficulty": 50,
+      "cpc": 0,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 80,
+      "originality": 90,
+      "conversionIntent": 85,
+      "trialIntent": 85,
+      "revenueIntent": 55,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 10,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "evenfall-continuity",
+          "rpdate-craft-guide",
+          "reverie-pacing"
+        ],
+        "searcherJob": "Repair an AI roleplay scene that has gone flat by choosing one small, answerable change instead of restarting the whole exchange.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Several independent public guides discuss flat openings, continuity, and pacing, making this a transparent public-web demand proxy.",
+          "difficulty": "Visible results include broad roleplay advice and product guides, so competition is a moderate research proxy rather than a keyword metric.",
+          "productFit": "The approved existing plot and available-role facts give a concrete, truthful context for a recovery exercise.",
+          "trialIntent": "The searcher has an active scene problem and wants an immediately usable move inside a roleplay experience.",
+          "revenueIntent": "A repair query evaluates whether a roleplay format remains usable after entry, which is modest commercial proximity without pricing claims.",
+          "intentSpecificity": "The phrase fixes a repair task, AI roleplay format, active participant audience, and a stalled-scene modifier.",
+          "originality": "A recovery diagnostic is a later-scene failure-mode answer, not a beginner, first-message, role-choice, or app-selection page.",
+          "ipRisk": "The task is generic and can use original abstract examples without a named character, franchise, or protected setting.",
+          "cannibalizationRisk": "Published pages explain entry and choice; none teaches how to diagnose a scene after the exchange has already stalled."
+        }
+      },
+      "score": 74,
+      "action": "create_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; specific searcher job; evidence-derived revenue-first opportunity score 74."
+    },
+    {
+      "keyword": "ai roleplay dialogue vs action",
+      "seed": "choose a response form",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 53,
+      "volume": 0,
+      "difficulty": 49,
+      "cpc": 0,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 80,
+      "originality": 90,
+      "conversionIntent": 85,
+      "trialIntent": 85,
+      "revenueIntent": 55,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 10,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "rpdate-craft-guide",
+          "aidungeon-basics"
+        ],
+        "searcherJob": "Decide whether the next AI roleplay response needs dialogue, an action, or both to change the current scene.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Public guides describe action beats and interactive responses, yielding a clear public-web proxy.",
+          "difficulty": "The results span general writing and roleplay pages, so difficulty remains a moderate proxy.",
+          "productFit": "A selected role inside a supplied story gives honest context for choosing a response form.",
+          "trialIntent": "This is an immediate decision while taking part in a scene, showing solution-aware intent.",
+          "revenueIntent": "The query concerns usable participation and modest commercial proximity, not a price claim.",
+          "intentSpecificity": "It fixes a response-format choice, AI roleplay context, active audience, and next-turn scope.",
+          "originality": "Response form is narrower than the current first-message guide and focuses on a later decision.",
+          "ipRisk": "Original abstract dialogue and actions require no protected characters or worlds.",
+          "cannibalizationRisk": "No page currently compares the jobs performed by dialogue and action in a live scene."
+        }
+      },
+      "score": 73,
+      "action": "create_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; specific searcher job; evidence-derived revenue-first opportunity score 73."
+    },
+    {
+      "keyword": "ai roleplay dialogue subtext",
+      "seed": "make dialogue imply a pressure",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 57,
+      "volume": 0,
+      "difficulty": 56,
+      "cpc": 0,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 80,
+      "originality": 90,
+      "conversionIntent": 85,
+      "trialIntent": 85,
+      "revenueIntent": 55,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 10,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "evenfall-continuity",
+          "keoria-beginner-guide"
+        ],
+        "searcherJob": "Write an AI roleplay line that implies a concrete pressure without explaining the entire scene in dialogue.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Independent guides discuss scene context and responsive beats, supporting a moderate public-web demand proxy for dialogue craft.",
+          "difficulty": "The visible result set is mostly broad writing guidance, so difficulty is a transparent moderate proxy.",
+          "productFit": "A supplied plot and selected available role truthfully anchor a dialogue choice without adding product capabilities.",
+          "trialIntent": "The reader is already participating or preparing to continue and asks for an immediate craft move.",
+          "revenueIntent": "The task reflects whether a roleplay format can sustain meaningful participation, a modest commercial-proximity signal.",
+          "intentSpecificity": "It names a dialogue task, AI roleplay format, participant audience, and a narrow implied-pressure constraint.",
+          "originality": "Dialogue subtext is a line-level craft lens, not a role-selection, opening, or app-choice explanation.",
+          "ipRisk": "The subject can be explained with original generic situations and no protected fictional material.",
+          "cannibalizationRisk": "No published page teaches how one dialogue line can imply a pressure inside a current scene."
+        }
+      },
+      "score": 72,
+      "action": "create_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; specific searcher job; evidence-derived revenue-first opportunity score 72."
+    },
+    {
+      "keyword": "ai roleplay pacing tips",
+      "seed": "match the pace of a scene",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 55,
+      "volume": 0,
+      "difficulty": 54,
+      "cpc": 0,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 80,
+      "originality": 90,
+      "conversionIntent": 85,
+      "trialIntent": 85,
+      "revenueIntent": 55,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 10,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "rpdate-craft-guide",
+          "reverie-pacing"
+        ],
+        "searcherJob": "Match reply length and scene pace in an AI roleplay without rushing a consequence or freezing the exchange.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Two public guides discuss response pace and avoid rushing scene beats, supporting a modest research proxy.",
+          "difficulty": "Pacing advice appears across broad creative guidance, so difficulty is a moderate public-web proxy.",
+          "productFit": "Approved story context and role selection are enough to frame pacing advice without making technical claims.",
+          "trialIntent": "The reader seeks an action usable during participation, which shows immediate experience intent.",
+          "revenueIntent": "Pacing helps a searcher evaluate practical roleplay fit, a modest commercial-proximity signal only.",
+          "intentSpecificity": "The query states a pacing task, AI roleplay format, active reader, and scene-level modifier.",
+          "originality": "Pacing measures tempo, not entry, role selection, first messaging, or product comparison.",
+          "ipRisk": "No named setting or character is needed to describe generic scene tempo.",
+          "cannibalizationRisk": "Existing pages do not give a separate pace-control answer for a scene already in progress."
+        }
+      },
+      "score": 72,
+      "action": "create_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; specific searcher job; evidence-derived revenue-first opportunity score 72."
+    },
+    {
+      "keyword": "ai roleplay character motivation",
+      "seed": "find a next-scene objective",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 51,
+      "volume": 0,
+      "difficulty": 52,
+      "cpc": 0,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 80,
+      "originality": 90,
+      "conversionIntent": 85,
+      "trialIntent": 85,
+      "revenueIntent": 55,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 10,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "funfun-scene-guide",
+          "keoria-beginner-guide"
+        ],
+        "searcherJob": "Find one immediate motivation for a chosen AI roleplay character so the next response has a direction inside the scene.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Independent scene and beginner guides discuss character context, producing a modest public-web demand proxy.",
+          "difficulty": "Generic creative advice competes here, so the visible difficulty is a moderate proxy only.",
+          "productFit": "Existing plot context and role selection directly support an honest motivation exercise.",
+          "trialIntent": "The reader wants to make a next move now, indicating immediate experience intent.",
+          "revenueIntent": "A character-goal task evaluates practical use of roleplay, a modest commercial signal.",
+          "intentSpecificity": "It identifies a motivation task, AI roleplay format, selected-role audience, and next-response objective.",
+          "originality": "Motivation is a goal-finding tool rather than a route, app, opening, or response-format answer.",
+          "ipRisk": "Examples can remain original and generic without any franchise or recognizable character.",
+          "cannibalizationRisk": "The site explains choosing a role, not identifying that role's immediate objective in a current scene."
+        }
+      },
+      "score": 72,
+      "action": "create_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; specific searcher job; evidence-derived revenue-first opportunity score 72."
+    },
+    {
+      "keyword": "ai roleplay choice consequences",
+      "seed": "make a meaningful next choice",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 50,
+      "volume": 0,
+      "difficulty": 55,
+      "cpc": 0,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 80,
+      "originality": 90,
+      "conversionIntent": 85,
+      "trialIntent": 85,
+      "revenueIntent": 55,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 10,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "keoria-beginner-guide",
+          "aidungeon-basics"
+        ],
+        "searcherJob": "Choose a next AI roleplay action that changes the immediate scene instead of adding a disconnected line.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Public interactive-fiction and beginner materials discuss choices and progress, making a modest proxy.",
+          "difficulty": "Results span broad game and fiction advice, so competition is a moderate research proxy.",
+          "productFit": "A story premise and selected role ground an immediate choice without promising branching mechanics.",
+          "trialIntent": "The reader is taking turns or preparing to do so and needs a direct continuation action.",
+          "revenueIntent": "Meaningful participation is a modest evaluation signal for a roleplay experience.",
+          "intentSpecificity": "The phrase names a next-choice task, AI roleplay format, active audience, and consequence modifier.",
+          "originality": "Choice impact is a distinct craft test from choosing a role or entering a story.",
+          "ipRisk": "No named fictional world or protected character is required for original examples.",
+          "cannibalizationRisk": "Published pages do not teach a test for whether the next action changes the immediate scene."
+        }
+      },
+      "score": 72,
+      "action": "create_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; specific searcher job; evidence-derived revenue-first opportunity score 72."
+    },
+    {
+      "keyword": "ai roleplay scene tension",
+      "seed": "add an answerable pressure",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 49,
+      "volume": 0,
+      "difficulty": 53,
+      "cpc": 0,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 80,
+      "originality": 90,
+      "conversionIntent": 85,
+      "trialIntent": 85,
+      "revenueIntent": 55,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 10,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "evenfall-continuity",
+          "funfun-scene-guide"
+        ],
+        "searcherJob": "Add one answerable pressure to an AI roleplay scene without resolving the conflict or borrowing a familiar fictional setting.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Scene guides discuss specific context and responsive beats, supporting a modest public-web proxy.",
+          "difficulty": "The task competes with broad creative-writing material, so the difficulty value is transparent and moderate.",
+          "productFit": "Approved story context and role perspective are sufficient to explain pressure without new product claims.",
+          "trialIntent": "The query asks for a move usable immediately during an active experience.",
+          "revenueIntent": "The reader is evaluating engaging participation, a modest commercial-proximity signal.",
+          "intentSpecificity": "It defines a tension task, AI roleplay form, active scene audience, and a narrow pressure modifier.",
+          "originality": "Tension focuses on the open pressure inside a scene rather than recovery, pace, or character motivation.",
+          "ipRisk": "The page can use original unnamed details and avoid all third-party settings.",
+          "cannibalizationRisk": "No existing page explains how to add one answerable pressure to a current scene."
+        }
+      },
+      "score": 72,
+      "action": "create_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; specific searcher job; evidence-derived revenue-first opportunity score 72."
+    },
+    {
+      "keyword": "ai roleplay sensory details",
+      "seed": "choose one sensory anchor",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 48,
+      "volume": 0,
+      "difficulty": 54,
+      "cpc": 0,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 80,
+      "originality": 90,
+      "conversionIntent": 85,
+      "trialIntent": 85,
+      "revenueIntent": 55,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 10,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "rpdate-craft-guide",
+          "funfun-scene-guide"
+        ],
+        "searcherJob": "Choose one sensory anchor for an AI roleplay reply so the next message is grounded in the current moment instead of a summary.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Scene guides recommend specific context and detail, supporting a modest public-web demand proxy.",
+          "difficulty": "General creative advice appears beside roleplay guides, so competition remains a moderate research proxy.",
+          "productFit": "An existing plot and selected role provide truthful anchors for choosing one observable sensory detail.",
+          "trialIntent": "The reader needs an immediate detail to use during participation, showing solution-aware experience intent.",
+          "revenueIntent": "The task concerns practical scene usability, a modest commercial-proximity signal without product promises.",
+          "intentSpecificity": "It names a sensory-detail task, AI roleplay format, active audience, and a narrow response constraint.",
+          "originality": "Grounding one sensory anchor differs from repairing a stall, choosing an action form, or deciding scene tempo.",
+          "ipRisk": "The guidance can use original abstract locations and avoids all named or protected fictional settings.",
+          "cannibalizationRisk": "No published page teaches a focused method for choosing one sensory anchor after entering a story."
+        }
+      },
+      "score": 72,
+      "action": "create_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; specific searcher job; evidence-derived revenue-first opportunity score 72."
+    }
+  ],
+  "performance": [],
+  "trendSignals": [
+    {
+      "keyword": "ai roleplay scene recovery",
+      "source": "google_trends",
+      "sourceUrl": "https://trends.google.com/trends/explore?date=today%2012-m&q=ai%20roleplay%20scene%20recovery",
+      "state": "unavailable",
+      "relativeInterest": null,
+      "direction": "unknown",
+      "geo": "Worldwide",
+      "period": "today 12-m",
+      "collectedAt": "2026-08-07T02:42:00.000Z",
+      "detail": "No official Google Trends observation was available to this run, so no interest value or direction was inferred."
+    }
+  ],
+  "feedbackDecisions": [],
+  "portfolioFunnels": {
+    "schemaVersion": 2,
+    "privacyClass": "public_growth_evidence",
+    "generatedAt": "2026-08-07T02:41:33.484Z",
+    "periodBasis": "complete_shanghai_calendar_days",
+    "reportingWindowDays": 28,
+    "reportingLagDays": 3,
+    "aggregationKey": "source_slug+reporting_period",
+    "periodStart": "2026-07-06T16:00:00.000Z",
+    "periodEnd": "2026-08-03T16:00:00.000Z",
+    "summary": {
+      "publishedPages": 8,
+      "collectedPages": 0,
+      "unavailablePages": 8,
+      "attributionJoinReady": false,
+      "attributionJoinBlocked": false,
+      "hasSearchValidatedLandingPage": false
+    },
+    "entries": [
+      {
+        "sourceSlug": "ai-roleplay-first-message",
+        "path": "/ai-roleplay-first-message",
+        "keyword": "ai roleplay first message",
+        "state": "unavailable",
+        "reason": "Private attribution evidence returned HTTP 503; no page metrics were persisted."
+      },
+      {
+        "sourceSlug": "ai-roleplay-prompt-vs-existing-story",
+        "path": "/ai-roleplay-prompt-vs-existing-story",
+        "keyword": "ai roleplay prompt vs existing story",
+        "state": "unavailable",
+        "reason": "Private attribution evidence returned HTTP 503; no page metrics were persisted."
+      },
+      {
+        "sourceSlug": "ai-voice-roleplay-story",
+        "path": "/ai-voice-roleplay-story",
+        "keyword": "ai voice roleplay story",
+        "state": "unavailable",
+        "reason": "Private attribution evidence returned HTTP 503; no page metrics were persisted."
+      },
+      {
+        "sourceSlug": "choose-a-role-ai-story",
+        "path": "/choose-a-role-ai-story",
+        "keyword": "choose a role ai story",
+        "state": "unavailable",
+        "reason": "Private attribution evidence returned HTTP 503; no page metrics were persisted."
+      },
+      {
+        "sourceSlug": "how-to-choose-an-ai-roleplay-app",
+        "path": "/how-to-choose-an-ai-roleplay-app",
+        "keyword": "how to choose an ai roleplay app",
+        "state": "unavailable",
+        "reason": "Private attribution evidence returned HTTP 503; no page metrics were persisted."
+      },
+      {
+        "sourceSlug": "how-to-start-ai-roleplay",
+        "path": "/how-to-start-ai-roleplay",
+        "keyword": "how to start ai roleplay",
+        "state": "unavailable",
+        "reason": "Private attribution evidence returned HTTP 503; no page metrics were persisted."
+      },
+      {
+        "sourceSlug": "interactive-voice-story",
+        "path": "/interactive-voice-story",
+        "keyword": "interactive voice story",
+        "state": "unavailable",
+        "reason": "Private attribution evidence returned HTTP 503; no page metrics were persisted."
+      },
+      {
+        "sourceSlug": "story-based-ai-roleplay",
+        "path": "/story-based-ai-roleplay",
+        "keyword": "story based ai roleplay",
+        "state": "unavailable",
+        "reason": "Private attribution evidence returned HTTP 503; no page metrics were persisted."
+      }
+    ]
+  },
+  "portfolioDecision": {
+    "schemaVersion": 1,
+    "action": "create_page",
+    "targetSlug": null,
+    "rationale": "The required all-page portfolio covers the complete finalized Shanghai-day window but records every page as unavailable because the protected endpoint returned HTTP 503. That unavailable state is not observed zero and does not support an update or consolidation. The scene-recovery job is a distinct post-entry failure-mode answer with policy-v4 evidence, approved facts, trial-ready signals, and no third-party IP.",
+    "evidenceSlugs": [
+      "ai-roleplay-first-message",
+      "how-to-start-ai-roleplay",
+      "how-to-choose-an-ai-roleplay-app"
+    ]
+  },
+  "publication": {
+    "status": "published",
+    "slug": "ai-roleplay-scene-recovery",
+    "path": "/ai-roleplay-scene-recovery",
+    "slot": "morning",
+    "publishedAt": "2026-08-07T02:54:26.161Z",
+    "updatedAt": "2026-08-07T02:54:26.161Z",
+    "draftDigest": "79de1d583d2bc79826927e01566a5e67502695c74f3b815aff0881aa9e123e4f",
+    "reason": "Approved by codex_editor Codex editorial review after automated and editorial gates passed."
+  },
+  "publications": [
+    {
+      "status": "published",
+      "slug": "ai-roleplay-scene-recovery",
+      "path": "/ai-roleplay-scene-recovery",
+      "slot": "morning",
+      "publishedAt": "2026-08-07T02:54:26.161Z",
+      "updatedAt": "2026-08-07T02:54:26.161Z",
+      "draftDigest": "79de1d583d2bc79826927e01566a5e67502695c74f3b815aff0881aa9e123e4f",
+      "reason": "Approved by codex_editor Codex editorial review after automated and editorial gates passed."
+    }
+  ],
+  "actions": [
+    {
+      "priority": "P0",
+      "action": "create a new page",
+      "why": "The required all-page portfolio covers the complete finalized Shanghai-day window but records every page as unavailable because the protected endpoint returned HTTP 503. That unavailable state is not observed zero and does not support an update or consolidation. The scene-recovery job is a distinct post-entry failure-mode answer with policy-v4 evidence, approved facts, trial-ready signals, and no third-party IP.",
+      "expectedImpact": "Target a specific searcher who is close to trial or purchase."
+    },
+    {
+      "priority": "P1",
+      "action": "Verify evidence, intent, and conversion hypothesis",
+      "why": "Research proxies rank options; they do not replace observed search or revenue data.",
+      "expectedImpact": "Prevent broad traffic from displacing qualified product demand."
+    },
+    {
+      "priority": "P2",
+      "action": "Build and publish /ai-roleplay-scene-recovery",
+      "why": "Approved by codex_editor Codex editorial review after automated and editorial gates passed.",
+      "expectedImpact": "Release one reviewed, measurable page."
+    }
+  ],
+  "brief": {
+    "keyword": "ai roleplay scene recovery",
+    "slug": "/ai-roleplay-scene-recovery",
+    "pageType": "product",
+    "searchIntent": "mixed",
+    "title": "AI Roleplay Scene Recovery: Diagnose the Stalled Beat",
+    "description": "Recover a flat AI roleplay scene by finding the stalled beat, changing one small detail, and leaving a concrete consequence for the next turn.",
+    "h1": "AI Roleplay Scene Recovery: Give the Next Turn a Job",
+    "primaryCta": "Explore story-led roleplay on NovelAI",
+    "sections": [
+      "failure_analysis: A flat scene has a specific stalled beat, not a missing universe.",
+      "framework: Missing evidence, oversized action, and closed consequence require different small repairs.",
+      "worked_example: One original detail or limited action can reopen an answerable scene.",
+      "decision_rule: Perspective turns a generic rewrite into one credible next choice.",
+      "next_step: Stop once another turn has one concrete consequence to answer."
+    ],
+    "evidenceRequired": [
+      "Public evidence for the intent",
+      "Approved product facts",
+      "Original non-infringing material",
+      "Verified CTA and attribution route"
+    ],
+    "qualityGate": [
+      "One intent and one H1",
+      "Content and presentation contracts passed",
+      "No unlicensed third-party IP",
+      "Independent editorial review",
+      "Render, link, and index checks"
+    ]
+  },
+  "draft": {
+    "schemaVersion": 2,
+    "slot": "morning",
+    "keyword": "ai roleplay scene recovery",
+    "slug": "/ai-roleplay-scene-recovery",
+    "language": "en",
+    "model": "codex",
+    "generatedAt": "2026-08-07T02:42:30.000Z",
+    "reviewRequired": true,
+    "factIdsUsed": [
+      "voice-roleplay-format",
+      "existing-story",
+      "role-selection",
+      "interactive-fiction-history"
+    ],
+    "title": "AI Roleplay Scene Recovery: Diagnose the Stalled Beat",
+    "metaDescription": "Recover a flat AI roleplay scene by finding the stalled beat, changing one small detail, and leaving a concrete consequence for the next turn.",
+    "h1": "AI Roleplay Scene Recovery: Give the Next Turn a Job",
+    "heroMarkdown": "When a roleplay scene goes flat, do not restart the story or write a larger speech. Find the beat that stopped moving, make one modest correction, and leave something specific for the scene to answer.",
+    "primaryCta": "Explore story-led roleplay on NovelAI",
+    "sections": [
+      {
+        "id": "spot-the-stall",
+        "role": "failure_analysis",
+        "format": "prose",
+        "heading": "Find the exact beat that stopped moving",
+        "bodyMarkdown": "A stalled exchange usually has one of three problems. It has no observable change, so there is nothing for another turn to notice. It makes an action too large, so the response settles the question before anyone can react. Or it closes the consequence, which turns a scene into a report. Read the last two turns and circle the first place where a role could have noticed, chosen, asked, or resisted something but did not. That is the stalled beat. The approved format begins from an existing story plot, so repair it with a detail already present rather than a different world."
+      },
+      {
+        "id": "use-the-index",
+        "role": "framework",
+        "format": "checklist",
+        "heading": "Use the Scene Recovery Specimen Index",
+        "bodyMarkdown": "- **Specimen A: missing evidence.** Add one observable detail the chosen role can respond to: a pause, an object out of place, or an unanswered question.\n\n- **Specimen B: oversized action.** Shrink the last move until it changes the moment but cannot settle the conflict.\n\n- **Specimen C: closed consequence.** Reopen one effect: who notices, what becomes harder, or what must be decided next.\n\nSelect the label that matches the stall, make one correction, and let the next exchange do the rest."
+      },
+      {
+        "id": "test-a-small-repair",
+        "role": "worked_example",
+        "format": "examples",
+        "heading": "Test one small repair instead of rewriting the scene",
+        "bodyMarkdown": "Imagine an original scene in which a courier leaves a sealed parcel on a table and the chosen role says, “That is strange.” The line names a mood but gives no next job. A missing-evidence repair could be: “The seal is warm, although the room is cold. I move the parcel away from the window and ask who knew I would be here.”\n\nNow imagine a reply that opens the parcel, identifies the sender, solves the mystery, and leaves the room. That is an oversized action. A smaller repair turns the parcel over, notices an unfamiliar hand on the address, and hesitates before breaking the seal. These are original craft demonstrations, not a promised product scenario or protected fictional world."
+      },
+      {
+        "id": "keep-the-role-in-view",
+        "role": "decision_rule",
+        "format": "checklist",
+        "heading": "Let the selected role choose the recovery move",
+        "bodyMarkdown": "Players choose which available story character they want to perform as. Use that approved fact as a practical limit: the recovery should come from what this role can notice, protect, avoid, or ask about now.\n\n- If the role has a reason to be cautious, add a detail that invites verification.\n\n- If the role has a reason to act, choose a modest action with an unresolved effect.\n\n- If the role needs information, ask one question that is specific enough to change the next answer.\n\nThis prevents a generic narrator from taking over. The repair is not “make the story exciting”; it is one credible choice from one perspective."
+      },
+      {
+        "id": "carry-one-open-consequence",
+        "role": "next_step",
+        "format": "callout",
+        "heading": "Carry one open consequence into the next turn",
+        "bodyMarkdown": "Before sending a repaired reply, check one thing: can another turn answer it without inventing a separate plot? If yes, stop there. A scene can regain momentum through one visible detail, one limited move, and one consequence that remains open. The team has previously built AI interactive-fiction and simulator experiences, useful background for thinking in scenes and choices. It is not a claim about a particular feature or available story. When the story-led format fits, use the attributed CTA intentionally; this guide itself does not begin a session."
+      }
+    ],
+    "faqs": [
+      {
+        "id": "faq-restart",
+        "job": "troubleshooting",
+        "question": "Should I restart an AI roleplay when the scene feels flat?",
+        "answerMarkdown": "Usually, first try one smaller repair. Identify whether the scene lacks an observable detail, has an action that is too large, or has no open consequence. Change only that beat before replacing the premise."
+      },
+      {
+        "id": "faq-role",
+        "job": "decision",
+        "question": "How does the selected role help repair a scene?",
+        "answerMarkdown": "Use the role to decide what can be noticed, protected, avoided, or asked next. A credible small choice gives the response a perspective without requiring a long backstory or an invented character biography."
+      },
+      {
+        "id": "faq-boundary",
+        "job": "constraint",
+        "question": "What does this recovery guide confirm about the product?",
+        "answerMarkdown": "It uses only approved facts: the product is a story-led voice cosplay and roleplay direction, experiences begin from an existing plot, and players choose an available role. It does not promise particular stories, availability, privacy, speed, or outcomes."
+      }
+    ],
+    "architecture": {
+      "schemaVersion": 1,
+      "intent": {
+        "searcherJob": "Repair an AI roleplay scene that has gone flat by choosing one small, answerable change instead of restarting the whole exchange.",
+        "painPointId": "stalled_exchange",
+        "decisionToEnable": "Choose a precise recovery move that creates an answerable next turn without replacing the existing scene.",
+        "oneSentenceAnswer": "Recover a flat scene by naming the stalled beat, making one modest change, and leaving one concrete consequence open.",
+        "nonGoals": [
+          "Do not provide a generic beginner roleplay tutorial.",
+          "Do not promise that a repair guarantees a story outcome."
+        ]
+      },
+      "content": {
+        "archetype": "reference",
+        "thesis": "A scene recovers when one small correction restores an observable detail, limited action, or open consequence.",
+        "originalContribution": "The page offers an original Scene Recovery Specimen Index: three diagnostic labels that separate missing evidence, oversized action, and closed consequences without copying prompts or fictional settings.",
+        "tone": "Curatorial and practical, like labeled specimens on a cobalt field table rather than a generic advice column.",
+        "openingMove": "diagnostic_question",
+        "avoidPhrases": [
+          "endless possibilities",
+          "bring characters to life",
+          "start your journey"
+        ],
+        "sections": [
+          {
+            "id": "spot-the-stall",
+            "role": "failure_analysis",
+            "format": "prose",
+            "readerQuestion": "Which exact beat made the exchange stop moving?",
+            "uniqueTakeaway": "A flat scene has a specific stalled beat, not a missing universe."
+          },
+          {
+            "id": "use-the-index",
+            "role": "framework",
+            "format": "checklist",
+            "readerQuestion": "Which recovery label fits the stalled beat?",
+            "uniqueTakeaway": "Missing evidence, oversized action, and closed consequence require different small repairs."
+          },
+          {
+            "id": "test-a-small-repair",
+            "role": "worked_example",
+            "format": "examples",
+            "readerQuestion": "What does a repair look like without a total rewrite?",
+            "uniqueTakeaway": "One original detail or limited action can reopen an answerable scene."
+          },
+          {
+            "id": "keep-the-role-in-view",
+            "role": "decision_rule",
+            "format": "checklist",
+            "readerQuestion": "How should the chosen role determine the repair?",
+            "uniqueTakeaway": "Perspective turns a generic rewrite into one credible next choice."
+          },
+          {
+            "id": "carry-one-open-consequence",
+            "role": "next_step",
+            "format": "callout",
+            "readerQuestion": "When is the repair complete enough to send?",
+            "uniqueTakeaway": "Stop once another turn has one concrete consequence to answer."
+          }
+        ],
+        "faqs": [
+          {
+            "id": "faq-restart",
+            "job": "troubleshooting",
+            "readerObstacle": "The reader assumes a stalled exchange requires a complete restart.",
+            "answerBoundary": "Recommend a small craft repair without promising a guaranteed result."
+          },
+          {
+            "id": "faq-role",
+            "job": "decision",
+            "readerObstacle": "The reader does not know how a selected role changes a recovery move.",
+            "answerBoundary": "Explain perspective through approved role-selection context only."
+          },
+          {
+            "id": "faq-boundary",
+            "job": "constraint",
+            "readerObstacle": "The reader may turn a general craft example into a product capability claim.",
+            "answerBoundary": "Restate the approved-fact boundary without adding availability or technology claims."
+          }
+        ],
+        "signature": {
+          "id": "scene-recovery-specimen-index",
+          "type": "inventory",
+          "readerAction": "Label the stalled beat before changing it",
+          "afterSectionId": "use-the-index"
+        }
+      },
+      "differentiation": {
+        "against": [
+          {
+            "slug": "ai-roleplay-first-message",
+            "intentDelta": "The first-message page solves a blank opening before a scene begins; this page repairs a scene only after an exchange has already become flat.",
+            "answerDelta": "The Flight Plan creates an initial reply, while the Specimen Index identifies which existing beat needs a limited correction.",
+            "structureDelta": "The earlier guide is a mission-style task sequence; this page is a labeled reference inventory followed by diagnostic examples.",
+            "faqDelta": "Earlier FAQs clarify opening-message ingredients; these FAQs address restarting, role-led repair, and limits on recovery claims.",
+            "visualDelta": "The prior route uses a retro-futuristic mission treatment; this page uses cobalt catalog labels, indexed shelves, and no companion."
+          },
+          {
+            "slug": "how-to-start-ai-roleplay",
+            "intentDelta": "The start guide helps a new reader enter an experience; this page serves a participant who is already inside a scene and needs to restore movement.",
+            "answerDelta": "The start guide explains the broad route into a story, while this answer names three failure types in the last two turns.",
+            "structureDelta": "The beginner guide follows a broad onboarding path; this page groups recoveries as specimens and tests one precise repair.",
+            "faqDelta": "The start-page FAQs address getting started; these questions diagnose a stalled exchange and bound the repair advice.",
+            "visualDelta": "The older page uses its established layout; this catalog recipe presents accession-style labels and a museum-cobalt reading system."
+          }
+        ]
+      },
+      "presentation": {
+        "recipeId": "specimen-catalog-v1",
+        "rendererId": "specimen_catalog",
+        "visualSystemId": "specimen-catalog",
+        "layoutId": "indexed-specimen-shelves",
+        "paletteId": "museum-cobalt",
+        "typographyId": "catalog-serif-label",
+        "motifId": "evidence-specimen-tag",
+        "companion": "none",
+        "gallery": "none",
+        "surfaceCopy": {
+          "eyebrow": "Scene recovery catalog",
+          "shortAnswerLabel": "The repair label",
+          "contentsLabel": "Specimen index",
+          "sectionLabel": "Specimen",
+          "faqEyebrow": "Field notes",
+          "faqHeading": "Questions before the next beat",
+          "relatedHeading": "Continue from the catalog",
+          "finalCtaEyebrow": "Scene ready",
+          "finalCtaHeading": "Carry one open consequence into a story.",
+          "finalCtaBody": "Use the attributed destination when a story-led roleplay experience fits the scene you want to continue.",
+          "backToTop": "Return to the index"
+        }
+      }
+    },
+    "signatureModule": {
+      "id": "scene-recovery-specimen-index",
+      "type": "inventory",
+      "title": "Scene Recovery Specimen Index",
+      "intro": "Label the stalled beat before you rewrite anything. Each specimen isolates one repair job and keeps the next response small enough to answer.",
+      "items": [
+        {
+          "label": "Specimen A",
+          "title": "Missing evidence",
+          "bodyMarkdown": "Add one observable detail the selected role can notice so another turn has something concrete to respond to."
+        },
+        {
+          "label": "Specimen B",
+          "title": "Oversized action",
+          "bodyMarkdown": "Reduce the last move until it changes the moment but leaves the central question unresolved for another response."
+        },
+        {
+          "label": "Specimen C",
+          "title": "Closed consequence",
+          "bodyMarkdown": "Open one specific effect by showing who notices, what becomes harder, or what decision must happen next."
+        }
+      ]
+    },
+    "internalLinks": [
+      {
+        "anchor": "AI roleplay first message guide",
+        "href": "/ai-roleplay-first-message"
+      },
+      {
+        "anchor": "how to start AI roleplay guide",
+        "href": "/how-to-start-ai-roleplay"
+      }
+    ],
+    "assetBriefs": [
+      "Render original cobalt specimen labels and abstract scene tokens only; do not use third-party characters, worlds, copied interfaces, or a companion.",
+      "Treat the Scene Recovery Specimen Index as an accessible server-rendered inventory, not a gallery or client-only interaction."
+    ],
+    "quality": {
+      "passed": true,
+      "wordCount": 991,
+      "checks": [
+        {
+          "id": "distinct-intent",
+          "label": "Answers a post-entry recovery job",
+          "passed": true,
+          "detail": "The page diagnoses a stalled exchange after entry rather than repeating a first-message or beginner-start answer."
+        },
+        {
+          "id": "no-third-party-ip",
+          "label": "Avoids third-party IP",
+          "passed": true,
+          "detail": "All examples are original and abstract; no character, world, franchise, celebrity, or trademark is named."
+        },
+        {
+          "id": "no-invented-claims",
+          "label": "Uses only approved product facts",
+          "passed": true,
+          "detail": "The draft makes no availability, price, privacy, safety, latency, platform, multiplayer, or technical voice claim."
+        },
+        {
+          "id": "approved-facts",
+          "label": "Uses approved product facts",
+          "passed": true,
+          "detail": "4 approved fact IDs"
+        },
+        {
+          "id": "content-structure",
+          "label": "Has required sections and FAQs",
+          "passed": true,
+          "detail": "5 sections; 3 FAQs"
+        },
+        {
+          "id": "conversion-path",
+          "label": "Has a concrete CTA",
+          "passed": true,
+          "detail": "Explore story-led roleplay on NovelAI"
+        },
+        {
+          "id": "minimum-depth",
+          "label": "600-1000 English words",
+          "passed": true,
+          "detail": "991 words"
+        },
+        {
+          "id": "content-contract",
+          "label": "Content layers match the reviewed architecture",
+          "passed": true,
+          "detail": "reference; 5 mapped sections"
+        },
+        {
+          "id": "content-distinctness",
+          "label": "Content is distinct from published pages",
+          "passed": true,
+          "detail": "4 published comparisons; no text or structure violations"
+        },
+        {
+          "id": "presentation-distinctness",
+          "label": "Presentation recipe passed its reuse policy",
+          "passed": true,
+          "detail": "specimen-catalog-v1"
+        },
+        {
+          "id": "optional-decoration",
+          "label": "Gallery and companion are explicit",
+          "passed": true,
+          "detail": "gallery=none; companion=none"
+        }
+      ],
+      "novelty": {
+        "schemaVersion": 1,
+        "passed": true,
+        "corpusDigest": "c4352c2f11f2ccfad4431de9a0185c910cda8d4f8250e6bd5dd4a01313e5d1c6",
+        "nearest": [
+          {
+            "slug": "ai-roleplay-first-message",
+            "wholeTextCosine": 0.42654211038164974,
+            "titleCosine": 0.23904572186687872,
+            "metaDescriptionCosine": 0.2581988897471611,
+            "h1Cosine": 0.4008918628686366,
+            "heroCosine": 0.22913326005048193,
+            "maxSectionHeadingCosine": 0.47140452079103173,
+            "maxSectionPairCosine": 0.4891748515594706,
+            "maxFaqQuestionCosine": 0.3380617018914066,
+            "maxFaqPairCosine": 0.2672612419124244,
+            "maxSurfaceCopyCosine": 0,
+            "matchedFaqPairs": 0,
+            "fiveWordShingleContainment": 0.023728813559322035,
+            "repeatedSentenceCount": 0,
+            "repeatedSentences": []
+          },
+          {
+            "slug": "how-to-start-ai-roleplay",
+            "wholeTextCosine": 0.388904381009742,
+            "titleCosine": 0.3086066999241838,
+            "metaDescriptionCosine": 0.1875,
+            "h1Cosine": 0.4082482904638631,
+            "heroCosine": 0.2211629342323457,
+            "maxSectionHeadingCosine": 0.3333333333333333,
+            "maxSectionPairCosine": 0.3488588343503088,
+            "maxFaqQuestionCosine": 0.4558423058385518,
+            "maxFaqPairCosine": 0.2645751311064591,
+            "maxSurfaceCopyCosine": 0,
+            "matchedFaqPairs": 0,
+            "fiveWordShingleContainment": 0.007425742574257425,
+            "repeatedSentenceCount": 0,
+            "repeatedSentences": []
+          },
+          {
+            "slug": "how-to-choose-an-ai-roleplay-app",
+            "wholeTextCosine": 0.3088359292420894,
+            "titleCosine": 0.3086066999241838,
+            "metaDescriptionCosine": 0.19364916731037085,
+            "h1Cosine": 0.35355339059327373,
+            "heroCosine": 0.12433397443204185,
+            "maxSectionHeadingCosine": 0.22360679774997896,
+            "maxSectionPairCosine": 0.4233243907726188,
+            "maxFaqQuestionCosine": 0.4629100498862757,
+            "maxFaqPairCosine": 0.3706246583305506,
+            "maxSurfaceCopyCosine": 0,
+            "matchedFaqPairs": 0,
+            "fiveWordShingleContainment": 0.017524644030668127,
+            "repeatedSentenceCount": 0,
+            "repeatedSentences": []
+          },
+          {
+            "slug": "ai-roleplay-prompt-vs-existing-story",
+            "wholeTextCosine": 0.24444239673666135,
+            "titleCosine": 0.2519763153394848,
+            "metaDescriptionCosine": 0.12126781251816648,
+            "h1Cosine": 0.2886751345948129,
+            "heroCosine": 0.0685591170191061,
+            "maxSectionHeadingCosine": 0.18257418583505536,
+            "maxSectionPairCosine": 0.31907224028301745,
+            "maxFaqQuestionCosine": 0.47809144373375745,
+            "maxFaqPairCosine": 0.3019405424385589,
+            "maxSurfaceCopyCosine": 0,
+            "matchedFaqPairs": 0,
+            "fiveWordShingleContainment": 0.007446808510638298,
+            "repeatedSentenceCount": 0,
+            "repeatedSentences": []
+          }
+        ],
+        "internal": {
+          "maxSectionPairCosine": 0.21087527060025527,
+          "maxFaqPairCosine": 0.11118739749916517,
+          "repeatedSentenceCount": 0
+        },
+        "violations": []
+      }
+    },
+    "status": "ready_for_review"
+  },
+  "drafts": [
+    {
+      "schemaVersion": 2,
+      "slot": "morning",
+      "keyword": "ai roleplay scene recovery",
+      "slug": "/ai-roleplay-scene-recovery",
+      "language": "en",
+      "model": "codex",
+      "generatedAt": "2026-08-07T02:42:30.000Z",
+      "reviewRequired": true,
+      "factIdsUsed": [
+        "voice-roleplay-format",
+        "existing-story",
+        "role-selection",
+        "interactive-fiction-history"
+      ],
+      "title": "AI Roleplay Scene Recovery: Diagnose the Stalled Beat",
+      "metaDescription": "Recover a flat AI roleplay scene by finding the stalled beat, changing one small detail, and leaving a concrete consequence for the next turn.",
+      "h1": "AI Roleplay Scene Recovery: Give the Next Turn a Job",
+      "heroMarkdown": "When a roleplay scene goes flat, do not restart the story or write a larger speech. Find the beat that stopped moving, make one modest correction, and leave something specific for the scene to answer.",
+      "primaryCta": "Explore story-led roleplay on NovelAI",
+      "sections": [
+        {
+          "id": "spot-the-stall",
+          "role": "failure_analysis",
+          "format": "prose",
+          "heading": "Find the exact beat that stopped moving",
+          "bodyMarkdown": "A stalled exchange usually has one of three problems. It has no observable change, so there is nothing for another turn to notice. It makes an action too large, so the response settles the question before anyone can react. Or it closes the consequence, which turns a scene into a report. Read the last two turns and circle the first place where a role could have noticed, chosen, asked, or resisted something but did not. That is the stalled beat. The approved format begins from an existing story plot, so repair it with a detail already present rather than a different world."
+        },
+        {
+          "id": "use-the-index",
+          "role": "framework",
+          "format": "checklist",
+          "heading": "Use the Scene Recovery Specimen Index",
+          "bodyMarkdown": "- **Specimen A: missing evidence.** Add one observable detail the chosen role can respond to: a pause, an object out of place, or an unanswered question.\n\n- **Specimen B: oversized action.** Shrink the last move until it changes the moment but cannot settle the conflict.\n\n- **Specimen C: closed consequence.** Reopen one effect: who notices, what becomes harder, or what must be decided next.\n\nSelect the label that matches the stall, make one correction, and let the next exchange do the rest."
+        },
+        {
+          "id": "test-a-small-repair",
+          "role": "worked_example",
+          "format": "examples",
+          "heading": "Test one small repair instead of rewriting the scene",
+          "bodyMarkdown": "Imagine an original scene in which a courier leaves a sealed parcel on a table and the chosen role says, “That is strange.” The line names a mood but gives no next job. A missing-evidence repair could be: “The seal is warm, although the room is cold. I move the parcel away from the window and ask who knew I would be here.”\n\nNow imagine a reply that opens the parcel, identifies the sender, solves the mystery, and leaves the room. That is an oversized action. A smaller repair turns the parcel over, notices an unfamiliar hand on the address, and hesitates before breaking the seal. These are original craft demonstrations, not a promised product scenario or protected fictional world."
+        },
+        {
+          "id": "keep-the-role-in-view",
+          "role": "decision_rule",
+          "format": "checklist",
+          "heading": "Let the selected role choose the recovery move",
+          "bodyMarkdown": "Players choose which available story character they want to perform as. Use that approved fact as a practical limit: the recovery should come from what this role can notice, protect, avoid, or ask about now.\n\n- If the role has a reason to be cautious, add a detail that invites verification.\n\n- If the role has a reason to act, choose a modest action with an unresolved effect.\n\n- If the role needs information, ask one question that is specific enough to change the next answer.\n\nThis prevents a generic narrator from taking over. The repair is not “make the story exciting”; it is one credible choice from one perspective."
+        },
+        {
+          "id": "carry-one-open-consequence",
+          "role": "next_step",
+          "format": "callout",
+          "heading": "Carry one open consequence into the next turn",
+          "bodyMarkdown": "Before sending a repaired reply, check one thing: can another turn answer it without inventing a separate plot? If yes, stop there. A scene can regain momentum through one visible detail, one limited move, and one consequence that remains open. The team has previously built AI interactive-fiction and simulator experiences, useful background for thinking in scenes and choices. It is not a claim about a particular feature or available story. When the story-led format fits, use the attributed CTA intentionally; this guide itself does not begin a session."
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq-restart",
+          "job": "troubleshooting",
+          "question": "Should I restart an AI roleplay when the scene feels flat?",
+          "answerMarkdown": "Usually, first try one smaller repair. Identify whether the scene lacks an observable detail, has an action that is too large, or has no open consequence. Change only that beat before replacing the premise."
+        },
+        {
+          "id": "faq-role",
+          "job": "decision",
+          "question": "How does the selected role help repair a scene?",
+          "answerMarkdown": "Use the role to decide what can be noticed, protected, avoided, or asked next. A credible small choice gives the response a perspective without requiring a long backstory or an invented character biography."
+        },
+        {
+          "id": "faq-boundary",
+          "job": "constraint",
+          "question": "What does this recovery guide confirm about the product?",
+          "answerMarkdown": "It uses only approved facts: the product is a story-led voice cosplay and roleplay direction, experiences begin from an existing plot, and players choose an available role. It does not promise particular stories, availability, privacy, speed, or outcomes."
+        }
+      ],
+      "architecture": {
+        "schemaVersion": 1,
+        "intent": {
+          "searcherJob": "Repair an AI roleplay scene that has gone flat by choosing one small, answerable change instead of restarting the whole exchange.",
+          "painPointId": "stalled_exchange",
+          "decisionToEnable": "Choose a precise recovery move that creates an answerable next turn without replacing the existing scene.",
+          "oneSentenceAnswer": "Recover a flat scene by naming the stalled beat, making one modest change, and leaving one concrete consequence open.",
+          "nonGoals": [
+            "Do not provide a generic beginner roleplay tutorial.",
+            "Do not promise that a repair guarantees a story outcome."
+          ]
+        },
+        "content": {
+          "archetype": "reference",
+          "thesis": "A scene recovers when one small correction restores an observable detail, limited action, or open consequence.",
+          "originalContribution": "The page offers an original Scene Recovery Specimen Index: three diagnostic labels that separate missing evidence, oversized action, and closed consequences without copying prompts or fictional settings.",
+          "tone": "Curatorial and practical, like labeled specimens on a cobalt field table rather than a generic advice column.",
+          "openingMove": "diagnostic_question",
+          "avoidPhrases": [
+            "endless possibilities",
+            "bring characters to life",
+            "start your journey"
+          ],
+          "sections": [
+            {
+              "id": "spot-the-stall",
+              "role": "failure_analysis",
+              "format": "prose",
+              "readerQuestion": "Which exact beat made the exchange stop moving?",
+              "uniqueTakeaway": "A flat scene has a specific stalled beat, not a missing universe."
+            },
+            {
+              "id": "use-the-index",
+              "role": "framework",
+              "format": "checklist",
+              "readerQuestion": "Which recovery label fits the stalled beat?",
+              "uniqueTakeaway": "Missing evidence, oversized action, and closed consequence require different small repairs."
+            },
+            {
+              "id": "test-a-small-repair",
+              "role": "worked_example",
+              "format": "examples",
+              "readerQuestion": "What does a repair look like without a total rewrite?",
+              "uniqueTakeaway": "One original detail or limited action can reopen an answerable scene."
+            },
+            {
+              "id": "keep-the-role-in-view",
+              "role": "decision_rule",
+              "format": "checklist",
+              "readerQuestion": "How should the chosen role determine the repair?",
+              "uniqueTakeaway": "Perspective turns a generic rewrite into one credible next choice."
+            },
+            {
+              "id": "carry-one-open-consequence",
+              "role": "next_step",
+              "format": "callout",
+              "readerQuestion": "When is the repair complete enough to send?",
+              "uniqueTakeaway": "Stop once another turn has one concrete consequence to answer."
+            }
+          ],
+          "faqs": [
+            {
+              "id": "faq-restart",
+              "job": "troubleshooting",
+              "readerObstacle": "The reader assumes a stalled exchange requires a complete restart.",
+              "answerBoundary": "Recommend a small craft repair without promising a guaranteed result."
+            },
+            {
+              "id": "faq-role",
+              "job": "decision",
+              "readerObstacle": "The reader does not know how a selected role changes a recovery move.",
+              "answerBoundary": "Explain perspective through approved role-selection context only."
+            },
+            {
+              "id": "faq-boundary",
+              "job": "constraint",
+              "readerObstacle": "The reader may turn a general craft example into a product capability claim.",
+              "answerBoundary": "Restate the approved-fact boundary without adding availability or technology claims."
+            }
+          ],
+          "signature": {
+            "id": "scene-recovery-specimen-index",
+            "type": "inventory",
+            "readerAction": "Label the stalled beat before changing it",
+            "afterSectionId": "use-the-index"
+          }
+        },
+        "differentiation": {
+          "against": [
+            {
+              "slug": "ai-roleplay-first-message",
+              "intentDelta": "The first-message page solves a blank opening before a scene begins; this page repairs a scene only after an exchange has already become flat.",
+              "answerDelta": "The Flight Plan creates an initial reply, while the Specimen Index identifies which existing beat needs a limited correction.",
+              "structureDelta": "The earlier guide is a mission-style task sequence; this page is a labeled reference inventory followed by diagnostic examples.",
+              "faqDelta": "Earlier FAQs clarify opening-message ingredients; these FAQs address restarting, role-led repair, and limits on recovery claims.",
+              "visualDelta": "The prior route uses a retro-futuristic mission treatment; this page uses cobalt catalog labels, indexed shelves, and no companion."
+            },
+            {
+              "slug": "how-to-start-ai-roleplay",
+              "intentDelta": "The start guide helps a new reader enter an experience; this page serves a participant who is already inside a scene and needs to restore movement.",
+              "answerDelta": "The start guide explains the broad route into a story, while this answer names three failure types in the last two turns.",
+              "structureDelta": "The beginner guide follows a broad onboarding path; this page groups recoveries as specimens and tests one precise repair.",
+              "faqDelta": "The start-page FAQs address getting started; these questions diagnose a stalled exchange and bound the repair advice.",
+              "visualDelta": "The older page uses its established layout; this catalog recipe presents accession-style labels and a museum-cobalt reading system."
+            }
+          ]
+        },
+        "presentation": {
+          "recipeId": "specimen-catalog-v1",
+          "rendererId": "specimen_catalog",
+          "visualSystemId": "specimen-catalog",
+          "layoutId": "indexed-specimen-shelves",
+          "paletteId": "museum-cobalt",
+          "typographyId": "catalog-serif-label",
+          "motifId": "evidence-specimen-tag",
+          "companion": "none",
+          "gallery": "none",
+          "surfaceCopy": {
+            "eyebrow": "Scene recovery catalog",
+            "shortAnswerLabel": "The repair label",
+            "contentsLabel": "Specimen index",
+            "sectionLabel": "Specimen",
+            "faqEyebrow": "Field notes",
+            "faqHeading": "Questions before the next beat",
+            "relatedHeading": "Continue from the catalog",
+            "finalCtaEyebrow": "Scene ready",
+            "finalCtaHeading": "Carry one open consequence into a story.",
+            "finalCtaBody": "Use the attributed destination when a story-led roleplay experience fits the scene you want to continue.",
+            "backToTop": "Return to the index"
+          }
+        }
+      },
+      "signatureModule": {
+        "id": "scene-recovery-specimen-index",
+        "type": "inventory",
+        "title": "Scene Recovery Specimen Index",
+        "intro": "Label the stalled beat before you rewrite anything. Each specimen isolates one repair job and keeps the next response small enough to answer.",
+        "items": [
+          {
+            "label": "Specimen A",
+            "title": "Missing evidence",
+            "bodyMarkdown": "Add one observable detail the selected role can notice so another turn has something concrete to respond to."
+          },
+          {
+            "label": "Specimen B",
+            "title": "Oversized action",
+            "bodyMarkdown": "Reduce the last move until it changes the moment but leaves the central question unresolved for another response."
+          },
+          {
+            "label": "Specimen C",
+            "title": "Closed consequence",
+            "bodyMarkdown": "Open one specific effect by showing who notices, what becomes harder, or what decision must happen next."
+          }
+        ]
+      },
+      "internalLinks": [
+        {
+          "anchor": "AI roleplay first message guide",
+          "href": "/ai-roleplay-first-message"
+        },
+        {
+          "anchor": "how to start AI roleplay guide",
+          "href": "/how-to-start-ai-roleplay"
+        }
+      ],
+      "assetBriefs": [
+        "Render original cobalt specimen labels and abstract scene tokens only; do not use third-party characters, worlds, copied interfaces, or a companion.",
+        "Treat the Scene Recovery Specimen Index as an accessible server-rendered inventory, not a gallery or client-only interaction."
+      ],
+      "quality": {
+        "passed": true,
+        "wordCount": 991,
+        "checks": [
+          {
+            "id": "distinct-intent",
+            "label": "Answers a post-entry recovery job",
+            "passed": true,
+            "detail": "The page diagnoses a stalled exchange after entry rather than repeating a first-message or beginner-start answer."
+          },
+          {
+            "id": "no-third-party-ip",
+            "label": "Avoids third-party IP",
+            "passed": true,
+            "detail": "All examples are original and abstract; no character, world, franchise, celebrity, or trademark is named."
+          },
+          {
+            "id": "no-invented-claims",
+            "label": "Uses only approved product facts",
+            "passed": true,
+            "detail": "The draft makes no availability, price, privacy, safety, latency, platform, multiplayer, or technical voice claim."
+          },
+          {
+            "id": "approved-facts",
+            "label": "Uses approved product facts",
+            "passed": true,
+            "detail": "4 approved fact IDs"
+          },
+          {
+            "id": "content-structure",
+            "label": "Has required sections and FAQs",
+            "passed": true,
+            "detail": "5 sections; 3 FAQs"
+          },
+          {
+            "id": "conversion-path",
+            "label": "Has a concrete CTA",
+            "passed": true,
+            "detail": "Explore story-led roleplay on NovelAI"
+          },
+          {
+            "id": "minimum-depth",
+            "label": "600-1000 English words",
+            "passed": true,
+            "detail": "991 words"
+          },
+          {
+            "id": "content-contract",
+            "label": "Content layers match the reviewed architecture",
+            "passed": true,
+            "detail": "reference; 5 mapped sections"
+          },
+          {
+            "id": "content-distinctness",
+            "label": "Content is distinct from published pages",
+            "passed": true,
+            "detail": "4 published comparisons; no text or structure violations"
+          },
+          {
+            "id": "presentation-distinctness",
+            "label": "Presentation recipe passed its reuse policy",
+            "passed": true,
+            "detail": "specimen-catalog-v1"
+          },
+          {
+            "id": "optional-decoration",
+            "label": "Gallery and companion are explicit",
+            "passed": true,
+            "detail": "gallery=none; companion=none"
+          }
+        ],
+        "novelty": {
+          "schemaVersion": 1,
+          "passed": true,
+          "corpusDigest": "c4352c2f11f2ccfad4431de9a0185c910cda8d4f8250e6bd5dd4a01313e5d1c6",
+          "nearest": [
+            {
+              "slug": "ai-roleplay-first-message",
+              "wholeTextCosine": 0.42654211038164974,
+              "titleCosine": 0.23904572186687872,
+              "metaDescriptionCosine": 0.2581988897471611,
+              "h1Cosine": 0.4008918628686366,
+              "heroCosine": 0.22913326005048193,
+              "maxSectionHeadingCosine": 0.47140452079103173,
+              "maxSectionPairCosine": 0.4891748515594706,
+              "maxFaqQuestionCosine": 0.3380617018914066,
+              "maxFaqPairCosine": 0.2672612419124244,
+              "maxSurfaceCopyCosine": 0,
+              "matchedFaqPairs": 0,
+              "fiveWordShingleContainment": 0.023728813559322035,
+              "repeatedSentenceCount": 0,
+              "repeatedSentences": []
+            },
+            {
+              "slug": "how-to-start-ai-roleplay",
+              "wholeTextCosine": 0.388904381009742,
+              "titleCosine": 0.3086066999241838,
+              "metaDescriptionCosine": 0.1875,
+              "h1Cosine": 0.4082482904638631,
+              "heroCosine": 0.2211629342323457,
+              "maxSectionHeadingCosine": 0.3333333333333333,
+              "maxSectionPairCosine": 0.3488588343503088,
+              "maxFaqQuestionCosine": 0.4558423058385518,
+              "maxFaqPairCosine": 0.2645751311064591,
+              "maxSurfaceCopyCosine": 0,
+              "matchedFaqPairs": 0,
+              "fiveWordShingleContainment": 0.007425742574257425,
+              "repeatedSentenceCount": 0,
+              "repeatedSentences": []
+            },
+            {
+              "slug": "how-to-choose-an-ai-roleplay-app",
+              "wholeTextCosine": 0.3088359292420894,
+              "titleCosine": 0.3086066999241838,
+              "metaDescriptionCosine": 0.19364916731037085,
+              "h1Cosine": 0.35355339059327373,
+              "heroCosine": 0.12433397443204185,
+              "maxSectionHeadingCosine": 0.22360679774997896,
+              "maxSectionPairCosine": 0.4233243907726188,
+              "maxFaqQuestionCosine": 0.4629100498862757,
+              "maxFaqPairCosine": 0.3706246583305506,
+              "maxSurfaceCopyCosine": 0,
+              "matchedFaqPairs": 0,
+              "fiveWordShingleContainment": 0.017524644030668127,
+              "repeatedSentenceCount": 0,
+              "repeatedSentences": []
+            },
+            {
+              "slug": "ai-roleplay-prompt-vs-existing-story",
+              "wholeTextCosine": 0.24444239673666135,
+              "titleCosine": 0.2519763153394848,
+              "metaDescriptionCosine": 0.12126781251816648,
+              "h1Cosine": 0.2886751345948129,
+              "heroCosine": 0.0685591170191061,
+              "maxSectionHeadingCosine": 0.18257418583505536,
+              "maxSectionPairCosine": 0.31907224028301745,
+              "maxFaqQuestionCosine": 0.47809144373375745,
+              "maxFaqPairCosine": 0.3019405424385589,
+              "maxSurfaceCopyCosine": 0,
+              "matchedFaqPairs": 0,
+              "fiveWordShingleContainment": 0.007446808510638298,
+              "repeatedSentenceCount": 0,
+              "repeatedSentences": []
+            }
+          ],
+          "internal": {
+            "maxSectionPairCosine": 0.21087527060025527,
+            "maxFaqPairCosine": 0.11118739749916517,
+            "repeatedSentenceCount": 0
+          },
+          "violations": []
+        }
+      },
+      "status": "ready_for_review"
+    }
+  ],
+  "contentStrategy": {
+    "schemaVersion": 2,
+    "searcherJob": "Repair an AI roleplay scene that has gone flat by choosing one small, answerable change instead of restarting the whole exchange.",
+    "painPointId": "stalled_exchange",
+    "readerStateBefore": "The reader has entered a story and selected a role, but the current exchange feels static, vague, or already finished.",
+    "readerOutcome": "The reader can identify the specific stalled beat and use one original recovery move that gives the next turn a clear job.",
+    "primaryPainPoint": "A scene stalls when a reply adds mood without changing what another participant can notice, choose, or answer next.",
+    "oneSentenceAnswer": "Recover a flat scene by naming the stalled beat, making one modest change, and leaving one concrete consequence open.",
+    "originalContribution": "The page offers an original Scene Recovery Specimen Index: three diagnostic labels that separate missing evidence, oversized action, and closed consequences without copying prompts or fictional settings.",
+    "pagePattern": "original_inventory",
+    "productBridge": "Approved facts say the experience begins with an existing plot and an available role, so the guide uses supplied context and a chosen perspective as honest anchors for a recovery exercise.",
+    "contextualNextStep": "Readers can use the existing first-message guide for an opening response, then intentionally follow the attributed NovelAI route when a story-led experience fits their next scene.",
+    "evidenceBoundary": "Public guides support the general craft ideas of context, character perspective, action beats, and pacing. Product statements use only approved facts and make no claims about availability, price, privacy, response speed, specific stories, or technology.",
+    "conversionHypothesis": "A reader who can repair one stalled exchange without inventing a new world is more likely to make an intentional attributed visit than a reader offered a broad roleplay overview.",
+    "primaryConversion": "trial_start",
+    "measurementPlan": "Use the finalized source-slug portfolio for exact-page Search Console, landing UV, and qualified outbound evidence; keep downstream click IDs and commercial outcomes in the protected attribution service."
+  },
+  "integrations": [
+    {
+      "id": "semrush",
+      "name": "SEO Research Tools",
+      "state": "configured",
+      "detail": "The shared GURU/PRO account is used for human-assisted keyword and competitor research; provider metrics must be labelled as observed when copied into evidence."
+    },
+    {
+      "id": "codex_research",
+      "name": "Codex Research",
+      "state": "connected",
+      "detail": "6 public evidence links support 8 candidates.",
+      "lastCheckedAt": "2026-08-07T02:53:35.018Z"
+    },
+    {
+      "id": "search_console",
+      "name": "Google Search Console",
+      "state": "missing",
+      "detail": "No visible Search Console rows were available; no metrics were inferred.",
+      "href": "https://search.google.com/search-console",
+      "actionLabel": "Open Search Console"
+    },
+    {
+      "id": "ai_gateway",
+      "name": "Codex Content",
+      "state": "connected",
+      "detail": "A fact-constrained draft is ready for a separate editorial review."
+    },
+    {
+      "id": "github",
+      "name": "GitHub Reports",
+      "state": "configured",
+      "detail": "Daily reports and approved pages are committed only after verification.",
+      "href": "https://github.com/lium53492-rgb/seo/tree/main/data/reports",
+      "actionLabel": "Open report history"
+    },
+    {
+      "id": "product_analytics",
+      "name": "Revenue Attribution",
+      "state": "missing",
+      "detail": "Private downstream attribution readiness is incomplete; no commercial outcome detail is retained in this public report.",
+      "href": "https://vercel.com/elser1/seo/analytics",
+      "actionLabel": "Open analytics"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "evenfall-continuity",
+      "title": "How to Roleplay With AI (Scenarios, Continuity, and Staying in Character)",
+      "url": "https://www.evenfall.ai/guides/how-to-roleplay-with-ai",
+      "source": "Evenfall",
+      "collectedAt": "2026-08-07T02:42:00.000Z",
+      "supports": [
+        "ai roleplay scene recovery",
+        "ai roleplay dialogue subtext",
+        "ai roleplay pacing tips",
+        "ai roleplay scene tension"
+      ]
+    },
+    {
+      "id": "rpdate-craft-guide",
+      "title": "AI Roleplay Guide: How to Roleplay with AI in 2026",
+      "url": "https://rpdate.com/en/blog/ai-roleplay-guide",
+      "source": "RPDATE",
+      "collectedAt": "2026-08-07T02:42:00.000Z",
+      "supports": [
+        "ai roleplay scene recovery",
+        "ai roleplay pacing tips",
+        "ai roleplay dialogue vs action",
+        "ai roleplay scene tension",
+        "ai roleplay sensory details"
+      ]
+    },
+    {
+      "id": "reverie-pacing",
+      "title": "Slow Conversation, Faster Connection - Pacing AI Roleplay",
+      "url": "https://reverie.im/en/blog/slow-conversation-faster-connection",
+      "source": "Reverie",
+      "collectedAt": "2026-08-07T02:42:00.000Z",
+      "supports": [
+        "ai roleplay scene recovery",
+        "ai roleplay pacing tips",
+        "ai roleplay scene transitions"
+      ]
+    },
+    {
+      "id": "funfun-scene-guide",
+      "title": "AI Roleplay Generator: 10 Practical Ways to Create Better Scenes",
+      "url": "https://www.funfun.ai/blog/ai-roleplay-generator-better-scenes",
+      "source": "FunFun AI",
+      "collectedAt": "2026-08-07T02:42:00.000Z",
+      "supports": [
+        "ai roleplay dialogue vs action",
+        "ai roleplay character motivation",
+        "ai roleplay scene tension",
+        "ai roleplay sensory details"
+      ]
+    },
+    {
+      "id": "keoria-beginner-guide",
+      "title": "Getting Started with AI Roleplay: The Complete Beginner's Guide",
+      "url": "https://keoria.com/getting-started-ai-roleplay.html",
+      "source": "Keoria",
+      "collectedAt": "2026-08-07T02:42:00.000Z",
+      "supports": [
+        "ai roleplay dialogue subtext",
+        "ai roleplay character motivation",
+        "ai roleplay choice consequences",
+        "ai roleplay scene transitions"
+      ]
+    },
+    {
+      "id": "aidungeon-basics",
+      "title": "What are the basics of AI Dungeon?",
+      "url": "https://help.aidungeon.com/faq/the-basics",
+      "source": "AI Dungeon Help Center",
+      "collectedAt": "2026-08-07T02:42:00.000Z",
+      "supports": [
+        "ai roleplay dialogue vs action",
+        "ai roleplay character motivation",
+        "ai roleplay choice consequences"
+      ]
+    }
+  ],
+  "caveats": [
+    "Product fit, trial intent, revenue intent, specificity, originality, IP risk, and cannibalization risk are derived from policy-versioned evidence signals rather than AI-supplied scores.",
+    "Demand and difficulty remain transparent 0-100 research proxies and require candidate-level rationales and evidence references unless an evidence record explicitly names an observed provider metric.",
+    "Google Trends relative interest is a normalized 0-100 signal for the selected geography and period, not search volume; unavailable access remains explicit.",
+    "Every locally unconsumed editorial instruction is preserved verbatim with an adopted or rejected decision before it may be marked consumed.",
+    "Missing Search Console, UV, trial, payment, or revenue data stays unavailable rather than being converted to zero.",
+    "The report builder never publishes a page; scripts/publish-reviewed-page.mjs requires a separate approval record.",
+    "Publication required a separate editorial approval artifact."
+  ]
+}
