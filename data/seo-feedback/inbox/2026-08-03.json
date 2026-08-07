@@ -7,7 +7,9 @@
       "message": "后面的页面设计  可以把风格铺开  比如 暗黑风 科幻风 产品说明风 都错开做一做  然后痛点也都分散开 比如对比 说明 玩法 趣味性 作好内容分层",
       "source": "codex_chat",
       "kind": "content_guidance",
-      "consumedAt": "2026-08-06T18:42:26.9098898+08:00"
+      "consumedAt": "2026-08-06T18:42:26.9098898+08:00",
+      "decision": "adopted",
+      "rationale": "Future briefs must vary visual systems, pain points, and content layers; this page used a retro-futuristic task-guide direction."
     },
     {
       "id": "feedback-2026-08-03-current-direction-better",
@@ -15,7 +17,9 @@
       "message": "这个就比上一个好点了",
       "source": "codex_chat",
       "kind": "content_guidance",
-      "consumedAt": "2026-08-06T18:42:26.9098898+08:00"
+      "consumedAt": "2026-08-06T18:42:26.9098898+08:00",
+      "decision": "adopted",
+      "rationale": "The improved direction is retained through evidence-led structure and independent review, rather than treated as permission to reuse prior copy."
     },
     {
       "id": "feedback-2026-08-03-release-third-first",
@@ -23,7 +27,9 @@
       "message": "都喜欢 先上线第三个吧  前面的后续慢慢上线",
       "source": "codex_chat",
       "kind": "content_guidance",
-      "consumedAt": "2026-08-06T18:42:26.9098898+08:00"
+      "consumedAt": "2026-08-06T18:42:26.9098898+08:00",
+      "decision": "rejected",
+      "rationale": "The earlier proposal ordering is no longer actionable; this Shanghai day already has its only independently approved page."
     }
   ]
 }

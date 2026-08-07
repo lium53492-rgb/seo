@@ -7,7 +7,9 @@
       "message": "为什么这个页面还是和以前的差不多啊  这样怎么可能会有流量啊   是要和以前的完全不同的  包含文案内容  页面风格  配色  也不一定每篇页面下面都有小宠物啊  ",
       "source": "codex_chat",
       "kind": "content_guidance",
-      "consumedAt": "2026-08-06T18:42:26.9098898+08:00"
+      "consumedAt": "2026-08-06T18:42:26.9098898+08:00",
+      "decision": "adopted",
+      "rationale": "The permanent novelty gate now requires distinct copy, structure, visual system, palette, and explicit no-default-pet or gallery behavior."
     },
     {
       "id": "feedback-2026-08-06-content-architecture",
@@ -15,7 +17,9 @@
       "message": "不能每次都是我一次一次的跟你说  内容不能太相似  你先设置一下项目的架构 分层设计  尤其是内容部分的  ",
       "source": "codex_chat",
       "kind": "content_guidance",
-      "consumedAt": "2026-08-06T18:42:26.9098898+08:00"
+      "consumedAt": "2026-08-06T18:42:26.9098898+08:00",
+      "decision": "adopted",
+      "rationale": "Content-strategy schema 2, mapped section and FAQ layers, signature modules, and presentation recipes are now permanent pre-draft gates."
     }
   ]
 }
