@@ -13,7 +13,7 @@
     "check:experience": "node scripts/verify-experience-contracts.mjs",
     "verify:pages": "node scripts/verify-built-pages.mjs",
     "daily:state": "node scripts/check-daily-run-state.mjs",
-    "daily:coord": "node scripts/run-node-supervised.mjs 600000 scripts/manage-daily-coordination.mjs",
+    "daily:coord": "node scripts/run-node-supervised.mjs 1200000 scripts/manage-daily-coordination.mjs",
     "release:verify": "node scripts/verify-live-release.mjs",
     "growth:check": "node scripts/check-growth-readiness.mjs",
     "growth:probe": "node scripts/probe-novelai-callback.mjs",

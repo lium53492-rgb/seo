@@ -36,7 +36,7 @@ test("unattended release proof is wired to the canonical production origin", () 
   assert.equal(unattendedPolicy.releaseVerification.revisionMetaName, "git-revision");
   assert.match(packageManifest.scripts["daily:state"], /check-daily-run-state\.mjs/);
   assert.match(packageManifest.scripts["daily:coord"], /manage-daily-coordination\.mjs/);
-  assert.match(packageManifest.scripts["daily:coord"], /run-node-supervised\.mjs 600000/);
+  assert.match(packageManifest.scripts["daily:coord"], /run-node-supervised\.mjs 1200000/);
   assert.match(packageManifest.scripts["research:publish"], /run-node-supervised\.mjs 600000/);
   assert.match(packageManifest.scripts["release:verify"], /verify-live-release\.mjs/);
 });
