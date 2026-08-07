@@ -37,7 +37,7 @@ function fixture() {
     schemaVersion: 1,
     intent: {
       searcherJob,
-      painPointId: "stalled_exchange",
+      painPointId: "quality_repair",
       decisionToEnable: "Turn supplied story context into one playable first response without copying a prompt.",
       oneSentenceAnswer,
       nonGoals: ["Do not provide a full beginner guide.", "Do not promise a particular story or response outcome."],
@@ -86,7 +86,7 @@ function fixture() {
         faqEyebrow: "Production notes",
         faqHeading: "Questions before the next take",
         relatedHeading: "Continue the rehearsal",
-        finalCtaEyebrow: "Ready for the scene",
+        finalCtaEyebrow: "Ready for another take",
         finalCtaHeading: "Carry one playable reply into a story.",
         finalCtaBody: "Use the attributed route only when the story-led starting condition matches the experience you want.",
         backToTop: "Return to the slate",
@@ -120,7 +120,7 @@ function fixture() {
   const contentStrategy = {
     schemaVersion: 2,
     searcherJob,
-    painPointId: "stalled_exchange",
+    painPointId: "quality_repair",
     readerStateBefore: "The reader has a story and role but is staring at an empty first-response field.",
     readerOutcome: "The reader can draft and diagnose one concise first reply using three different scene jobs.",
     primaryPainPoint: "The first response feels vague or finished because its sentences do not create an answerable next beat.",
