@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "reportId": "seo-2026-08-10",
+  "slug": "ai-roleplay-dialogue-vs-action",
+  "draftDigest": "5e2386676abb002c969b8bfdb922561c66c6f487c2b0dc80bcc8ed4de7670cf6",
+  "reviewerType": "codex_editor",
+  "reviewer": "Codex editorial review",
+  "reviewedAt": "2026-08-10T03:05:00.000Z",
+  "decision": "approved",
+  "notes": "Independent codex_editor review approves the dialogue-versus-action page as a distinct active-turn decision. It is bound to the report's schema-2 strategy and draft digest, uses only approved facts, keeps NovelAI behind an intentional attributed CTA, and uses the unused editorial-argument recipe with no companion or gallery.",
+  "checks": [
+    {"id":"search-intent","passed":true,"detail":"The page answers the narrow active-turn choice of dialogue, action, or both; it does not replace the site's entry, first-message, scene-recovery, app-selection, role-choice, or prompt-versus-story intents."},
+    {"id":"product-truth","passed":true,"detail":"Every product statement maps to approved story-premise, role-selection, voice-roleplay, or interactive-fiction facts; it contains no availability, price, privacy, technical, platform, latency, group, or safety promise."},
+    {"id":"conversion-path","passed":true,"detail":"The reviewed CTA is a user-initiated attributed NovelAI route for this exact slug, and the page does not claim that it starts a session."},
+    {"id":"source-accuracy","passed":true,"detail":"Five current public evidence records across five independent domains support general dialogue, action, context, pacing, and character-perspective craft; no external source is used to establish product capabilities."},
+    {"id":"content-distinctness","passed":true,"detail":"The builder passed complete-corpus text, structure, FAQ, shingle, repeated-sentence, pain-point, and nearest-page novelty checks; the Turn Ledger is a response-form decision aid."},
+    {"id":"presentation-distinctness","passed":true,"detail":"The draft uses editorial-argument-v1 with longform columns, newsprint burgundy, display serif typography, and explicit companion=none/gallery=none rather than a reused visual system."},
+    {"id":"signature-module","passed":true,"detail":"The Turn Ledger counterpoint is a useful three-item myth-fact module with a reader action and real placement after the ledger framework."},
+    {"id":"rendered-preview","passed":true,"detail":"The schema-3 renderer contract supplies a server-rendered H1, hero, mapped sections, counterpoint signature, FAQs, related links, page-owned surface copy, and attributed CTA without client-only primary content."}
+  ]
+}

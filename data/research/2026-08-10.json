@@ -1,0 +1,889 @@
+{
+  "date": "2026-08-10",
+  "generatedAt": "2026-08-10T03:00:00.000Z",
+  "policyVersion": 4,
+  "publicationMode": "create",
+  "portfolioSnapshot": "data/growth/2026-08-10.json",
+  "performance": [],
+  "performanceStatus": "unavailable",
+  "caveats": [
+    "The private growth-readiness endpoint returned HTTP 503, so Search Console, URL Inspection, landing UV, and attribution entries remain unavailable rather than zero.",
+    "Demand and difficulty are transparent public-web research proxies, not observed search volume, traffic, or revenue.",
+    "Google Trends was not used to infer relative interest in this run; the public craft sources below support the candidate jobs directly.",
+    "The attribution join was checked and is not blocked; missing signed callback readiness prevents a full-loop-ready claim but not a distinct create-page decision."
+  ],
+  "contentStrategy": {
+    "schemaVersion": 2,
+    "searcherJob": "Decide whether the next AI roleplay response needs dialogue, an action, or both to change the current scene.",
+    "painPointId": "format_confusion",
+    "readerStateBefore": "The reader has a story moment and a chosen role in mind but cannot tell whether to speak, describe a move, or combine them.",
+    "readerOutcome": "The reader can choose a compact response shape that gives the next turn one observable change and one answerable pressure.",
+    "primaryPainPoint": "Format confusion makes a roleplay turn either all explanation, all quotation, or an oversized action that closes the scene.",
+    "oneSentenceAnswer": "Use dialogue to change a relationship, action to change the immediate situation, and a paired turn only when both changes are needed now.",
+    "originalContribution": "The page introduces an original Turn Ledger that tests a reply against three columns—relationship, situation, and open pressure—before the reader adds dialogue, action, or both.",
+    "pagePattern": "narrative_essay",
+    "productBridge": "Approved facts describe a story-led voice cosplay and roleplay direction with an existing plot and an available role; those facts honestly frame a reader's craft choice without promising how any system responds.",
+    "contextualNextStep": "After choosing a turn shape, readers can use the existing scene-recovery guide when an exchange has already gone flat, then make an intentional attributed visit when a story-led experience fits.",
+    "evidenceBoundary": "Public guides support the general distinction between dialogue, action, scene context, character perspective, and pacing. Product statements use only approved facts and make no claims about price, availability, privacy, response speed, voice technology, safety, or named stories.",
+    "conversionHypothesis": "A searcher who can turn a vague roleplay response into one deliberate scene contribution is more likely to make an intentional attributed CTA visit than a reader given a generic overview.",
+    "primaryConversion": "trial_start",
+    "measurementPlan": "Use the finalized source-slug portfolio for exact-page Search Console, landing UV, and qualified outbound evidence; keep click IDs and all downstream commercial outcomes inside the protected attribution service."
+  },
+  "portfolioDecision": {
+    "schemaVersion": 1,
+    "action": "create_page",
+    "targetSlug": null,
+    "evidenceSlugs": [
+      "ai-roleplay-first-message",
+      "ai-roleplay-scene-recovery",
+      "how-to-start-ai-roleplay"
+    ],
+    "rationale": "The complete finalized portfolio represents every published page, but all measurements are unavailable because the protected endpoint returned HTTP 503. That is not observed zero and supplies no evidence for an update or consolidation. Dialogue-versus-action is a distinct in-scene decision with approved-fact fit, direct public evidence, and no third-party IP."
+  },
+  "trendSignals": [],
+  "feedbackDecisions": [],
+  "evidence": [
+    {
+      "id": "rpdate-craft-guide",
+      "title": "AI Roleplay Guide: How to Roleplay with AI in 2026",
+      "url": "https://rpdate.com/en/blog/ai-roleplay-guide",
+      "source": "RPDATE",
+      "collectedAt": "2026-08-10T02:58:00.000Z",
+      "supports": [
+        "ai roleplay dialogue vs action",
+        "ai roleplay pacing tips",
+        "ai roleplay scene tension",
+        "ai roleplay sensory details",
+        "ai roleplay character motivation",
+        "ai roleplay choice consequences",
+        "ai roleplay dialogue subtext",
+        "how to stay in character in ai roleplay"
+      ]
+    },
+    {
+      "id": "arepee-roleplay-guide",
+      "title": "How to Roleplay with Immersive AI Roleplay",
+      "url": "https://www.arepee.com/",
+      "source": "Arepee",
+      "collectedAt": "2026-08-10T02:58:00.000Z",
+      "supports": [
+        "ai roleplay dialogue vs action",
+        "ai roleplay pacing tips",
+        "ai roleplay scene tension",
+        "ai roleplay sensory details",
+        "ai roleplay character motivation",
+        "ai roleplay choice consequences",
+        "ai roleplay dialogue subtext",
+        "how to stay in character in ai roleplay"
+      ]
+    },
+    {
+      "id": "evenfall-continuity",
+      "title": "How to Roleplay With AI: Scenarios, Continuity, and Staying in Character",
+      "url": "https://www.evenfall.ai/guides/how-to-roleplay-with-ai",
+      "source": "Evenfall",
+      "collectedAt": "2026-08-10T02:58:00.000Z",
+      "supports": [
+        "ai roleplay dialogue vs action",
+        "ai roleplay pacing tips",
+        "ai roleplay scene tension",
+        "ai roleplay sensory details",
+        "ai roleplay character motivation",
+        "ai roleplay choice consequences",
+        "ai roleplay dialogue subtext",
+        "how to stay in character in ai roleplay"
+      ]
+    },
+    {
+      "id": "egirls-roleplay-tips",
+      "title": "AI Roleplay Tips for More Immersive Conversations",
+      "url": "https://egirls.ai/blog/ai-roleplay-tips-for-immersive-conversations",
+      "source": "Egirls.ai",
+      "collectedAt": "2026-08-10T02:58:00.000Z",
+      "supports": [
+        "ai roleplay dialogue vs action",
+        "ai roleplay pacing tips",
+        "ai roleplay scene tension",
+        "ai roleplay sensory details",
+        "ai roleplay character motivation",
+        "ai roleplay choice consequences",
+        "ai roleplay dialogue subtext",
+        "how to stay in character in ai roleplay"
+      ]
+    },
+    {
+      "id": "aidungeon-basics",
+      "title": "What are the basics of AI Dungeon?",
+      "url": "https://help.aidungeon.com/faq/the-basics",
+      "source": "AI Dungeon Help Center",
+      "collectedAt": "2026-08-10T02:58:00.000Z",
+      "supports": [
+        "ai roleplay dialogue vs action",
+        "ai roleplay pacing tips",
+        "ai roleplay scene tension",
+        "ai roleplay sensory details",
+        "ai roleplay character motivation",
+        "ai roleplay choice consequences",
+        "ai roleplay dialogue subtext",
+        "how to stay in character in ai roleplay"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "keyword": "ai roleplay dialogue vs action",
+      "seed": "choose the next response shape",
+      "demandScore": 63,
+      "difficulty": 56,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "rpdate-craft-guide",
+          "arepee-roleplay-guide"
+        ],
+        "searcherJob": "Decide whether the next AI roleplay response needs dialogue, an action, or both to change the current scene.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Independent current craft guides explicitly discuss action lines, dialogue, and response composition, making this a moderate public-web proxy.",
+          "difficulty": "Visible results are broad practical guides rather than an observed provider metric, so difficulty remains a transparent moderate proxy.",
+          "productFit": "Approved story premise, role selection, and voice-roleplay format make the response-shape decision directly relevant without inventing capabilities.",
+          "trialIntent": "The query is solution-aware and asks for a move a participant can use in the next turn of an experience.",
+          "revenueIntent": "A practical format decision signals evaluation of a usable roleplay experience without making pricing or purchase claims.",
+          "intentSpecificity": "The query fixes a turn-level task, AI roleplay format, participant audience, and narrow dialogue-versus-action modifier.",
+          "originality": "The Turn Ledger is a response-form decision aid, unlike the existing start, first-message, or stalled-scene pages.",
+          "ipRisk": "The phrase is generic and the page uses original abstract examples with no franchise, person, or trademark.",
+          "cannibalizationRisk": "This is an active-turn choice after entry, not a broad onboarding, role-selection, or recovery diagnosis."
+        }
+      }
+    },
+    {
+      "keyword": "ai roleplay pacing tips",
+      "seed": "set reply tempo",
+      "demandScore": 58,
+      "difficulty": 57,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "rpdate-craft-guide",
+          "evenfall-continuity"
+        ],
+        "searcherJob": "Match reply length and scene pace in an AI roleplay without rushing a consequence or freezing the exchange.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Two independent guides address scene pace and response rhythm, supporting a moderate public-web demand proxy.",
+          "difficulty": "The competing advice is general and editorial, so the proxy remains moderate rather than a verified metric.",
+          "productFit": "A supplied story premise and selected role provide factual anchors for pacing advice without claims about response behavior.",
+          "trialIntent": "The reader wants an immediate participatory adjustment inside an active roleplay exchange.",
+          "revenueIntent": "The task evaluates whether a roleplay format can stay usable over repeated turns without price assertions.",
+          "intentSpecificity": "It names a pacing task, AI roleplay format, participant audience, and turn-tempo constraint.",
+          "originality": "Pacing is a cadence decision rather than opening a scene or diagnosing a flat exchange.",
+          "ipRisk": "Generic wording can be answered with original non-franchise craft examples.",
+          "cannibalizationRisk": "The later-turn tempo job remains separate from every current route."
+        }
+      }
+    },
+    {
+      "keyword": "ai roleplay scene tension",
+      "seed": "add answerable pressure",
+      "demandScore": 55,
+      "difficulty": 54,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "evenfall-continuity",
+          "egirls-roleplay-tips"
+        ],
+        "searcherJob": "Add one answerable pressure to an AI roleplay scene without resolving the conflict or borrowing a familiar fictional setting.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Public guides discuss scene hooks and interaction opportunities, supporting a cautious demand proxy.",
+          "difficulty": "Visible guidance is broad craft education, making the competition estimate a moderate proxy.",
+          "productFit": "Existing plot and role choice supply honest context for an original tension exercise.",
+          "trialIntent": "The searcher seeks an immediate craft move while participating in a scene.",
+          "revenueIntent": "A usable engagement technique is adjacent to evaluating a roleplay format, with no promise of outcomes.",
+          "intentSpecificity": "The job identifies a tension task, AI roleplay format, participant, and an unresolved-scene constraint.",
+          "originality": "Answerable pressure is not the same as a first reply or post-stall repair diagnosis.",
+          "ipRisk": "No protected setting is required for generic pressure examples.",
+          "cannibalizationRisk": "This creates a distinct scene-design job from published intents."
+        }
+      }
+    },
+    {
+      "keyword": "ai roleplay sensory details",
+      "seed": "ground a reply in a detail",
+      "demandScore": 52,
+      "difficulty": 53,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "egirls-roleplay-tips",
+          "arepee-roleplay-guide"
+        ],
+        "searcherJob": "Choose one sensory anchor for an AI roleplay reply so the next message is grounded in the current moment instead of a summary.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Independent guides recommend responding to a setting and adding scene detail, supporting this conservative proxy.",
+          "difficulty": "Competing results are broad how-to pages, not a verified keyword difficulty source.",
+          "productFit": "Story context and a selected role are approved factual anchors for choosing what to notice.",
+          "trialIntent": "The reader can apply the sensory-anchor task in the next response.",
+          "revenueIntent": "The focused craft query suggests use-oriented evaluation of an experience without commercial claims.",
+          "intentSpecificity": "It defines one detail-selection task in the AI roleplay format for an active participant.",
+          "originality": "A sensory anchor concerns grounded description, not start flow, recovery, or app choice.",
+          "ipRisk": "The examples can stay abstract and original.",
+          "cannibalizationRisk": "The detail-selection job is distinct from current published pages."
+        }
+      }
+    },
+    {
+      "keyword": "ai roleplay character motivation",
+      "seed": "find a role goal",
+      "demandScore": 57,
+      "difficulty": 58,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "arepee-roleplay-guide",
+          "aidungeon-basics"
+        ],
+        "searcherJob": "Find one immediate motivation for a chosen AI roleplay character so the next response has a direction inside the scene.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Public guides connect roleplay turns with character goals and choices, giving a moderate public signal.",
+          "difficulty": "The results are broad instructional resources, so difficulty is a transparent proxy.",
+          "productFit": "The approved role-selection fact directly frames the reader's motivation choice.",
+          "trialIntent": "The task is ready to use in an active scene.",
+          "revenueIntent": "A decision about continuing an experience is commercially adjacent without price language.",
+          "intentSpecificity": "It fixes a motivation task for an AI roleplay participant in the next turn.",
+          "originality": "Motivation chooses why a role acts, while existing pages cover how to enter or repair a scene.",
+          "ipRisk": "Only generic original roles are needed.",
+          "cannibalizationRisk": "The task does not duplicate the broader role-selection route."
+        }
+      }
+    },
+    {
+      "keyword": "ai roleplay choice consequences",
+      "seed": "make a next choice matter",
+      "demandScore": 54,
+      "difficulty": 55,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "aidungeon-basics",
+          "rpdate-craft-guide"
+        ],
+        "searcherJob": "Choose a next AI roleplay action that changes the immediate scene instead of adding a disconnected line.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Independent public sources explain that actions and choices shape a scene, supporting a careful public-web proxy.",
+          "difficulty": "The visible guidance is general, so the estimate is moderate and not provider data.",
+          "productFit": "Existing plot context and selected roles anchor a next-choice exercise honestly.",
+          "trialIntent": "The searcher has an immediate action to test in a current exchange.",
+          "revenueIntent": "The query is use-oriented and commercially adjacent without asserting a product result.",
+          "intentSpecificity": "It identifies a next-action task, format, audience, and consequence constraint.",
+          "originality": "Consequence design differs from selecting a response form or repairing a flat scene.",
+          "ipRisk": "Original generic scenarios are sufficient.",
+          "cannibalizationRisk": "The decision occurs inside a scene and is distinct from published entry content."
+        }
+      }
+    },
+    {
+      "keyword": "ai roleplay dialogue subtext",
+      "seed": "imply pressure in a line",
+      "demandScore": 51,
+      "difficulty": 56,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "rpdate-craft-guide",
+          "evenfall-continuity"
+        ],
+        "searcherJob": "Write an AI roleplay line that implies a concrete pressure without explaining the entire scene in dialogue.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Current roleplay guides discuss character voice and concise exchanges, supporting a cautious public-web proxy.",
+          "difficulty": "The visible material is broad craft instruction rather than observed keyword-provider data.",
+          "productFit": "Approved story and role context can frame an original dialogue exercise without feature claims.",
+          "trialIntent": "The reader asks for an immediate line-level technique inside a roleplay.",
+          "revenueIntent": "The focused use case is commercially adjacent without prices or comparisons.",
+          "intentSpecificity": "It specifies a dialogue craft task, AI roleplay format, participant audience, and subtext constraint.",
+          "originality": "Subtext is a line-writing question, not an onboarding or scene-repair answer.",
+          "ipRisk": "It can rely on invented generic dialogue only.",
+          "cannibalizationRisk": "No published page addresses implied pressure in a single line."
+        }
+      }
+    },
+    {
+      "keyword": "how to stay in character in ai roleplay",
+      "seed": "hold a chosen perspective",
+      "demandScore": 60,
+      "difficulty": 59,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "evenfall-continuity",
+          "arepee-roleplay-guide"
+        ],
+        "searcherJob": "Maintain a chosen character perspective during an AI roleplay scene after the initial response has begun.",
+        "productFactIds": [
+          "voice-roleplay-format",
+          "existing-story",
+          "role-selection"
+        ],
+        "productSignals": [
+          "voice_roleplay",
+          "story_premise",
+          "role_selection"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Two independent current guides explicitly address continuity and staying in character, supporting this moderate proxy.",
+          "difficulty": "Results are established editorial guides, so difficulty is a transparent moderate estimate.",
+          "productFit": "The approved available-role fact directly supports perspective guidance.",
+          "trialIntent": "The reader wants an immediate way to continue participating.",
+          "revenueIntent": "Continuity help is close to evaluating a roleplay experience, without price claims.",
+          "intentSpecificity": "It defines a continuity task, AI roleplay format, participant audience, and in-character constraint.",
+          "originality": "Continuity after entry is distinct from first-message advice and from repair diagnostics.",
+          "ipRisk": "Generic original roles avoid protected IP.",
+          "cannibalizationRisk": "The sustained-perspective job is not covered by the current corpus."
+        }
+      }
+    }
+  ],
+  "funnel": {
+    "schemaVersion": 1,
+    "aggregationKey": "source_slug+reporting_period",
+    "conversionJoinKey": "seo_click_id",
+    "periodStart": "2026-07-09T16:00:00.000Z",
+    "periodEnd": "2026-08-06T16:00:00.000Z",
+    "metrics": {
+      "organicClicks": {
+        "status": "unavailable",
+        "value": null,
+        "source": "search_console",
+        "detail": "Private readiness returned HTTP 503; no Search Console export was available."
+      },
+      "landingUv": {
+        "status": "unavailable",
+        "value": null,
+        "source": "vercel_analytics",
+        "detail": "Private readiness returned HTTP 503 before safe landing aggregates could be read."
+      },
+      "qualifiedOutboundClicks": {
+        "status": "unavailable",
+        "value": null,
+        "source": "seo_redirect",
+        "detail": "Private readiness returned HTTP 503 before redirect aggregates could be read."
+      },
+      "trialStarts": {
+        "status": "unavailable",
+        "value": null,
+        "source": "product_analytics",
+        "detail": "Protected downstream outcomes are unavailable while readiness is not configured."
+      },
+      "signups": {
+        "status": "unavailable",
+        "value": null,
+        "source": "product_analytics",
+        "detail": "Protected downstream outcomes are unavailable while readiness is not configured."
+      },
+      "paidConversions": {
+        "status": "unavailable",
+        "value": null,
+        "source": "payments",
+        "detail": "Protected payment outcomes are unavailable while readiness is not configured."
+      },
+      "revenueMinor": {
+        "status": "unavailable",
+        "value": null,
+        "source": "payments",
+        "detail": "Protected revenue outcomes are unavailable while readiness is not configured."
+      }
+    }
+  },
+  "draft": {
+    "schemaVersion": 2,
+    "slot": "morning",
+    "keyword": "ai roleplay dialogue vs action",
+    "slug": "ai-roleplay-dialogue-vs-action",
+    "language": "en",
+    "model": "codex",
+    "generatedAt": "2026-08-10T03:00:00.000Z",
+    "reviewRequired": true,
+    "factIdsUsed": [
+      "voice-roleplay-format",
+      "existing-story",
+      "role-selection",
+      "interactive-fiction-history"
+    ],
+    "title": "AI Roleplay Dialogue vs Action: Choose the Next Turn",
+    "metaDescription": "Choose dialogue, action, or both in an AI roleplay turn with a simple ledger for relationship, situation, and an open pressure.",
+    "h1": "AI Roleplay Dialogue vs Action: What Should Change Next?",
+    "heroMarkdown": "The hard part of an AI roleplay reply is often deciding what needs to change. Dialogue shifts a relationship; action alters the immediate situation. Use both only when each has a separate job. The Turn Ledger keeps one response focused and answerable. When a story-led roleplay experience fits, use the attributed CTA intentionally; it opens the approved destination in a new tab.",
+    "primaryCta": "Explore story-led roleplay on NovelAI",
+    "sections": [
+      {
+        "id": "name-the-needed-change",
+        "role": "direct_answer",
+        "format": "prose",
+        "heading": "Name the change before choosing the format",
+        "bodyMarkdown": "A turn does not need more decoration just because it feels quiet. First ask what must be different after this reply. If the role needs to reveal, refuse, reassure, or test another person, dialogue is usually the useful change. If the room, object, distance, evidence, or immediate risk needs to move, an action is usually the useful change. If both a relationship and a situation need to move together, pair one small action with one line. This is a decision tool, not a guarantee about how any system will answer. Its purpose is to stop a response from becoming a recap with no new job for the next turn."
+      },
+      {
+        "id": "read-the-turn-ledger",
+        "role": "framework",
+        "format": "comparison",
+        "heading": "Read the three columns in the Turn Ledger",
+        "bodyMarkdown": "**Relationship — choose dialogue.** Use a line when the important change is what one role lets another role know, question, accept, or resist. Keep the line attached to the present moment rather than a full history.\n\n**Situation — choose action.** Use an action when a visible detail must change: a document is moved, a door is checked, a cup is set down, or a distance is created. Let the move be small enough that another turn can react.\n\n**Open pressure — choose both only when needed.** Pair an action and a line when the move makes the relationship question sharper. For example, an original role folds an unsigned note and asks, “Who else saw this?” The fold changes the situation; the question creates pressure.\n\nDo not add both formats merely to make a reply longer. The ledger is useful when each part has a different job."
+      },
+      {
+        "id": "test-a-small-pair",
+        "role": "worked_example",
+        "format": "examples",
+        "heading": "Test one small paired turn",
+        "bodyMarkdown": "Imagine an original scene: a chosen role finds a lantern burning in an otherwise empty archive. Dialogue only might ask, “Did someone leave this for me?” That changes the relationship by inviting an answer, but the situation stays still. Action only might be: *I shield the flame and look beneath the desk.* That changes the situation, but it gives no clear interpersonal pressure.\n\nA paired turn can be smaller than a paragraph: *I move the lantern away from the papers and keep my hand near the drawer.* “If you expected me, say so before I open this.” The action protects something immediate; the line makes the next response choose a position. The archive, lantern, note, and roles are original generic craft material, not a supplied story, a promise, or a borrowed fictional setting."
+      },
+      {
+        "id": "send-one-open-pressure",
+        "role": "next_step",
+        "format": "checklist",
+        "heading": "Send one open pressure, then stop",
+        "bodyMarkdown": "- Check the **relationship** column: did a line give another role something specific to answer?\n\n- Check the **situation** column: did an action create one observable change?\n\n- Check the **open pressure** column: can the next turn respond without a separate plot?\n\nKeep only the format that has a job. If the exchange is flat, use the related scene-recovery guide."
+      }
+    ],
+    "faqs": [
+      {
+        "id": "faq-dialogue",
+        "job": "decision",
+        "question": "When should I use dialogue instead of action in AI roleplay?",
+        "answerMarkdown": "Use dialogue when the needed change is relational: a role needs to ask, reveal, refuse, reassure, or test another person. Keep the line tied to one present detail so it gives the next turn a precise response job."
+      },
+      {
+        "id": "faq-both",
+        "job": "setup",
+        "question": "Should every AI roleplay reply include dialogue and action?",
+        "answerMarkdown": "No. Pair them only when one small action changes the immediate situation and one line changes the relationship question. A shorter single-format reply is stronger when only one of those changes is needed."
+      },
+      {
+        "id": "faq-product-boundary",
+        "job": "constraint",
+        "question": "Does choosing a turn form unlock any particular product behavior?",
+        "answerMarkdown": "No. The ledger is writing advice. Its only product context is a story-led voice cosplay and roleplay direction in which an existing plot and an available character perspective frame participation. It says nothing about access, individual plots, technical implementation, response characteristics, or results."
+      }
+    ],
+    "architecture": {
+      "schemaVersion": 1,
+      "intent": {
+        "searcherJob": "Decide whether the next AI roleplay response needs dialogue, an action, or both to change the current scene.",
+        "painPointId": "format_confusion",
+        "decisionToEnable": "Choose a response form that changes the relationship, situation, or both while leaving a clear next-turn pressure.",
+        "oneSentenceAnswer": "Use dialogue to change a relationship, action to change the immediate situation, and a paired turn only when both changes are needed now.",
+        "nonGoals": [
+          "Do not provide a generic beginner roleplay tutorial.",
+          "Do not promise that a response format guarantees a story outcome."
+        ]
+      },
+      "content": {
+        "archetype": "argument",
+        "thesis": "The best response form is decided by the kind of change a scene needs, not by a rule that every turn must contain dialogue and action.",
+        "originalContribution": "The page introduces an original Turn Ledger that tests a reply against three columns—relationship, situation, and open pressure—before the reader adds dialogue, action, or both.",
+        "tone": "A concise editorial argument with visible counterpoints, rather than a generic step-card guide.",
+        "openingMove": "counterintuitive_claim",
+        "avoidPhrases": [
+          "endless possibilities",
+          "bring characters to life",
+          "start your journey"
+        ],
+        "sections": [
+          {
+            "id": "name-the-needed-change",
+            "role": "direct_answer",
+            "format": "prose",
+            "readerQuestion": "What must change after this reply?",
+            "uniqueTakeaway": "Format follows the needed relationship or situation change."
+          },
+          {
+            "id": "read-the-turn-ledger",
+            "role": "framework",
+            "format": "comparison",
+            "readerQuestion": "Which ledger column calls for dialogue, action, or both?",
+            "uniqueTakeaway": "Each format earns its place through a distinct scene job."
+          },
+          {
+            "id": "test-a-small-pair",
+            "role": "worked_example",
+            "format": "examples",
+            "readerQuestion": "What does a compact paired turn look like?",
+            "uniqueTakeaway": "One action and one line can create a focused answerable pressure."
+          },
+          {
+            "id": "send-one-open-pressure",
+            "role": "next_step",
+            "format": "checklist",
+            "readerQuestion": "When is the turn complete enough to send?",
+            "uniqueTakeaway": "Stop after leaving one pressure another turn can answer."
+          }
+        ],
+        "faqs": [
+          {
+            "id": "faq-dialogue",
+            "job": "decision",
+            "readerObstacle": "The reader cannot tell when dialogue has a clearer job than action.",
+            "answerBoundary": "Give a craft criterion without product promises."
+          },
+          {
+            "id": "faq-both",
+            "job": "setup",
+            "readerObstacle": "The reader assumes every reply must combine formats.",
+            "answerBoundary": "Recommend a conditional paired turn, not a universal rule."
+          },
+          {
+            "id": "faq-product-boundary",
+            "job": "constraint",
+            "readerObstacle": "The reader may infer unsupported product capabilities from a craft guide.",
+            "answerBoundary": "Restate approved facts without availability or technology claims."
+          }
+        ],
+        "signature": {
+          "id": "turn-ledger-counterpoint",
+          "type": "myth_fact",
+          "readerAction": "Test the reply against relationship, situation, and open pressure before adding another format.",
+          "afterSectionId": "read-the-turn-ledger"
+        }
+      },
+      "differentiation": {
+        "against": [
+          {
+            "slug": "ai-roleplay-scene-recovery",
+            "intentDelta": "Scene recovery diagnoses an exchange after it has gone flat; this page chooses the shape of the next normal turn before a stall is assumed.",
+            "answerDelta": "The Specimen Index labels a failure type, while the Turn Ledger distinguishes relationship and situation changes.",
+            "structureDelta": "The recovery page is a cobalt reference inventory; this is an editorial counterpoint argument with a ledger comparison.",
+            "faqDelta": "Recovery FAQs address restart and repair; these FAQs address format selection and paired turns.",
+            "visualDelta": "The catalog recipe uses cobalt specimen labels; this page uses newsprint-burgundy marginalia and no companion."
+          },
+          {
+            "slug": "ai-roleplay-first-message",
+            "intentDelta": "The first-message guide solves the blank opening; this page solves the response-form choice during an ongoing scene.",
+            "answerDelta": "The Flight Plan creates an initial hook, while the Turn Ledger chooses dialogue, action, or a deliberate pair.",
+            "structureDelta": "The earlier guide is a mission sequence; this is an argument-driven comparison and counterpoint margin.",
+            "faqDelta": "Opening FAQs explain first-message ingredients; these FAQs test response formats.",
+            "visualDelta": "The mission treatment is retro-futuristic; this essay uses editorial columns, burgundy accents, and no companion."
+          }
+        ]
+      },
+      "presentation": {
+        "recipeId": "editorial-argument-v1",
+        "rendererId": "editorial_argument",
+        "visualSystemId": "longform-editorial",
+        "layoutId": "oversized-deck-and-marginalia",
+        "paletteId": "newsprint-burgundy",
+        "typographyId": "display-serif-editorial",
+        "motifId": "pull-quote-counterpoint",
+        "companion": "none",
+        "gallery": "none",
+        "surfaceCopy": {
+          "eyebrow": "Turn-form editorial",
+          "shortAnswerLabel": "The argument",
+          "contentsLabel": "The ledger columns",
+          "sectionLabel": "Counterpoint",
+          "faqEyebrow": "Reader objections",
+          "faqHeading": "Questions before the next reply",
+          "relatedHeading": "Continue the scene work",
+          "finalCtaEyebrow": "Choose the next turn",
+          "finalCtaHeading": "Bring one deliberate change into a story.",
+          "finalCtaBody": "Follow the attributed path only when stepping into a story-led roleplay experience is the useful next move.",
+          "backToTop": "Return to the ledger"
+        }
+      }
+    },
+    "signatureModule": {
+      "id": "turn-ledger-counterpoint",
+      "type": "myth_fact",
+      "title": "The Turn Ledger: Three Counterpoints",
+      "intro": "Before adding another sentence, decide what the reply must change. The ledger rejects the idea that longer turns are automatically better.",
+      "items": [
+        {
+          "label": "Counterpoint 1",
+          "title": "Dialogue is not decoration",
+          "bodyMarkdown": "Choose a line when it changes what one role lets another role know, question, accept, or resist in the current moment."
+        },
+        {
+          "label": "Counterpoint 2",
+          "title": "Action is not a summary",
+          "bodyMarkdown": "Choose a small move when it changes one observable detail while leaving the central consequence for the next turn."
+        },
+        {
+          "label": "Counterpoint 3",
+          "title": "Both formats need separate jobs",
+          "bodyMarkdown": "Pair action and dialogue only when the move changes the situation and the line makes the relationship pressure clearer."
+        }
+      ]
+    },
+    "internalLinks": [
+      {
+        "anchor": "scene-recovery guide",
+        "href": "/ai-roleplay-scene-recovery"
+      },
+      {
+        "anchor": "AI roleplay first message guide",
+        "href": "/ai-roleplay-first-message"
+      }
+    ],
+    "assetBriefs": [
+      "Render the Turn Ledger as accessible editorial marginalia with relationship, situation, and open-pressure labels; use no third-party characters, worlds, or copied interfaces.",
+      "Use a newsprint-and-burgundy editorial treatment with readable longform columns, no gallery, and no decorative companion."
+    ],
+    "quality": {
+      "passed": true,
+      "checks": [
+        {
+          "id": "distinct-intent",
+          "label": "Answers a response-form decision",
+          "passed": true,
+          "detail": "The Turn Ledger chooses dialogue, action, or both during a live scene, distinct from start and recovery guides."
+        },
+        {
+          "id": "no-third-party-ip",
+          "label": "Avoids third-party IP",
+          "passed": true,
+          "detail": "All examples are generic and original; no external character, world, franchise, or trademark appears."
+        },
+        {
+          "id": "no-invented-claims",
+          "label": "Avoids unsupported claims",
+          "passed": true,
+          "detail": "The draft makes no pricing, privacy, safety, latency, platform, real-time, multiplayer, or capability claim."
+        }
+      ]
+    }
+  }
+}
