@@ -9,6 +9,10 @@ import {
 } from "../lib/seo/content-similarity.mjs";
 import { publishedArchitectureHistoryFromReports } from "../lib/seo/content-history.mjs";
 import {
+  hasExplicitMarkdownList,
+  unsupportedMarkdownReason,
+} from "../lib/seo/markdown-semantics.mjs";
+import {
   analyzeCandidateIntentBatch,
   findPublishedIntentMatch,
   publishedIntentRecords,
@@ -29,8 +33,11 @@ const factCatalog = readJson("data/config/product-facts.json");
 const architecturePolicy = readJson("data/config/content-architecture.json");
 const presentationCatalog = readJson("data/config/presentation-recipes.json");
 const unattendedPolicy = readJson("data/config/unattended-publishing.json");
+const siteConfig = readJson("data/config/site.json");
 const date = String(input.date || "");
 const retiredPageSlugs = new Set(Array.isArray(policy.retiredPageSlugs) ? policy.retiredPageSlugs : []);
+const retiredRecipeIds = new Set(Array.isArray(policy.retiredRecipeIds) ? policy.retiredRecipeIds : []);
+const retiredPaletteIds = new Set(Array.isArray(policy.retiredPaletteIds) ? policy.retiredPaletteIds : []);
 
 validateSeoArchitectureBridge(policy, architecturePolicy);
 
@@ -112,6 +119,109 @@ function registrableDomain(hostname) {
   return commonSecondLevelSuffixes.has(lastTwo) ? labels.slice(-3).join(".") : lastTwo;
 }
 
+function validatedBreakoutEvidencePolicy() {
+  const config = policy.breakoutEvidence;
+  const safeSignalToken = /^[a-z][a-z0-9_]*$/;
+  if (
+    config?.schemaVersion !== 1 ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(config.enforcedFromReportDate || "") ||
+    !safeSignalToken.test(config.requiredKind || "") ||
+    !Array.isArray(config.allowedSignalTypes) ||
+    !config.allowedSignalTypes.length ||
+    new Set(config.allowedSignalTypes).size !== config.allowedSignalTypes.length ||
+    config.allowedSignalTypes.some((type) => !safeSignalToken.test(type)) ||
+    !Number.isInteger(config.minDetailChars) ||
+    config.minDetailChars < 1 ||
+    !Number.isInteger(config.minBasisChars) ||
+    config.minBasisChars < 1
+  ) {
+    throw new Error("seo-policy breakoutEvidence configuration is invalid");
+  }
+  return config;
+}
+
+const breakoutEvidencePolicy = validatedBreakoutEvidencePolicy();
+const firstPartyEvidenceDomain = registrableDomain(
+  new URL(siteConfig.canonicalOrigin).hostname,
+);
+
+function normalizeBreakoutEvidence(item, evidenceId) {
+  let sourceUrl;
+  try {
+    sourceUrl = new URL(item.url);
+  } catch {
+    throw new Error(`Breakout-page evidence needs a valid independent source URL: ${evidenceId}`);
+  }
+  const sourceDomain = registrableDomain(sourceUrl.hostname);
+  if (
+    !/^https?:$/.test(sourceUrl.protocol) ||
+    sourceUrl.username ||
+    sourceUrl.password ||
+    !sourceUrl.hostname.includes(".") ||
+    sourceDomain === firstPartyEvidenceDomain ||
+    (sourceUrl.pathname === "/" && !sourceUrl.search)
+  ) {
+    throw new Error(`Breakout-page evidence needs a page-specific independent HTTP(S) source URL: ${evidenceId}`);
+  }
+  const collectedAt = String(item.collectedAt || "");
+  if (
+    !Number.isFinite(Date.parse(collectedAt)) ||
+    shanghaiCalendarDate(collectedAt) !== date
+  ) {
+    throw new Error(`Breakout-page evidence must be collected on the report's Shanghai date: ${evidenceId}`);
+  }
+  const signal = item.signal;
+  if (!signal || typeof signal !== "object" || Array.isArray(signal)) {
+    throw new Error(`Breakout-page evidence needs a structured signal: ${evidenceId}`);
+  }
+  const allowedSignalFields = new Set(["type", "value", "unit", "basis", "detail"]);
+  const unknownSignalField = Object.keys(signal).find((field) => !allowedSignalFields.has(field));
+  if (unknownSignalField) {
+    throw new Error(`Breakout-page signal has an unknown field ${unknownSignalField}: ${evidenceId}`);
+  }
+  const type = String(signal.type || "").trim();
+  const value = signal.value;
+  const unit = String(signal.unit || "").trim();
+  const basis = String(signal.basis || "").trim();
+  const detail = String(signal.detail || "").trim();
+  if (!breakoutEvidencePolicy.allowedSignalTypes.includes(type)) {
+    throw new Error(`Breakout-page signal has an unsupported type: ${evidenceId}`);
+  }
+  if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) {
+    throw new Error(`Breakout-page signal needs a positive finite numeric value: ${evidenceId}`);
+  }
+  if (!unit || unit.length > 64) {
+    throw new Error(`Breakout-page signal needs a concise unit: ${evidenceId}`);
+  }
+  if (basis.length < breakoutEvidencePolicy.minBasisChars) {
+    throw new Error(`Breakout-page signal basis is too short: ${evidenceId}`);
+  }
+  if (detail.length < breakoutEvidencePolicy.minDetailChars) {
+    throw new Error(`Breakout-page signal detail is too short: ${evidenceId}`);
+  }
+  return {
+    kind: breakoutEvidencePolicy.requiredKind,
+    sourceUrl: sourceUrl.toString(),
+    collectedAt,
+    supports: Array.isArray(item.supports)
+      ? item.supports.map((keyword) => String(keyword).trim().toLowerCase()).filter(Boolean)
+      : [],
+    signal: { type, value, unit, basis, detail },
+  };
+}
+
+function assertSelectedCreateBreakoutEvidence(selectedKeyword, normalizedEvidence) {
+  if (date < breakoutEvidencePolicy.enforcedFromReportDate) return;
+  const keyword = String(selectedKeyword || "").trim().toLowerCase();
+  const qualifying = normalizedEvidence.some((item) => item.supports.includes(keyword));
+  if (!qualifying) {
+    throw new Error(
+      `Create-page breakout evidence gate failed: selected keyword ${keyword || "<empty>"} needs at least one ` +
+      `same-day, page-specific independent ${breakoutEvidencePolicy.requiredKind} record with a structured supported signal`,
+    );
+  }
+}
+
 function sha256(value) {
   return createHash("sha256").update(JSON.stringify(value)).digest("hex");
 }
@@ -135,6 +245,7 @@ const evidenceDomains = new Set();
 const supportedKeywords = new Set();
 const evidenceById = new Map();
 const evidenceDomainById = new Map();
+const normalizedBreakoutEvidenceById = new Map();
 for (const item of input.evidence) {
   const evidenceId = String(item.id || "").trim();
   if (!safeEvidenceId.test(evidenceId) || evidenceById.has(evidenceId)) {
@@ -152,6 +263,12 @@ for (const item of input.evidence) {
   evidenceDomains.add(domain);
   evidenceById.set(evidenceId, item);
   evidenceDomainById.set(evidenceId, domain);
+  if (item.kind === breakoutEvidencePolicy.requiredKind) {
+    normalizedBreakoutEvidenceById.set(
+      evidenceId,
+      normalizeBreakoutEvidence(item, evidenceId),
+    );
+  }
   for (const keyword of Array.isArray(item.supports) ? item.supports : []) {
     supportedKeywords.add(String(keyword).trim().toLowerCase());
   }
@@ -488,9 +605,59 @@ function validateDraft(rawDraft, keyword) {
       throw new Error(`Draft needs a specific ${field}`);
     }
   }
+  const enhancedContentRequired = date >= architecturePolicy.enhancedNoveltyEnforcedFromReportDate;
+  const genericCtaPattern = /^(?:click here|learn more|get started|explore stories|explore story-led roleplay|try novelai|start now|read more)(?:\s+(?:on|with)\s+novelai)?[.!]?$/i;
+  const ctaTokens = new Set(
+    `${keyword} ${contentStrategy?.readerOutcome || ""} ${contentStrategy?.primaryPainPoint || ""}`
+      .toLowerCase()
+      .match(/[a-z0-9]+/g)
+      ?.filter((token) => token.length >= 5 && !["novelai", "story", "stories", "roleplay", "using", "about"].includes(token)) || [],
+  );
+  const ctaSpecific = !genericCtaPattern.test(rawDraft.primaryCta.trim()) &&
+    [...ctaTokens].some((token) => rawDraft.primaryCta.toLowerCase().includes(token));
+  if (enhancedContentRequired && !ctaSpecific) {
+    throw new Error("Draft primaryCta must name this page's specific outcome; generic CTA copy is not publishable");
+  }
   if (sections.some((section) => typeof section?.heading !== "string" || typeof section?.bodyMarkdown !== "string") ||
     faqs.some((faq) => typeof faq?.question !== "string" || typeof faq?.answerMarkdown !== "string")) {
     throw new Error("Every draft section and FAQ needs visible text");
+  }
+  let markdownRenderable = true;
+  if (enhancedContentRequired) {
+    const plainTextValues = [
+      ["title", rawDraft.title],
+      ["metaDescription", rawDraft.metaDescription],
+      ["h1", rawDraft.h1],
+      ["primaryCta", rawDraft.primaryCta],
+      ...sections.map((section, index) => [`section ${index + 1} heading`, section.heading]),
+      ...faqs.map((faq, index) => [`FAQ ${index + 1} question`, faq.question]),
+      ...Object.entries(rawDraft.architecture?.presentation?.surfaceCopy || {}).map(([field, value]) => [`surfaceCopy.${field}`, value]),
+      ["signature title", rawDraft.signatureModule?.title],
+      ...(rawDraft.signatureModule?.items || []).flatMap((item, index) => [
+        [`signature item ${index + 1} label`, item.label],
+        [`signature item ${index + 1} title`, item.title],
+      ]),
+    ];
+    const richTextValues = [
+      ["heroMarkdown", rawDraft.heroMarkdown],
+      ...sections.map((section, index) => [`section ${index + 1} bodyMarkdown`, section.bodyMarkdown]),
+      ...faqs.map((faq, index) => [`FAQ ${index + 1} answerMarkdown`, faq.answerMarkdown]),
+      ["signature intro", rawDraft.signatureModule?.intro],
+      ...(rawDraft.signatureModule?.items || []).map((item, index) => [`signature item ${index + 1} bodyMarkdown`, item.bodyMarkdown]),
+    ];
+    const invalidPlain = plainTextValues.find(([, value]) => unsupportedMarkdownReason(value, { plainText: true }));
+    const invalidRich = richTextValues.find(([, value]) => unsupportedMarkdownReason(value));
+    const unmarkedList = sections.find((section) =>
+      ["steps", "checklist", "examples", "comparison"].includes(section.format) &&
+      !hasExplicitMarkdownList(section.bodyMarkdown));
+    markdownRenderable = !invalidPlain && !invalidRich && !unmarkedList;
+    if (invalidPlain || invalidRich) {
+      const [label, value] = invalidPlain || invalidRich;
+      throw new Error(`Draft ${label} uses unsupported Markdown: ${unsupportedMarkdownReason(value, { plainText: Boolean(invalidPlain) })}`);
+    }
+    if (unmarkedList) {
+      throw new Error(`Draft section ${unmarkedList.id || unmarkedList.heading} must use explicit Markdown list markers for ${unmarkedList.format}`);
+    }
   }
   const publishableText = visiblePageText(rawDraft);
   const failedClaim = forbiddenClaims.find((pattern) => pattern.test(publishableText));
@@ -501,6 +668,8 @@ function validateDraft(rawDraft, keyword) {
     { id: "approved-facts", label: "Uses approved product facts", passed: true, detail: `${factIds.length} approved fact IDs` },
     { id: "content-structure", label: "Has required sections and FAQs", passed: sections.length >= policy.content.minSections && faqs.length >= policy.content.minFaqs, detail: `${sections.length} sections; ${faqs.length} FAQs` },
     { id: "conversion-path", label: "Has a concrete CTA", passed: rawDraft.primaryCta.trim().length >= 5, detail: rawDraft.primaryCta.trim() },
+    { id: "cta-specificity", label: "CTA names the page-specific outcome", passed: !enhancedContentRequired || ctaSpecific, detail: enhancedContentRequired ? rawDraft.primaryCta.trim() : "Enhanced CTA gate starts with 2026-08-11 reports" },
+    { id: "markdown-renderability", label: "Copy uses only production-supported Markdown", passed: markdownRenderable, detail: enhancedContentRequired ? "Plain fields and rich text match the renderer subset; list formats use explicit markers" : "Enhanced Markdown gate starts with 2026-08-11 reports" },
     { id: "minimum-depth", label: `${policy.content.minWords}-${policy.content.maxWords} English words`, passed: wordCount >= policy.content.minWords && wordCount <= policy.content.maxWords, detail: `${wordCount} words` },
   ];
   const automatedIds = new Set(automatedChecks.map((check) => check.id));
@@ -1340,6 +1509,10 @@ const preparedDrafts = rawDrafts.map((rawDraft, index) => {
     throw new Error("The new page needs at least one contextual link to a published first-party page");
   }
   const preparedDraft = { ...draft, slug: `/${pageSlug}` };
+  const selectedPresentation = preparedDraft.architecture?.presentation;
+  if (retiredRecipeIds.has(selectedPresentation?.recipeId) || retiredPaletteIds.has(selectedPresentation?.paletteId)) {
+    throw new Error(`Presentation ${selectedPresentation?.recipeId || "<missing>"}/${selectedPresentation?.paletteId || "<missing>"} was retired by explicit user feedback`);
+  }
   const comparisonPages = pages.filter((page) => page.slug !== pageSlug);
   validatePageArchitecture({
     draft: preparedDraft,
@@ -1356,6 +1529,7 @@ const preparedDrafts = rawDrafts.map((rawDraft, index) => {
     architecturePolicy,
     presentationCatalog,
     allowedPhrases: factCatalog.facts.map((fact) => fact.statement),
+    enforceEnhancedNovelty: date >= architecturePolicy.enhancedNoveltyEnforcedFromReportDate,
   });
   if (!novelty.passed) {
     const first = novelty.violations[0];
@@ -1391,6 +1565,12 @@ if (!selectedOpportunity) throw new Error("Research produced no scored opportuni
 const selectedCreateKeyword = selectedOpportunity.action === "create_page"
   ? selectedOpportunity.keyword
   : null;
+if (isCreatePageDecision) {
+  assertSelectedCreateBreakoutEvidence(
+    selectedCreateKeyword,
+    [...normalizedBreakoutEvidenceById.values()],
+  );
+}
 const eligibleFallbacks = eligibleCreateOpportunities
   .filter((candidate) => candidate.keyword !== selectedCreateKeyword)
   .map((candidate, index) => ({
@@ -1555,7 +1735,19 @@ const report = {
   ],
   evidence: input.evidence.map((item) => {
     const url = new URL(item.url);
-    return { id: String(item.id), title: String(item.title || url.hostname), url: url.toString(), source: String(item.source || url.hostname), collectedAt: item.collectedAt || checkedAt, supports: Array.isArray(item.supports) ? item.supports.map(String) : [] };
+    const evidenceId = String(item.id);
+    const breakout = normalizedBreakoutEvidenceById.get(evidenceId);
+    return {
+      id: evidenceId,
+      title: String(item.title || url.hostname),
+      url: url.toString(),
+      source: String(item.source || url.hostname),
+      collectedAt: item.collectedAt || checkedAt,
+      supports: Array.isArray(item.supports) ? item.supports.map(String) : [],
+      ...(breakout
+        ? { kind: breakout.kind, signal: breakout.signal }
+        : {}),
+    };
   }),
   caveats: [
     "Product fit, trial intent, revenue intent, specificity, originality, IP risk, and cannibalization risk are derived from policy-versioned evidence signals rather than AI-supplied scores.",

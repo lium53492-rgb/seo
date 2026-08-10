@@ -19,6 +19,10 @@ export type PresentationRecipe = {
   rendererId: PageArchitecture["presentation"]["rendererId"];
   companion: PageArchitecture["presentation"]["companion"];
   gallery: "none";
+  motifId: string;
+  sectionMarkerStyle: string;
+  sectionFlow: string;
+  domainConcepts: string[];
 };
 
 const rendererIds: ReadonlyArray<PresentationRecipe["rendererId"]> = [
@@ -67,6 +71,10 @@ export function resolvePagePresentation(page: PublishedSeoPage): PresentationRec
     rendererId: recipe.rendererId as PresentationRecipe["rendererId"],
     companion: recipe.companion,
     gallery: recipe.gallery,
+    motifId: recipe.motifId,
+    sectionMarkerStyle: recipe.sectionMarkerStyle,
+    sectionFlow: recipe.sectionFlow,
+    domainConcepts: recipe.domainConcepts,
   };
 }
 

@@ -2,9 +2,11 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import seoPolicy from "../../data/config/seo-policy.json" with { type: "json" };
 import architecturePolicy from "../../data/config/content-architecture.json" with { type: "json" };
+import unattendedPolicy from "../../data/config/unattended-publishing.json" with { type: "json" };
 import { validatePipelineReviewContract } from "../../lib/seo/pipeline-contract.mjs";
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const DIGEST_PATTERN = /^[a-f0-9]{64}$/;
 
 export function shanghaiDate(value = new Date()) {
   const date = value instanceof Date ? value : new Date(value);
@@ -44,6 +46,54 @@ function pagePublishedOn(page, date) {
     shanghaiDate(page.publishedAt) === date;
 }
 
+export function isDailyNoPublishReceipt(receipt, date) {
+  const noPublishPolicy = unattendedPolicy.noPublish;
+  const artifactDigests = Array.isArray(receipt?.artifactDigests) ? receipt.artifactDigests : [];
+  const allowedPaths = new Set([
+    `data/growth/${date}.json`,
+    `data/research/${date}.json`,
+    `data/reports/${date}.json`,
+    `data/reviews/${date}.json`,
+  ]);
+  const artifactPaths = artifactDigests.map((artifact) => artifact?.path);
+  const evidence = receipt?.evidenceSummary;
+  return unattendedPolicy.allowZeroPageOutcome === true &&
+    noPublishPolicy?.schemaVersion === 1 &&
+    receipt?.schemaVersion === noPublishPolicy.schemaVersion &&
+    receipt?.outcome === "no_publish" &&
+    receipt?.date === date &&
+    typeof receipt?.reasonCode === "string" &&
+    noPublishPolicy.reasonCodes.includes(receipt.reasonCode) &&
+    typeof receipt?.reason === "string" &&
+    receipt.reason.trim().length >= noPublishPolicy.minimumReasonChars &&
+    receipt.reason.trim().length <= noPublishPolicy.maximumReasonChars &&
+    typeof receipt?.recordedAt === "string" &&
+    Number.isFinite(Date.parse(receipt.recordedAt)) &&
+    shanghaiDate(receipt.recordedAt) === date &&
+    !("publishedSlug" in receipt) &&
+    !("releaseRevision" in receipt) &&
+    !("liveVerification" in receipt) &&
+    artifactDigests.length >= 1 &&
+    new Set(artifactPaths).size === artifactPaths.length &&
+    artifactDigests.every((artifact) => artifact && allowedPaths.has(artifact.path) &&
+      DIGEST_PATTERN.test(String(artifact.sha256 || "")) &&
+      Number.isSafeInteger(artifact.bytes) && artifact.bytes > 0) &&
+    artifactPaths.includes(`data/growth/${date}.json`) &&
+    evidence && typeof evidence === "object" && !Array.isArray(evidence) &&
+    typeof evidence.dailyState === "string" &&
+    evidence.growth && typeof evidence.growth === "object" &&
+    Number.isSafeInteger(evidence.growth.publishedPages) && evidence.growth.publishedPages >= 0 &&
+    Number.isSafeInteger(evidence.growth.collectedPages) && evidence.growth.collectedPages >= 0 &&
+    Number.isSafeInteger(evidence.growth.unavailablePages) && evidence.growth.unavailablePages >= 0 &&
+    typeof evidence.growth.attributionJoinReady === "boolean" &&
+    evidence.trends && typeof evidence.trends === "object" &&
+    Number.isSafeInteger(evidence.trends.recorded) && evidence.trends.recorded >= 0 &&
+    Number.isSafeInteger(evidence.trends.observed) && evidence.trends.observed >= 0 &&
+    Number.isSafeInteger(evidence.trends.qualifying) && evidence.trends.qualifying >= 0 &&
+    typeof evidence.publicationStatus === "string" &&
+    typeof evidence.reviewDecision === "string";
+}
+
 export function deriveDailyRunState({
   date,
   growth = null,
@@ -52,6 +102,7 @@ export function deriveDailyRunState({
   review = null,
   pages = [],
   pdfExists = false,
+  noPublishReceipt = null,
 }) {
   if (!DATE_PATTERN.test(String(date || ""))) throw new Error("Daily state requires YYYY-MM-DD");
   const todayPages = pages.filter((page) => pagePublishedOn(page, date));
@@ -74,6 +125,8 @@ export function deriveDailyRunState({
     requiredDraftSchemaVersion: architecturePolicy.requiredDraftSchemaVersion,
     baseRequiredChecks: seoPolicy.requiredReviewChecks,
     architectureRequiredChecks: architecturePolicy.requiredReviewChecks,
+    reportDate: report?.date ?? date,
+    visualAuditPolicy: seoPolicy.visualAudit,
   }));
   const reportReadyForPublication = report?.publication?.status === "ready_for_review" &&
     report?.draft?.quality?.passed === true;
@@ -88,8 +141,17 @@ export function deriveDailyRunState({
   const publicationNeedsFinalization = Boolean(pageMatchesApprovedChain &&
     report?.publication?.status === "ready_for_review" &&
     publicationDraftSlug === todayPage?.slug);
+  const noPublishReceiptValid = isDailyNoPublishReceipt(noPublishReceipt, date);
   const conflicts = [];
 
+  if (noPublishReceipt && !noPublishReceiptValid) conflicts.push("The no-publish receipt is invalid.");
+  if (noPublishReceiptValid && !growth) conflicts.push("A no-publish receipt requires the same-day growth snapshot.");
+  if (noPublishReceiptValid && todayPages.length > 0) {
+    conflicts.push("A no-publish receipt cannot coexist with a page published on the Shanghai day.");
+  }
+  if (noPublishReceiptValid && reportedSlug) {
+    conflicts.push("A no-publish receipt cannot coexist with a report that claims publication.");
+  }
   if (todayPages.length > 1) conflicts.push("More than one page is published for the Shanghai day.");
   if (research && !growth) conflicts.push("Research exists without the required growth snapshot.");
   if (report && !research) conflicts.push("A report exists without its research input.");
@@ -97,7 +159,7 @@ export function deriveDailyRunState({
   if (pdfExists && todayPages.length === 0) conflicts.push("A PDF exists before today's page publication.");
   if (research?.date && research.date !== date) conflicts.push("The research date does not match the daily chain.");
   if (report?.date && report.date !== date) conflicts.push("The report date does not match the daily chain.");
-  if (report && date >= seoPolicy.contentArchitecture.enforcedFromReportDate &&
+  if (report && !noPublishReceiptValid && date >= seoPolicy.contentArchitecture.enforcedFromReportDate &&
     draftSchemaVersion !== architecturePolicy.requiredDraftSchemaVersion) {
     conflicts.push("The daily report does not contain the required architecture draft schema.");
   }
@@ -148,6 +210,19 @@ export function deriveDailyRunState({
     };
   }
 
+  if (noPublishReceiptValid) {
+    return {
+      schemaVersion: 1,
+      date,
+      state: "no_publish_complete",
+      resumeAt: null,
+      mayCreatePage: false,
+      publishedSlug: null,
+      noPublishReceipt,
+      conflicts: [],
+    };
+  }
+
   let state = "start";
   let resumeAt = "growth_check";
   if (publicationNeedsFinalization) {
@@ -181,7 +256,11 @@ export function deriveDailyRunState({
   };
 }
 
-export function readDailyRunState({ root = process.cwd(), date = shanghaiDate() } = {}) {
+export function readDailyRunState({
+  root = process.cwd(),
+  date = shanghaiDate(),
+  noPublishReceipt = null,
+} = {}) {
   const artifact = (folder) => readJson(resolve(root, `data/${folder}/${date}.json`));
   const pagesDirectory = resolve(root, "data/pages");
   const pages = existsSync(pagesDirectory)
@@ -197,5 +276,6 @@ export function readDailyRunState({ root = process.cwd(), date = shanghaiDate() 
     review: artifact("reviews"),
     pages,
     pdfExists: existsSync(resolve(root, `output/pdf/seo-daily-${date}.pdf`)),
+    noPublishReceipt,
   });
 }

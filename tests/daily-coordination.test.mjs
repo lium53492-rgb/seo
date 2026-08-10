@@ -9,6 +9,7 @@ import {
   acquireDailyReleaseRecoveryLease,
   assertDailyLease,
   completeDailyLease,
+  completeDailyNoPublish,
   coordinationOwner,
   heartbeatDailyLease,
   inspectDailyCarryover,
@@ -92,6 +93,25 @@ function prepareAndStartRelease(options) {
   return startDailyRelease(options);
 }
 
+function writeNoPublishGrowth(worktreeRoot, date, generatedAt) {
+  const path = join(worktreeRoot, "data", "growth", `${date}.json`);
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, `${JSON.stringify({
+    schemaVersion: 2,
+    generatedAt,
+    summary: {
+      publishedPages: 9,
+      collectedPages: 0,
+      unavailablePages: 9,
+      attributionJoinReady: false,
+    },
+    entries: Array.from({ length: 9 }, (_, index) => ({
+      sourceSlug: `page-${index + 1}`,
+      state: "unavailable",
+    })),
+  }, null, 2)}\n`);
+}
+
 test("a stale daily lease is taken over while a fresh lease blocks a second worktree", () => {
   const date = "2099-01-01";
   const { coordinationRoot, worktreeA, worktreeB } = roots("lease");
@@ -135,6 +155,87 @@ test("a stale daily lease is taken over while a fresh lease blocks a second work
     /does not own/,
   );
   assert.equal(assertDailyLease({ coordinationRoot, date, owner: ownerB }).owner, ownerB);
+});
+
+test("a durable no-publish receipt ends same-day recovery without claiming a publication", () => {
+  const date = "2099-01-10";
+  const nextDate = "2099-01-11";
+  const now = new Date("2099-01-10T01:00:00.000Z");
+  const { coordinationRoot, worktreeA, worktreeB } = roots("no-publish");
+  const ownerA = coordinationOwner(worktreeA, "run-a");
+  const ownerB = coordinationOwner(worktreeB, "run-b");
+  acquireDailyLease({ coordinationRoot, date, owner: ownerA, now, staleAfterMinutes: 60 });
+
+  const completion = () => completeDailyNoPublish({
+    coordinationRoot,
+    worktreeRoot: worktreeA,
+    date,
+    owner: ownerA,
+    reasonCode: "growth_unavailable",
+    reason: "The protected growth endpoint remained unavailable after the configured retries.",
+    now,
+  });
+  assert.throws(completion, /same-day growth snapshot/);
+  writeNoPublishGrowth(worktreeA, date, "2099-01-10T00:55:00.000Z");
+  assert.throws(() => completeDailyNoPublish({
+    coordinationRoot,
+    worktreeRoot: worktreeA,
+    date,
+    owner: ownerA,
+    reasonCode: "trends_below_threshold",
+    reason: "The observed Google Trends signals remained below the configured release threshold.",
+    now,
+  }), /requires observed but non-qualifying/);
+
+  const completed = completion();
+  assert.equal(completed.status, "completed_no_publish");
+  assert.equal(completed.noPublishReceipt.outcome, "no_publish");
+  assert.equal(completed.noPublishReceipt.evidenceSummary.growth.unavailablePages, 9);
+  assert.equal(completed.noPublishReceipt.artifactDigests[0].path, `data/growth/${date}.json`);
+  assert.equal("publishedSlug" in completed.noPublishReceipt, false);
+  assert.equal("releaseRevision" in completed.noPublishReceipt, false);
+  assert.equal("liveVerification" in completed.noPublishReceipt, false);
+  assert.equal(inspectDailyCarryover({ coordinationRoot, date, owner: ownerB, now }).state, "no_publish");
+  assert.equal(acquireDailyLease({
+    coordinationRoot,
+    date,
+    owner: ownerB,
+    now: new Date("2099-01-10T02:00:00.000Z"),
+    staleAfterMinutes: 60,
+  }).outcome, "no_publish");
+  assert.equal(inspectDailyCarryover({
+    coordinationRoot,
+    date: nextDate,
+    owner: ownerB,
+    now: new Date("2099-01-11T01:00:00.000Z"),
+  }).state, "none");
+  assert.throws(() => assertDailyLease({ coordinationRoot, date, owner: ownerA }), /does not own/);
+});
+
+test("no-publish completion refuses to hide a page already published that day", () => {
+  const date = "2099-01-12";
+  const now = new Date("2099-01-12T01:00:00.000Z");
+  const { coordinationRoot, worktreeA } = roots("no-publish-page-conflict");
+  const owner = coordinationOwner(worktreeA, "run-a");
+  acquireDailyLease({ coordinationRoot, date, owner, now, staleAfterMinutes: 60 });
+  writeNoPublishGrowth(worktreeA, date, "2099-01-12T00:55:00.000Z");
+  const pagesDirectory = join(worktreeA, "data", "pages");
+  mkdirSync(pagesDirectory, { recursive: true });
+  writeFileSync(join(pagesDirectory, "already-published.json"), `${JSON.stringify({
+    slug: "already-published",
+    status: "published",
+    publishedAt: "2099-01-12T00:58:00.000Z",
+  }, null, 2)}\n`);
+  assert.throws(() => completeDailyNoPublish({
+    coordinationRoot,
+    worktreeRoot: worktreeA,
+    date,
+    owner,
+    reasonCode: "visual_quality_failed",
+    reason: "The rendered page failed the required desktop and mobile visual review.",
+    now,
+  }), /cannot coexist with a page published/);
+  assert.equal(readDailyLease({ coordinationRoot, date }).status, "active");
 });
 
 test("stale crash remnants cannot permanently block coordination", () => {

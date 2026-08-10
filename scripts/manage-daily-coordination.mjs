@@ -6,6 +6,7 @@ import {
   acquireDailyLease,
   acquireDailyReleaseRecoveryLease,
   completeDailyLease,
+  completeDailyNoPublish,
   coordinationOwner,
   heartbeatDailyLease,
   inspectDailyCarryover,
@@ -324,6 +325,10 @@ function run() {
         result = { outcome: "clear", carryover };
         break;
       }
+      if (carryover.state === "no_publish") {
+        result = { outcome: "no_publish", carryover };
+        break;
+      }
       if (carryover.state === "occupied") {
         result = { outcome: "completed", carryover };
         break;
@@ -383,6 +388,19 @@ function run() {
       break;
     case "restore":
       result = restoreDailyCheckpoint({ coordinationRoot, worktreeRoot, date, owner });
+      break;
+    case "no-publish":
+      result = {
+        outcome: "no_publish",
+        lease: completeDailyNoPublish({
+          coordinationRoot,
+          worktreeRoot,
+          date,
+          owner,
+          reasonCode: revision,
+          reason: slug,
+        }),
+      };
       break;
     case "release-start": {
       if (gitText(["rev-parse", "HEAD"]) !== revision) {
@@ -464,7 +482,7 @@ function run() {
       result = { owner, lease: readDailyLease({ coordinationRoot, date }) };
       break;
     default:
-      throw new Error("Usage: npm run daily:coord -- settle|acquire|restore|save|heartbeat|assert|release-start|complete|status [YYYY-MM-DD] [SHA] [SLUG]");
+      throw new Error("Usage: npm run daily:coord -- settle|acquire|restore|save|heartbeat|assert|no-publish|release-start|complete|status [YYYY-MM-DD] [SHA_OR_REASON_CODE] [SLUG_OR_REASON]");
   }
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
 }

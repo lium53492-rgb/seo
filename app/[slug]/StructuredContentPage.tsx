@@ -43,6 +43,8 @@ export function StructuredContentPage({ page, recipe, relatedPages }: Structured
   if (!page.architecture || !page.signatureModule) return null;
   const { architecture, signatureModule } = page;
   const copy = architecture.presentation.surfaceCopy;
+  const sectionMarker = (index: number) =>
+    (recipe.domainConcepts[index % recipe.domainConcepts.length] || recipe.sectionMarkerStyle).toUpperCase();
 
   const signatureItems = (() => {
     if (["comparison", "diagnostic", "myth_fact"].includes(signatureModule.type)) {
@@ -119,7 +121,7 @@ export function StructuredContentPage({ page, recipe, relatedPages }: Structured
       <ol>
         {page.sections.map((section, index) => (
           <li key={section.id ?? section.heading}>
-            <a href={`#${section.id}`}><b>{String(index + 1).padStart(2, "0")}</b>{section.heading}</a>
+            <a href={`#${section.id}`}><b>{sectionMarker(index)}</b>{section.heading}</a>
           </li>
         ))}
       </ol>
@@ -150,7 +152,7 @@ export function StructuredContentPage({ page, recipe, relatedPages }: Structured
           >
             <div className={styles.layerLabel}>
               <span>{copy.sectionLabel}</span>
-              <b>{String(index + 1).padStart(2, "0")}</b>
+              <b>{sectionMarker(index)}</b>
             </div>
             <div className={styles.layerCopy}>
               <p className={styles.layerPurpose}>{architecture.content.sections[index]?.readerQuestion}</p>
@@ -232,6 +234,9 @@ export function StructuredContentPage({ page, recipe, relatedPages }: Structured
       data-renderer={recipe.rendererId}
       data-companion-policy={architecture.presentation.companion}
       data-gallery-policy={architecture.presentation.gallery}
+      data-motif={recipe.motifId}
+      data-section-marker-style={recipe.sectionMarkerStyle}
+      data-section-flow={recipe.sectionFlow}
     >
       <nav className={styles.nav} aria-label="Primary navigation">
         <a href="/">NovelAI Story Guide</a>

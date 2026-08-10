@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
-import { MessageResponse } from "@/components/ai-elements/message";
+import { StoryCompanion } from "@/app/[slug]/StoryCompanion";
+import { StructuredContentPage } from "@/app/[slug]/StructuredContentPage";
 import { isBasicAuthHeaderAuthorized } from "@/lib/seo/auth";
-import { productFacts } from "@/lib/seo/product-facts";
+import {
+  resolveCompanionPolicy,
+  resolvePagePresentation,
+  resolveRelatedSeoPages,
+} from "@/lib/seo/page-presentation";
+import { listPublishedPages } from "@/lib/seo/page-store";
 import { readLatestReport } from "@/lib/seo/report-store";
+import type { PublishedSeoPage } from "@/lib/seo/types";
 
 export const dynamic = "force-dynamic";
 
@@ -27,12 +34,47 @@ export default async function DraftPreviewPage({
   const report = await readLatestReport();
   const draft = report?.draft;
   if (!draft || draft.slug.replace(/^\//, "") !== slug) notFound();
+  if (draft.schemaVersion !== 2 || !draft.architecture || !draft.signatureModule) notFound();
 
-  const factMap = new Map(productFacts.map((fact) => [fact.id, fact]));
+  const previewPage: PublishedSeoPage = {
+    schemaVersion: 3,
+    status: "published",
+    slug,
+    path: `/${slug}`,
+    keyword: draft.keyword,
+    publishedAt: draft.generatedAt,
+    updatedAt: draft.generatedAt,
+    generatedFromReport: report.id,
+    draftDigest: report.publication?.draftDigest,
+    pagePattern: report.contentStrategy?.pagePattern,
+    architecture: draft.architecture,
+    signatureModule: draft.signatureModule,
+    title: draft.title,
+    metaDescription: draft.metaDescription,
+    h1: draft.h1,
+    heroMarkdown: draft.heroMarkdown,
+    primaryCta: draft.primaryCta,
+    sections: draft.sections,
+    faqs: draft.faqs,
+    factIdsUsed: draft.factIdsUsed,
+    internalLinks: draft.internalLinks,
+    assetBriefs: draft.assetBriefs,
+    quality: draft.quality,
+    research: {
+      opportunityScore: 0,
+      demandProxy: 0,
+      competitionProxy: 0,
+      evidenceCount: report.evidence?.length ?? 0,
+    },
+  };
+  const presentation = resolvePagePresentation(previewPage);
+  if (!presentation) notFound();
+  const relatedPages = resolveRelatedSeoPages(previewPage, await listPublishedPages());
+  const companionPolicy = resolveCompanionPolicy(previewPage, presentation);
 
   return (
-    <main className="wb-preview-shell">
-      <header className="wb-preview-toolbar">
+    <>
+      <aside className="wb-preview-toolbar" aria-label="Draft preview controls">
         <a href="/workbench#generated">← 返回工作台</a>
         <div>
           <span className={`wb-mode-badge ${draft.status === "ready_for_review" ? "live" : "blocked"}`}>
@@ -40,72 +82,11 @@ export default async function DraftPreviewPage({
           </span>
           <span>NOINDEX PREVIEW</span>
         </div>
-      </header>
-
-      <article className="wb-preview-page">
-        <section className="wb-preview-hero">
-          <p className="wb-kicker">AI VOICE ROLEPLAY</p>
-          <MessageResponse className="wb-preview-h1">{draft.h1}</MessageResponse>
-          <MessageResponse className="wb-preview-lede">{draft.heroMarkdown}</MessageResponse>
-          <a
-            className="wb-preview-cta"
-            href={`/go/novelai/${encodeURIComponent(slug)}?location=preview`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <MessageResponse>{draft.primaryCta}</MessageResponse>
-          </a>
-        </section>
-
-        <section className="wb-preview-content">
-          {draft.sections.map((section) => (
-            <div className="wb-preview-section" key={section.heading}>
-              <MessageResponse className="wb-preview-h2">{section.heading}</MessageResponse>
-              <MessageResponse>{section.bodyMarkdown}</MessageResponse>
-            </div>
-          ))}
-        </section>
-
-        {draft.internalLinks.length ? (
-          <nav className="wb-preview-links" aria-label="Related SEO pages">
-            <p className="wb-kicker">RELATED GUIDES</p>
-            <div>
-              {draft.internalLinks.map((link) => (
-                <a href={link.href} key={`${link.href}-${link.anchor}`}>{link.anchor}</a>
-              ))}
-            </div>
-          </nav>
-        ) : null}
-
-        <section className="wb-preview-faq">
-          <p className="wb-kicker">FAQ</p>
-          {draft.faqs.map((faq) => (
-            <article key={faq.question}>
-              <MessageResponse>{faq.question}</MessageResponse>
-              <MessageResponse>{faq.answerMarkdown}</MessageResponse>
-            </article>
-          ))}
-        </section>
-
-        <section className="wb-preview-audit">
-          <div>
-            <p className="wb-kicker">APPROVED FACTS USED</p>
-            {draft.factIdsUsed.map((id) => (
-              <article key={id}>
-                <MessageResponse>{id}</MessageResponse>
-                <p>{factMap.get(id)?.statement ?? "Unknown fact ID — blocked for review"}</p>
-                <small>{factMap.get(id)?.source}</small>
-              </article>
-            ))}
-          </div>
-          <div>
-            <p className="wb-kicker">ORIGINAL ASSET BRIEFS</p>
-            {draft.assetBriefs.map((brief) => (
-              <MessageResponse className="wb-asset-brief" key={brief}>{brief}</MessageResponse>
-            ))}
-          </div>
-        </section>
-      </article>
-    </main>
+      </aside>
+      <StructuredContentPage page={previewPage} recipe={presentation} relatedPages={relatedPages} />
+      {companionPolicy === "story_companion"
+        ? <StoryCompanion sourceSlug={previewPage.slug} />
+        : null}
+    </>
   );
 }

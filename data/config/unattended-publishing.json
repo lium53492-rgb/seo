@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "timezone": "Asia/Shanghai",
   "dailyPageTarget": 1,
+  "allowZeroPageOutcome": true,
   "primarySchedule": "09:15",
   "pdfFallbackSchedule": "18:30",
   "finalRecoverySchedule": "21:30",
@@ -17,6 +18,22 @@
     "max": 12
   },
   "minimumFallbackIntents": 7,
+  "noPublish": {
+    "schemaVersion": 1,
+    "minimumReasonChars": 20,
+    "maximumReasonChars": 600,
+    "reasonCodes": [
+      "growth_unavailable",
+      "attribution_blocked",
+      "trends_unavailable",
+      "trends_below_threshold",
+      "research_insufficient",
+      "content_quality_failed",
+      "visual_quality_failed",
+      "editorial_rejected",
+      "external_dependency_failed"
+    ]
+  },
   "releaseVerification": {
     "origin": "https://lorelens.novelai.ai",
     "expectedOriginRepository": "lium53492-rgb/seo",
@@ -38,6 +55,10 @@
     "origin_main_contains_release_commit",
     "production_serves_exact_git_revision",
     "live_page_contract_verified"
+  ],
+  "terminalNoPublishSuccess": [
+    "zero_pages_published_for_shanghai_day",
+    "no_publish_receipt_recorded_for_shanghai_day"
   ],
   "hardStops": [
     "unrelated_user_work_would_be_overwritten",

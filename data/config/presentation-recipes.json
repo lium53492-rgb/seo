@@ -11,6 +11,8 @@
       "paletteId": "film-stock-red",
       "typographyId": "condensed-slate-mono",
       "motifId": "notice-move-hook-clapper",
+      "sectionMarkerStyle": "take",
+      "sectionFlow": "alternating_script",
       "domainConcepts": ["slate", "take", "cue", "beat", "retake"],
       "signature": "A three-beat clapper that marks the exact move a reader can rehearse.",
       "rejectedDefaults": ["rounded step cards", "pastel glass gradients", "floating mascot"],
@@ -28,12 +30,14 @@
       "paletteId": "midnight-amber",
       "typographyId": "technical-grotesk-mono",
       "motifId": "illuminated-route-switch",
+      "sectionMarkerStyle": "route",
+      "sectionFlow": "decision_grid",
       "domainConcepts": ["route", "switch", "signal", "threshold", "destination"],
       "signature": "A route switch that exposes the consequence of each choice.",
       "rejectedDefaults": ["feature card grid", "soft purple gradient", "generic comparison table"],
       "companion": "none",
       "gallery": "none",
-      "reusePolicy": { "kind": "cooldown", "pages": 4 }
+      "reusePolicy": { "kind": "cooldown", "pages": 6 }
     },
     {
       "id": "product-field-manual-v1",
@@ -45,12 +49,14 @@
       "paletteId": "blueprint-paper",
       "typographyId": "humanist-manual-serif",
       "motifId": "numbered-product-cutaway",
+      "sectionMarkerStyle": "figure",
+      "sectionFlow": "annotated_manual",
       "domainConcepts": ["manual", "cutaway", "annotation", "specification", "sequence"],
       "signature": "An annotated cutaway that connects one approved fact to one reader action.",
       "rejectedDefaults": ["marketing hero", "bento features", "decorative dashboard chrome"],
       "companion": "none",
       "gallery": "none",
-      "reusePolicy": { "kind": "cooldown", "pages": 4 }
+      "reusePolicy": { "kind": "cooldown", "pages": 6 }
     },
     {
       "id": "editorial-argument-v1",
@@ -62,12 +68,14 @@
       "paletteId": "newsprint-burgundy",
       "typographyId": "display-serif-editorial",
       "motifId": "pull-quote-counterpoint",
+      "sectionMarkerStyle": "argument",
+      "sectionFlow": "editorial_column",
       "domainConcepts": ["deck", "column", "marginalia", "counterpoint", "closing argument"],
       "signature": "A counterpoint margin that shows what the page deliberately does not claim.",
       "rejectedDefaults": ["centered SaaS hero", "icon cards", "step-by-step checklist"],
       "companion": "none",
       "gallery": "none",
-      "reusePolicy": { "kind": "cooldown", "pages": 4 }
+      "reusePolicy": { "kind": "cooldown", "pages": 6 }
     },
     {
       "id": "specimen-catalog-v1",
@@ -79,6 +87,8 @@
       "paletteId": "museum-cobalt",
       "typographyId": "catalog-serif-label",
       "motifId": "evidence-specimen-tag",
+      "sectionMarkerStyle": "accession",
+      "sectionFlow": "catalog_shelves",
       "domainConcepts": ["specimen", "accession", "label", "shelf", "field note"],
       "signature": "An accession tag that tells the reader why each item belongs in the set.",
       "rejectedDefaults": ["uniform blog cards", "infinite carousel", "stock illustration gallery"],
@@ -96,12 +106,14 @@
       "paletteId": "deep-space-cyan",
       "typographyId": "mission-display-mono",
       "motifId": "checkpoint-telemetry-strip",
+      "sectionMarkerStyle": "checkpoint",
+      "sectionFlow": "telemetry_timeline",
       "domainConcepts": ["mission", "telemetry", "orbit", "checkpoint", "debrief"],
       "signature": "A telemetry strip that turns each content layer into a visible mission checkpoint.",
       "rejectedDefaults": ["neon card soup", "generic starfield", "floating gradient blobs"],
       "companion": "none",
       "gallery": "none",
-      "reusePolicy": { "kind": "cooldown", "pages": 5 }
+      "reusePolicy": { "kind": "cooldown", "pages": 6 }
     },
     {
       "id": "playful-story-workshop-v1",
@@ -113,6 +125,8 @@
       "paletteId": "craft-paper-orange",
       "typographyId": "rounded-workshop-serif",
       "motifId": "buildable-scene-parts",
+      "sectionMarkerStyle": "part",
+      "sectionFlow": "workbench_parts",
       "domainConcepts": ["workbench", "parts", "draft", "sticker", "test play"],
       "signature": "A set of buildable scene parts that can be rearranged into one original example.",
       "rejectedDefaults": ["baby-blue onboarding", "identical step cards", "mascot as decoration only"],

@@ -32,6 +32,27 @@ function reviewWith(checks) {
     notes: "The independent editorial pass verified every required contract.",
     draftDigest: digest,
     checks,
+    visualAudit: {
+      schemaVersion: 1,
+      draftDigest: digest,
+      inspectedAt: "2099-01-01T11:30:00.000Z",
+      previewPath: "/workbench/preview/distinct-roleplay-guide",
+      passed: true,
+      viewports: seoPolicy.visualAudit.viewports.map((viewport) => ({
+        id: viewport.id,
+        width: viewport.width,
+        height: viewport.height,
+        screenshotPath: `output/previews/2099-01-01/distinct-roleplay-guide-${viewport.id}.png`,
+        screenshotSha256: "b".repeat(64),
+        h1Lines: 3,
+        h1ViewportRatio: 0.3,
+        ctaInFirstViewport: true,
+        horizontalOverflowPx: 0,
+        rawMarkdownVisible: false,
+        signatureVisible: true,
+        maxUniformNumberedRun: 2,
+      })),
+    },
   };
 }
 
@@ -46,6 +67,8 @@ function validate(review, draftSchemaVersion) {
     requiredDraftSchemaVersion: architecturePolicy.requiredDraftSchemaVersion,
     baseRequiredChecks: seoPolicy.requiredReviewChecks,
     architectureRequiredChecks: architecturePolicy.requiredReviewChecks,
+    reportDate: "2099-01-01",
+    visualAuditPolicy: seoPolicy.visualAudit,
   });
 }
 
@@ -98,6 +121,28 @@ test("architecture checks use the publisher's passed and detail contract", () =>
   );
 });
 
+test("new reviews need a digest-bound desktop and mobile visual receipt", () => {
+  const approved = reviewWith([...baseChecks, ...architectureChecks]);
+  assert.equal(validate({ ...approved, visualAudit: undefined }, architecturePolicy.requiredDraftSchemaVersion), false);
+  assert.equal(validate({ ...approved, visualAudit: { ...approved.visualAudit, draftDigest: "c".repeat(64) } }, architecturePolicy.requiredDraftSchemaVersion), false);
+  assert.equal(validate({
+    ...approved,
+    visualAudit: {
+      ...approved.visualAudit,
+      viewports: approved.visualAudit.viewports.map((viewport) =>
+        viewport.id === "mobile" ? { ...viewport, ctaInFirstViewport: false } : viewport),
+    },
+  }, architecturePolicy.requiredDraftSchemaVersion), false);
+  assert.equal(validate({
+    ...approved,
+    visualAudit: {
+      ...approved.visualAudit,
+      viewports: approved.visualAudit.viewports.map((viewport) =>
+        viewport.id === "desktop" ? { ...viewport, h1Lines: 5 } : viewport),
+    },
+  }, architecturePolicy.requiredDraftSchemaVersion), false);
+});
+
 test("review readiness fails closed without publisher bindings", () => {
   const approved = reviewWith([...baseChecks, ...architectureChecks]);
   const shared = {
@@ -110,6 +155,8 @@ test("review readiness fails closed without publisher bindings", () => {
     reportId: "seo-2099-01-01",
     expectedSlug: "distinct-roleplay-guide",
     expectedDigest: digest,
+    reportDate: "2099-01-01",
+    visualAuditPolicy: seoPolicy.visualAudit,
   };
   assert.equal(validatePipelineReviewContract({ ...shared, reportId: null }), false);
   assert.equal(validatePipelineReviewContract({ ...shared, expectedSlug: null }), false);

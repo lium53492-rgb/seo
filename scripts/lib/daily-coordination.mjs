@@ -15,7 +15,7 @@ import {
 import { hostname } from "node:os";
 import { dirname, relative, resolve, sep } from "node:path";
 import unattendedPolicy from "../../data/config/unattended-publishing.json" with { type: "json" };
-import { readDailyRunState, shanghaiDate } from "./daily-run-state.mjs";
+import { isDailyNoPublishReceipt, readDailyRunState, shanghaiDate } from "./daily-run-state.mjs";
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const OWNER_PATTERN = /^[a-f0-9]{16}$/;
@@ -334,6 +334,7 @@ export function inspectDailyCarryover({
 
   const releases = [];
   const occupied = [];
+  const noPublishOutcomes = [];
   for (const candidateDate of readdirSync(dailyRoot).filter((name) => DATE_PATTERN.test(name) && name <= date).sort()) {
     const candidateRoot = coordinationDirectory(coordinationRoot, candidateDate);
     assertSafePath(dailyRoot, candidateRoot);
@@ -343,6 +344,14 @@ export function inspectDailyCarryover({
     }
     const lease = readLease(coordinationRoot, candidateDate);
     if (!lease) continue;
+    if (lease.status === "completed_no_publish") {
+      if (!isDailyNoPublishReceipt(lease.noPublishReceipt, candidateDate)) {
+        throw new Error(`Daily coordination found an invalid no-publish receipt for ${candidateDate}`);
+      }
+      if (candidateDate === date) {
+        noPublishOutcomes.push({ releaseDate: candidateDate, lease, productionDate: null });
+      }
+    }
     const productionDate = lease.liveVerification?.productionDate || (
       Number.isFinite(Date.parse(lease.liveVerification?.verifiedAt || ""))
         ? shanghaiDate(lease.liveVerification.verifiedAt)
@@ -375,9 +384,11 @@ export function inspectDailyCarryover({
       });
     }
   }
-  if (releases.length > 1 || occupied.length > 1 || (releases.length && occupied.length)) {
+  if (releases.length > 1 || occupied.length > 1 || noPublishOutcomes.length > 1 ||
+    (releases.length && occupied.length) || (noPublishOutcomes.length && (releases.length || occupied.length))) {
     throw new Error("Daily coordination found conflicting unresolved or production-day releases");
   }
+  if (noPublishOutcomes.length === 1) return { state: "no_publish", ...noPublishOutcomes[0] };
   if (occupied.length === 1) return { state: "occupied", ...occupied[0] };
   if (releases.length === 1) {
     const release = releases[0];
@@ -581,6 +592,9 @@ export function acquireDailyLease({
     throw new Error("Lease timing configuration is invalid");
   }
   const carryover = inspectDailyCarryover({ coordinationRoot, date, owner, now, staleAfterMinutes });
+  if (carryover.state === "no_publish") {
+    return { outcome: "no_publish", lease: carryover.lease, carryover };
+  }
   if (carryover.state === "occupied") {
     return { outcome: "completed", lease: carryover.lease, carryover };
   }
@@ -591,6 +605,12 @@ export function acquireDailyLease({
   return withCoordinationLock({ coordinationRoot, date, owner, now }, (assertLock) => {
     const timestamp = now.toISOString();
     const current = readLease(coordinationRoot, date);
+    if (current?.status === "completed_no_publish") {
+      if (!isDailyNoPublishReceipt(current.noPublishReceipt, date)) {
+        throw new Error("The persisted no-publish receipt is invalid");
+      }
+      return { outcome: "no_publish", lease: current };
+    }
     if (current?.status === "completed") return { outcome: "completed", lease: current };
     if (current?.owner === owner) {
       const lease = {
@@ -1031,6 +1051,125 @@ function checkedFile(path, trustedRoot = dirname(path)) {
   return readFileSync(path);
 }
 
+function noPublishEvidence(worktreeRoot, date, dailyState) {
+  const candidatePaths = [
+    `data/growth/${date}.json`,
+    `data/research/${date}.json`,
+    `data/reports/${date}.json`,
+    `data/reviews/${date}.json`,
+  ];
+  const documents = new Map();
+  const artifactDigests = [];
+  for (const relativePath of candidatePaths) {
+    const absolutePath = resolve(worktreeRoot, relativePath);
+    if (!existsSync(absolutePath)) continue;
+    const content = checkedFile(absolutePath, worktreeRoot);
+    let document;
+    try {
+      document = JSON.parse(content.toString("utf8"));
+    } catch (error) {
+      throw new Error(`No-publish evidence is not valid JSON: ${relativePath}`, { cause: error });
+    }
+    if (relativePath.includes("/growth/") &&
+      (!Number.isFinite(Date.parse(document?.generatedAt || "")) || shanghaiDate(document.generatedAt) !== date)) {
+      throw new Error("No-publish growth evidence must be generated on the same Shanghai day");
+    }
+    if ((relativePath.includes("/research/") || relativePath.includes("/reports/")) && document?.date !== date) {
+      throw new Error(`No-publish evidence date does not match: ${relativePath}`);
+    }
+    if (relativePath.includes("/reviews/") &&
+      (!Number.isFinite(Date.parse(document?.reviewedAt || "")) || shanghaiDate(document.reviewedAt) !== date)) {
+      throw new Error("No-publish review evidence must belong to the same Shanghai day");
+    }
+    documents.set(relativePath, document);
+    artifactDigests.push({ path: relativePath, sha256: sha256(content), bytes: content.byteLength });
+  }
+
+  const growthPath = `data/growth/${date}.json`;
+  const growth = documents.get(growthPath);
+  if (!growth) throw new Error("No-publish completion requires the same-day growth snapshot");
+  const growthSummary = growth.summary;
+  for (const field of ["publishedPages", "collectedPages", "unavailablePages"]) {
+    if (!Number.isSafeInteger(growthSummary?.[field]) || growthSummary[field] < 0) {
+      throw new Error(`No-publish growth evidence has an invalid ${field}`);
+    }
+  }
+  if (typeof growthSummary.attributionJoinReady !== "boolean") {
+    throw new Error("No-publish growth evidence needs attributionJoinReady");
+  }
+  if (!Array.isArray(growth.entries) || growth.entries.length !== growthSummary.publishedPages) {
+    throw new Error("No-publish growth evidence must cover every published page");
+  }
+  const collectedPages = growth.entries.filter((entry) => entry?.state === "collected").length;
+  const unavailablePages = growth.entries.filter((entry) => entry?.state === "unavailable").length;
+  if (collectedPages !== growthSummary.collectedPages || unavailablePages !== growthSummary.unavailablePages ||
+    collectedPages + unavailablePages !== growth.entries.length) {
+    throw new Error("No-publish growth evidence summary is inconsistent with its page entries");
+  }
+
+  const research = documents.get(`data/research/${date}.json`);
+  const report = documents.get(`data/reports/${date}.json`);
+  const review = documents.get(`data/reviews/${date}.json`);
+  const trendSignals = Array.isArray(report?.trendSignals)
+    ? report.trendSignals
+    : Array.isArray(research?.trendSignals) ? research.trendSignals : [];
+  const observedTrends = trendSignals.filter((signal) => signal?.source === "google_trends" &&
+    signal?.state === "observed");
+  const qualifyingTrends = observedTrends.filter((signal) => {
+    let sourceUrl;
+    try {
+      sourceUrl = new URL(signal.sourceUrl);
+    } catch {
+      return false;
+    }
+    return sourceUrl.protocol === "https:" && sourceUrl.hostname === "trends.google.com" &&
+      sourceUrl.pathname.startsWith("/trends/") &&
+      Number.isFinite(Date.parse(signal.collectedAt || "")) && shanghaiDate(signal.collectedAt) === date &&
+      (signal.direction === "rising" || (Number.isInteger(signal.relativeInterest) && signal.relativeInterest >= 50));
+  });
+
+  return {
+    artifactDigests,
+    evidenceSummary: {
+      dailyState: dailyState.state,
+      growth: {
+        publishedPages: growthSummary.publishedPages,
+        collectedPages: growthSummary.collectedPages,
+        unavailablePages: growthSummary.unavailablePages,
+        attributionJoinReady: growthSummary.attributionJoinReady,
+      },
+      trends: {
+        recorded: trendSignals.length,
+        observed: observedTrends.length,
+        qualifying: qualifyingTrends.length,
+      },
+      publicationStatus: typeof report?.publication?.status === "string"
+        ? report.publication.status
+        : "absent",
+      reviewDecision: typeof review?.decision === "string" ? review.decision : "absent",
+    },
+  };
+}
+
+function assertNoPublishReasonEvidence(reasonCode, summary) {
+  if (reasonCode === "growth_unavailable" && summary.growth.unavailablePages < 1) {
+    throw new Error("growth_unavailable requires at least one unavailable portfolio page");
+  }
+  if (reasonCode === "attribution_blocked" && summary.growth.attributionJoinReady !== false) {
+    throw new Error("attribution_blocked requires attributionJoinReady=false");
+  }
+  if (reasonCode === "trends_unavailable" && summary.trends.observed !== 0) {
+    throw new Error("trends_unavailable requires zero observed Google Trends signals");
+  }
+  if (reasonCode === "trends_below_threshold" &&
+    (summary.trends.observed < 1 || summary.trends.qualifying !== 0)) {
+    throw new Error("trends_below_threshold requires observed but non-qualifying Google Trends signals");
+  }
+  if (reasonCode === "editorial_rejected" && summary.reviewDecision !== "rejected") {
+    throw new Error("editorial_rejected requires a same-day rejected review artifact");
+  }
+}
+
 function feedbackConsumptions(worktreeRoot, date) {
   const reportPath = resolve(worktreeRoot, `data/reports/${date}.json`);
   const inboxDirectory = resolve(worktreeRoot, "data/seo-feedback/inbox");
@@ -1232,6 +1371,79 @@ export function restoreDailyCheckpoint({ coordinationRoot, worktreeRoot, date, o
       lease,
     );
     return { outcome: "restored", restored, state: manifest.state, feedbackPaths };
+  });
+}
+
+export function completeDailyNoPublish({
+  coordinationRoot,
+  worktreeRoot,
+  date,
+  owner,
+  reasonCode,
+  reason,
+  now = new Date(),
+}) {
+  assertDate(date);
+  assertOwner(owner);
+  const noPublishPolicy = unattendedPolicy.noPublish;
+  const normalizedReason = typeof reason === "string" ? reason.trim() : "";
+  if (unattendedPolicy.allowZeroPageOutcome !== true || noPublishPolicy?.schemaVersion !== 1) {
+    throw new Error("The unattended policy does not allow a zero-page outcome");
+  }
+  if (!noPublishPolicy.reasonCodes.includes(reasonCode)) {
+    throw new Error(`Unknown no-publish reason code: ${reasonCode || "<empty>"}`);
+  }
+  if (normalizedReason.length < noPublishPolicy.minimumReasonChars ||
+    normalizedReason.length > noPublishPolicy.maximumReasonChars) {
+    throw new Error(
+      `No-publish reason must contain ${noPublishPolicy.minimumReasonChars}-${noPublishPolicy.maximumReasonChars} characters`,
+    );
+  }
+  assertPublishingWindow(date, now);
+
+  return withCoordinationLock({ coordinationRoot, date, owner, now }, (assertLock) => {
+    const lease = assertDailyLease({ coordinationRoot, date, owner });
+    if (lease.releasePreparing || lease.releaseInFlight || lease.publicationReservation ||
+      pinnedDailyReleaseRevision(coordinationRoot, date) || readyReleaseCheckpoint(coordinationRoot, date, lease)) {
+      throw new Error("No-publish completion cannot replace a prepared, pinned, reserved, or checkpoint-ready release");
+    }
+    const dailyState = readDailyRunState({ root: worktreeRoot, date });
+    if (dailyState.publishedSlug) {
+      throw new Error("No-publish completion cannot coexist with a page published on the Shanghai day");
+    }
+    const evidence = noPublishEvidence(worktreeRoot, date, dailyState);
+    assertNoPublishReasonEvidence(reasonCode, evidence.evidenceSummary);
+    const receipt = {
+      schemaVersion: noPublishPolicy.schemaVersion,
+      date,
+      outcome: "no_publish",
+      reasonCode,
+      reason: normalizedReason,
+      recordedAt: now.toISOString(),
+      ...evidence,
+    };
+    if (!isDailyNoPublishReceipt(receipt, date)) {
+      throw new Error("Generated no-publish receipt does not satisfy the durable receipt contract");
+    }
+    const terminalState = readDailyRunState({ root: worktreeRoot, date, noPublishReceipt: receipt });
+    if (terminalState.state !== "no_publish_complete") {
+      throw new Error(
+        `No-publish completion conflicts with the daily chain: ${terminalState.conflicts.join(" ")}`,
+      );
+    }
+    const completed = {
+      ...lease,
+      status: "completed_no_publish",
+      completedAt: now.toISOString(),
+      heartbeatAt: now.toISOString(),
+      noPublishReceipt: receipt,
+    };
+    const current = assertDailyLease({ coordinationRoot, date, owner });
+    if (current.leaseId !== lease.leaseId || current.generation !== lease.generation) {
+      throw new Error("Daily publishing lease generation changed before no-publish completion");
+    }
+    assertLock();
+    return appendLeaseState(coordinationRoot, date, completed, current);
   });
 }
 

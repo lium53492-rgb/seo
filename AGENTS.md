@@ -76,9 +76,12 @@ Before a new page or update:
   skin. All reader-visible template copy belongs to the reviewed draft, and
   gallery/companion behavior is explicit per recipe with no global default.
 - Structured `steps`, `checklist`, `examples`, and `comparison` sections need
-  at least two semantic Markdown blocks. Do not label one prose paragraph as a
-  structured format. Fact IDs must be unique, and every visible architecture
-  field is subject to product-claim, word-count, and novelty gates.
+  explicit Markdown list markers and at least two semantic blocks. The
+  production subset is paragraphs, marked lists, and paired `**strong**`
+  spans; headings, links, code, raw HTML, italics, and unmatched markers are
+  publication errors. Do not relabel prose as a list. Fact IDs must be unique,
+  and every visible architecture field is subject to product-claim,
+  word-count, and novelty gates.
 - New candidates must use policy version 4. Each candidate must cite at least
   two directly supporting evidence records from two independent domains and
   provide the required decision-evidence signals and rationales. The builder,
@@ -89,9 +92,24 @@ Before a new page or update:
   interest of at least 50 in its declared geography and comparison period.
   Empty, unavailable, stale, falling-low, or model-only trend claims cannot
   authorize publication.
+- From the date configured in `seo-policy.json`, a selected `create_page`
+  candidate also needs a same-day, page-specific, independent
+  `breakout_page` evidence record. Its numeric signal, unit, basis, detail,
+  source URL, and exact supported keyword must survive into the report and be
+  revalidated by the publisher.
 - The English draft must be review-required, 600-1,000 words, have at least
   four sections and three FAQs, use approved facts only, contain a real CTA,
   and pass the builder's source, IP, duplicate, slug, and link gates.
+- A new-page CTA must name the page-specific outcome and pass an independent
+  similarity gate. Generic labels such as `Learn more`, `Get started`, or
+  generic `Explore`/`Try NovelAI` copy cannot authorize publication.
+- `specimen-catalog-v1`, `museum-cobalt`, and every recipe/palette listed in
+  the policy retirement arrays are hard-blocked even when history is missing.
+- From the configured visual-audit date, editorial approval needs digest-bound
+  1440x1000 and 390x844 screenshot receipts. The publisher verifies the files
+  and hashes, H1 line/viewport limits, first-screen CTA, overflow, raw Markdown,
+  signature visibility, and repeated-numbered-block limit both before and
+  inside the publication guard.
 - Keep the H1, main answer, sections, FAQ, CTA, and canonical metadata in the
   initial rendered HTML. Verify the current template rather than assuming an
   old workflow still matches it.
@@ -109,6 +127,10 @@ Before a new page or update:
 - A scheduled run may legitimately publish zero pages. Research and record the
   decision, but do not create a page merely to satisfy a daily count when
   Trends, measurement readiness, reader value, or rendered visual quality fails.
+  After the same-day growth snapshot exists, close that decision with
+  `daily:coord -- no-publish YYYY-MM-DD REASON_CODE "Specific observed reason"`.
+  A valid receipt is terminal for that day; recovery must not restart the
+  content chain or treat it as a published-page/deployment receipt.
 - For scheduled production, follow `docs/seo/unattended-daily-publishing.md`.
   Settle any previous-day release in flight, acquire the shared daily lease,
   restore its latest checkpoint, save after

@@ -22,7 +22,7 @@ Do not create near-duplicate keyword variants. A keyword is only a discovery han
 - Give every evidence record a stable ID. For policy version 4, each candidate must reference at least two directly supporting records from two independent domains and explain every selected product, trial, revenue, specificity, IP, and cannibalization signal.
 - Never copy model-supplied hard-gate scores into a report. The builder derives them from the versioned signal policy; demand and difficulty remain explicitly labelled research proxies with rationales.
 - Prefer official pages, credible editorial sources, public communities, and observable first-party Search Console data. Keep Search Console metrics separate from proxy demand and difficulty scores.
-- Treat trend or hot-topic signals as leads, not facts. They need a source, freshness date, product-fit check, and intellectual-property risk check before they can influence a brief. An unattended `create_page` draft additionally needs a same-day observed Google Trends signal for its exact candidate; unavailable or empty Trends evidence means no publication.
+- Treat trend or hot-topic signals as leads, not facts. They need a source, freshness date, product-fit check, and intellectual-property risk check before they can influence a brief. An unattended `create_page` draft additionally needs a same-day observed Google Trends signal for its exact candidate; unavailable or empty Trends evidence means no publication. From the configured enforcement date it also needs a page-specific independent `breakout_page` record with a numeric signal, unit, basis, detail, same-day timestamp, and exact keyword support.
 - Monitor Google policy or ranking-system changes through official Google Search Status Dashboard and Search Central documentation. Do not treat screenshots or third-party summaries as authoritative policy.
 
 ## 3. Draft with AI, finish with editorial judgment
@@ -80,8 +80,24 @@ and document intent/answer/structure/FAQ/visual differences from the nearest
 published pages. Select a registered presentation recipe only after the answer
 shape is fixed. A page pattern is not a presentation recipe.
 Record a stable `painPointId`, use at least three section roles and two FAQ
-jobs, and give structured formats at least two semantic Markdown blocks. The
+jobs, and give structured formats explicit list markers plus at least two
+semantic blocks. Only paragraphs, marked lists, and paired `**strong**` spans
+are supported; raw HTML, headings, links, code, italics, and unmatched markers
+must fail before review. The
 published schema-3 payload must retain a recomputable served-content digest.
+
+The primary CTA must name the page-specific outcome, pass its own similarity
+gate, and avoid generic `Learn more`, `Get started`, `Explore`, or `Try` copy.
+Pain points rotate across seven recent pages; presentation systems and reusable
+recipes rotate across six. Policy-retired recipes and palettes are forbidden
+without relying on publication history.
+
+For reports on or after the configured visual-audit date, `rendered-preview`
+requires the production renderer at 1440x1000 and 390x844. Store screenshot
+paths and SHA-256 digests with measured H1 lines/viewport ratios, first-screen
+CTA, horizontal overflow, raw-Markdown visibility, signature visibility, and
+the longest uniform numbered run. Publisher validation must verify the files
+before entering and again inside the guarded write.
 
 When a draft includes a contextual internal link, the published template must render it as a standard crawlable `<a href="...">` with a descriptive anchor in the initial HTML. Storing `internalLinks` in a JSON artifact without rendering them does not satisfy this rule.
 

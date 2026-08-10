@@ -14,6 +14,7 @@ import {
 import { visiblePageText } from "./content-similarity.mjs";
 import { markdownSemanticBlockCount } from "./markdown-semantics.mjs";
 import { servedContentDigest } from "./served-content.mjs";
+import { validateVisualAuditContract } from "./pipeline-contract.mjs";
 import type { PublishedSeoPage } from "./types";
 
 const pagesDirectory = resolve(process.cwd(), "data/pages");
@@ -43,9 +44,22 @@ function hasValidEditorialReview(page: Partial<PublishedSeoPage>) {
   const requiredChecks = page.schemaVersion === seoPolicy.contentArchitecture.publishedPageSchemaVersion
     ? [...seoPolicy.requiredReviewChecks, ...architecturePolicy.requiredReviewChecks]
     : seoPolicy.requiredReviewChecks;
-  return requiredChecks.every((checkId) => {
+  const checksValid = requiredChecks.every((checkId) => {
     const check = review.checks.find((item) => item.id === checkId);
     return check?.passed === true && isNonEmptyString(check.detail) && check.detail.trim().length >= 10;
+  });
+  return checksValid && validateVisualAuditContract({
+    review,
+    reportId: page.generatedFromReport,
+    reportDate: String(page.generatedFromReport || "").match(/\d{4}-\d{2}-\d{2}/)?.[0],
+    expectedSlug: page.slug,
+    expectedDigest: page.draftDigest,
+    reportGeneratedAt: "1970-01-01T00:00:00.000Z",
+    draftSchemaVersion: page.schemaVersion === seoPolicy.contentArchitecture.publishedPageSchemaVersion
+      ? architecturePolicy.requiredDraftSchemaVersion
+      : null,
+    requiredDraftSchemaVersion: architecturePolicy.requiredDraftSchemaVersion,
+    visualAuditPolicy: seoPolicy.visualAudit,
   });
 }
 

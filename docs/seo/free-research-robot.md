@@ -66,7 +66,7 @@ The research input uses `policyVersion: 4`, content-strategy schema 2, and inclu
   readable only as migration input and are projected to schema v2 before a
   report is written.
 
-The English draft remains 600-1,000 words, has at least four sections and three FAQs, records its generation model and timestamp, uses only approved fact IDs, contains one real CTA, avoids prohibited claims and third-party IP, and links a relevant published first-party page when one exists. New drafts use schema 2 and include the complete architecture, mapped section/FAQ layers, signature module, resolved presentation contract, and page-specific surface copy. The builder owns the final route slug and binds both the draft and content strategy to the reviewed digest.
+The English draft remains 600-1,000 words, has at least four sections and three FAQs, records its generation model and timestamp, uses only approved fact IDs, contains one page-specific CTA, avoids prohibited claims and third-party IP, and links a relevant published first-party page when one exists. New drafts use schema 2 and include the complete architecture, mapped section/FAQ layers, signature module, resolved presentation contract, and page-specific surface copy. Structured formats use explicit list markers; the allowed Markdown subset is paragraphs, marked lists, and paired strong spans. The builder owns the final route slug and binds both the draft and content strategy to the reviewed digest.
 
 A `consolidate` decision is evidence-gated and does not itself create a
 redirect. It must name distinct published `sourceSlug` and `targetSlug` values,
@@ -100,12 +100,19 @@ artifact with an identified reviewer, timestamp, substantive notes, and passed
 checks for search intent, product truth, conversion path, source accuracy,
 content distinctness, presentation distinctness, the signature module, and the
 rendered preview.
+A post-enforcement review also contains a visual-audit receipt bound to the
+draft digest. It records 1440x1000 and 390x844 screenshot paths and hashes,
+measured H1 geometry, first-screen CTA, overflow, raw-Markdown visibility,
+signature visibility, and repeated-numbered-block limits. Reading the draft or
+recipe metadata is not visual inspection.
 A Codex review must identify itself as `codex_editor`; it must never be labelled
 human.
 
-The publisher enforces one page per report/day, reruns the novelty and recipe
+The publisher enforces one page per report/day, revalidates Google Trends and
+same-day breakout-page evidence, reruns CTA/content novelty and recipe
 gates against the latest page corpus, then obtains the shared publication guard
-and re-reads the corpus before writing. This closes the two-publisher race. It
+and re-reads the report, review, screenshot files, and corpus before writing.
+This closes both approval-tampering and two-publisher races. It
 writes schema-version 3 page data, attaches the approval record, and updates the
 report to `published`. Existing schema-version 1/2 pages remain readable through
 the isolated legacy path; all new pages use version 3. Publishing is rejected at

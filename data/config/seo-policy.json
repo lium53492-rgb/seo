@@ -4,6 +4,49 @@
   "retiredPageSlugs": [
     "ai-roleplay-scene-recovery"
   ],
+  "retiredRecipeIds": [
+    "specimen-catalog-v1"
+  ],
+  "retiredPaletteIds": [
+    "museum-cobalt"
+  ],
+  "breakoutEvidence": {
+    "schemaVersion": 1,
+    "enforcedFromReportDate": "2026-08-11",
+    "requiredKind": "breakout_page",
+    "allowedSignalTypes": [
+      "search_prominence",
+      "engagement",
+      "publishing_velocity",
+      "trend_alignment"
+    ],
+    "minDetailChars": 30,
+    "minBasisChars": 20
+  },
+  "visualAudit": {
+    "schemaVersion": 1,
+    "enforcedFromReportDate": "2026-08-11",
+    "previewPathPrefix": "/workbench/preview/",
+    "screenshotDirectory": "output/previews",
+    "viewports": [
+      {
+        "id": "desktop",
+        "width": 1440,
+        "height": 1000,
+        "maxH1Lines": 4,
+        "maxH1ViewportRatio": 0.45
+      },
+      {
+        "id": "mobile",
+        "width": 390,
+        "height": 844,
+        "maxH1Lines": 5,
+        "maxH1ViewportRatio": 0.35
+      }
+    ],
+    "maxHorizontalOverflowPx": 1,
+    "maxUniformNumberedRun": 3
+  },
   "feedbackLoop": {
     "blockOnOrphanCallbacks": true,
     "reportingWindowDays": 28,

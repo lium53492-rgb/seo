@@ -427,6 +427,36 @@ test("title, H1, headings, FAQ questions, and surface labels have independent ga
   ]) assert.ok(novelty.violations.some((item) => item.code === code), code);
 });
 
+test("enhanced novelty independently blocks reused CTA copy and near-identical section flow", () => {
+  const input = fixture();
+  const previous = {
+    ...structuredClone(input.draft),
+    schemaVersion: 3,
+    slug: "previous-cta-and-flow",
+    path: "/previous-cta-and-flow",
+    status: "published",
+    publishedAt: "2098-12-31T00:00:00.000Z",
+    updatedAt: "2098-12-31T00:00:00.000Z",
+  };
+  input.draft.architecture.differentiation.against = [{
+    slug: previous.slug,
+    intentDelta: "This page addresses a different reader decision after the supplied context has already changed.",
+    answerDelta: "Its answer focuses on a separate outcome and does not repeat the earlier construction advice.",
+    structureDelta: "The reviewed sequence will need a materially different set and order of section jobs.",
+    faqDelta: "The questions target different obstacles at a later decision point in the experience.",
+    visualDelta: "The visual receipt must prove a different registered layout, motif, palette, and hierarchy.",
+  }];
+  const novelty = analyzeContentNovelty({
+    draft: input.draft,
+    pages: [previous],
+    architecturePolicy,
+    presentationCatalog,
+    enforceEnhancedNovelty: true,
+  });
+  assert.ok(novelty.violations.some((item) => item.code === "primary-cta-similarity"));
+  assert.ok(novelty.violations.some((item) => item.code === "structure-sequence-similarity"));
+});
+
 test("recipe cooldown uses its full six-page window and updatedAt ordering", () => {
   const input = fixture();
   const playful = presentationCatalog.recipes.find((recipe) => recipe.id === "playful-story-workshop-v1");

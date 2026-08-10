@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
 import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -210,6 +211,18 @@ test("report generation cannot publish before a separate approval artifact", asy
         source: `Source ${index + 1}`,
         collectedAt: "2099-01-01T09:00:00+08:00",
         supports,
+        ...(index === 2
+          ? {
+              kind: "breakout_page",
+              signal: {
+                type: "search_prominence",
+                value: 3,
+                unit: "organic_result_position",
+                basis: "Observed in the same-day public search-result sample for the selected query.",
+                detail: "The independent page appeared among the first three organic results for the selected keyword during collection.",
+              },
+            }
+          : {}),
       })),
       performance: [],
       portfolioDecision: {
@@ -264,7 +277,7 @@ test("report generation cannot publish before a separate approval artifact", asy
         metaDescription: "Learn how to enter an original AI roleplay story, choose an available character, and move from a clear opening scene toward a measured trial step.",
         h1: "Play an AI Roleplay Story",
         heroMarkdown: "Start with an original story already in motion, choose an available role, and decide whether this story-led format matches the way you want to participate.",
-        primaryCta: "Explore stories on NovelAI",
+        primaryCta: "Compare starting routes on NovelAI",
         sections: [
           { id: "separate-the-jobs", role: "direct_answer", format: "prose", heading: "Separate the two starting jobs", bodyMarkdown: sectionBodies[0] },
           { id: "compare-the-routes", role: "comparison", format: "comparison", heading: "Compare what each route asks you to supply", bodyMarkdown: sectionBodies[1] },
@@ -458,6 +471,39 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.notEqual(weakSelectedTrendBuild.status, 0);
     assert.match(weakSelectedTrendBuild.stderr, /direction=rising or relativeInterest>=50/);
 
+    const missingBreakoutEvidenceInput = structuredClone(input);
+    missingBreakoutEvidenceInput.evidence = missingBreakoutEvidenceInput.evidence.map((item) => {
+      const { kind, signal, ...ordinaryEvidence } = item;
+      return ordinaryEvidence;
+    });
+    await writeFile(inputPath, `${JSON.stringify(missingBreakoutEvidenceInput, null, 2)}\n`);
+    const missingBreakoutEvidenceBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(missingBreakoutEvidenceBuild.status, 0);
+    assert.match(missingBreakoutEvidenceBuild.stderr, /Create-page breakout evidence gate failed/);
+
+    const staleBreakoutEvidenceInput = structuredClone(input);
+    staleBreakoutEvidenceInput.evidence[2].collectedAt = "2098-12-31T09:00:00+08:00";
+    await writeFile(inputPath, `${JSON.stringify(staleBreakoutEvidenceInput, null, 2)}\n`);
+    const staleBreakoutEvidenceBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(staleBreakoutEvidenceBuild.status, 0);
+    assert.match(staleBreakoutEvidenceBuild.stderr, /must be collected on the report's Shanghai date/);
+
+    const unsupportedBreakoutEvidenceInput = structuredClone(input);
+    unsupportedBreakoutEvidenceInput.evidence[2].supports = keywords.slice(1);
+    await writeFile(inputPath, `${JSON.stringify(unsupportedBreakoutEvidenceInput, null, 2)}\n`);
+    const unsupportedBreakoutEvidenceBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(unsupportedBreakoutEvidenceBuild.status, 0);
+    assert.match(unsupportedBreakoutEvidenceBuild.stderr, /Create-page breakout evidence gate failed/);
+
     const undersizedCandidateInput = structuredClone(input);
     undersizedCandidateInput.candidates = undersizedCandidateInput.candidates.slice(0, 7);
     await writeFile(inputPath, `${JSON.stringify(undersizedCandidateInput, null, 2)}\n`);
@@ -633,6 +679,8 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.equal(reportBeforeReview.trendSignals[0].source, "google_trends");
     assert.equal(reportBeforeReview.trendSignals[1].state, "unavailable");
     assert.equal(reportBeforeReview.trendSignals[1].relativeInterest, null);
+    assert.equal(reportBeforeReview.evidence[2].kind, "breakout_page");
+    assert.deepEqual(reportBeforeReview.evidence[2].signal, input.evidence[2].signal);
     assert.equal(reportBeforeReview.feedbackDecisions.length, 1);
     assert.equal(reportBeforeReview.feedbackDecisions[0].message, feedbackMessage);
     assert.equal(reportBeforeReview.feedbackDecisions[0].decision, "adopted");
@@ -641,6 +689,16 @@ test("report generation cannot publish before a separate approval artifact", asy
     const duplicateBuild = spawnSync(process.execPath, [builderPath, inputPath], { cwd: workspace, encoding: "utf8" });
     assert.notEqual(duplicateBuild.status, 0);
     assert.match(duplicateBuild.stderr, /Refusing to overwrite existing daily report/);
+
+    const previewDirectory = join(workspace, "output", "previews", "2099-01-01");
+    const previewPng = Buffer.from(
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+      "base64",
+    );
+    const previewSha256 = createHash("sha256").update(previewPng).digest("hex");
+    await mkdir(previewDirectory, { recursive: true });
+    await Promise.all(["desktop", "mobile"].map((id) =>
+      writeFile(join(previewDirectory, `play-an-ai-roleplay-story-${id}.png`), previewPng)));
 
     const review = {
       schemaVersion: 1,
@@ -662,6 +720,43 @@ test("report generation cannot publish before a separate approval artifact", asy
         { id: "signature-module", passed: true, detail: "The route evidence switchboard is useful, original, and present in initial HTML." },
         { id: "rendered-preview", passed: true, detail: "The structured renderer contract includes the hero, layers, signature, FAQ, CTA, and optional-decoration states." },
       ],
+      visualAudit: {
+        schemaVersion: 1,
+        draftDigest: reportBeforeReview.publication.draftDigest,
+        inspectedAt: "2099-01-01T11:30:00.000Z",
+        previewPath: "/workbench/preview/play-an-ai-roleplay-story",
+        passed: true,
+        viewports: [
+          {
+            id: "desktop",
+            width: 1440,
+            height: 1000,
+            screenshotPath: "output/previews/2099-01-01/play-an-ai-roleplay-story-desktop.png",
+            screenshotSha256: previewSha256,
+            h1Lines: 3,
+            h1ViewportRatio: 0.3,
+            ctaInFirstViewport: true,
+            horizontalOverflowPx: 0,
+            rawMarkdownVisible: false,
+            signatureVisible: true,
+            maxUniformNumberedRun: 2,
+          },
+          {
+            id: "mobile",
+            width: 390,
+            height: 844,
+            screenshotPath: "output/previews/2099-01-01/play-an-ai-roleplay-story-mobile.png",
+            screenshotSha256: previewSha256,
+            h1Lines: 4,
+            h1ViewportRatio: 0.3,
+            ctaInFirstViewport: true,
+            horizontalOverflowPx: 0,
+            rawMarkdownVisible: false,
+            signatureVisible: true,
+            maxUniformNumberedRun: 2,
+          },
+        ],
+      },
     };
     const reviewPath = join(workspace, "data", "reviews", "2099-01-01.json");
     await mkdir(dirname(reviewPath), { recursive: true });
@@ -688,12 +783,37 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.notEqual(missingTrendBypassPublish.status, 0);
     assert.match(missingTrendBypassPublish.stderr, /Create-page Google Trends gate failed/);
 
+    const missingBreakoutPublisherBypass = structuredClone(reportBeforeReview);
+    missingBreakoutPublisherBypass.evidence = missingBreakoutPublisherBypass.evidence.map((item) => {
+      const { kind, signal, ...ordinaryEvidence } = item;
+      return ordinaryEvidence;
+    });
+    await writeFile(reportPath, `${JSON.stringify(missingBreakoutPublisherBypass, null, 2)}\n`);
+    const missingBreakoutBypassPublish = spawnSync(process.execPath, [publisherPath, reportPath, reviewPath], { cwd: workspace, encoding: "utf8" });
+    assert.notEqual(missingBreakoutBypassPublish.status, 0);
+    assert.match(missingBreakoutBypassPublish.stderr, /Create-page breakout evidence gate failed/);
+
     const unavailableGrowthPublisherBypass = structuredClone(reportBeforeReview);
     unavailableGrowthPublisherBypass.portfolioFunnels.summary.attributionJoinReady = false;
     await writeFile(reportPath, `${JSON.stringify(unavailableGrowthPublisherBypass, null, 2)}\n`);
     const unavailableGrowthBypassPublish = spawnSync(process.execPath, [publisherPath, reportPath, reviewPath], { cwd: workspace, encoding: "utf8" });
     assert.notEqual(unavailableGrowthBypassPublish.status, 0);
     assert.match(unavailableGrowthBypassPublish.stderr, /Create-page growth readiness gate failed/);
+
+    await writeFile(reportPath, `${JSON.stringify(reportBeforeReview, null, 2)}\n`);
+    const desktopPreviewPath = join(previewDirectory, "play-an-ai-roleplay-story-desktop.png");
+    await writeFile(desktopPreviewPath, Buffer.from("changed after editorial inspection"));
+    const changedScreenshotPublish = spawnSync(process.execPath, [publisherPath, reportPath, reviewPath], { cwd: workspace, encoding: "utf8" });
+    assert.notEqual(changedScreenshotPublish.status, 0);
+    assert.match(changedScreenshotPublish.stderr, /screenshot digest changed after review/i);
+    await writeFile(desktopPreviewPath, previewPng);
+
+    const mobilePreviewPath = join(previewDirectory, "play-an-ai-roleplay-story-mobile.png");
+    await rm(mobilePreviewPath);
+    const missingScreenshotPublish = spawnSync(process.execPath, [publisherPath, reportPath, reviewPath], { cwd: workspace, encoding: "utf8" });
+    assert.notEqual(missingScreenshotPublish.status, 0);
+    assert.match(missingScreenshotPublish.stderr, /screenshot is missing/i);
+    await writeFile(mobilePreviewPath, previewPng);
 
     const publisherSource = await readFile(publisherPath, "utf8");
     assert.equal(

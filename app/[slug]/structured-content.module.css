@@ -148,12 +148,12 @@
 }
 
 .hero {
-  min-height: min(800px, 92svh);
+  min-height: min(760px, 84svh);
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
   align-items: end;
-  gap: clamp(36px, 7vw, 110px);
-  padding: clamp(84px, 12vw, 164px) clamp(20px, 7vw, 110px) clamp(64px, 9vw, 120px);
+  gap: clamp(32px, 6vw, 92px);
+  padding: clamp(64px, 9vw, 120px) clamp(20px, 7vw, 110px) clamp(52px, 7vw, 88px);
   background:
     linear-gradient(105deg, color-mix(in srgb, var(--page-accent-on-ground) 15%, transparent), transparent 42%),
     var(--page-ground);
@@ -180,12 +180,16 @@
   max-width: 980px;
   margin: 0;
   font-family: var(--page-display);
-  font-size: clamp(3.8rem, 9.5vw, 9.6rem);
+  font-size: clamp(2.8rem, 6vw, 6.5rem);
   font-weight: 700;
-  line-height: .83;
+  line-height: .92;
   letter-spacing: -.045em;
-  text-transform: uppercase;
+  text-wrap: balance;
 }
+.shell[data-presentation-recipe="rehearsal-slate-v1"] .hero h1,
+.shell[data-presentation-recipe="nocturne-decision-grid-v1"] .hero h1,
+.shell[data-presentation-recipe="specimen-catalog-v1"] .hero h1,
+.shell[data-presentation-recipe="orbital-mission-log-v1"] .hero h1 { text-transform: uppercase; }
 .heroCopy > p:not(.eyebrow) {
   max-width: 720px;
   margin: 34px 0 0;
@@ -219,7 +223,7 @@
 .contents { padding: 32px clamp(20px, 7vw, 110px); border-bottom: 1px solid var(--page-line); }
 .contents > span { color: var(--page-accent); }
 .contents ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 28px; margin: 20px 0 0; padding: 0; list-style: none; }
-.contents a { display: grid; grid-template-columns: 2rem 1fr; gap: 10px; font-size: .88rem; line-height: 1.35; text-decoration: none; }
+.contents a { display: grid; grid-template-columns: minmax(4.5rem, auto) 1fr; gap: 10px; font-size: .88rem; line-height: 1.35; text-decoration: none; }
 .contents b { color: var(--page-accent); font-family: var(--page-utility); }
 
 .layers { padding: 0 clamp(20px, 7vw, 110px); }
@@ -231,7 +235,7 @@
   border-bottom: 1px solid var(--page-line);
 }
 .layerLabel { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; color: var(--page-accent); font-family: var(--page-utility); }
-.layerLabel b { font-size: clamp(2rem, 5vw, 5rem); line-height: .8; }
+.layerLabel b { max-width: 9ch; font-size: clamp(1.15rem, 2.5vw, 2.5rem); line-height: .9; overflow-wrap: anywhere; }
 .layerCopy { max-width: 900px; }
 .layerPurpose { margin: 0 0 22px; color: var(--page-accent); font-family: var(--page-utility); font-size: .8rem; line-height: 1.5; }
 .layer h2,
@@ -397,4 +401,8 @@
   .workshopLayers .layerUnit:nth-child(even) .layer { transform: none; }
   .layerLabel { justify-content: flex-start; }
   .related a { grid-template-columns: 1fr; gap: 8px; }
+  .hero { gap: 28px; padding: 52px 20px 44px; }
+  .hero h1 { font-size: clamp(2.5rem, 12vw, 4.2rem); line-height: .92; }
+  .heroCopy > p:not(.eyebrow) { margin-top: 24px; font-size: 1rem; }
+  .heroCta { margin-top: 24px; }
 }

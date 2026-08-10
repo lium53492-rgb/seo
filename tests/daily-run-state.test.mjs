@@ -46,10 +46,47 @@ const page = {
   draftDigest: review.draftDigest,
   editorialReview: review,
 };
+const noPublishReceipt = {
+  schemaVersion: 1,
+  date,
+  outcome: "no_publish",
+  reasonCode: "growth_unavailable",
+  reason: "The protected growth endpoint remained unavailable after the configured retries.",
+  recordedAt: "2026-08-07T02:00:00.000Z",
+  artifactDigests: [{
+    path: `data/growth/${date}.json`,
+    sha256: "c".repeat(64),
+    bytes: 128,
+  }],
+  evidenceSummary: {
+    dailyState: "resume_research",
+    growth: {
+      publishedPages: 9,
+      collectedPages: 0,
+      unavailablePages: 9,
+      attributionJoinReady: false,
+    },
+    trends: { recorded: 0, observed: 0, qualifying: 0 },
+    publicationStatus: "absent",
+    reviewDecision: "absent",
+  },
+};
 
 test("daily state starts exactly one page when no artifacts exist", () => {
   assert.deepEqual(deriveDailyRunState({ date }).state, "start");
   assert.equal(deriveDailyRunState({ date }).mayCreatePage, true);
+});
+
+test("a valid no-publish receipt is terminal and cannot occupy a published-page slot", () => {
+  const terminal = deriveDailyRunState({ date, growth, noPublishReceipt });
+  assert.equal(terminal.state, "no_publish_complete");
+  assert.equal(terminal.resumeAt, null);
+  assert.equal(terminal.mayCreatePage, false);
+  assert.equal(terminal.publishedSlug, null);
+
+  const conflict = deriveDailyRunState({ date, growth, pages: [page], noPublishReceipt });
+  assert.equal(conflict.state, "conflict");
+  assert.match(conflict.conflicts.join(" "), /cannot coexist with a page published/);
 });
 
 test("daily state resumes each valid partial stage", () => {

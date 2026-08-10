@@ -230,6 +230,8 @@ export async function readDailyPipelineStatus(now = new Date()): Promise<DailyPi
         requiredDraftSchemaVersion: architecturePolicy.requiredDraftSchemaVersion,
         baseRequiredChecks: seoPolicy.requiredReviewChecks,
         architectureRequiredChecks: architecturePolicy.requiredReviewChecks,
+        reportDate: date,
+        visualAuditPolicy: seoPolicy.visualAudit,
       })) {
         blockers.push("今日审稿文件存在，但批准记录结构或 reportId 绑定无效。");
       }

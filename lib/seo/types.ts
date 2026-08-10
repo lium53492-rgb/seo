@@ -532,6 +532,27 @@ export type EditorialReview = {
     passed: true;
     detail: string;
   }>;
+  visualAudit?: {
+    schemaVersion: 1;
+    draftDigest: string;
+    inspectedAt: string;
+    previewPath: string;
+    passed: true;
+    viewports: Array<{
+      id: "desktop" | "mobile";
+      width: number;
+      height: number;
+      screenshotPath: string;
+      screenshotSha256: string;
+      h1Lines: number;
+      h1ViewportRatio: number;
+      ctaInFirstViewport: true;
+      horizontalOverflowPx: number;
+      rawMarkdownVisible: false;
+      signatureVisible: true;
+      maxUniformNumberedRun: number;
+    }>;
+  };
 };
 
 export type ObservedMetric = {

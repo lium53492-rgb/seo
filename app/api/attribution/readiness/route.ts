@@ -155,6 +155,9 @@ export async function GET(request: Request) {
     probe.urlInspection.state === "observed" &&
     probe.landingUv.state === "observed" &&
     probe.attributionStore.state === "observed";
+  const searchToUvReady = probe && !("state" in probe) &&
+    probe.searchConsole.state === "observed" &&
+    probe.landingUv.state === "observed";
 
   return privateJson({
     schemaVersion: 1,
@@ -180,7 +183,7 @@ export async function GET(request: Request) {
         probe.searchConsole.state === "observed" &&
         probe.urlInspection.state === "observed"
       ),
-      searchToUv: searchConsole.configured && landingUv.configured,
+      searchToUv: Boolean(searchToUvReady),
       outboundToRevenue: attributionStore.configured &&
         conversionCallback.configured &&
         callbackHandshakeRecent,

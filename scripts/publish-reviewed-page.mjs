@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { dirname, resolve } from "node:path";
+import { dirname, relative, resolve } from "node:path";
 import { validatePageArchitecture, validateSeoArchitectureBridge } from "../lib/seo/content-contract.mjs";
 import {
   analyzeContentNovelty,
@@ -10,6 +10,7 @@ import {
 import { publishedArchitectureHistoryFromReports } from "../lib/seo/content-history.mjs";
 import { servedContentDigest } from "../lib/seo/served-content.mjs";
 import { validatePipelineReviewContract } from "../lib/seo/pipeline-contract.mjs";
+import { hasExplicitMarkdownList, unsupportedMarkdownReason } from "../lib/seo/markdown-semantics.mjs";
 import {
   coordinationOwner,
   withDailyPublicationGuard,
@@ -29,8 +30,11 @@ const factCatalog = readJson("data/config/product-facts.json");
 const architecturePolicy = readJson("data/config/content-architecture.json");
 const presentationCatalog = readJson("data/config/presentation-recipes.json");
 const unattendedPolicy = readJson("data/config/unattended-publishing.json");
+const siteConfig = readJson("data/config/site.json");
 const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const retiredPageSlugs = new Set(Array.isArray(policy.retiredPageSlugs) ? policy.retiredPageSlugs : []);
+const retiredRecipeIds = new Set(Array.isArray(policy.retiredRecipeIds) ? policy.retiredRecipeIds : []);
+const retiredPaletteIds = new Set(Array.isArray(policy.retiredPaletteIds) ? policy.retiredPaletteIds : []);
 
 validateSeoArchitectureBridge(policy, architecturePolicy);
 
@@ -63,6 +67,181 @@ function shanghaiDate(value) {
     month: "2-digit",
     day: "2-digit",
   }).format(new Date(value));
+}
+
+function assertVisualAuditFiles(reviewArtifact, reportArtifact) {
+  if (reportArtifact.draft?.schemaVersion !== architecturePolicy.requiredDraftSchemaVersion ||
+    reportArtifact.date < policy.visualAudit.enforcedFromReportDate) return;
+  const expectedRoot = resolve(policy.visualAudit.screenshotDirectory, reportArtifact.date);
+  for (const viewport of reviewArtifact.visualAudit?.viewports || []) {
+    const screenshotPath = resolve(viewport.screenshotPath);
+    const childPath = relative(expectedRoot, screenshotPath);
+    if (!childPath || childPath.startsWith("..") || resolve(expectedRoot, childPath) !== screenshotPath) {
+      throw new Error(`Visual audit screenshot escapes its dated evidence directory: ${viewport.screenshotPath}`);
+    }
+    if (!existsSync(screenshotPath)) {
+      throw new Error(`Visual audit screenshot is missing: ${viewport.screenshotPath}`);
+    }
+    const digest = createHash("sha256").update(readFileSync(screenshotPath)).digest("hex");
+    if (digest !== viewport.screenshotSha256) {
+      throw new Error(`Visual audit screenshot digest changed after review: ${viewport.screenshotPath}`);
+    }
+  }
+}
+
+function assertEnhancedDraftRenderContract(candidateReport) {
+  if (candidateReport.date < architecturePolicy.enhancedNoveltyEnforcedFromReportDate) return;
+  const candidateDraft = candidateReport.draft;
+  const keyword = String(candidateDraft?.keyword || "").trim().toLowerCase();
+  const genericCtaPattern = /^(?:click here|learn more|get started|explore stories|explore story-led roleplay|try novelai|start now|read more)(?:\s+(?:on|with)\s+novelai)?[.!]?$/i;
+  const ctaTokens = new Set(
+    `${keyword} ${candidateReport.contentStrategy?.readerOutcome || ""} ${candidateReport.contentStrategy?.primaryPainPoint || ""}`
+      .toLowerCase()
+      .match(/[a-z0-9]+/g)
+      ?.filter((token) => token.length >= 5 && !["novelai", "story", "stories", "roleplay", "using", "about"].includes(token)) || [],
+  );
+  if (genericCtaPattern.test(String(candidateDraft?.primaryCta || "").trim()) ||
+    ![...ctaTokens].some((token) => candidateDraft.primaryCta.toLowerCase().includes(token))) {
+    throw new Error("Publisher rejected a generic primary CTA that is not bound to the selected page outcome");
+  }
+  const sections = Array.isArray(candidateDraft?.sections) ? candidateDraft.sections : [];
+  const faqs = Array.isArray(candidateDraft?.faqs) ? candidateDraft.faqs : [];
+  const plainTextValues = [
+    ["title", candidateDraft?.title], ["metaDescription", candidateDraft?.metaDescription],
+    ["h1", candidateDraft?.h1], ["primaryCta", candidateDraft?.primaryCta],
+    ...sections.map((section, index) => [`section ${index + 1} heading`, section.heading]),
+    ...faqs.map((faq, index) => [`FAQ ${index + 1} question`, faq.question]),
+    ...Object.entries(candidateDraft?.architecture?.presentation?.surfaceCopy || {}).map(([field, value]) => [`surfaceCopy.${field}`, value]),
+    ["signature title", candidateDraft?.signatureModule?.title],
+    ...(candidateDraft?.signatureModule?.items || []).flatMap((item, index) => [
+      [`signature item ${index + 1} label`, item.label], [`signature item ${index + 1} title`, item.title],
+    ]),
+  ];
+  const richTextValues = [
+    ["heroMarkdown", candidateDraft?.heroMarkdown],
+    ...sections.map((section, index) => [`section ${index + 1} bodyMarkdown`, section.bodyMarkdown]),
+    ...faqs.map((faq, index) => [`FAQ ${index + 1} answerMarkdown`, faq.answerMarkdown]),
+    ["signature intro", candidateDraft?.signatureModule?.intro],
+    ...(candidateDraft?.signatureModule?.items || []).map((item, index) => [`signature item ${index + 1} bodyMarkdown`, item.bodyMarkdown]),
+  ];
+  const invalidPlain = plainTextValues.find(([, value]) => unsupportedMarkdownReason(value, { plainText: true }));
+  const invalidRich = richTextValues.find(([, value]) => unsupportedMarkdownReason(value));
+  if (invalidPlain || invalidRich) {
+    const [label, value] = invalidPlain || invalidRich;
+    throw new Error(`Publisher rejected unsupported Markdown in ${label}: ${unsupportedMarkdownReason(value, { plainText: Boolean(invalidPlain) })}`);
+  }
+  const unmarkedList = sections.find((section) =>
+    ["steps", "checklist", "examples", "comparison"].includes(section.format) &&
+    !hasExplicitMarkdownList(section.bodyMarkdown));
+  if (unmarkedList) {
+    throw new Error(`Publisher requires explicit Markdown list markers for ${unmarkedList.format} section ${unmarkedList.id || unmarkedList.heading}`);
+  }
+}
+
+function registrableDomain(hostname) {
+  const labels = hostname.toLowerCase().replace(/^www\./, "").split(".").filter(Boolean);
+  if (labels.length <= 2) return labels.join(".");
+  const commonSecondLevelSuffixes = new Set(["co.uk", "org.uk", "com.au", "com.cn", "com.hk", "co.jp"]);
+  const lastTwo = labels.slice(-2).join(".");
+  return commonSecondLevelSuffixes.has(lastTwo) ? labels.slice(-3).join(".") : lastTwo;
+}
+
+function validatedBreakoutEvidencePolicy() {
+  const config = policy.breakoutEvidence;
+  const safeSignalToken = /^[a-z][a-z0-9_]*$/;
+  if (
+    config?.schemaVersion !== 1 ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(config.enforcedFromReportDate || "") ||
+    !safeSignalToken.test(config.requiredKind || "") ||
+    !Array.isArray(config.allowedSignalTypes) ||
+    !config.allowedSignalTypes.length ||
+    new Set(config.allowedSignalTypes).size !== config.allowedSignalTypes.length ||
+    config.allowedSignalTypes.some((type) => !safeSignalToken.test(type)) ||
+    !Number.isInteger(config.minDetailChars) ||
+    config.minDetailChars < 1 ||
+    !Number.isInteger(config.minBasisChars) ||
+    config.minBasisChars < 1
+  ) {
+    throw new Error("seo-policy breakoutEvidence configuration is invalid");
+  }
+  return config;
+}
+
+const breakoutEvidencePolicy = validatedBreakoutEvidencePolicy();
+const firstPartyEvidenceDomain = registrableDomain(
+  new URL(siteConfig.canonicalOrigin).hostname,
+);
+
+function validatePublishedBreakoutEvidence(item, reportDate, selectedKeyword) {
+  let sourceUrl;
+  try {
+    sourceUrl = new URL(item?.url);
+  } catch {
+    throw new Error("Create-page breakout evidence has an invalid source URL");
+  }
+  const sourceDomain = registrableDomain(sourceUrl.hostname);
+  if (
+    !/^https?:$/.test(sourceUrl.protocol) ||
+    sourceUrl.username ||
+    sourceUrl.password ||
+    !sourceUrl.hostname.includes(".") ||
+    sourceDomain === firstPartyEvidenceDomain ||
+    (sourceUrl.pathname === "/" && !sourceUrl.search)
+  ) {
+    throw new Error("Create-page breakout evidence needs a page-specific independent HTTP(S) source URL");
+  }
+  let collectedDate;
+  try {
+    collectedDate = shanghaiDate(item?.collectedAt);
+  } catch {
+    throw new Error("Create-page breakout evidence has an invalid collectedAt timestamp");
+  }
+  if (collectedDate !== reportDate) {
+    throw new Error("Create-page breakout evidence must be collected on the report's Shanghai date");
+  }
+  const signal = item?.signal;
+  if (!signal || typeof signal !== "object" || Array.isArray(signal)) {
+    throw new Error("Create-page breakout evidence needs a structured signal");
+  }
+  const allowedSignalFields = new Set(["type", "value", "unit", "basis", "detail"]);
+  if (Object.keys(signal).some((field) => !allowedSignalFields.has(field))) {
+    throw new Error("Create-page breakout evidence signal contains an unknown field");
+  }
+  const type = String(signal.type || "").trim();
+  const unit = String(signal.unit || "").trim();
+  const basis = String(signal.basis || "").trim();
+  const detail = String(signal.detail || "").trim();
+  if (!breakoutEvidencePolicy.allowedSignalTypes.includes(type)) {
+    throw new Error("Create-page breakout evidence signal has an unsupported type");
+  }
+  if (typeof signal.value !== "number" || !Number.isFinite(signal.value) || signal.value <= 0) {
+    throw new Error("Create-page breakout evidence signal needs a positive finite numeric value");
+  }
+  if (!unit || unit.length > 64 ||
+    basis.length < breakoutEvidencePolicy.minBasisChars ||
+    detail.length < breakoutEvidencePolicy.minDetailChars) {
+    throw new Error("Create-page breakout evidence signal is incomplete");
+  }
+  return Array.isArray(item.supports) && item.supports.some((keyword) =>
+    String(keyword).trim().toLowerCase() === selectedKeyword);
+}
+
+function assertPublishedBreakoutEvidence(candidateReport, selectedKeyword) {
+  if (candidateReport.date < breakoutEvidencePolicy.enforcedFromReportDate) return;
+  const evidence = Array.isArray(candidateReport.evidence) ? candidateReport.evidence : [];
+  let qualifying = false;
+  for (const item of evidence) {
+    if (item?.kind !== breakoutEvidencePolicy.requiredKind) continue;
+    if (validatePublishedBreakoutEvidence(item, candidateReport.date, selectedKeyword)) {
+      qualifying = true;
+    }
+  }
+  if (!qualifying) {
+    throw new Error(
+      `Create-page breakout evidence gate failed: selected draft ${selectedKeyword || "<empty>"} needs at least one ` +
+      `same-day, page-specific independent ${breakoutEvidencePolicy.requiredKind} record with a structured supported signal`,
+    );
+  }
 }
 
 function isOfficialObservedTrendSignal(signal, reportDate, selectedKeyword) {
@@ -132,6 +311,7 @@ function assertCreatePagePublicationReadiness(candidateReport) {
       "official same-day observed signal with direction=rising or relativeInterest>=50",
     );
   }
+  assertPublishedBreakoutEvidence(candidateReport, selectedKeyword);
 }
 
 function publicationClock() {
@@ -199,9 +379,13 @@ if (!safeSlug.test(review.slug) || !validatePipelineReviewContract({
   requiredDraftSchemaVersion: architecturePolicy.requiredDraftSchemaVersion,
   baseRequiredChecks: policy.requiredReviewChecks,
   architectureRequiredChecks: architecturePolicy.requiredReviewChecks,
+  reportDate: report.date,
+  visualAuditPolicy: policy.visualAudit,
 })) {
   throw new Error("Approval record does not satisfy the reviewed draft contract");
 }
+assertVisualAuditFiles(review, report);
+assertEnhancedDraftRenderContract(report);
 if (retiredPageSlugs.has(review.slug)) {
   throw new Error(`Page /${review.slug} was retired by explicit user feedback and cannot be republished automatically`);
 }
@@ -238,6 +422,10 @@ if (sameSlug && sameSlug.generatedFromReport !== report.id && report.publication
 }
 
 const draft = report.draft;
+if (retiredRecipeIds.has(draft.architecture?.presentation?.recipeId) ||
+  retiredPaletteIds.has(draft.architecture?.presentation?.paletteId)) {
+  throw new Error("Reviewed draft uses a presentation recipe or palette retired by explicit user feedback");
+}
 const opportunity = report.opportunities.find((candidate) => candidate.keyword === draft.keyword);
 const expectedAction = report.publicationMode === "update" ? "improve_page" : "create_page";
 if (!opportunity || opportunity.action !== expectedAction) {
@@ -269,6 +457,7 @@ const novelty = analyzeContentNovelty({
   architecturePolicy,
   presentationCatalog,
   allowedPhrases: factCatalog.facts.map((fact) => fact.statement),
+  enforceEnhancedNovelty: report.date >= architecturePolicy.enhancedNoveltyEnforcedFromReportDate,
 });
 if (!novelty.passed) {
   const first = novelty.violations[0];
@@ -351,7 +540,29 @@ withDailyPublicationGuard({
   now: publicationTime,
 }, (assertGuard) => {
   const currentReport = readJson(reportPath);
+  const currentReview = readJson(reviewPath);
   assertCreatePagePublicationReadiness(currentReport);
+  if (!validatePipelineReviewContract({
+    review: currentReview,
+    reportId: currentReport.id,
+    expectedSlug: currentReport.publication?.slug,
+    expectedDigest: currentReport.publication?.draftDigest,
+    reportGeneratedAt: currentReport.generatedAt,
+    draftSchemaVersion: currentReport.draft?.schemaVersion ?? null,
+    requiredDraftSchemaVersion: architecturePolicy.requiredDraftSchemaVersion,
+    baseRequiredChecks: policy.requiredReviewChecks,
+    architectureRequiredChecks: architecturePolicy.requiredReviewChecks,
+    reportDate: currentReport.date,
+    visualAuditPolicy: policy.visualAudit,
+  })) {
+    throw new Error("Approval record changed before the guarded publication write");
+  }
+  assertVisualAuditFiles(currentReview, currentReport);
+  assertEnhancedDraftRenderContract(currentReport);
+  if (retiredRecipeIds.has(currentReport.draft?.architecture?.presentation?.recipeId) ||
+    retiredPaletteIds.has(currentReport.draft?.architecture?.presentation?.paletteId)) {
+    throw new Error("Guarded publication draft uses a retired presentation recipe or palette");
+  }
   const currentPages = publishedPagesFromDisk();
   const currentSameSlug = currentPages.find((candidate) => candidate.slug === review.slug);
   const currentDigest = currentReport.draft?.schemaVersion === architecturePolicy.requiredDraftSchemaVersion

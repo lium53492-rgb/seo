@@ -219,6 +219,51 @@ test("readiness reports a source configuration failure without bypassing auth or
   }
 });
 
+test("search-to-UV readiness requires observed probe results, not configured credentials alone", async () => {
+  const environment = snapshotEnvironment();
+  const originalFetch = globalThis.fetch;
+  const machineToken = "machine-secret-with-at-least-32-bytes";
+  try {
+    process.env.NODE_ENV = "production";
+    process.env.SEO_AUTOMATION_TOKEN = machineToken;
+    delete process.env.WORKBENCH_PASSWORD;
+    process.env.GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL = "seo@example.invalid";
+    process.env.GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY = "not-a-real-private-key";
+    process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL = "https://lorelens.novelai.ai/";
+    process.env.VERCEL_ANALYTICS_TOKEN = "vercel-token";
+    delete process.env.VERCEL_TOKEN;
+    delete process.env.KV_REST_API_TOKEN;
+    delete process.env.KV_REST_API_URL;
+    delete process.env.UPSTASH_REDIS_REST_TOKEN;
+    delete process.env.UPSTASH_REDIS_REST_URL;
+    delete process.env.ATTRIBUTION_SECRET;
+
+    globalThis.fetch = async (input) => {
+      const url = String(input);
+      if (url.startsWith("https://api.vercel.com/v1/query/web-analytics/visits/count")) {
+        return Response.json({ data: { visitors: 1, pageviews: 1 } });
+      }
+      throw new Error(`Unexpected fetch in readiness test: ${url}`);
+    };
+
+    const response = await readinessRoute.GET(
+      new Request("http://localhost/api/attribution/readiness", {
+        headers: { authorization: `Bearer ${machineToken}` },
+      }),
+    );
+    assert.equal(response.status, 200);
+    const body = await response.json();
+    assert.equal(body.sources.searchConsole.configured, true);
+    assert.equal(body.sources.landingUv.configured, true);
+    assert.equal(body.probe.searchConsole.state, "unavailable");
+    assert.equal(body.probe.landingUv.state, "observed");
+    assert.equal(body.readyFor.searchToUv, false);
+  } finally {
+    globalThis.fetch = originalFetch;
+    restoreEnvironment(environment);
+  }
+});
+
 test("growth command entry points use only the machine automation credential", async () => {
   const scriptPaths = [
     "scripts/check-growth-readiness.mjs",

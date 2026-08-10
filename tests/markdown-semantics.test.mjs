@@ -2,9 +2,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  hasExplicitMarkdownList,
   listMarkdownRenderBlocks,
   markdownSemanticBlockCount,
   parseMarkdownBlocks,
+  unsupportedMarkdownReason,
 } from "../lib/seo/markdown-semantics.mjs";
 
 test("single-newline numbered items preserve surrounding prose", () => {
@@ -49,13 +51,13 @@ test("list-shaped render blocks keep prose and apply the section list order", ()
   ]);
 });
 
-test("legacy blank-line paragraphs still become list items for list formats", () => {
+test("unmarked paragraphs are never disguised as list items", () => {
   const value = "Inspect the opening pressure first.\n\nChoose the perspective second.";
-  assert.deepEqual(listMarkdownRenderBlocks(value, true), [{
-    type: "list",
-    ordered: true,
-    items: ["Inspect the opening pressure first.", "Choose the perspective second."],
-  }]);
+  assert.deepEqual(listMarkdownRenderBlocks(value, true), [
+    { type: "prose", text: "Inspect the opening pressure first." },
+    { type: "prose", text: "Choose the perspective second." },
+  ]);
+  assert.equal(hasExplicitMarkdownList(value), false);
   assert.equal(markdownSemanticBlockCount(value), 2);
 });
 
@@ -73,4 +75,16 @@ test("comparison parsing retains bullet semantics and wrapped item text", () => 
     },
     { type: "prose", text: "Record the difference." },
   ]);
+});
+
+test("supported Markdown rejects syntax the production renderer cannot render", () => {
+  assert.equal(unsupportedMarkdownReason("Use **one supported emphasis** here."), null);
+  assert.equal(unsupportedMarkdownReason("Use *italics* here."), "unsupported-emphasis");
+  assert.equal(unsupportedMarkdownReason("Use _italics_ here."), "unsupported-emphasis");
+  assert.equal(unsupportedMarkdownReason("Read [this](https://example.com)."), "inline-link");
+  assert.equal(unsupportedMarkdownReason("Run `code` here."), "code");
+  assert.equal(unsupportedMarkdownReason("<strong>raw HTML</strong>"), "raw-html");
+  assert.equal(unsupportedMarkdownReason("# Hidden heading"), "heading");
+  assert.equal(unsupportedMarkdownReason("**Unclosed emphasis"), "unsupported-emphasis");
+  assert.equal(unsupportedMarkdownReason("Plain **label**", { plainText: true }), "formatting-in-plain-text");
 });

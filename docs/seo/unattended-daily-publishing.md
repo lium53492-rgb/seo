@@ -49,6 +49,11 @@ the next stage:
 5. `pdf` after the page is locally published;
 6. `release_verification` after the complete local delivery exists.
 
+A valid same-day `no_publish` receipt is also terminal. `settle` returns
+`outcome=no_publish`, and `daily:state` returns `no_publish_complete` with
+`resumeAt=null` and `mayCreatePage=false`. Evening recovery exits on that
+outcome instead of restarting research or substituting a weaker candidate.
+
 Consistent artifacts from the same daily chain are resumable. An inconsistent
 chain or more than one page for the Shanghai day is a conflict and must not be
 overwritten. Once a page is published for the day, all resumed runs switch to
@@ -72,6 +77,23 @@ Lease transitions are immutable files under `lease-states/`; heartbeat,
 checkpoint, reservation, takeover, and completion append a complete new state
 instead of replacing `lease.json`. This avoids Windows/OneDrive overwrite races
 and makes a crash before the final hard link harmless.
+
+When a hard gate means that zero pages is the correct result, complete the
+owned lease before the cutoff with:
+
+```text
+npm.cmd run daily:coord -- no-publish YYYY-MM-DD REASON_CODE "Specific observed reason"
+```
+
+`REASON_CODE` must be one of the configured no-publish codes. The coordinator,
+not the caller, derives the evidence summary and SHA-256 bindings from the
+same-day growth snapshot and any research, report, or review artifacts. The
+growth snapshot is mandatory. The immutable receipt contains no slug, release
+revision, or live-verification claim, cannot coexist with a page published that
+Shanghai day, and cannot replace a reservation, complete release checkpoint,
+pin, preparation, or in-flight release. It closes only that calendar day's
+content decision; unlike a deployed page, it never occupies a later production
+day.
 
 ## Candidate continuity
 
@@ -152,8 +174,9 @@ rendered HTML must use the same contract.
 
 The primary run generates the daily PDF after the page is published. The
 secondary automation runs at 18:30 and makes a final recovery pass at 21:30: it
-verifies an existing page and PDF, or resumes the incomplete daily chain and creates the day's sole page
-when the primary run did not finish. The shared lease and daily state gate
+verifies an existing page and PDF, exits on a durable no-publish receipt, or
+resumes the incomplete daily chain and creates the day's sole page only when
+all publication gates remain ready. The shared lease and daily state gate
 prevent a second page. Immediately before fetching/pushing and again before
 production verification, the active worktree must run
 `npm.cmd run daily:coord -- assert YYYY-MM-DD`.

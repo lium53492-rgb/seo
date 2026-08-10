@@ -12,6 +12,7 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 test("unattended policy targets one page with persistent release recovery", () => {
   assert.equal(unattendedPolicy.timezone, "Asia/Shanghai");
   assert.equal(unattendedPolicy.dailyPageTarget, 1);
+  assert.equal(unattendedPolicy.allowZeroPageOutcome, true);
   assert.equal(unattendedPolicy.primarySchedule, "09:15");
   assert.equal(unattendedPolicy.pdfFallbackSchedule, "18:30");
   assert.equal(unattendedPolicy.finalRecoverySchedule, "21:30");
@@ -25,6 +26,12 @@ test("unattended policy targets one page with persistent release recovery", () =
   assert.ok(unattendedPolicy.networkAttempts >= 3);
   assert.ok(unattendedPolicy.candidateBatchSize.min >= 8);
   assert.ok(unattendedPolicy.minimumFallbackIntents >= 7);
+  assert.equal(unattendedPolicy.noPublish.schemaVersion, 1);
+  assert.ok(unattendedPolicy.noPublish.reasonCodes.includes("visual_quality_failed"));
+  assert.deepEqual(unattendedPolicy.terminalNoPublishSuccess, [
+    "zero_pages_published_for_shanghai_day",
+    "no_publish_receipt_recorded_for_shanghai_day",
+  ]);
 });
 
 test("unattended release proof is wired to the canonical production origin", () => {
@@ -44,10 +51,16 @@ test("unattended release proof is wired to the canonical production origin", () 
 
 test("user-retired pages cannot be recreated by the unattended pipeline", () => {
   assert.deepEqual(seoPolicy.retiredPageSlugs, ["ai-roleplay-scene-recovery"]);
+  assert.deepEqual(seoPolicy.retiredRecipeIds, ["specimen-catalog-v1"]);
+  assert.deepEqual(seoPolicy.retiredPaletteIds, ["museum-cobalt"]);
   const builder = readFileSync(join(root, "scripts", "build-free-research-report.mjs"), "utf8");
   const publisher = readFileSync(join(root, "scripts", "publish-reviewed-page.mjs"), "utf8");
   assert.match(builder, /retiredPageSlugs\.has\(pageSlug\)/);
   assert.match(publisher, /retiredPageSlugs\.has\(review\.slug\)/);
+  assert.match(builder, /retiredRecipeIds\.has\(selectedPresentation\?\.recipeId\)/);
+  assert.match(builder, /retiredPaletteIds\.has\(selectedPresentation\?\.paletteId\)/);
+  assert.match(publisher, /retiredRecipeIds\.has\(draft\.architecture\?\.presentation\?\.recipeId\)/);
+  assert.match(publisher, /retiredPaletteIds\.has\(draft\.architecture\?\.presentation\?\.paletteId\)/);
 });
 
 test("coordination and publication children have a terminating supervisor", () => {
