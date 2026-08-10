@@ -419,6 +419,45 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.notEqual(invalidTrendValueBuild.status, 0);
     assert.match(invalidTrendValueBuild.stderr, /relativeInterest must be an integer from 0 to 100/);
 
+    const missingTrendInput = structuredClone(input);
+    delete missingTrendInput.trendSignals;
+    await writeFile(inputPath, `${JSON.stringify(missingTrendInput, null, 2)}\n`);
+    const missingTrendBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(missingTrendBuild.status, 0);
+    assert.match(missingTrendBuild.stderr, /Create-page Google Trends gate failed/);
+
+    const unavailableSelectedTrendInput = structuredClone(input);
+    unavailableSelectedTrendInput.trendSignals[0] = {
+      ...unavailableSelectedTrendInput.trendSignals[0],
+      state: "unavailable",
+      relativeInterest: null,
+      direction: "unknown",
+    };
+    await writeFile(inputPath, `${JSON.stringify(unavailableSelectedTrendInput, null, 2)}\n`);
+    const unavailableSelectedTrendBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(unavailableSelectedTrendBuild.status, 0);
+    assert.match(unavailableSelectedTrendBuild.stderr, /Create-page Google Trends gate failed/);
+
+    const weakSelectedTrendInput = structuredClone(input);
+    weakSelectedTrendInput.trendSignals[0] = {
+      ...weakSelectedTrendInput.trendSignals[0],
+      relativeInterest: 49,
+      direction: "flat",
+    };
+    await writeFile(inputPath, `${JSON.stringify(weakSelectedTrendInput, null, 2)}\n`);
+    const weakSelectedTrendBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(weakSelectedTrendBuild.status, 0);
+    assert.match(weakSelectedTrendBuild.stderr, /direction=rising or relativeInterest>=50/);
+
     const undersizedCandidateInput = structuredClone(input);
     undersizedCandidateInput.candidates = undersizedCandidateInput.candidates.slice(0, 7);
     await writeFile(inputPath, `${JSON.stringify(undersizedCandidateInput, null, 2)}\n`);
@@ -457,6 +496,53 @@ test("report generation cannot publish before a separate approval artifact", asy
       mostlyIneligibleBuild.stderr,
       /semantically distinct candidates that passed all gates with action=create_page; found 1/,
     );
+
+    const pagesDirectory = join(workspace, "data", "pages");
+    await mkdir(pagesDirectory, { recursive: true });
+    const existingPage = JSON.parse(await readFile(
+      join(repoRoot, "data", "pages", "how-to-choose-an-ai-roleplay-app.json"),
+      "utf8",
+    ));
+    await writeFile(
+      join(pagesDirectory, "how-to-choose-an-ai-roleplay-app.json"),
+      `${JSON.stringify(existingPage, null, 2)}\n`,
+    );
+    const unavailablePortfolioInput = structuredClone(input);
+    unavailablePortfolioInput.portfolioFunnels = {
+      schemaVersion: 2,
+      privacyClass: "public_growth_evidence",
+      generatedAt: "2099-01-01T09:00:00+08:00",
+      periodBasis: "complete_shanghai_calendar_days",
+      reportingWindowDays: 28,
+      reportingLagDays: 3,
+      aggregationKey: "source_slug+reporting_period",
+      periodStart: "2098-12-05T00:00:00+08:00",
+      periodEnd: "2099-01-01T00:00:00+08:00",
+      summary: {
+        publishedPages: 1,
+        collectedPages: 0,
+        unavailablePages: 1,
+        attributionJoinReady: false,
+        attributionJoinBlocked: false,
+        hasSearchValidatedLandingPage: false,
+      },
+      entries: [{
+        sourceSlug: existingPage.slug,
+        path: existingPage.path,
+        keyword: existingPage.keyword,
+        state: "unavailable",
+        reason: "The protected growth endpoint returned HTTP 503 for this published page.",
+      }],
+    };
+    unavailablePortfolioInput.portfolioDecision.evidenceSlugs = [existingPage.slug];
+    await writeFile(inputPath, `${JSON.stringify(unavailablePortfolioInput, null, 2)}\n`);
+    const unavailablePortfolioBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(unavailablePortfolioBuild.status, 0);
+    assert.match(unavailablePortfolioBuild.stderr, /Create-page growth readiness gate failed/);
+    await rm(pagesDirectory, { recursive: true, force: true });
 
     await mkdir(join(workspace, "data", "seo-feedback", "inbox"), { recursive: true });
     const feedbackMessage = "  Keep the exact page intent narrow.\n\nDo not flatten this feedback.  ";
@@ -594,6 +680,27 @@ test("report generation cannot publish before a separate approval artifact", asy
     const tamperedStrategyPublish = spawnSync(process.execPath, [publisherPath, reportPath, reviewPath], { cwd: workspace, encoding: "utf8" });
     assert.notEqual(tamperedStrategyPublish.status, 0);
     assert.match(tamperedStrategyPublish.stderr, /SHA-256 digest/);
+
+    const missingTrendPublisherBypass = structuredClone(reportBeforeReview);
+    missingTrendPublisherBypass.trendSignals = [];
+    await writeFile(reportPath, `${JSON.stringify(missingTrendPublisherBypass, null, 2)}\n`);
+    const missingTrendBypassPublish = spawnSync(process.execPath, [publisherPath, reportPath, reviewPath], { cwd: workspace, encoding: "utf8" });
+    assert.notEqual(missingTrendBypassPublish.status, 0);
+    assert.match(missingTrendBypassPublish.stderr, /Create-page Google Trends gate failed/);
+
+    const unavailableGrowthPublisherBypass = structuredClone(reportBeforeReview);
+    unavailableGrowthPublisherBypass.portfolioFunnels.summary.attributionJoinReady = false;
+    await writeFile(reportPath, `${JSON.stringify(unavailableGrowthPublisherBypass, null, 2)}\n`);
+    const unavailableGrowthBypassPublish = spawnSync(process.execPath, [publisherPath, reportPath, reviewPath], { cwd: workspace, encoding: "utf8" });
+    assert.notEqual(unavailableGrowthBypassPublish.status, 0);
+    assert.match(unavailableGrowthBypassPublish.stderr, /Create-page growth readiness gate failed/);
+
+    const publisherSource = await readFile(publisherPath, "utf8");
+    assert.equal(
+      [...publisherSource.matchAll(/assertCreatePagePublicationReadiness\(/g)].length,
+      3,
+      "publisher must validate the initial report and the publication-guard reread",
+    );
 
     await writeFile(reportPath, `${JSON.stringify(reportBeforeReview, null, 2)}\n`);
 

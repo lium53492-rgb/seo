@@ -84,7 +84,7 @@
       "rejectedDefaults": ["uniform blog cards", "infinite carousel", "stock illustration gallery"],
       "companion": "none",
       "gallery": "none",
-      "reusePolicy": { "kind": "cooldown", "pages": 5 }
+      "reusePolicy": { "kind": "single_use" }
     },
     {
       "id": "orbital-mission-log-v1",

@@ -1,6 +1,6 @@
 # Pending SEO feedback
 
-Last updated: 2026-08-04 (Asia/Shanghai)
+Last updated: 2026-08-10 (Asia/Shanghai)
 
 ## Operating constraints
 
@@ -22,6 +22,11 @@ Last updated: 2026-08-04 (Asia/Shanghai)
 
 - Verbatim: “seo的这个网址  前面是点开之后会直接跳转到novel.ai，  现在说不让这样了  这个你重新修改一下”
 - Decision: adopted. The bare homepage now renders a first-party guide hub and keeps its navigation on this site. NovelAI redirects remain available only after an intentional CTA click from a published SEO page.
+
+## User feedback adopted 2026-08-10
+
+- Verbatim: 像8月7号的这种页面  就不用上线了  风格配色都不行  删除吧  我要内容能吸引人的  不是发布页面凑数的
+- Decision: adopted. Retire the 2026-08-07 scene-recovery page and its museum-cobalt specimen presentation. A scheduled run may end with no publication; missing Google Trends or complete GSC/landing-UV/attribution readiness is a hard stop, and rendered desktop/mobile appeal must be inspected rather than inferred from recipe metadata.
 
 ## User feedback awaiting intake
 

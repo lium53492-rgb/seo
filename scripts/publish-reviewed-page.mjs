@@ -30,6 +30,7 @@ const architecturePolicy = readJson("data/config/content-architecture.json");
 const presentationCatalog = readJson("data/config/presentation-recipes.json");
 const unattendedPolicy = readJson("data/config/unattended-publishing.json");
 const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const retiredPageSlugs = new Set(Array.isArray(policy.retiredPageSlugs) ? policy.retiredPageSlugs : []);
 
 validateSeoArchitectureBridge(policy, architecturePolicy);
 
@@ -62,6 +63,75 @@ function shanghaiDate(value) {
     month: "2-digit",
     day: "2-digit",
   }).format(new Date(value));
+}
+
+function isOfficialObservedTrendSignal(signal, reportDate, selectedKeyword) {
+  let sourceUrl;
+  try {
+    sourceUrl = new URL(signal?.sourceUrl);
+  } catch {
+    return false;
+  }
+  let collectedDate;
+  try {
+    collectedDate = shanghaiDate(signal?.collectedAt);
+  } catch {
+    return false;
+  }
+  return String(signal?.keyword || "").trim().toLowerCase() === selectedKeyword &&
+    signal?.source === "google_trends" &&
+    signal?.state === "observed" &&
+    sourceUrl.protocol === "https:" &&
+    !sourceUrl.username &&
+    !sourceUrl.password &&
+    sourceUrl.hostname === "trends.google.com" &&
+    sourceUrl.pathname.startsWith("/trends/") &&
+    collectedDate === reportDate &&
+    Number.isInteger(signal?.relativeInterest) &&
+    signal.relativeInterest >= 0 &&
+    signal.relativeInterest <= 100 &&
+    (signal.direction === "rising" || signal.relativeInterest >= 50);
+}
+
+function assertCreatePagePublicationReadiness(candidateReport) {
+  if (candidateReport.publicationMode === "update") return;
+  if (candidateReport.portfolioDecision?.action !== "create_page") {
+    throw new Error("Create-page publication requires portfolioDecision.action=create_page");
+  }
+  if (unattendedPolicy.allowCreatePageWhenMetricsUnavailable !== false) {
+    throw new Error("Create-page growth readiness gate requires allowCreatePageWhenMetricsUnavailable=false");
+  }
+  const portfolio = candidateReport.portfolioFunnels;
+  const summary = portfolio?.summary;
+  const entries = Array.isArray(portfolio?.entries) ? portfolio.entries : [];
+  const pageReadinessFailures = entries.filter((entry) =>
+    entry?.state !== "collected" ||
+    entry.report?.decisionState?.searchPerformanceReady !== true ||
+    entry.report?.decisionState?.landingUvReady !== true ||
+    entry.report?.decisionState?.qualifiedOutboundReady !== true);
+  const growthReady = Boolean(summary) &&
+    summary.collectedPages === summary.publishedPages &&
+    summary.unavailablePages === 0 &&
+    summary.attributionJoinReady === true &&
+    entries.length === summary.publishedPages &&
+    pageReadinessFailures.length === 0;
+  if (!growthReady) {
+    throw new Error(
+      "Create-page growth readiness gate failed: every published page must be collected with " +
+      "Search Console, landing UV, and qualified outbound readiness, zero unavailable pages, " +
+      "and attributionJoinReady=true",
+    );
+  }
+  const selectedKeyword = String(candidateReport.draft?.keyword || "").trim().toLowerCase();
+  const trendReady = Array.isArray(candidateReport.trendSignals) &&
+    candidateReport.trendSignals.some((signal) =>
+      isOfficialObservedTrendSignal(signal, candidateReport.date, selectedKeyword));
+  if (!trendReady) {
+    throw new Error(
+      `Create-page Google Trends gate failed: selected draft ${selectedKeyword || "<empty>"} needs an ` +
+      "official same-day observed signal with direction=rising or relativeInterest>=50",
+    );
+  }
 }
 
 function publicationClock() {
@@ -110,6 +180,7 @@ function coordinationContext() {
 if (report.publication?.status !== "ready_for_review" || !report.draft?.quality?.passed) {
   throw new Error("Report does not contain a draft that passed automated gates");
 }
+assertCreatePagePublicationReadiness(report);
 const draftDigest = report.draft?.schemaVersion === architecturePolicy.requiredDraftSchemaVersion
   ? sha256({ draft: report.draft, contentStrategy: report.contentStrategy })
   : sha256(report.draft);
@@ -130,6 +201,9 @@ if (!safeSlug.test(review.slug) || !validatePipelineReviewContract({
   architectureRequiredChecks: architecturePolicy.requiredReviewChecks,
 })) {
   throw new Error("Approval record does not satisfy the reviewed draft contract");
+}
+if (retiredPageSlugs.has(review.slug)) {
+  throw new Error(`Page /${review.slug} was retired by explicit user feedback and cannot be republished automatically`);
 }
 
 const pagesDirectory = resolve("data/pages");
@@ -277,6 +351,7 @@ withDailyPublicationGuard({
   now: publicationTime,
 }, (assertGuard) => {
   const currentReport = readJson(reportPath);
+  assertCreatePagePublicationReadiness(currentReport);
   const currentPages = publishedPagesFromDisk();
   const currentSameSlug = currentPages.find((candidate) => candidate.slug === review.slug);
   const currentDigest = currentReport.draft?.schemaVersion === architecturePolicy.requiredDraftSchemaVersion

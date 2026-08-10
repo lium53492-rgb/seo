@@ -2,16 +2,20 @@
 
 ## Outcome
 
-The primary automation owns one outcome for each Asia/Shanghai calendar day:
-publish exactly one new, reviewed English SEO page, or recognize that the page
-for that day is already complete. It must not require a user to identify the
-next step after a timeout, network interruption, or partial run.
+The primary automation owns one decision for each Asia/Shanghai calendar day:
+publish at most one new, reviewed English SEO page when every release gate is
+ready, recognize that the page for that day is already complete, or record a
+no-publication outcome with its reason. It must not require a user to identify
+the next step after a timeout, network interruption, or partial run.
 
 This contract does not relax product truth, originality, IP, review, build, or
-one-page-per-day safeguards. Missing analytics is recorded as unavailable and
-does not by itself block a distinct `create_page` decision. A confirmed orphan
+one-page-per-day safeguards. A `create_page` release requires an observed
+same-day Google Trends signal for the selected keyword and a complete all-page
+measurement portfolio with observed Search Console and landing UV states plus
+a ready attribution join. Missing evidence is recorded as unavailable and
+blocks publication without being converted to zero. A confirmed orphan
 callback, unsupported claim, third-party IP, duplicate intent, failed review,
-failed verification, unrelated user work, or irreconcilable Git conflict still
+failed verification, unrelated user work, or irreconcilable Git conflict also
 stops publication rather than shipping unsafe content.
 
 ## Idempotent state machine
@@ -84,8 +88,11 @@ reused seeds against current pages, approved facts, feedback, and fresh directly
 supporting evidence before publication.
 
 Do not use unavailable Search Console, URL Inspection, UV, or attribution data
-as zero. For a new intent, unavailable measurement alone is not a publication
-block. It remains a release caveat and must be retried on later runs.
+as zero. For unattended `create_page` production, any unavailable exact-page
+Search Console or landing UV state, incomplete portfolio coverage, or unready
+attribution join is a publication block. Retry within the configured network
+budget, then record no publication instead of switching candidates to fill the
+daily slot.
 
 ## Retry and recovery
 

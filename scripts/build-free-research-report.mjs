@@ -30,6 +30,7 @@ const architecturePolicy = readJson("data/config/content-architecture.json");
 const presentationCatalog = readJson("data/config/presentation-recipes.json");
 const unattendedPolicy = readJson("data/config/unattended-publishing.json");
 const date = String(input.date || "");
+const retiredPageSlugs = new Set(Array.isArray(policy.retiredPageSlugs) ? policy.retiredPageSlugs : []);
 
 validateSeoArchitectureBridge(policy, architecturePolicy);
 
@@ -266,6 +267,22 @@ function validateTrendSignals(rawSignals, candidateKeywordSet) {
       detail,
     };
   });
+}
+
+function assertSelectedCreateTrendReadiness(selectedDraftKeyword, signals) {
+  const keyword = String(selectedDraftKeyword || "").trim().toLowerCase();
+  const qualifyingSignal = signals.find((signal) =>
+    signal.keyword === keyword &&
+    signal.source === "google_trends" &&
+    signal.state === "observed" &&
+    shanghaiCalendarDate(signal.collectedAt) === date &&
+    (signal.direction === "rising" || signal.relativeInterest >= 50));
+  if (!qualifyingSignal) {
+    throw new Error(
+      `Create-page Google Trends gate failed: selected draft ${keyword || "<empty>"} needs an ` +
+      "official same-day observed signal with direction=rising or relativeInterest>=50",
+    );
+  }
 }
 
 function readUnconsumedFeedback() {
@@ -1082,6 +1099,33 @@ function validatePortfolioSnapshot(rawPortfolio, publishedPages) {
   };
 }
 
+function assertCreatePageGrowthReadiness(portfolio) {
+  if (unattendedPolicy.allowCreatePageWhenMetricsUnavailable !== false) {
+    throw new Error("Create-page growth readiness gate requires allowCreatePageWhenMetricsUnavailable=false");
+  }
+  const summary = portfolio?.summary;
+  const entries = Array.isArray(portfolio?.entries) ? portfolio.entries : [];
+  const pageReadinessFailures = entries.filter((entry) =>
+    entry?.state !== "collected" ||
+    entry.report?.decisionState?.searchPerformanceReady !== true ||
+    entry.report?.decisionState?.landingUvReady !== true ||
+    entry.report?.decisionState?.qualifiedOutboundReady !== true);
+  const ready = Boolean(summary) &&
+    summary.collectedPages === summary.publishedPages &&
+    summary.unavailablePages === 0 &&
+    summary.attributionJoinReady === true &&
+    entries.length === summary.publishedPages &&
+    pageReadinessFailures.length === 0;
+  if (!ready) {
+    const failedSlugs = pageReadinessFailures.map((entry) => entry?.sourceSlug || "<unknown>");
+    throw new Error(
+      "Create-page growth readiness gate failed: every published page must be collected with " +
+      "Search Console, landing UV, and qualified outbound readiness, zero unavailable pages, " +
+      `and attributionJoinReady=true${failedSlugs.length ? `; failed pages: ${failedSlugs.join(", ")}` : ""}`,
+    );
+  }
+}
+
 function validatePortfolioDecision(rawDecision, publishedPages) {
   const allowedActions = new Set(["create_page", "improve_page", "consolidate", "observe"]);
   if (!rawDecision || !allowedActions.has(rawDecision.action)) {
@@ -1236,6 +1280,8 @@ const preparedCandidateInputs = input.candidates.map((candidate) => {
 });
 const portfolioFunnels = validatePortfolioSnapshot(readPortfolioInput(), pages);
 const portfolioDecision = validatePortfolioDecision(input.portfolioDecision, pages);
+const isCreatePageDecision = input.publicationMode !== "update" && portfolioDecision.action === "create_page";
+if (isCreatePageDecision) assertCreatePageGrowthReadiness(portfolioFunnels);
 const opportunities = preparedCandidateInputs
   .map((candidate) => scoreResearchCandidate(candidate, policy))
   .sort((left, right) => right.score - left.score)
@@ -1255,6 +1301,9 @@ const rawDrafts = Array.isArray(input.drafts) && input.drafts.length ? input.dra
 if (rawDrafts.length > policy.dailyPageLimit) {
   throw new Error(`A daily report may contain at most ${policy.dailyPageLimit} publishable draft`);
 }
+if (isCreatePageDecision && rawDrafts.length) {
+  assertSelectedCreateTrendReadiness(rawDrafts[0]?.keyword, trendSignals);
+}
 
 const preparedDrafts = rawDrafts.map((rawDraft, index) => {
   const keyword = String(rawDraft?.keyword || "").trim().toLowerCase();
@@ -1269,6 +1318,9 @@ const preparedDrafts = rawDrafts.map((rawDraft, index) => {
     ? portfolioDecision.targetSlug
     : slugify(opportunity.keyword);
   if (!pageSlug) throw new Error("Draft keyword did not produce a safe slug");
+  if (retiredPageSlugs.has(pageSlug)) {
+    throw new Error(`Page /${pageSlug} was retired by explicit user feedback and cannot be republished automatically`);
+  }
   if (rawDraft.slug && String(rawDraft.slug).replace(/^\//, "") !== pageSlug) {
     throw new Error(`Draft slug must match the researched keyword: ${pageSlug}`);
   }

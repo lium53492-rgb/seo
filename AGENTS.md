@@ -56,10 +56,12 @@ Before a new page or update:
   the revenue loop as ready unless the protected probe observes Search
   Console, landing UV, and the attribution store and a recent signed NovelAI
   callback handshake exists.
-- Do not use a published-page count, non-zero landing UV, or non-zero exact-page
-  Search Console impressions as a hard prerequisite for a distinct new page.
-  Keep those metrics as observed prioritization signals. Stop on orphan
-  conversion callbacks instead of hiding a broken attribution join.
+- For unattended `create_page` production, require the current all-page
+  portfolio to have zero unavailable pages, observed exact-page Search Console
+  and landing UV states for every published page, and a ready attribution join.
+  Observed zero remains valid evidence; unavailable does not. Stop rather than
+  publishing while the measurement loop is disconnected, and always stop on
+  orphan conversion callbacks.
 
 ## Content and page requirements
 
@@ -82,6 +84,11 @@ Before a new page or update:
   provide the required decision-evidence signals and rationales. The builder,
   not the generating model, derives product-fit, trial-intent, revenue-intent,
   intent-specificity, originality, IP, and cannibalization scores.
+- A selected `create_page` draft must have a same-day observed Google Trends
+  signal from an official Trends URL. It must be rising or have relative
+  interest of at least 50 in its declared geography and comparison period.
+  Empty, unavailable, stale, falling-low, or model-only trend claims cannot
+  authorize publication.
 - The English draft must be review-required, 600-1,000 words, have at least
   four sections and three FAQs, use approved facts only, contain a real CTA,
   and pass the builder's source, IP, duplicate, slug, and link gates.
@@ -99,6 +106,9 @@ Before a new page or update:
 
 - Publish at most one new page per Shanghai day. A different keyword spelling
   is not a different intent, and an update is a separate evidence-led decision.
+- A scheduled run may legitimately publish zero pages. Research and record the
+  decision, but do not create a page merely to satisfy a daily count when
+  Trends, measurement readiness, reader value, or rendered visual quality fails.
 - For scheduled production, follow `docs/seo/unattended-daily-publishing.md`.
   Settle any previous-day release in flight, acquire the shared daily lease,
   restore its latest checkpoint, save after

@@ -22,7 +22,7 @@ Do not create near-duplicate keyword variants. A keyword is only a discovery han
 - Give every evidence record a stable ID. For policy version 4, each candidate must reference at least two directly supporting records from two independent domains and explain every selected product, trial, revenue, specificity, IP, and cannibalization signal.
 - Never copy model-supplied hard-gate scores into a report. The builder derives them from the versioned signal policy; demand and difficulty remain explicitly labelled research proxies with rationales.
 - Prefer official pages, credible editorial sources, public communities, and observable first-party Search Console data. Keep Search Console metrics separate from proxy demand and difficulty scores.
-- Treat trend or hot-topic signals as leads, not facts. They need a source, freshness date, product-fit check, and intellectual-property risk check before they can influence a brief.
+- Treat trend or hot-topic signals as leads, not facts. They need a source, freshness date, product-fit check, and intellectual-property risk check before they can influence a brief. An unattended `create_page` draft additionally needs a same-day observed Google Trends signal for its exact candidate; unavailable or empty Trends evidence means no publication.
 - Monitor Google policy or ranking-system changes through official Google Search Status Dashboard and Search Central documentation. Do not treat screenshots or third-party summaries as authoritative policy.
 
 ## 3. Draft with AI, finish with editorial judgment
@@ -101,7 +101,7 @@ When a draft includes a contextual internal link, the published template must re
   snapshot keeps only exact-page GSC, sanitized URL Inspection, aggregate UV,
   aggregate qualified outbound, and boolean readiness/blocking state.
 - Convert that portfolio into a durable `portfolioDecision`: `create_page`, `improve_page`, `consolidate`, or `observe`. Record an evidence-led rationale, cited published slugs, and a target slug when applicable. A draft is legal only for the matching create or improve action.
-- Page count, landing UV, and exact-page Search Console impressions are observed prioritization signals, not a hard prerequisite for a distinct new page. Zero or unavailable performance does not by itself block `create_page`; every candidate still needs the normal evidence, product, intent, originality, IP, review, and daily-limit gates. An update additionally needs an observed Search Console row for its exact target URL.
+- Page count and non-zero performance remain prioritization signals rather than traffic quotas. Observed zero is valid. For unattended `create_page` production, however, the complete current portfolio must have observed exact-page Search Console and landing UV states for every published page and a ready attribution join; unavailable measurement blocks publication. An update additionally needs an observed Search Console row for its exact target URL.
 - Consolidation is not permission to redirect. The builder requires distinct
   source and target slugs, at least one query observed for both exact pages,
   at least 20 exact-page impressions per page over the same finalized period,

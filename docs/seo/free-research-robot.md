@@ -19,7 +19,7 @@ This is the active zero-additional-API-cost production protocol. It uses public 
    revenue, currency, purchase-event, callback-count, click-ID, or cohort detail
    into `data/growth` or `data/reports`.
 5. Run `npm.cmd run growth:probe` from the NovelAI server environment after callback deployment or secret rotation, then run `npm.cmd run growth:check`. Full-loop readiness requires observed Search Console, Vercel landing UV, and attribution-store probes plus a recent signed NovelAI callback handshake.
-6. Run `npm.cmd run growth:collect` before researching candidates. It uses the official Search Console and Vercel APIs over the configured 28-day finalized-data window, currently ending three complete Shanghai days before the run. Read the resulting all-page snapshot and use page-level UV and exact-page Search Console evidence to prioritize decisions, but do not treat page count, zero metrics, or unavailable metrics as a standalone hard block on a distinct `create_page` candidate.
+6. Run `npm.cmd run growth:collect` before researching candidates. It uses the official Search Console and Vercel APIs over the configured 28-day finalized-data window, currently ending three complete Shanghai days before the run. Observed zero is valid, but an unattended `create_page` draft is illegal unless every published page has observed exact-page Search Console and landing UV states and the attribution join is ready. After retries, record no publication when any required measurement remains unavailable.
 
 ## Candidate research
 
@@ -40,6 +40,12 @@ For policy version 4, every candidate needs:
 - `funnelStage`: problem, solution, trial, or purchase;
 - `conversionGoal`: qualified_outbound_click, trial_start, or purchase;
 - a `decisionEvidence` object with the candidate-specific searcher job, evidence references, approved product fact IDs, discrete product/trial/revenue/specificity signals, IP class, cannibalization class, nearest published slug when relevant, and a specific rationale for every score dimension.
+
+The selected `create_page` candidate also needs a same-day `observed` Google
+Trends signal from an official Trends URL. Its direction must be `rising`, or
+its relative interest must be at least 50 for the declared geography and
+period. An empty array, unavailable observation, or unsupported model claim is
+a no-publication result, not permission to choose a weaker fallback.
 
 The builder derives `productFit`, `trialIntent`, `revenueIntent`, `intentSpecificity`, `originality`, `ipRisk`, and `cannibalizationRisk` from the versioned signal weights. Raw AI-supplied values for those fields are ignored. New pages must pass every hard gate in `data/config/seo-policy.json`; demand cannot override a failed trial, revenue, specificity, product, IP, or cannibalization gate. See `research-signal-contract.md` for the exact contract and formulas.
 

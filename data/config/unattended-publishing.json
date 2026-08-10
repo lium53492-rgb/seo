@@ -10,7 +10,7 @@
   "sharedCheckpoint": "git-common-dir",
   "leaseStaleAfterMinutes": 60,
   "heartbeatIntervalMinutes": 15,
-  "allowCreatePageWhenMetricsUnavailable": true,
+  "allowCreatePageWhenMetricsUnavailable": false,
   "networkAttempts": 3,
   "candidateBatchSize": {
     "min": 8,

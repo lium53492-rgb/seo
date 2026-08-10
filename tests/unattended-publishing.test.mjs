@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import seoPolicy from "../data/config/seo-policy.json" with { type: "json" };
 import unattendedPolicy from "../data/config/unattended-publishing.json" with { type: "json" };
 import packageManifest from "../package.json" with { type: "json" };
 
@@ -20,7 +21,7 @@ test("unattended policy targets one page with persistent release recovery", () =
   assert.equal(unattendedPolicy.sharedCheckpoint, "git-common-dir");
   assert.ok(unattendedPolicy.leaseStaleAfterMinutes >= 15);
   assert.ok(unattendedPolicy.heartbeatIntervalMinutes < unattendedPolicy.leaseStaleAfterMinutes);
-  assert.equal(unattendedPolicy.allowCreatePageWhenMetricsUnavailable, true);
+  assert.equal(unattendedPolicy.allowCreatePageWhenMetricsUnavailable, false);
   assert.ok(unattendedPolicy.networkAttempts >= 3);
   assert.ok(unattendedPolicy.candidateBatchSize.min >= 8);
   assert.ok(unattendedPolicy.minimumFallbackIntents >= 7);
@@ -39,6 +40,14 @@ test("unattended release proof is wired to the canonical production origin", () 
   assert.match(packageManifest.scripts["daily:coord"], /run-node-supervised\.mjs 1200000/);
   assert.match(packageManifest.scripts["research:publish"], /run-node-supervised\.mjs 600000/);
   assert.match(packageManifest.scripts["release:verify"], /verify-live-release\.mjs/);
+});
+
+test("user-retired pages cannot be recreated by the unattended pipeline", () => {
+  assert.deepEqual(seoPolicy.retiredPageSlugs, ["ai-roleplay-scene-recovery"]);
+  const builder = readFileSync(join(root, "scripts", "build-free-research-report.mjs"), "utf8");
+  const publisher = readFileSync(join(root, "scripts", "publish-reviewed-page.mjs"), "utf8");
+  assert.match(builder, /retiredPageSlugs\.has\(pageSlug\)/);
+  assert.match(publisher, /retiredPageSlugs\.has\(review\.slug\)/);
 });
 
 test("coordination and publication children have a terminating supervisor", () => {

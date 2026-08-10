@@ -1,0 +1,15 @@
+{
+  "date": "2026-08-10",
+  "entries": [
+    {
+      "id": "feedback-2026-08-10-reject-filler-page",
+      "createdAt": "2026-08-10T11:53:36.5772372+08:00",
+      "message": "像8月7号的这种页面  就不用上线了  风格配色都不行  删除吧  我要内容能吸引人的  不是发布页面凑数的",
+      "source": "codex_chat",
+      "kind": "content_guidance",
+      "consumedAt": "2026-08-10T11:53:36.5772372+08:00",
+      "decision": "adopted",
+      "rationale": "The 2026-08-07 page is retired, its museum-cobalt specimen recipe is permanently single-use, and future unattended publication is blocked when Google Trends or the complete measurement portfolio is unavailable."
+    }
+  ]
+}

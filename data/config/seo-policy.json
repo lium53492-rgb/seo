@@ -1,6 +1,9 @@
 {
   "policyVersion": 4,
   "dailyPageLimit": 1,
+  "retiredPageSlugs": [
+    "ai-roleplay-scene-recovery"
+  ],
   "feedbackLoop": {
     "blockOnOrphanCallbacks": true,
     "reportingWindowDays": 28,

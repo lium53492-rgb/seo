@@ -5,7 +5,7 @@
   "path": "/ai-roleplay-dialogue-vs-action",
   "keyword": "ai roleplay dialogue vs action",
   "publishedAt": "2026-08-10T03:06:48.328Z",
-  "updatedAt": "2026-08-10T03:06:48.328Z",
+  "updatedAt": "2026-08-10T03:49:27.373Z",
   "generatedFromReport": "seo-2026-08-10",
   "draftDigest": "5e2386676abb002c969b8bfdb922561c66c6f487c2b0dc80bcc8ed4de7670cf6",
   "pagePattern": "narrative_essay",
@@ -182,14 +182,14 @@
       "role": "worked_example",
       "format": "examples",
       "heading": "Test one small paired turn",
-      "bodyMarkdown": "Imagine an original scene: a chosen role finds a lantern burning in an otherwise empty archive. Dialogue only might ask, “Did someone leave this for me?” That changes the relationship by inviting an answer, but the situation stays still. Action only might be: *I shield the flame and look beneath the desk.* That changes the situation, but it gives no clear interpersonal pressure.\n\nA paired turn can be smaller than a paragraph: *I move the lantern away from the papers and keep my hand near the drawer.* “If you expected me, say so before I open this.” The action protects something immediate; the line makes the next response choose a position. The archive, lantern, note, and roles are original generic craft material, not a supplied story, a promise, or a borrowed fictional setting."
+      "bodyMarkdown": "Imagine an original scene: a chosen role finds a lantern burning in an otherwise empty archive. Dialogue only might ask, “Did someone leave this for me?” That changes the relationship by inviting an answer, but the situation stays still. Action only might be: “I shield the flame and look beneath the desk.” That changes the situation, but it gives no clear interpersonal pressure.\n\nA paired turn can be smaller than a paragraph: “I move the lantern away from the papers and keep my hand near the drawer.” “If you expected me, say so before I open this.” The action protects something immediate; the line makes the next response choose a position. The archive, lantern, note, and roles are original generic craft material, not a supplied story, a promise, or a borrowed fictional setting."
     },
     {
       "id": "send-one-open-pressure",
       "role": "next_step",
       "format": "checklist",
       "heading": "Send one open pressure, then stop",
-      "bodyMarkdown": "- Check the **relationship** column: did a line give another role something specific to answer?\n\n- Check the **situation** column: did an action create one observable change?\n\n- Check the **open pressure** column: can the next turn respond without a separate plot?\n\nKeep only the format that has a job. If the exchange is flat, use the related scene-recovery guide."
+      "bodyMarkdown": "- Check the **relationship** column: did a line give another role something specific to answer?\n\n- Check the **situation** column: did an action create one observable change?\n\n- Check the **open pressure** column: can the next turn respond without a separate plot?\n\nKeep only the format that has a job. If the exchange is flat, return to the concrete scene detail that made the turn answerable."
     }
   ],
   "faqs": [
@@ -220,10 +220,6 @@
   ],
   "internalLinks": [
     {
-      "anchor": "scene-recovery guide",
-      "href": "/ai-roleplay-scene-recovery"
-    },
-    {
       "anchor": "AI roleplay first message guide",
       "href": "/ai-roleplay-first-message"
     }
@@ -234,7 +230,7 @@
   ],
   "quality": {
     "passed": true,
-    "wordCount": 982,
+    "wordCount": 984,
     "checks": [
       {
         "id": "distinct-intent",
@@ -459,5 +455,5 @@
       "role-selection"
     ]
   },
-  "servedContentDigest": "2fd15b403f4212e2f6198370f294f732ba882d18c534577405c625ce3e10ee05"
+  "servedContentDigest": "0a439e4e658fc173871e9428bc2ffc53f3bb51b1a92ee7e3930283b18bb382bc"
 }
