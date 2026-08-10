@@ -17,11 +17,15 @@ Each candidate needs at least two `decisionEvidence.evidenceRefs` from two indep
     "evidenceRefs": ["result-one", "result-two"],
     "searcherJob": "Enter an original AI roleplay story now and compare whether the format is worth trying.",
     "productFactIds": [
+      "dnd-content-direction",
+      "dnd-primary-audience",
       "voice-roleplay-format",
       "existing-story",
       "role-selection"
     ],
     "productSignals": [
+      "dnd_content",
+      "adult_tabletop_audience",
       "voice_roleplay",
       "story_premise",
       "role_selection"
@@ -64,7 +68,7 @@ Each rationale must contain at least 30 characters. A rationale makes a signal r
 
 The weights live in `data/config/seo-policy.json`, and `scripts/lib/seo-policy.mjs` is the only scoring implementation.
 
-- Product fit: voice roleplay 30, story premise 25, role selection 25, interactive-fiction history 20. Each selected signal requires its mapped approved fact ID.
+- Product fit: D&D content direction 30, voice roleplay 30, story premise 25, role selection 25, interactive-fiction history 20; totals are capped at 100. The `adult_tabletop_audience` qualifier has weight 0. Every new candidate must include both D&D qualifiers and name a D&D/tabletop player or Game Master job, while still earning product fit from approved capability facts. Audience direction alone cannot clear the 80-point product-fit gate or authorize protected settings, characters, logos, trademarks, or rules text.
 - Trial intent: solution-aware 25, immediate-use 30, experience-seeking 30, action language 15.
 - Revenue intent: commercial comparison 30, alternative seeking 25, purchase language 40, recurring use 15; totals are capped at 100.
 - Intent specificity: defined task 30, defined format 25, defined audience 25, narrow modifier 20.

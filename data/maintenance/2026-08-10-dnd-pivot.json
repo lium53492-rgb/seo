@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "id": "maintenance-2026-08-10-dnd-pivot",
+  "createdAt": "2026-08-10T18:28:47.0402909+08:00",
+  "authorization": "Direct user instruction in Codex chat on 2026-08-10",
+  "coldStartGate": {
+    "state": "retired",
+    "retiredByCommit": "6dfafb4e4ec4e4334e0e75458a4cead2c08fdc1e",
+    "note": "The earlier statement that the cold-start allowance still blocked production was incorrect and has been withdrawn."
+  },
+  "preservedPage": "ai-roleplay-prompt-vs-existing-story",
+  "preservedPageState": "untouched_original_release_chain",
+  "retiredPublications": [
+    {
+      "schemaVersion": 1,
+      "action": "retire_published_page",
+      "originalPublicationDate": "2026-07-20",
+      "slug": "choose-a-role-ai-story",
+      "reportId": "seo-2026-07-20",
+      "draftDigest": null,
+      "publishedAt": "2026-07-20T12:14:29.024Z",
+      "retiredAt": "2026-08-10T10:28:47.040Z",
+      "reason": "Direct user instruction retired the generic, child-directed page while preserving its historical report and research evidence."
+    },
+    {
+      "schemaVersion": 1,
+      "action": "retire_published_page",
+      "originalPublicationDate": "2026-07-21",
+      "slug": "ai-voice-roleplay-story",
+      "reportId": "seo-2026-07-21",
+      "draftDigest": null,
+      "publishedAt": "2026-07-21T02:30:20.989Z",
+      "retiredAt": "2026-08-10T10:28:47.040Z",
+      "reason": "Direct user instruction retired the generic, child-directed page while preserving its historical report and research evidence."
+    },
+    {
+      "schemaVersion": 1,
+      "action": "retire_published_page",
+      "originalPublicationDate": "2026-07-21",
+      "slug": "story-based-ai-roleplay",
+      "reportId": "seo-2026-07-21",
+      "draftDigest": null,
+      "publishedAt": "2026-07-21T08:25:38.790Z",
+      "retiredAt": "2026-08-10T10:28:47.040Z",
+      "reason": "Direct user instruction retired the second same-day legacy page while retaining its original page history for audit."
+    },
+    {
+      "schemaVersion": 1,
+      "action": "retire_published_page",
+      "originalPublicationDate": "2026-07-22",
+      "slug": "interactive-voice-story",
+      "reportId": "seo-2026-07-22",
+      "draftDigest": null,
+      "publishedAt": "2026-07-22T02:33:11.569Z",
+      "retiredAt": "2026-08-10T10:28:47.040Z",
+      "reason": "Direct user instruction retired the generic, child-directed page while preserving its historical report and research evidence."
+    },
+    {
+      "schemaVersion": 1,
+      "action": "retire_published_page",
+      "originalPublicationDate": "2026-07-31",
+      "slug": "how-to-start-ai-roleplay",
+      "reportId": "seo-2026-07-31",
+      "draftDigest": "f8b97ad0ea81adbf6bd7e0efa65f6cb5acfb674c4b7c91672fa12fe3be1684c5",
+      "publishedAt": "2026-07-31T07:10:56.939Z",
+      "retiredAt": "2026-08-10T10:28:47.040Z",
+      "reason": "Direct user instruction retired the generic, child-directed page while preserving its report, review, and research evidence."
+    },
+    {
+      "schemaVersion": 1,
+      "action": "retire_published_page",
+      "originalPublicationDate": "2026-08-03",
+      "slug": "how-to-choose-an-ai-roleplay-app",
+      "reportId": "seo-2026-08-03",
+      "draftDigest": "d8aaf31baae265f0e8c4c44a3037b40bb55e7f1a72c6a971464060f78a92d9f9",
+      "publishedAt": "2026-08-03T06:40:00.000Z",
+      "retiredAt": "2026-08-10T10:28:47.040Z",
+      "reason": "Direct user instruction retired the generic, child-directed page while preserving its report, review, research, and PDF evidence."
+    },
+    {
+      "schemaVersion": 1,
+      "action": "retire_published_page",
+      "originalPublicationDate": "2026-08-06",
+      "slug": "ai-roleplay-first-message",
+      "reportId": "seo-2026-08-06",
+      "draftDigest": "f3beb13d8847ea9c2a3fa912da477ca99e01937101198f42d6489dbdba0c9770",
+      "publishedAt": "2026-08-06T02:50:30.000Z",
+      "retiredAt": "2026-08-10T10:28:47.040Z",
+      "reason": "Direct user instruction retired the generic, child-directed page while preserving its report, review, research, and PDF evidence."
+    },
+    {
+      "schemaVersion": 1,
+      "action": "retire_published_page",
+      "originalPublicationDate": "2026-08-07",
+      "slug": "ai-roleplay-scene-recovery",
+      "reportId": "seo-2026-08-07",
+      "draftDigest": "79de1d583d2bc79826927e01566a5e67502695c74f3b815aff0881aa9e123e4f",
+      "publishedAt": "2026-08-07T02:54:26.161Z",
+      "retiredAt": "2026-08-10T10:28:47.040Z",
+      "reason": "The previously authorized retirement remains explicit while its report, review, research, and PDF evidence are retained."
+    },
+    {
+      "schemaVersion": 1,
+      "action": "retire_published_page",
+      "originalPublicationDate": "2026-08-10",
+      "slug": "ai-roleplay-dialogue-vs-action",
+      "reportId": "seo-2026-08-10",
+      "draftDigest": "5e2386676abb002c969b8bfdb922561c66c6f487c2b0dc80bcc8ed4de7670cf6",
+      "publishedAt": "2026-08-10T03:06:48.328Z",
+      "retiredAt": "2026-08-10T10:28:47.040Z",
+      "reason": "Direct user instruction retired the child-directed, samey page after publication; the historical report, review, growth record, and PDF remain as audit evidence."
+    }
+  ],
+  "retiredPages": [
+    "ai-roleplay-dialogue-vs-action",
+    "ai-roleplay-first-message",
+    "ai-roleplay-scene-recovery",
+    "ai-voice-roleplay-story",
+    "choose-a-role-ai-story",
+    "how-to-choose-an-ai-roleplay-app",
+    "how-to-start-ai-roleplay",
+    "interactive-voice-story",
+    "story-based-ai-roleplay"
+  ],
+  "historicalArtifactsRetained": [
+    "data/growth",
+    "data/reports",
+    "data/research",
+    "data/reviews",
+    "output/pdf"
+  ],
+  "retirementVerification": {
+    "deploymentState": "not_deployed_from_this_worktree",
+    "expectedLiveHttpStatus": [404, 410],
+    "sitemapMustExcludeRetiredUrls": true,
+    "searchMonitoring": "data/growth/YYYY-MM-DD.json#retiredUrls",
+    "completionRule": "Requires production deployment plus live HTTP, sitemap, Search Console performance, and URL Inspection observations."
+  },
+  "contentDirection": {
+    "primaryAudience": "adult D&D players and Game Masters",
+    "contentBasis": "original tabletop fantasy only until a structured SRD license and attribution contract exists",
+    "retiredPresentation": "playful-story-workshop-v1"
+  },
+  "retiredRuntimeRoute": "/go/story/2000s-marriage-life-simulator"
+}

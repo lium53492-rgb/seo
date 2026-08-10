@@ -11,10 +11,13 @@ import { publishedArchitectureHistoryFromReports } from "../lib/seo/content-hist
 import { servedContentDigest } from "../lib/seo/served-content.mjs";
 import { validatePipelineReviewContract } from "../lib/seo/pipeline-contract.mjs";
 import { hasExplicitMarkdownList, unsupportedMarkdownReason } from "../lib/seo/markdown-semantics.mjs";
+import { audienceDraftBlockers } from "../lib/seo/audience-policy.mjs";
+import { assertOriginalIpBoundary } from "../lib/seo/ip-boundary.mjs";
 import {
   coordinationOwner,
   withDailyPublicationGuard,
 } from "./lib/daily-coordination.mjs";
+import { readDailyRunState } from "./lib/daily-run-state.mjs";
 
 const reportPath = process.argv[2];
 const reviewPath = process.argv[3];
@@ -37,6 +40,16 @@ const retiredRecipeIds = new Set(Array.isArray(policy.retiredRecipeIds) ? policy
 const retiredPaletteIds = new Set(Array.isArray(policy.retiredPaletteIds) ? policy.retiredPaletteIds : []);
 
 validateSeoArchitectureBridge(policy, architecturePolicy);
+
+function assertDailyPublicationWasNotRetired(date) {
+  const dailyState = readDailyRunState({ root: process.cwd(), date });
+  if (dailyState.state === "retired_publication_complete") {
+    throw new Error(
+      `${date} already ended with retired publication /${dailyState.retiredSlug}; ` +
+      "the daily slot cannot be reused for another publication",
+    );
+  }
+}
 
 function sha256(value) {
   return createHash("sha256").update(JSON.stringify(value)).digest("hex");
@@ -357,6 +370,7 @@ function coordinationContext() {
   };
 }
 
+assertDailyPublicationWasNotRetired(report.date);
 if (report.publication?.status !== "ready_for_review" || !report.draft?.quality?.passed) {
   throw new Error("Report does not contain a draft that passed automated gates");
 }
@@ -469,7 +483,38 @@ if (!Array.isArray(draft.factIdsUsed) || new Set(draft.factIdsUsed).size < 2 ||
   draft.factIdsUsed.some((id) => !approvedFactIds.has(id))) {
   throw new Error("Reviewed draft uses an unapproved or missing product fact ID");
 }
+
+function assertDraftOriginalIpBoundary(candidateReport) {
+  const candidateDraft = candidateReport.draft;
+  const candidateOpportunity = candidateReport.opportunities?.find((item) => item.keyword === candidateDraft?.keyword);
+  assertOriginalIpBoundary({
+    policy,
+    reportDate: candidateReport.date,
+    draftSchemaVersion: candidateDraft?.schemaVersion,
+    ipBoundary: candidateDraft?.ipBoundary,
+    visibleText: `${candidateOpportunity?.keyword || candidateDraft?.keyword || ""} ${visiblePageText(candidateDraft || {})}`,
+  });
+}
+
+function assertDraftAudienceContract(candidateReport) {
+  const candidateDraft = candidateReport.draft;
+  const candidateOpportunity = candidateReport.opportunities?.find((item) => item.keyword === candidateDraft?.keyword);
+  const audienceBlockers = audienceDraftBlockers({
+    policy,
+    reportDate: candidateReport.date,
+    keyword: candidateOpportunity?.keyword,
+    h1: candidateDraft?.h1,
+    factIds: candidateDraft?.factIdsUsed,
+    architecture: candidateDraft?.architecture,
+    visibleText: visiblePageText(candidateDraft || {}),
+  });
+  if (audienceBlockers.length) {
+    throw new Error(`Reviewed draft violates the D&D-first audience contract: ${audienceBlockers.join("; ")}`);
+  }
+}
 const publishableText = visiblePageText(draft);
+assertDraftAudienceContract(report);
+assertDraftOriginalIpBoundary(report);
 const failedClaim = factCatalog.forbiddenClaimPatterns
   .map((pattern) => new RegExp(pattern, "i"))
   .find((pattern) => pattern.test(publishableText));
@@ -496,6 +541,7 @@ const page = {
   pagePattern: report.contentStrategy.pagePattern,
   architecture: draft.architecture,
   signatureModule: draft.signatureModule,
+  ipBoundary: draft.ipBoundary,
   title: draft.title,
   metaDescription: draft.metaDescription,
   h1: draft.h1,
@@ -539,6 +585,7 @@ withDailyPublicationGuard({
   reportId: report.id,
   now: publicationTime,
 }, (assertGuard) => {
+  assertDailyPublicationWasNotRetired(report.date);
   const currentReport = readJson(reportPath);
   const currentReview = readJson(reviewPath);
   assertCreatePagePublicationReadiness(currentReport);
@@ -559,6 +606,8 @@ withDailyPublicationGuard({
   }
   assertVisualAuditFiles(currentReview, currentReport);
   assertEnhancedDraftRenderContract(currentReport);
+  assertDraftAudienceContract(currentReport);
+  assertDraftOriginalIpBoundary(currentReport);
   if (retiredRecipeIds.has(currentReport.draft?.architecture?.presentation?.recipeId) ||
     retiredPaletteIds.has(currentReport.draft?.architecture?.presentation?.paletteId)) {
     throw new Error("Guarded publication draft uses a retired presentation recipe or palette");

@@ -2,6 +2,8 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, writeFile
 import { createHash } from "node:crypto";
 import { dirname, relative, resolve } from "node:path";
 import { scoreResearchCandidate } from "./lib/seo-policy.mjs";
+import { audienceDraftBlockers } from "../lib/seo/audience-policy.mjs";
+import { assertOriginalIpBoundary } from "../lib/seo/ip-boundary.mjs";
 import { validatePageArchitecture, validateSeoArchitectureBridge } from "../lib/seo/content-contract.mjs";
 import {
   analyzeContentNovelty,
@@ -606,6 +608,18 @@ function validateDraft(rawDraft, keyword) {
     }
   }
   const enhancedContentRequired = date >= architecturePolicy.enhancedNoveltyEnforcedFromReportDate;
+  const audienceBlockers = audienceDraftBlockers({
+    policy,
+    reportDate: date,
+    keyword,
+    h1: rawDraft.h1,
+    factIds,
+    architecture: rawDraft.architecture,
+    visibleText: visiblePageText(rawDraft),
+  });
+  if (audienceBlockers.length) {
+    throw new Error(`Draft violates the D&D-first audience contract: ${audienceBlockers.join("; ")}`);
+  }
   const genericCtaPattern = /^(?:click here|learn more|get started|explore stories|explore story-led roleplay|try novelai|start now|read more)(?:\s+(?:on|with)\s+novelai)?[.!]?$/i;
   const ctaTokens = new Set(
     `${keyword} ${contentStrategy?.readerOutcome || ""} ${contentStrategy?.primaryPainPoint || ""}`
@@ -660,6 +674,13 @@ function validateDraft(rawDraft, keyword) {
     }
   }
   const publishableText = visiblePageText(rawDraft);
+  assertOriginalIpBoundary({
+    policy,
+    reportDate: date,
+    draftSchemaVersion: rawDraft.schemaVersion,
+    ipBoundary: rawDraft.ipBoundary,
+    visibleText: `${rawDraft.keyword || ""} ${publishableText}`,
+  });
   const failedClaim = forbiddenClaims.find((pattern) => pattern.test(publishableText));
   if (failedClaim) throw new Error(`Draft contains an unsupported product claim: ${failedClaim}`);
   const wordCount = (publishableText.match(/[A-Za-z0-9][A-Za-z0-9']*/g) ?? []).length;
@@ -1452,7 +1473,7 @@ const portfolioDecision = validatePortfolioDecision(input.portfolioDecision, pag
 const isCreatePageDecision = input.publicationMode !== "update" && portfolioDecision.action === "create_page";
 if (isCreatePageDecision) assertCreatePageGrowthReadiness(portfolioFunnels);
 const opportunities = preparedCandidateInputs
-  .map((candidate) => scoreResearchCandidate(candidate, policy))
+  .map((candidate) => scoreResearchCandidate(candidate, policy, { reportDate: date }))
   .sort((left, right) => right.score - left.score)
   .slice(0, policy.candidateCount.max);
 const eligibleCreateCandidates = opportunities.filter((candidate) =>
@@ -1714,10 +1735,10 @@ const report = {
       : `/${slugify(selectedOpportunity.keyword)}`,
     pageType,
     searchIntent: selectedOpportunity.intent,
-    title: draft?.title ?? `${phrase} | Enter a Story and Choose a Role`,
-    description: draft?.metaDescription ?? `Explore ${selectedOpportunity.keyword} through an existing story plot and an available role.`,
+    title: draft?.title ?? `${phrase} | D&D Table-Ready Field Guide`,
+    description: draft?.metaDescription ?? `Use an original, table-ready framework for ${selectedOpportunity.keyword} without borrowed settings, characters, or rules text.`,
     h1: draft?.h1 ?? phrase,
-    primaryCta: draft?.primaryCta ?? "Explore stories on NovelAI",
+    primaryCta: draft?.primaryCta ?? "Explore D&D-focused content on NovelAI",
     sections: draft?.architecture?.content?.sections?.map((section) => `${section.role}: ${section.uniqueTakeaway}`) ?? ["Define a distinct content architecture before drafting"],
     evidenceRequired: ["Public evidence for the intent", "Approved product facts", "Original non-infringing material", "Verified CTA and attribution route"],
     qualityGate: ["One intent and one H1", "Content and presentation contracts passed", "No unlicensed third-party IP", "Independent editorial review", "Render, link, and index checks"],

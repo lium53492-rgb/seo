@@ -89,6 +89,13 @@ function reportRequest(authorization) {
   );
 }
 
+function retiredReportRequest(authorization) {
+  return new Request(
+    "http://localhost/api/attribution/report?sourceSlug=ai-roleplay-scene-recovery",
+    authorization ? { headers: { authorization } } : undefined,
+  );
+}
+
 test("private attribution routes fail closed and accept the separate machine bearer token", async () => {
   const environment = snapshotEnvironment();
   try {
@@ -138,6 +145,9 @@ test("private attribution routes fail closed and accept the separate machine bea
     assert.equal(response.status, 401);
     response = await reportRoute.GET(reportRequest(`Bearer ${machineToken}`));
     assert.equal(response.status, 404);
+    response = await reportRoute.GET(retiredReportRequest(`Bearer ${machineToken}`));
+    assert.equal(response.status, 200);
+    assert.equal((await response.json()).sourceSlug, "ai-roleplay-scene-recovery");
     response = await readinessRoute.GET(
       new Request("http://localhost/api/attribution/readiness", {
         headers: { authorization: `Bearer ${machineToken}` },
@@ -281,6 +291,13 @@ test("growth command entry points use only the machine automation credential", a
   );
   assert.match(collectorSource, /Bearer \$\{automationToken\}/);
   assert.doesNotMatch(collectorSource, /WORKBENCH_PASSWORD/);
+
+  const conversionSource = await readFile(
+    join(projectRoot, "app/api/attribution/conversion/route.ts"),
+    "utf8",
+  );
+  assert.match(conversionSource, /readPublishedPage\(event\.sourceSlug\)/);
+  assert.doesNotMatch(conversionSource, /retiredPageSlugs/);
 
   const workflowSource = await readFile(
     join(projectRoot, ".github/workflows/growth-readiness.yml"),

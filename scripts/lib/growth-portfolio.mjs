@@ -203,6 +203,16 @@ function unavailableEntry(page, reason) {
   };
 }
 
+function unavailableRetiredUrl(page, reason) {
+  return {
+    sourceSlug: page.slug,
+    path: page.path,
+    ...(page.retiredAt ? { retiredAt: page.retiredAt } : {}),
+    state: "unavailable",
+    reason,
+  };
+}
+
 function isRecord(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
@@ -238,6 +248,33 @@ function validatePages(pages) {
     if (slugs.has(slug)) throw new Error(`Duplicate published page slug: ${slug}`);
     slugs.add(slug);
     return { slug, path, keyword };
+  });
+}
+
+function validateRetiredPages(pages, activeSlugs) {
+  if (!Array.isArray(pages)) throw new Error("Retired pages must be an array");
+  const slugs = new Set();
+  return pages.map((page) => {
+    const slug = String(page?.slug || "");
+    const path = String(page?.path || "");
+    const retiredAt = page?.retiredAt == null ? null : String(page.retiredAt);
+    if (
+      !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) ||
+      path !== `/${slug}` ||
+      (retiredAt !== null && !Number.isFinite(Date.parse(retiredAt)))
+    ) {
+      throw new Error("Every retired page needs a safe slug, matching path, and optional valid retirement timestamp");
+    }
+    if (activeSlugs.has(slug)) {
+      throw new Error(`A page cannot be both published and retired: ${slug}`);
+    }
+    if (slugs.has(slug)) throw new Error(`Duplicate retired page slug: ${slug}`);
+    slugs.add(slug);
+    return {
+      slug,
+      path,
+      ...(retiredAt ? { retiredAt: new Date(retiredAt).toISOString() } : {}),
+    };
   });
 }
 
@@ -529,8 +566,29 @@ export function projectPrivateGrowthReport(report, page, period, expectedOrigin)
   };
 }
 
+export function projectPrivateRetiredUrlReport(report, page, period, expectedOrigin) {
+  const privateReport = validateCollectedReport(report, page, period);
+  const normalizedExpectedOrigin = resolveExpectedEvidenceOrigin(
+    privateReport,
+    expectedOrigin,
+  );
+  return {
+    searchPerformance: publicSearchPerformance(
+      privateReport.searchPerformance,
+      page,
+      normalizedExpectedOrigin,
+    ),
+    urlInspection: publicUrlInspection(
+      privateReport.urlInspection,
+      page,
+      normalizedExpectedOrigin,
+    ),
+  };
+}
+
 export async function collectGrowthPortfolio({
   pages,
+  retiredPages = [],
   automationToken,
   siteUrl = canonicalSiteOrigin,
   days = 28,
@@ -539,6 +597,13 @@ export async function collectGrowthPortfolio({
   fetchImpl = fetch,
 }) {
   const normalizedPages = validatePages(pages);
+  const normalizedRetiredPages = validateRetiredPages(
+    retiredPages,
+    new Set(normalizedPages.map((page) => page.slug)),
+  );
+  if (normalizedPages.length + normalizedRetiredPages.length > 500) {
+    throw new Error("Growth portfolio cannot collect more than 500 active and retired pages at once");
+  }
   const period = completeShanghaiWindow(days, now, reportingLagDays);
   const normalizedSiteUrl = normalizeSiteUrl(siteUrl);
   const authorization = typeof automationToken === "string" &&
@@ -595,6 +660,55 @@ export async function collectGrowthPortfolio({
     }
   }));
 
+  const retiredUrls = await Promise.all(normalizedRetiredPages.map(async (page) => {
+    if (!authorization) {
+      return unavailableRetiredUrl(
+        page,
+        "SEO_AUTOMATION_TOKEN is missing or shorter than 32 bytes, so retired-URL Search Console evidence could not be collected.",
+      );
+    }
+
+    const endpoint = new URL("/api/attribution/report", normalizedSiteUrl);
+    endpoint.searchParams.set("sourceSlug", page.slug);
+    endpoint.searchParams.set("from", period.periodStart);
+    endpoint.searchParams.set("to", period.periodEnd);
+    try {
+      const response = await fetchImpl(endpoint, {
+        headers: { authorization },
+        signal: AbortSignal.timeout(10_000),
+      });
+      if (!response.ok) {
+        await response.body?.cancel();
+        return unavailableRetiredUrl(
+          page,
+          `Private retired-URL evidence returned HTTP ${response.status}; no Search Console evidence was persisted.`,
+        );
+      }
+      const responseBody = await response.text();
+      if (responseBody.length > 1_000_000) {
+        throw new Error("Attribution report exceeded the 1 MB response limit");
+      }
+      const report = projectPrivateRetiredUrlReport(
+        JSON.parse(responseBody),
+        page,
+        period,
+        normalizedSiteUrl.origin,
+      );
+      return {
+        sourceSlug: page.slug,
+        path: page.path,
+        ...(page.retiredAt ? { retiredAt: page.retiredAt } : {}),
+        state: "collected",
+        ...report,
+      };
+    } catch (error) {
+      return unavailableRetiredUrl(
+        page,
+        `Private retired-URL evidence could not be converted into a safe public Search Console snapshot (${error instanceof Error ? error.name : "unknown error"}).`,
+      );
+    }
+  }));
+
   const collectedEntries = entries.filter((entry) => entry.state === "collected");
   const attributionJoinBlocked = collectedEntries.some(
     (entry) => entry.report.decisionState.attributionJoinBlocked,
@@ -622,5 +736,6 @@ export async function collectGrowthPortfolio({
       hasSearchValidatedLandingPage,
     },
     entries,
+    retiredUrls,
   };
 }

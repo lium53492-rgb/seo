@@ -43,7 +43,14 @@ AI may prepare the source summary, outline, first draft, schema suggestions and 
 
 Every published SEO page must make its search intent understandable in the first screen, show a concrete path into the approved product experience, and use a CTA whose destination has been verified during that run. Do not compensate for missing product proof with generic AI prose, invented social proof, or decorative claims.
 
-For story-roleplay pages, use this structure: a query-specific promise; a concise three-step path from story premise to role selection to entering the scene; at least one clear primary CTA with an honest destination label; and a related first-party internal link. Open external product destinations in a new tab with `noopener noreferrer`, and maintain a safe fallback if a deep link has become unavailable.
+For new D&D-first pages, use this structure: a table-ready direct answer; the
+session failure mode; one concrete player or Game Master framework; an original
+mature worked example; meaningful variation; the product and IP boundary; and
+a page-specific attributed next step. The machine contract requires the core
+section roles `direct_answer`, `failure_analysis`, `framework`,
+`worked_example`, and `next_step`. Do not force a related link when the only
+available target is retired or irrelevant. Open external product destinations
+in a new tab with `noopener noreferrer`.
 
 User feedback and workbench content guidance are editorial inputs for the next daily run. Preserve each verbatim with a date, then translate it into an explicit brief requirement rather than silently changing copy. Guidance submitted from the workbench is marked `kind: "content_guidance"` and must be evaluated before keyword selection, not after the draft is written.
 For feedback received through the workbench inbox, process only entries without
@@ -65,9 +72,10 @@ Use `docs/seo/content-pattern-library.md` as the current reusable library. A new
 
 The brief must also name the primary pain point, a coherent design direction,
 one useful server-rendered signature module, and an ordered content-layer plan.
-Rotate the design language with the intent: for example, a dark decision map,
-a retro-futuristic mission guide, a product field manual, a playful discovery
-deck, and an editorial concept essay solve different reading jobs. Do not
+Rotate the design language with the intent: for example, a campaign war room,
+gothic illuminated folio, sword-and-sorcery pulp spread, dark tavern noir,
+archival campaign binder, and cosmic-horror field notes solve different reading
+jobs. Do not
 repeat the same visual language and pain point on consecutive pages merely by
 changing a keyword or palette. The signature module must make the answer more
 useful and remain accessible in the initial HTML; it is not permission for
@@ -91,6 +99,17 @@ gate, and avoid generic `Learn more`, `Get started`, `Explore`, or `Try` copy.
 Pain points rotate across seven recent pages; presentation systems and reusable
 recipes rotate across six. Policy-retired recipes and palettes are forbidden
 without relying on publication history.
+
+The unattended path uses original tabletop-fantasy material only. SRD-derived
+copy is blocked until the artifact schemas can bind an exact SRD version,
+license URL, and required Creative Commons attribution; a free-form note or an
+input-supplied `ipClass` cannot substitute for that contract. From 2026-08-11,
+the schema-2 draft carries an exact digest-bound original-only `ipBoundary`;
+the builder, guarded publisher, and schema-3 page store also scan the SEO
+keyword and visible copy for configured third-party references. Visible copy
+is independently rejected for configured child-directed framing even when the
+tone label says `mature`. Review must pass separate
+`adult-tabletop-audience` and `original-ip-boundary` checks.
 
 For reports on or after the configured visual-audit date, `rendered-preview`
 requires the production renderer at 1440x1000 and 390x844. Store screenshot
@@ -116,6 +135,10 @@ When a draft includes a contextual internal link, the published template must re
   outcomes remain in the private API/in-memory response; the committable
   snapshot keeps only exact-page GSC, sanitized URL Inspection, aggregate UV,
   aggregate qualified outbound, and boolean readiness/blocking state.
+- Keep formally retired URLs in the snapshot's separate `retiredUrls` monitor.
+  Persist only exact-page Search Console and sanitized URL Inspection evidence
+  for them; never count them in active-page totals, attribution readiness, or
+  the next-page decision.
 - Convert that portfolio into a durable `portfolioDecision`: `create_page`, `improve_page`, `consolidate`, or `observe`. Record an evidence-led rationale, cited published slugs, and a target slug when applicable. A draft is legal only for the matching create or improve action.
 - Page count and non-zero performance remain prioritization signals rather than traffic quotas. Observed zero is valid. For unattended `create_page` production, however, the complete current portfolio must have observed exact-page Search Console and landing UV states for every published page and a ready attribution join; unavailable measurement blocks publication. An update additionally needs an observed Search Console row for its exact target URL.
 - Consolidation is not permission to redirect. The builder requires distinct

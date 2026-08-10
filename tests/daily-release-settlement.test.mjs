@@ -25,8 +25,8 @@ import {
 
 const sandbox = mkdtempSync(join(tmpdir(), "lorelens-release-settlement-"));
 const sourceRoot = process.cwd();
-const date = "2026-08-06";
-const slug = "ai-roleplay-first-message";
+const date = "2026-08-01";
+const slug = "ai-roleplay-prompt-vs-existing-story";
 after(() => rmSync(sandbox, { recursive: true, force: true }));
 
 function git(root, args) {
@@ -69,10 +69,14 @@ function createReleaseRepository(name, { baseRuntimeFile = false, baseFeedbackFi
   git(worktree, ["remote", "add", "origin", remote]);
   writeFileSync(join(worktree, "README.md"), "base\n");
   copyFileSync(join(sourceRoot, ".gitignore"), join(worktree, ".gitignore"));
-  const existingPagePath = join(worktree, "data/pages/choose-a-role-ai-story.json");
-  mkdirSync(dirname(existingPagePath), { recursive: true });
-  copyFileSync(join(sourceRoot, "data/pages/choose-a-role-ai-story.json"), existingPagePath);
-  const basePaths = [".gitignore", "README.md", "data/pages/choose-a-role-ai-story.json"];
+  const baselinePagePath = join(worktree, "data/pages/release-settlement-baseline.json");
+  mkdirSync(dirname(baselinePagePath), { recursive: true });
+  writeFileSync(baselinePagePath, `${JSON.stringify({
+    status: "retired",
+    slug: "release-settlement-baseline",
+    path: "/release-settlement-baseline",
+  }, null, 2)}\n`);
+  const basePaths = [".gitignore", "README.md", "data/pages/release-settlement-baseline.json"];
   if (baseRuntimeFile) {
     mkdirSync(join(worktree, "app"), { recursive: true });
     writeFileSync(join(worktree, "app/runtime.ts"), "export const runtimeValue = true;\n");
@@ -107,7 +111,7 @@ function marker(repository) {
   return {
     revision: repository.releaseRevision,
     slug,
-    startedAt: "2026-08-06T12:00:00.000Z",
+    startedAt: "2026-08-01T12:00:00.000Z",
     releaseProof: repository.releaseProof,
   };
 }
@@ -183,7 +187,7 @@ test("a complete restored checkpoint is committed and pinned when release start 
   git(repository.worktree, ["reset", "--mixed", repository.baseRevision]);
   const feedbackPath = join(repository.worktree, "data/seo-feedback/inbox/recovery.json");
   const feedback = JSON.parse(readFileSync(feedbackPath, "utf8"));
-  feedback.entries[0].consumedAt = "2026-08-06T12:00:00.000Z";
+  feedback.entries[0].consumedAt = "2026-08-01T12:00:00.000Z";
   writeFileSync(feedbackPath, `${JSON.stringify(feedback, null, 2)}\n`);
   const materialized = materializeCheckpointDailyRelease({
     worktreeRoot: repository.worktree,

@@ -20,6 +20,9 @@ This is the active zero-additional-API-cost production protocol. It uses public 
    into `data/growth` or `data/reports`.
 5. Run `npm.cmd run growth:probe` from the NovelAI server environment after callback deployment or secret rotation, then run `npm.cmd run growth:check`. Full-loop readiness requires observed Search Console, Vercel landing UV, and attribution-store probes plus a recent signed NovelAI callback handshake.
 6. Run `npm.cmd run growth:collect` before researching candidates. It uses the official Search Console and Vercel APIs over the configured 28-day finalized-data window, currently ending three complete Shanghai days before the run. Observed zero is valid, but an unattended `create_page` draft is illegal unless every published page has observed exact-page Search Console and landing UV states and the attribution join is ready. After retries, record no publication when any required measurement remains unavailable.
+   Formally retired slugs are collected separately in `retiredUrls` with only
+   Search Console and URL Inspection fields; they do not count as published
+   pages and cannot improve or block active-portfolio readiness.
 
 ## Candidate research
 
@@ -40,6 +43,15 @@ For policy version 4, every candidate needs:
 - `funnelStage`: problem, solution, trial, or purchase;
 - `conversionGoal`: qualified_outbound_click, trial_start, or purchase;
 - a `decisionEvidence` object with the candidate-specific searcher job, evidence references, approved product fact IDs, discrete product/trial/revenue/specificity signals, IP class, cannibalization class, nearest published slug when relevant, and a specific rationale for every score dimension.
+
+For reports dated 2026-08-11 or later, the overseas lane is D&D-first. Every
+new-page candidate must name both the adult tabletop audience and a concrete
+table job: for example Game Master campaign preparation, encounter repair,
+NPC differentiation, at-table improvisation, player-character hooks, agency,
+party tone, or continuity. A generic AI-story candidate that merely mentions
+"session" or "campaign" is ineligible. The audience qualifier does not count
+toward product-fit by itself; the page must also cite approved, currently true
+product capabilities.
 
 The selected `create_page` candidate also needs a same-day `observed` Google
 Trends signal from an official Trends URL. Its direction must be `rising`, or
@@ -66,7 +78,14 @@ The research input uses `policyVersion: 4`, content-strategy schema 2, and inclu
   readable only as migration input and are projected to schema v2 before a
   report is written.
 
-The English draft remains 600-1,000 words, has at least four sections and three FAQs, records its generation model and timestamp, uses only approved fact IDs, contains one page-specific CTA, avoids prohibited claims and third-party IP, and links a relevant published first-party page when one exists. New drafts use schema 2 and include the complete architecture, mapped section/FAQ layers, signature module, resolved presentation contract, and page-specific surface copy. Structured formats use explicit list markers; the allowed Markdown subset is paragraphs, marked lists, and paired strong spans. The builder owns the final route slug and binds both the draft and content strategy to the reviewed digest.
+The English draft remains 600-1,000 words, has at least four sections and three FAQs, records its generation model and timestamp, uses only approved fact IDs, contains one page-specific CTA, avoids prohibited claims and third-party IP, and links a relevant published first-party page when one exists. New D&D-first drafts must use original tabletop-fantasy people, places, creatures, symbols, and mechanics until the repository has a structured, machine-validated SRD version/license/attribution contract. Do not imply official, licensed, endorsed, or 5e-compatible status. New drafts use schema 2 and include the complete architecture, mapped section/FAQ layers, signature module, resolved presentation contract, and page-specific surface copy. Structured formats use explicit list markers; the allowed Markdown subset is paragraphs, marked lists, and paired strong spans. The builder owns the final route slug and binds both the draft and content strategy to the reviewed digest.
+
+For reports dated 2026-08-11 or later, that schema-2 draft also carries the
+exact top-level `ipBoundary` contract documented in `dnd-content-boundary.md`.
+The SEO keyword and visible draft are scanned independently for configured
+third-party names, while visible copy is separately scanned for child-directed
+framing. The structured declaration is not a substitute for either scan or for
+the editor's independent judgment.
 
 A `consolidate` decision is evidence-gated and does not itself create a
 redirect. It must name distinct published `sourceSlug` and `targetSlug` values,
@@ -99,7 +118,8 @@ write `data/pages`. Before publication, an independent editor creates a review
 artifact with an identified reviewer, timestamp, substantive notes, and passed
 checks for search intent, product truth, conversion path, source accuracy,
 content distinctness, presentation distinctness, the signature module, and the
-rendered preview.
+rendered preview. Schema-3 publication additionally requires distinct passed
+checks for `adult-tabletop-audience` and `original-ip-boundary`.
 A post-enforcement review also contains a visual-audit receipt bound to the
 draft digest. It records 1440x1000 and 390x844 screenshot paths and hashes,
 measured H1 geometry, first-screen CTA, overflow, raw-Markdown visibility,

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -35,8 +35,9 @@ function schemaThreePage() {
   const draftDigest = "a".repeat(64);
   const sectionPlans = [
     ["answer", "direct_answer", "prose"],
-    ["compare", "comparison", "comparison"],
-    ["rule", "decision_rule", "checklist"],
+    ["compare", "failure_analysis", "comparison"],
+    ["rule", "framework", "checklist"],
+    ["example", "worked_example", "examples"],
     ["next", "next_step", "callout"],
   ];
   const faqPlans = [
@@ -67,29 +68,38 @@ function schemaThreePage() {
     "presentation-distinctness",
     "signature-module",
     "rendered-preview",
+    "adult-tabletop-audience",
+    "original-ip-boundary",
   ].map((id) => ({ id, passed: true, detail: `The ${id} requirement passed with specific reviewed evidence.` }));
   const page = {
     schemaVersion: 3,
     status: "published",
     slug: "schema-three-route",
     path: "/schema-three-route",
-    keyword: "schema three route",
+    keyword: "adult d&d game master campaign prep framework",
     publishedAt: "2099-01-01T04:00:00.000Z",
     updatedAt: "2099-01-01T04:05:00.000Z",
     generatedFromReport: "seo-2099-01-01",
     draftDigest,
     pagePattern: "decision_page",
-    title: "Choose a Story Route With a Reviewed Decision Contract",
-    metaDescription: "Compare two original story-entry routes with a reviewed decision structure, approved product facts, and an explicit attributed next step.",
-    h1: "Choose a Story Route",
-    heroMarkdown: "Compare the setup work each route asks you to do, then choose the path whose context and perspective match the action you want to take.",
-    primaryCta: "Explore story-led roleplay on NovelAI",
+    title: "A Campaign Prep Framework for Adult D&D Game Masters",
+    metaDescription: "Reduce campaign-prep pressure with an original, table-ready D&D framework for adult Game Masters, including a worked example and a concrete next step.",
+    h1: "Run Tonight's D&D Campaign With Less Prep",
+    heroMarkdown: "Use this mature tabletop framework to identify the one campaign decision that matters tonight, prepare only the evidence your players can reach, and leave the rest open for play.",
+    primaryCta: "Explore D&D-focused campaign content on NovelAI",
+    ipBoundary: {
+      schemaVersion: 1,
+      contentBasis: "original_tabletop_fantasy",
+      dndReferenceScope: "audience_reference_only",
+      srdMaterialUsed: false,
+      thirdPartyNames: [],
+    },
     sections: sectionPlans.map(([id, role, format], index) => ({
       id,
       role,
       format,
       heading: `Reviewed content layer ${index + 1}`,
-      bodyMarkdown: semanticSectionBodies[id] ?? `This original layer ${index + 1} performs a separate reader job and stays within the approved story and role-selection facts. It identifies the exact choice in front of the visitor, explains what evidence belongs to that choice, and keeps each conclusion inside the documented boundary.\n\nThe layer then gives the reader a concrete way to apply the distinction in practice today without borrowing a character, promising a result, or repeating the job assigned to another section.`,
+      bodyMarkdown: semanticSectionBodies[id] ?? `This original layer ${index + 1} performs a separate campaign-prep job for an adult D&D Game Master and stays within the approved product facts. It identifies the exact table decision in front of the group, explains what evidence belongs to that decision, and keeps each conclusion inside the documented boundary.\n\nThe layer then gives the Game Master a concrete way to apply the distinction in tonight's tabletop session without borrowing a protected setting or character, promising a result, or repeating the job assigned to another section.`,
     })),
     faqs: faqPlans.map(([id, job], index) => ({
       id,
@@ -97,23 +107,23 @@ function schemaThreePage() {
       question: `What does reviewed FAQ ${index + 1} resolve?`,
       answerMarkdown: `It resolves one specific ${job} obstacle with a direct boundary, a practical distinction, and no unsupported product claim or invented availability statement.`,
     })),
-    factIdsUsed: ["existing-story", "role-selection"],
+    factIdsUsed: ["dnd-content-direction", "dnd-primary-audience", "existing-story", "role-selection"],
     internalLinks: [],
     assetBriefs: [],
     architecture: {
       schemaVersion: 1,
       intent: {
-        searcherJob: "Choose between two story-entry routes after comparing the setup work each route requires.",
-        painPointId: "choice_uncertainty",
-        decisionToEnable: "Select one route and name the immediate next action.",
-        oneSentenceAnswer: "Choose the route whose supplied context and perspective match the work you want to do.",
-        nonGoals: ["Do not rank every roleplay product.", "Do not promise a particular scenario."],
+        searcherJob: "Help an adult D&D Game Master reduce campaign-prep pressure before tonight's tabletop session.",
+        painPointId: "campaign_prep_overload",
+        decisionToEnable: "Select the one campaign decision that needs preparation and name the immediate table action.",
+        oneSentenceAnswer: "Prepare the decision your players can reach tonight, then leave unreachable branches open for live play.",
+        nonGoals: ["Do not reproduce protected setting material.", "Do not promise a particular campaign outcome."],
       },
       content: {
         archetype: "comparison",
-        thesis: "A useful route choice compares setup work rather than declaring a universal winner.",
-        originalContribution: "A compact decision grid that separates context, perspective, and next action.",
-        tone: "Precise and evaluative like a control-room route check.",
+        thesis: "Useful D&D campaign prep follows reachable player decisions instead of attempting to script every branch.",
+        originalContribution: "A compact table-ready decision grid that separates reachable context, player agency, and the next Game Master action.",
+        tone: "Mature adult tabletop field notes for a time-pressed D&D Game Master.",
         openingMove: "before_after_contrast",
         avoidPhrases: ["endless possibilities", "unlock creativity", "step into magic"],
         sections: sectionPlans.map(([id, role, format], index) => ({
@@ -265,6 +275,118 @@ test("page store exposes a reviewed schema-version 3 route", async () => {
     assert.equal(page?.architecture?.presentation.recipeId, "nocturne-decision-grid-v1");
     assert.match(page?.sections.find((section) => section.id === "compare")?.bodyMarkdown ?? "", /introduction[\s\S]*\n1\.[\s\S]*\n2\.[\s\S]*conclusion/);
     assert.match(page?.sections.find((section) => section.id === "rule")?.bodyMarkdown ?? "", /boundary[\s\S]*\n- Confirm[\s\S]*\n- Confirm[\s\S]*closing instruction/);
+
+    const preservedLegacyPage = JSON.parse(await readFile(
+      join(projectRoot, "data", "pages", "ai-roleplay-prompt-vs-existing-story.json"),
+      "utf8",
+    ));
+    const preservedLegacyPath = join(pagesDirectory, `${preservedLegacyPage.slug}.json`);
+    await writeFile(preservedLegacyPath, `${JSON.stringify(preservedLegacyPage, null, 2)}\n`);
+    assert.equal((await readPublishedPage(preservedLegacyPage.slug))?.schemaVersion, 2);
+
+    const forgedLegacyPage = structuredClone(preservedLegacyPage);
+    forgedLegacyPage.h1 = "A generic legacy page reusing the approved release identity";
+    await writeFile(preservedLegacyPath, `${JSON.stringify(forgedLegacyPage, null, 2)}\n`);
+    assert.equal(await readPublishedPage(preservedLegacyPage.slug), null);
+
+    const futureLegacyPage = structuredClone(preservedLegacyPage);
+    futureLegacyPage.publishedAt = "2026-08-11T01:00:00.000Z";
+    futureLegacyPage.updatedAt = futureLegacyPage.publishedAt;
+    await writeFile(preservedLegacyPath, `${JSON.stringify(futureLegacyPage, null, 2)}\n`);
+    assert.equal(await readPublishedPage(preservedLegacyPage.slug), null);
+
+    const unlistedLegacyPage = structuredClone(preservedLegacyPage);
+    unlistedLegacyPage.slug = "unlisted-legacy-route";
+    unlistedLegacyPage.path = `/${unlistedLegacyPage.slug}`;
+    unlistedLegacyPage.editorialReview.slug = unlistedLegacyPage.slug;
+    await writeFile(
+      join(pagesDirectory, `${unlistedLegacyPage.slug}.json`),
+      `${JSON.stringify(unlistedLegacyPage, null, 2)}\n`,
+    );
+    assert.equal(await readPublishedPage(unlistedLegacyPage.slug), null);
+
+    const jobOnlyPage = structuredClone(releasedPage);
+    jobOnlyPage.keyword = "adult campaign session prep workflow";
+    jobOnlyPage.h1 = "Prepare Tonight's Campaign Session";
+    jobOnlyPage.architecture.intent.searcherJob = "Help an adult facilitator prepare a campaign session and opening encounter without naming a specific hobby audience.";
+    jobOnlyPage.quality.wordCount = (visiblePageText(jobOnlyPage).match(/[A-Za-z0-9][A-Za-z0-9']*/g) ?? []).length;
+    jobOnlyPage.servedContentDigest = servedContentDigest(jobOnlyPage);
+    await writeFile(pagePath, `${JSON.stringify(jobOnlyPage, null, 2)}\n`);
+    assert.equal(await readPublishedPage("schema-three-route"), null);
+
+    const tamperedIpContractPage = structuredClone(releasedPage);
+    tamperedIpContractPage.ipBoundary.contentBasis = "licensed_setting_material";
+    assert.notEqual(servedContentDigest(tamperedIpContractPage), releasedPage.servedContentDigest,
+      "the runtime digest must bind the structured IP contract when it is present");
+    await writeFile(pagePath, `${JSON.stringify(tamperedIpContractPage, null, 2)}\n`);
+    assert.equal(await readPublishedPage("schema-three-route"), null);
+
+    const childDirectedVisiblePage = structuredClone(releasedPage);
+    childDirectedVisiblePage.heroMarkdown += " A cute mascot leads kids through a sticker workshop.";
+    childDirectedVisiblePage.quality.wordCount = (visiblePageText(childDirectedVisiblePage).match(/[A-Za-z0-9][A-Za-z0-9']*/g) ?? []).length;
+    childDirectedVisiblePage.servedContentDigest = servedContentDigest(childDirectedVisiblePage);
+    await writeFile(pagePath, `${JSON.stringify(childDirectedVisiblePage, null, 2)}\n`);
+    assert.equal(await readPublishedPage("schema-three-route"), null);
+
+    const preEnforcementJobOnlyPage = structuredClone(jobOnlyPage);
+    preEnforcementJobOnlyPage.generatedFromReport = "seo-2026-08-10";
+    preEnforcementJobOnlyPage.editorialReview.reportId = preEnforcementJobOnlyPage.generatedFromReport;
+    preEnforcementJobOnlyPage.servedContentDigest = servedContentDigest(preEnforcementJobOnlyPage);
+    await writeFile(pagePath, `${JSON.stringify(preEnforcementJobOnlyPage, null, 2)}\n`);
+    assert.equal(await readPublishedPage("schema-three-route"), null,
+      "schema 3 has no pre-enforcement legacy lane; an old report ID cannot bypass current policy");
+
+    const missingIpBoundaryPage = structuredClone(releasedPage);
+    delete missingIpBoundaryPage.ipBoundary;
+    missingIpBoundaryPage.servedContentDigest = servedContentDigest(missingIpBoundaryPage);
+    await writeFile(pagePath, `${JSON.stringify(missingIpBoundaryPage, null, 2)}\n`);
+    assert.equal(await readPublishedPage("schema-three-route"), null);
+
+    const protectedReferencePage = structuredClone(releasedPage);
+    protectedReferencePage.heroMarkdown += " This route visits the Sword Coast.";
+    protectedReferencePage.quality.wordCount = (visiblePageText(protectedReferencePage).match(/[A-Za-z0-9][A-Za-z0-9']*/g) ?? []).length;
+    protectedReferencePage.servedContentDigest = servedContentDigest(protectedReferencePage);
+    await writeFile(pagePath, `${JSON.stringify(protectedReferencePage, null, 2)}\n`);
+    assert.equal(await readPublishedPage("schema-three-route"), null);
+
+    const audienceOnlyPage = structuredClone(releasedPage);
+    audienceOnlyPage.keyword = "adult d&d tabletop guide";
+    audienceOnlyPage.h1 = "An Adult D&D Tabletop Guide";
+    audienceOnlyPage.architecture.intent.searcherJob = "Help an adult D&D tabletop reader understand the hobby and evaluate this general guide.";
+    audienceOnlyPage.quality.wordCount = (visiblePageText(audienceOnlyPage).match(/[A-Za-z0-9][A-Za-z0-9']*/g) ?? []).length;
+    audienceOnlyPage.servedContentDigest = servedContentDigest(audienceOnlyPage);
+    await writeFile(pagePath, `${JSON.stringify(audienceOnlyPage, null, 2)}\n`);
+    assert.equal(await readPublishedPage("schema-three-route"), null);
+
+    const preEnforcementPage = structuredClone(audienceOnlyPage);
+    preEnforcementPage.generatedFromReport = "seo-2026-08-10";
+    preEnforcementPage.editorialReview.reportId = preEnforcementPage.generatedFromReport;
+    preEnforcementPage.servedContentDigest = servedContentDigest(preEnforcementPage);
+    await writeFile(pagePath, `${JSON.stringify(preEnforcementPage, null, 2)}\n`);
+    assert.equal(await readPublishedPage("schema-three-route"), null,
+      "a schema-3 artifact cannot spoof an old report date to bypass the D&D-first gates");
+
+    const undatedPage = structuredClone(audienceOnlyPage);
+    undatedPage.generatedFromReport = "seo-undated";
+    undatedPage.editorialReview.reportId = undatedPage.generatedFromReport;
+    undatedPage.servedContentDigest = servedContentDigest(undatedPage);
+    await writeFile(pagePath, `${JSON.stringify(undatedPage, null, 2)}\n`);
+    assert.equal(await readPublishedPage("schema-three-route"), null);
+
+    const childDirectedCampaignPage = structuredClone(releasedPage);
+    childDirectedCampaignPage.architecture.content.tone = "Playful child-directed campaign fun with bright mascot energy.";
+    childDirectedCampaignPage.servedContentDigest = servedContentDigest(childDirectedCampaignPage);
+    await writeFile(pagePath, `${JSON.stringify(childDirectedCampaignPage, null, 2)}\n`);
+    assert.equal(await readPublishedPage("schema-three-route"), null);
+
+    const retiredPage = structuredClone(releasedPage);
+    retiredPage.slug = "ai-roleplay-first-message";
+    retiredPage.path = "/ai-roleplay-first-message";
+    retiredPage.editorialReview.slug = retiredPage.slug;
+    retiredPage.servedContentDigest = servedContentDigest(retiredPage);
+    const retiredPagePath = join(pagesDirectory, `${retiredPage.slug}.json`);
+    await writeFile(retiredPagePath, `${JSON.stringify(retiredPage, null, 2)}\n`);
+    assert.equal(await readPublishedPage(retiredPage.slug), null);
 
     const malformedArchitecture = structuredClone(releasedPage);
     for (const section of malformedArchitecture.sections) section.role = "comparison";

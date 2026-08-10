@@ -22,6 +22,9 @@ if (process.env.NEXT_PUBLIC_SITE_URL?.trim()) {
 const allowedCtaLocations = new Set(["seo_page", "hero", "header", "inline", "final_cta", "companion"]);
 const seoPolicy = JSON.parse(readFileSync(resolve("data/config/seo-policy.json"), "utf8"));
 const currentPageSchema = seoPolicy.contentArchitecture.publishedPageSchemaVersion;
+const retiredPagePaths = new Set(
+  (seoPolicy.retiredPageSlugs || []).map((slug) => `/${slug}`),
+);
 
 function escapeHtml(value) {
   return String(value)
@@ -114,8 +117,9 @@ const homepagePath = resolve(buildDirectory, "index.html");
 if (!existsSync(homepagePath)) throw new Error("The production build did not emit the homepage HTML.");
 const homepage = readFileSync(homepagePath, "utf8");
 for (const [fragment, label] of [
-  ["<h1>Enter a story.", "rendered H1"],
-  ["<em>Choose your role.</em>", "complete H1"],
+  ["<h1>Make the next session", "rendered H1"],
+  ["<em>hit harder.</em>", "complete H1"],
+  ["<title>D&amp;D Field Guides for Players and Game Masters | Tabletop Field Notes</title>", "exact page title"],
   [`rel="canonical" href="${siteUrl}"`, "canonical URL"],
   ['id="guide-library"', "guide library"],
   ['"@type":"FAQPage"', "FAQ JSON-LD"],
@@ -148,6 +152,11 @@ if (
   throw new Error("The built sitemap must contain exactly the homepage and every published canonical page once.");
 }
 rejectLegacyOrigins(sitemap, "The production sitemap");
+for (const retiredPath of retiredPagePaths) {
+  if (sitemapLocations.includes(`${siteUrl}${retiredPath}`)) {
+    throw new Error(`The built sitemap still exposes retired page ${retiredPath}.`);
+  }
+}
 
 for (const page of pages) {
   const htmlPath = resolve(buildDirectory, `${page.slug}.html`);
@@ -212,6 +221,12 @@ for (const page of pages) {
   if (invalidCtaLocation) throw new Error(`/${page.slug} contains an invalid CTA location: ${invalidCtaLocation}.`);
   for (const link of page.internalLinks || []) {
     if (link.href === "/" && page.schemaVersion !== currentPageSchema) continue;
+    if (retiredPagePaths.has(link.href)) {
+      if (html.includes(`href="${escapeHtml(link.href)}"`)) {
+        throw new Error(`/${page.slug} still renders a crawlable link to retired page ${link.href}.`);
+      }
+      continue;
+    }
     if (!html.includes(`href="${escapeHtml(link.href)}"`)) {
       throw new Error(`/${page.slug} is missing its declared crawlable link to ${link.href} in initial HTML.`);
     }

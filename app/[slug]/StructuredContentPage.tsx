@@ -239,7 +239,7 @@ export function StructuredContentPage({ page, recipe, relatedPages }: Structured
       data-section-flow={recipe.sectionFlow}
     >
       <nav className={styles.nav} aria-label="Primary navigation">
-        <a href="/">NovelAI Story Guide</a>
+        <a href="/">Tabletop Field Notes</a>
         <span>{copy.eyebrow}</span>
       </nav>
       {renderer}

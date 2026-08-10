@@ -1,6 +1,6 @@
 # Content Pattern Library
 
-Updated: 2026-08-06
+Updated: 2026-08-10
 
 This library records reusable answer mechanics, not reusable pages. It may
 help research and briefing, but it never selects a layout, palette, mascot, or
@@ -38,6 +38,15 @@ does not mean dark UI, `task_guide` does not mean numbered cards, and
 | `discovery_need` | The reader wants a useful set to browse | reference, original inventory | fabricated catalog |
 | `quality_repair` | The reader has an attempt but cannot improve it | diagnostic, worked example | start-from-zero tutorial |
 | `product_fit_uncertainty` | The reader cannot tell whether the experience fits | comparison, argument | unsupported product claims |
+| `campaign_prep_overload` | The Game Master prepares more material than can matter at the table | procedure, diagnostic | encyclopedic lore dump |
+| `improv_pressure` | The table leaves the prepared path and the next consequence is unclear | framework, worked example | scripted railroad |
+| `session_stall` | A live scene has lost pressure or a meaningful next move | diagnostic, decision rule | another opening-scene recap |
+| `encounter_flatness` | An encounter has activity but no changing stakes | worked example, framework | stat-block summary |
+| `npc_sameness` | NPCs blur together in motive, voice, or table function | original inventory, diagnostic | cosmetic trait list |
+| `player_agency_gap` | A consequence feels arbitrary or removes meaningful choice | comparison, decision rule | consequence-free wish fulfilment |
+| `character_hook_gap` | Backstory exists but creates no playable decision | worked example, checklist | biography generator |
+| `party_tone_mismatch` | Character expectations pull toward incompatible table experiences | diagnostic, comparison | universal tone ranking |
+| `worldbuilding_sprawl` | World detail grows without improving the next session | checklist, reference | setting encyclopedia |
 
 The ID is a stable production control, not a substitute for the specific
 `primaryPainPoint`, `readerStateBefore`, `readerOutcome`, or `searcherJob`.
@@ -141,14 +150,16 @@ structure or presentation cooldown. Missing policy thresholds fail closed.
 Decoration is never inherited from a page family. Every schema-3 recipe
 declares `companion` and `gallery` explicitly. The current gallery contract is
 `none` until a content-driven gallery schema exists. The story companion is
-allowed only by an explicit recipe; one legacy route retains it through an
-explicit slug policy so legacy pages do not all receive the same pet.
+allowed only by an explicit non-retired recipe. Current D&D-first production
+rejects mascot-led and child-directed presentation; old implementations may
+remain solely for historical artifact recovery.
 
 ## Candidate jobs are hypotheses
 
-Possible research directions include first-response repair, choosing a role
-from motive/knowledge/conflict position, comparing prompt creation with
-supplied story context, or explaining the story-role-performance loop. The
+Possible research directions include campaign prep triage, consequence ladders
+for improvised turns, NPC differentiation by table function, character hooks
+that create decisions, encounter stakes, party-tone repair, or campaign-state
+handoff. The
 daily process must reject any direction that lacks current evidence, repeats
-an owned intent, violates the cold-start release gate, or cannot produce a
+an owned intent, fails the current evidence and measurement gates, or cannot produce a
 concrete original contribution.

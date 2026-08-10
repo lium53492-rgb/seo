@@ -1,9 +1,11 @@
 # NovelAI SEO Growth Workbench
 
 A Next.js SEO landing site plus a revenue-first research-to-action workbench for
-NovelAI voice roleplay and interactive stories. Each published page owns one
-independent search intent and sends qualified readers through an attributed
-NovelAI redirect.
+NovelAI's overseas D&D-focused content direction. New production serves adult
+tabletop players and Game Masters with original, intent-specific material; the
+retained legacy decision page remains the visual-quality benchmark. Each
+published page owns one independent search intent and sends qualified readers
+through an attributed NovelAI redirect.
 
 ## Commands
 
@@ -67,6 +69,9 @@ separate from keyword volume, ranks published pages only with observed
 page-level data, and exposes today's artifact/blocker state. Publishing,
 Vercel deployment, Google indexing, and a live third-party backlink are
 independent statuses; none is guaranteed or inferred from another.
+Retired URLs remain in a separate Search Console and URL Inspection monitor so
+their residual impressions can be observed without treating them as active
+landing pages or allowing them to influence publication readiness.
 
 Semrush is replaced by the free Codex research path. Vercel Web Analytics pageview
 instrumentation is installed; enable the project-level switch in Vercel to begin

@@ -397,6 +397,42 @@ function isPublicGrowthMetric(value: unknown, source: "vercel_analytics" | "seo_
     value.source === source;
 }
 
+function hasOnlyKeys(value: Record<string, unknown>, allowedKeys: Set<string>) {
+  return Object.keys(value).every((key) => allowedKeys.has(key));
+}
+
+function isRetiredUrlGrowth(
+  value: unknown,
+  activeSlugs: Set<string>,
+) {
+  if (value === undefined) return true;
+  if (!Array.isArray(value) || value.length + activeSlugs.size > 500) return false;
+  const retiredSlugs = new Set<string>();
+  const baseKeys = ["sourceSlug", "path", "retiredAt", "state"];
+  return value.every((entry) => {
+    if (!isRecord(entry) ||
+      !isString(entry.sourceSlug) || !safeSlug.test(entry.sourceSlug) ||
+      entry.path !== `/${entry.sourceSlug}` ||
+      activeSlugs.has(entry.sourceSlug) || retiredSlugs.has(entry.sourceSlug) ||
+      (entry.retiredAt !== undefined &&
+        (!isString(entry.retiredAt) || !Number.isFinite(Date.parse(entry.retiredAt))))) {
+      return false;
+    }
+    retiredSlugs.add(entry.sourceSlug);
+    if (entry.state === "unavailable") {
+      return hasOnlyKeys(entry, new Set([...baseKeys, "reason"])) &&
+        isString(entry.reason) && entry.reason.trim().length >= 20;
+    }
+    if (entry.state !== "collected") return false;
+    return hasOnlyKeys(
+      entry,
+      new Set([...baseKeys, "searchPerformance", "urlInspection"]),
+    ) &&
+      isSearchPerformance(entry.searchPerformance, entry.sourceSlug) &&
+      isUrlInspection(entry.urlInspection, entry.sourceSlug);
+  });
+}
+
 function isGrowthPortfolio(value: unknown) {
   if (!isRecord(value) || value.schemaVersion !== 2 ||
     value.privacyClass !== "public_growth_evidence" ||
@@ -490,6 +526,7 @@ function isGrowthPortfolio(value: unknown) {
     collectedPages += 1;
   }
   attributionJoinReady &&= collectedPages === value.entries.length;
+  if (!isRetiredUrlGrowth(value.retiredUrls, slugs)) return false;
   return value.summary.publishedPages === value.entries.length &&
     value.summary.collectedPages === collectedPages &&
     value.summary.unavailablePages === value.entries.length - collectedPages &&

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
+import seoPolicy from "@/data/config/seo-policy.json";
 import { isBasicAuthHeaderAuthorized } from "@/lib/seo/auth";
 import { redactPrivateReportData } from "@/lib/seo/default-report";
 import { readReportHistory } from "@/lib/seo/report-store";
@@ -15,7 +16,11 @@ export const metadata: Metadata = {
 };
 
 function publicationsFor(report: DailySeoReport) {
-  return report.publications?.length ? report.publications : report.publication ? [report.publication] : [];
+  const publications = report.publications?.length ? report.publications : report.publication ? [report.publication] : [];
+  return publications.map((item) => ({
+    ...item,
+    isRetired: Boolean(item.slug && seoPolicy.retiredPageSlugs.includes(item.slug)),
+  }));
 }
 
 export default async function WorkbenchReportsPage() {
@@ -51,19 +56,29 @@ export default async function WorkbenchReportsPage() {
           <div className="wb-top-actions"><a className="wb-guide-link" href="/workbench">返回今日工作台</a><PrintReportButton /></div>
         </header>
         <p className="wb-report-intro">每张日报保留当日机会、公开证据、发布页、质量闸门和已读取的 Search Console 指标。这里展示仓库中可追溯的日报；“打印 / 存为 PDF”可把当前归档保存为日报附件。</p>
-        {reports.length ? <div className="wb-report-archive">{reports.map((report) => {
+        {reports.length ? <div className="wb-report-archive">{reports.map((report, reportIndex) => {
           const top = report.opportunities[0];
           const publications = publicationsFor(report);
+          const publicationStatus = publications[0]?.isRetired
+            ? "RETIRED"
+            : publications[0]?.status ?? "—";
+          const retiredPreviewSlug = reportIndex === 0 && report.draft?.schemaVersion === 2 &&
+            report.draft.architecture && report.draft.signatureModule
+            ? publications.find((item) =>
+              item.isRetired && item.slug &&
+              report.draft?.slug.replace(/^\//, "") === item.slug)?.slug ?? null
+            : null;
           const hasSearchPerformance = report.performance.length > 0;
           const landingUv = report.funnel?.metrics.landingUv;
           const paidConversions = report.funnel?.metrics.paidConversions;
           const revenue = report.funnel?.metrics.revenueMinor;
           return <article className="wb-report-card" id={`report-${report.date}`} key={report.id}>
             <div className="wb-report-card-head"><div><p className="wb-kicker">{report.date}</p><h2>{top?.keyword ?? "No publishable opportunity"}</h2></div><span className={`wb-mode-badge ${report.mode}`}>{report.mode.toUpperCase()}</span></div>
-            <dl className="wb-report-metrics"><div><dt>机会分</dt><dd>{top?.score ?? "—"}</dd></div><div><dt>发布状态</dt><dd>{publications[0]?.status ?? "—"}</dd></div><div><dt>Google 点击</dt><dd>{hasSearchPerformance ? report.summary.totalClicks : "—"}</dd></div><div><dt>落地页 UV</dt><dd>{landingUv?.status === "observed" ? landingUv.value : "—"}</dd></div><div><dt>付费数</dt><dd>{paidConversions?.status === "observed" ? paidConversions.value : "—"}</dd></div><div><dt>归因营收</dt><dd>{revenue?.status === "observed" && revenue.value !== null && report.funnel?.currency ? new Intl.NumberFormat("zh-CN", { style: "currency", currency: report.funnel.currency }).format(revenue.value / 100) : "—"}</dd></div></dl>
+            <dl className="wb-report-metrics"><div><dt>机会分</dt><dd>{top?.score ?? "—"}</dd></div><div><dt>发布状态</dt><dd>{publicationStatus}</dd></div><div><dt>Google 点击</dt><dd>{hasSearchPerformance ? report.summary.totalClicks : "—"}</dd></div><div><dt>落地页 UV</dt><dd>{landingUv?.status === "observed" ? landingUv.value : "—"}</dd></div><div><dt>付费数</dt><dd>{paidConversions?.status === "observed" ? paidConversions.value : "—"}</dd></div><div><dt>归因营收</dt><dd>{revenue?.status === "observed" && revenue.value !== null && report.funnel?.currency ? new Intl.NumberFormat("zh-CN", { style: "currency", currency: report.funnel.currency }).format(revenue.value / 100) : "—"}</dd></div></dl>
             <p>{top?.reason ?? "该日报没有通过发布闸门的机会。"}</p>
             <div className="wb-report-links">
-              {publications.filter((item) => item.status === "published" && item.path).map((item) => <a key={item.path} href={item.path}>已发布页面</a>)}
+              {publications.filter((item) => item.status === "published" && item.path && !item.isRetired).map((item) => <a key={item.path} href={item.path}>已发布页面</a>)}
+              {retiredPreviewSlug ? <a href={`/workbench/preview/${encodeURIComponent(retiredPreviewSlug)}`}>RETIRED · 查看历史草稿</a> : null}
               <a href={`https://github.com/lium53492-rgb/seo/blob/main/data/reports/${report.date}.json`} target="_blank" rel="noreferrer">查看原始日报</a>
             </div>
           </article>;

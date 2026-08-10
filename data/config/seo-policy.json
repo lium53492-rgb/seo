@@ -2,14 +2,106 @@
   "policyVersion": 4,
   "dailyPageLimit": 1,
   "retiredPageSlugs": [
-    "ai-roleplay-scene-recovery"
+    "ai-roleplay-dialogue-vs-action",
+    "ai-roleplay-first-message",
+    "ai-roleplay-scene-recovery",
+    "ai-voice-roleplay-story",
+    "choose-a-role-ai-story",
+    "how-to-choose-an-ai-roleplay-app",
+    "how-to-start-ai-roleplay",
+    "interactive-voice-story",
+    "story-based-ai-roleplay"
   ],
   "retiredRecipeIds": [
+    "playful-story-workshop-v1",
     "specimen-catalog-v1"
   ],
   "retiredPaletteIds": [
+    "craft-paper-orange",
     "museum-cobalt"
   ],
+  "audienceStrategy": {
+    "schemaVersion": 1,
+    "enforcedFromReportDate": "2026-08-11",
+    "primaryAudience": "adult_dnd_players_and_game_masters",
+    "requiredProductSignals": [
+      "dnd_content",
+      "adult_tabletop_audience"
+    ],
+    "requiredAudienceTerms": [
+      "d&d",
+      "dungeons & dragons",
+      "dungeons and dragons",
+      "tabletop",
+      "ttrpg",
+      "game master",
+      "dungeon master"
+    ],
+    "requiredJobTerms": [
+      "campaign",
+      "session",
+      "encounter",
+      "npc",
+      "player character",
+      "prep",
+      "preparation",
+      "improv",
+      "continuity",
+      "agency",
+      "character hook",
+      "party tone",
+      "worldbuilding"
+    ],
+    "allowedPainPointIds": [
+      "campaign_prep_overload",
+      "improv_pressure",
+      "session_stall",
+      "encounter_flatness",
+      "npc_sameness",
+      "player_agency_gap",
+      "character_hook_gap",
+      "party_tone_mismatch",
+      "worldbuilding_sprawl"
+    ],
+    "requiredSectionRoles": [
+      "direct_answer",
+      "failure_analysis",
+      "framework",
+      "worked_example",
+      "next_step"
+    ],
+    "requiredMaturityToneTerms": [
+      "adult",
+      "mature"
+    ],
+    "requiredTabletopToneTerms": [
+      "tabletop",
+      "campaign",
+      "game master",
+      "dungeon master"
+    ],
+    "blockedChildDirectedPatterns": [
+      "\\bchild[- ]directed\\b",
+      "\\b(?:kids?|children)\\b",
+      "\\bcute mascot\\b",
+      "\\bsticker(?:[- ]workshop)?\\b",
+      "\\bstory workshop\\b"
+    ],
+    "contentBoundary": "original_tabletop_fantasy_only_until_srd_attribution_contract_exists",
+    "tone": "adult_hobbyist"
+  },
+  "ipBoundary": {
+    "schemaVersion": 1,
+    "enforcedFromReportDate": "2026-08-11",
+    "requiredDraftSchemaVersion": 2,
+    "requiredReviewCheckId": "original-ip-boundary",
+    "thirdPartyReferencePatterns": [
+      "\\bvecna\\b",
+      "\\bcritical role\\b",
+      "\\bexandria\\b",
+      "\\bsword coast\\b"
+    ]
+  },
   "breakoutEvidence": {
     "schemaVersion": 1,
     "enforcedFromReportDate": "2026-08-11",
@@ -69,6 +161,14 @@
     "minSearcherJobChars": 30,
     "minRationaleChars": 30,
     "productSignals": {
+      "dnd_content": {
+        "weight": 30,
+        "factId": "dnd-content-direction"
+      },
+      "adult_tabletop_audience": {
+        "weight": 0,
+        "factId": "dnd-primary-audience"
+      },
       "voice_roleplay": {
         "weight": 30,
         "factId": "voice-roleplay-format"
@@ -138,6 +238,19 @@
     "architecturePolicy": "data/config/content-architecture.json",
     "presentationRecipes": "data/config/presentation-recipes.json",
     "legacyPageSchemas": [1, 2]
+  },
+  "legacyPageGrandfathering": {
+    "publishedBefore": "2026-08-11T00:00:00+08:00",
+    "allowlist": [
+      {
+        "slug": "ai-roleplay-prompt-vs-existing-story",
+        "schemaVersion": 2,
+        "publishedAt": "2026-08-01T01:31:00.000Z",
+        "generatedFromReport": "seo-2026-08-01",
+        "draftDigest": "c2a5d23a16d4333047d3ef4224283f1fcc51be91510fc1294709a11e4bc77308",
+        "servedContentDigest": "ca3efcd1c9c78c2c671ef2eb7fa5faef61e29241521cd91d55d4bbd95e41575f"
+      }
+    ]
   },
   "allowedPagePatterns": [
     "task_guide",

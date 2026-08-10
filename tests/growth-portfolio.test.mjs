@@ -199,6 +199,91 @@ test("collector authenticates and keeps every page bound to the same reporting p
   }
 });
 
+test("retired URLs keep only search evidence and never affect the active portfolio summary", async () => {
+  const now = new Date("2026-08-10T12:00:00.000Z");
+  const period = completeShanghaiWindow(28, now);
+  const activePage = {
+    slug: "active-dnd-guide",
+    path: "/active-dnd-guide",
+    keyword: "dnd campaign guide",
+  };
+  const retiredPage = {
+    slug: "retired-story-page",
+    path: "/retired-story-page",
+    retiredAt: "2026-08-10T10:28:47.040Z",
+  };
+  const requestedSlugs = [];
+  const snapshot = await collectGrowthPortfolio({
+    pages: [activePage],
+    retiredPages: [retiredPage],
+    automationToken: "fixture-secret-with-at-least-32-bytes",
+    siteUrl: "https://seo.example/",
+    now,
+    fetchImpl: async (url) => {
+      const sourceSlug = new URL(url).searchParams.get("sourceSlug");
+      requestedSlugs.push(sourceSlug);
+      const page = sourceSlug === activePage.slug ? activePage : retiredPage;
+      const report = collectedReport(page, period);
+      if (sourceSlug === retiredPage.slug) {
+        report.orphanCallbacks = 99;
+        report.searchPerformance = {
+          ...report.searchPerformance,
+          state: "observed",
+          clicks: 1,
+          impressions: 9,
+          ctr: 1 / 9,
+          position: 14,
+          detail: "Observed the retired URL's exact-page Search Console row.",
+        };
+      }
+      return Response.json(report);
+    },
+  });
+
+  assert.deepEqual(requestedSlugs.sort(), [activePage.slug, retiredPage.slug].sort());
+  assert.deepEqual(snapshot.summary, {
+    publishedPages: 1,
+    collectedPages: 1,
+    unavailablePages: 0,
+    attributionJoinReady: true,
+    attributionJoinBlocked: false,
+    hasSearchValidatedLandingPage: false,
+  });
+  assert.equal(snapshot.entries.length, 1);
+  assert.equal(snapshot.entries[0].sourceSlug, activePage.slug);
+  assert.equal(snapshot.retiredUrls.length, 1);
+  assert.deepEqual(
+    Object.keys(snapshot.retiredUrls[0]).sort(),
+    [
+      "path",
+      "retiredAt",
+      "searchPerformance",
+      "sourceSlug",
+      "state",
+      "urlInspection",
+    ],
+  );
+  assert.equal(snapshot.retiredUrls[0].sourceSlug, retiredPage.slug);
+  assert.equal(snapshot.retiredUrls[0].searchPerformance.impressions, 9);
+  assert.equal(snapshot.retiredUrls[0].urlInspection.sourceSlug, retiredPage.slug);
+  assert.deepEqual(
+    objectKeys(snapshot.retiredUrls).filter((key) => [
+      "funnel",
+      "metrics",
+      "decisionState",
+      "landingUv",
+      "qualifiedOutboundClicks",
+      "trialStarts",
+      "signups",
+      "paidConversions",
+      "revenueMinor",
+      "orphanCallbacks",
+    ].includes(key)),
+    [],
+  );
+  assert.equal(countSearchValidatedLandingPages(snapshot.entries), 0);
+});
+
 test("collector accepts only Search Console evidence from the requested site origin", async () => {
   const now = new Date("2026-07-23T03:30:00.000Z");
   const period = completeShanghaiWindow(28, now);
@@ -297,6 +382,14 @@ test("collector rejects unsafe origins and malformed page metadata before fetchi
   await assert.rejects(
     collectGrowthPortfolio({ pages: [page, page], automationToken: "secret" }),
     /Duplicate/,
+  );
+  await assert.rejects(
+    collectGrowthPortfolio({
+      pages: [page],
+      retiredPages: [{ slug: page.slug, path: page.path }],
+      automationToken: "secret",
+    }),
+    /both published and retired/,
   );
 });
 

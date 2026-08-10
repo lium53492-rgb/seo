@@ -62,23 +62,23 @@ test("report generation cannot publish before a separate approval artifact", asy
 
     const keywords = [
       "play an ai roleplay story",
-      "write an ai roleplay first reply",
-      "recover a stalled ai roleplay scene",
-      "stay in character during ai roleplay",
-      "set ai roleplay reply pacing",
-      "choose dialogue or action in ai roleplay",
-      "find an ai roleplay character motivation",
-      "make a consequential ai roleplay choice",
+      "d&d player character first reply",
+      "d&d session stall recovery",
+      "d&d player character voice consistency",
+      "d&d session reply pacing",
+      "d&d encounter dialogue vs action",
+      "d&d player character motivation hook",
+      "d&d campaign choice consequences",
     ];
     const searcherJobs = [
-      "Compare authoring a blank roleplay prompt with entering a prepared AI story, then choose the starting route that fits this session.",
-      "Write one first AI roleplay reply from a supplied scene detail, a small in-character action, and a hook the next turn can answer.",
-      "Recover a stalled AI roleplay scene by adding one grounded observation, action, or decision that creates a clear next beat.",
-      "Maintain a chosen character perspective during an AI roleplay scene after the opening exchange has already begun.",
-      "Set the length and pacing of an AI roleplay reply so it matches how actively the chosen role should respond.",
-      "Decide whether an AI roleplay response should use dialogue, an action, or both for the current story beat.",
-      "Find one immediate motivation for a selected AI roleplay character so the next response has a coherent direction.",
-      "Choose an AI roleplay action with a visible consequence for the immediate scene instead of adding a disconnected line.",
+      "Compare a blank prompt with prepared story context for a D&D campaign, then choose the route that reduces useful Game Master prep.",
+      "Write one D&D player character reply from a supplied session detail, a small in-character action, and a hook the next turn can answer.",
+      "Recover a stalled D&D session by adding one grounded observation, action, or decision that creates a clear next beat at the table.",
+      "Maintain a D&D player character perspective during a campaign session after the opening exchange has already begun.",
+      "Set the pacing of a D&D session reply so it matches how actively the player character should respond at the table.",
+      "Decide whether a D&D encounter response should use dialogue, an action, or both for the current campaign beat.",
+      "Find one immediate D&D player character motivation hook so the next session decision has a coherent direction.",
+      "Choose a D&D campaign action with a visible consequence for the current session instead of adding a disconnected line.",
     ];
     const decisionRationale = Object.fromEntries([
       "demand",
@@ -115,12 +115,16 @@ test("report generation cannot publish before a separate approval artifact", asy
         evidenceRefs: ["evidence-1", "evidence-2"],
         searcherJob: searcherJobs[index],
         productFactIds: [
+          "dnd-content-direction",
+          "dnd-primary-audience",
           "voice-roleplay-format",
           "existing-story",
           "role-selection",
           "interactive-fiction-history",
         ],
         productSignals: [
+          "dnd_content",
+          "adult_tabletop_audience",
           "voice_roleplay",
           "story_premise",
           "role_selection",
@@ -151,10 +155,11 @@ test("report generation cannot publish before a separate approval artifact", asy
     }));
     const supports = [...keywords];
     const sectionBodies = [
-      "A useful entry decision begins by separating two very different jobs. A blank-prompt route asks the reader to supply a premise before anything can happen. A story-led route begins with an existing plot, so the first decision is whether that supplied situation already creates a reason to participate. Read the opening for one unresolved pressure, one available perspective, and one immediate consequence. That comparison prevents a generic greeting from standing in for a real choice. It also keeps the explanation inside approved product facts: the page can describe an existing story and role selection without promising a specific world, character, platform, price, response speed, or technical voice behavior.",
-      "Compare the routes with a small evidence grid rather than a feature checklist.\n1. In the first column, write what context the reader must invent.\n2. In the second column, write what context is already present.\nThen note where the point of view comes from and what the reader can decide next. The story-led side should show that an available role narrows the perspective, while the blank side leaves that work open. Neither route is declared universally better. The grid exists to help a trial-ready searcher recognize which starting condition matches the action they want to take now, using original language and no borrowed fictional setting.",
-      "Use a three-question decision rule after the comparison.\n- First, do you want to build the premise or respond to one that is already moving?\n- Second, do you want to invent a speaker or choose from the roles made available by the story?\n- Third, can you name one scene-level action you would take after that choice?\nThree clear answers create a reasoned next step; uncertainty on any answer tells the reader what to inspect again. This rule is deliberately narrower than a broad beginner tutorial because it resolves one route choice before the reader reaches the opening scene.",
-      "When the route is clear, carry only the decision forward. Open the attributed destination intentionally in a new tab, inspect an existing premise, and choose an available role if the format fits. The page does not start a session, guarantee an outcome, or claim that every imagined scenario exists. Its job is to replace a vague product visit with a qualified one: the reader understands the story-led boundary, knows which perspective they would take, and can measure the next action through the approved redirect and downstream attribution chain without exposing protected commercial data in the public report.",
+      "A useful D&D campaign entry decision begins by separating two adult tabletop jobs. A blank-prompt route asks the Game Master to supply a premise before play can move. A prepared-story route begins with an existing plot, so the first decision is whether that situation already gives the party a reason to participate. Read the opening for one unresolved pressure, one available perspective, and one immediate consequence. That comparison prevents a generic tavern greeting from standing in for a table-ready choice. It also stays inside approved product facts: the guide can describe D&D-focused content, an existing story, and role selection without promising a named setting, character, platform, price, response speed, or technical voice behavior.",
+      "Find wasted campaign preparation with a compact evidence grid instead of a feature checklist.\n1. In the first column, write what premise, opposition, and stakes the Game Master must invent.\n2. In the second column, write which of those elements the prepared situation already supplies.\nThen mark where player-character perspective comes from and what decision could reach the table this session. If neither route produces a consequential choice, the preparation is still scenery rather than playable pressure. The exercise does not crown a universal winner. It helps a trial-ready tabletop reader identify which starting condition matches tonight's job, while keeping every example original and clear of protected settings, monsters, or characters.",
+      "Use a three-question campaign rule after diagnosing the waste.\n- First, do you want to build the premise or respond to pressure that is already moving?\n- Second, does the party need a fresh character hook, or does an available role already create one?\n- Third, can you name a decision whose consequence will be visible before the session ends?\nThree clear answers produce a bounded preparation plan; uncertainty on any answer identifies the exact gap to solve. This framework is narrower than a beginner tutorial. It gives an adult player or Game Master enough structure to protect agency, preserve campaign tone, and stop before unused lore crowds out the next table decision.",
+      "Consider an original campaign in which a storm-battered river town has one working signal bell. The ferrymaster wants it rung to guide refugees, while the night watch warns that the sound will reveal the crossing to raiders. A prepared route already supplies pressure, two credible interests, and a consequence; the Game Master only needs to frame what the party knows. A blank route is the better choice when the group wants to invent the town, threat, and obligations together. In either case, ask the player characters what risk they accept and let that answer change the next scene. The example proves the framework at table scale without borrowing a licensed world or dictating a correct outcome.",
+      "Carry one qualified campaign choice forward after the example passes the table test. Open the attributed destination intentionally in a new tab, inspect the available original premise, and choose a role only if its pressure fits the party's mature tone. The guide does not start a session, guarantee an outcome, or claim that every imagined scenario exists. Its job is to replace a vague product visit with a measurable one: the reader knows which preparation should survive contact with player agency, which perspective they would take, and which next action matters. The approved redirect can then connect that deliberate visit to downstream attribution without exposing protected commercial data in the public report.",
     ];
     const input = {
       policyVersion: 4,
@@ -163,7 +168,7 @@ test("report generation cannot publish before a separate approval artifact", asy
       contentStrategy: {
         schemaVersion: 2,
         searcherJob: candidates[0].decisionEvidence.searcherJob,
-        painPointId: "choice_uncertainty",
+        painPointId: "campaign_prep_overload",
         readerStateBefore: "The reader wants to participate now but has not decided whether to invent a prompt or enter an existing story.",
         readerOutcome: "The reader can compare the two starting routes, choose one deliberately, and explain the next scene-level action.",
         primaryPainPoint: "The reader is close to trying a product but cannot tell which starting route removes the right kind of setup work.",
@@ -273,16 +278,24 @@ test("report generation cannot publish before a separate approval artifact", asy
         generatedAt: "2099-01-01T09:15:00+08:00",
         language: "en",
         reviewRequired: true,
-        title: "Play an AI Roleplay Story by Entering an Existing Plot",
-        metaDescription: "Learn how to enter an original AI roleplay story, choose an available character, and move from a clear opening scene toward a measured trial step.",
-        h1: "Play an AI Roleplay Story",
-        heroMarkdown: "Start with an original story already in motion, choose an available role, and decide whether this story-led format matches the way you want to participate.",
+        title: "Choose a D&D Campaign Starting Route Without Wasted Prep",
+        metaDescription: "Compare a blank prompt with prepared story context for a D&D campaign, then choose the route that reduces wasted Game Master preparation.",
+        h1: "Choose a D&D Campaign Starting Route",
+        heroMarkdown: "Start with an original D&D campaign situation, compare the preparation each route demands, and choose the path that preserves useful table decisions.",
         primaryCta: "Compare starting routes on NovelAI",
+        ipBoundary: {
+          schemaVersion: 1,
+          contentBasis: "original_tabletop_fantasy",
+          dndReferenceScope: "audience_reference_only",
+          srdMaterialUsed: false,
+          thirdPartyNames: [],
+        },
         sections: [
           { id: "separate-the-jobs", role: "direct_answer", format: "prose", heading: "Separate the two starting jobs", bodyMarkdown: sectionBodies[0] },
-          { id: "compare-the-routes", role: "comparison", format: "comparison", heading: "Compare what each route asks you to supply", bodyMarkdown: sectionBodies[1] },
-          { id: "apply-the-rule", role: "decision_rule", format: "checklist", heading: "Apply a three-question decision rule", bodyMarkdown: sectionBodies[2] },
-          { id: "carry-the-choice", role: "next_step", format: "callout", heading: "Carry one qualified choice forward", bodyMarkdown: sectionBodies[3] },
+          { id: "compare-the-routes", role: "failure_analysis", format: "comparison", heading: "See where campaign prep gets wasted", bodyMarkdown: sectionBodies[1] },
+          { id: "apply-the-rule", role: "framework", format: "checklist", heading: "Apply a three-question prep rule", bodyMarkdown: sectionBodies[2] },
+          { id: "work-the-example", role: "worked_example", format: "prose", heading: "Work one original campaign example", bodyMarkdown: sectionBodies[3] },
+          { id: "carry-the-choice", role: "next_step", format: "callout", heading: "Carry one qualified choice forward", bodyMarkdown: sectionBodies[4] },
         ],
         faqs: [
           { id: "faq-existing-plot", job: "definition", question: "What does an existing plot change about the start?", answerMarkdown: "It supplies an opening situation to inspect, so the reader can focus on choosing a perspective and responding to one immediate pressure instead of inventing an entire premise." },
@@ -293,7 +306,7 @@ test("report generation cannot publish before a separate approval artifact", asy
           schemaVersion: 1,
           intent: {
             searcherJob: candidates[0].decisionEvidence.searcherJob,
-            painPointId: "choice_uncertainty",
+            painPointId: "campaign_prep_overload",
             decisionToEnable: "Choose between inventing a blank prompt and entering a supplied story before visiting the product.",
             oneSentenceAnswer: "Begin with an original plot, choose an available role, and enter the opening scene.",
             nonGoals: ["Do not teach a full beginner roleplay workflow.", "Do not rank products or promise an outcome."],
@@ -302,13 +315,14 @@ test("report generation cannot publish before a separate approval artifact", asy
             archetype: "comparison",
             thesis: "The useful decision is not which route is universally best, but which kind of setup work the reader wants to do.",
             originalContribution: "A decision sequence that maps search intent to plot, role choice, and a measured next step.",
-            tone: "Precise and evaluative, like a late-night control-room route check.",
+            tone: "Precise and mature for an adult tabletop campaign prep discussion.",
             openingMove: "before_after_contrast",
             avoidPhrases: ["unlock your imagination", "endless possibilities", "step into a world"],
             sections: [
               { id: "separate-the-jobs", role: "direct_answer", format: "prose", readerQuestion: "What decision am I actually making?", uniqueTakeaway: "The two routes require different kinds of setup work." },
-              { id: "compare-the-routes", role: "comparison", format: "comparison", readerQuestion: "What does each route ask me to supply?", uniqueTakeaway: "Compare context, perspective, and the next available action." },
-              { id: "apply-the-rule", role: "decision_rule", format: "checklist", readerQuestion: "How can I decide without a generic ranking?", uniqueTakeaway: "Three questions turn preferences into a route choice." },
+              { id: "compare-the-routes", role: "failure_analysis", format: "comparison", readerQuestion: "Where does campaign preparation become waste?", uniqueTakeaway: "Compare context, pressure, and decisions that can reach the table." },
+              { id: "apply-the-rule", role: "framework", format: "checklist", readerQuestion: "How can a Game Master choose without overpreparing?", uniqueTakeaway: "Three questions turn preparation pressure into a route choice." },
+              { id: "work-the-example", role: "worked_example", format: "prose", readerQuestion: "How does the rule work in an original campaign situation?", uniqueTakeaway: "A bounded example shows which preparation survives player choice." },
               { id: "carry-the-choice", role: "next_step", format: "callout", readerQuestion: "What should I do after the route is clear?", uniqueTakeaway: "Make one intentional, attributed visit with the boundary understood." },
             ],
             faqs: [
@@ -360,7 +374,7 @@ test("report generation cannot publish before a separate approval artifact", asy
             { label: "Signal 03", title: "Next action", bodyMarkdown: "Name one scene-level move that follows from the chosen context and perspective before continuing." }
           ]
         },
-        factIdsUsed: ["voice-roleplay-format", "existing-story", "role-selection"],
+        factIdsUsed: ["dnd-content-direction", "dnd-primary-audience", "voice-roleplay-format", "existing-story", "role-selection"],
         internalLinks: [],
         assetBriefs: ["Use only original story and role imagery."],
         quality: { checks: [{ id: "distinct-intent", label: "Answers one trial-ready job", passed: true, detail: "The page targets a reader who wants to enter a story now." }] },
@@ -388,6 +402,53 @@ test("report generation cannot publish before a separate approval artifact", asy
     });
     assert.notEqual(duplicateFactBuild.status, 0);
     assert.match(duplicateFactBuild.stderr, /unapproved or missing product fact ID/);
+
+    const missingIpBoundaryInput = structuredClone(input);
+    delete missingIpBoundaryInput.draft.ipBoundary;
+    await writeFile(inputPath, `${JSON.stringify(missingIpBoundaryInput, null, 2)}\n`);
+    const missingIpBoundaryBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(missingIpBoundaryBuild.status, 0);
+    assert.match(missingIpBoundaryBuild.stderr, /exact original-only ipBoundary contract/);
+
+    const protectedIpInput = structuredClone(input);
+    protectedIpInput.draft.heroMarkdown += " Continue the example in Exandria.";
+    await writeFile(inputPath, `${JSON.stringify(protectedIpInput, null, 2)}\n`);
+    const protectedIpBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(protectedIpBuild.status, 0);
+    assert.match(protectedIpBuild.stderr, /blocked third-party reference/);
+
+    const protectedKeywordInput = structuredClone(input);
+    const protectedKeyword = "vecna d&d campaign prep";
+    protectedKeywordInput.candidates[0].keyword = protectedKeyword;
+    protectedKeywordInput.draft.keyword = protectedKeyword;
+    protectedKeywordInput.trendSignals[0].keyword = protectedKeyword;
+    protectedKeywordInput.evidence = protectedKeywordInput.evidence.map((item) => ({
+      ...item,
+      supports: [...item.supports, protectedKeyword],
+    }));
+    await writeFile(inputPath, `${JSON.stringify(protectedKeywordInput, null, 2)}\n`);
+    const protectedKeywordBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(protectedKeywordBuild.status, 0);
+    assert.match(protectedKeywordBuild.stderr, /blocked third-party reference/);
+
+    const disguisedChildInput = structuredClone(input);
+    disguisedChildInput.draft.heroMarkdown += " A cute mascot leads kids through a sticker workshop.";
+    await writeFile(inputPath, `${JSON.stringify(disguisedChildInput, null, 2)}\n`);
+    const disguisedChildBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(disguisedChildBuild.status, 0);
+    assert.match(disguisedChildBuild.stderr, /child-directed framing/);
 
     const unknownEvidenceInput = structuredClone(input);
     unknownEvidenceInput.candidates[0].decisionEvidence.evidenceRefs = [
@@ -515,9 +576,9 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.match(undersizedCandidateBuild.stderr, /Research requires 8-12 candidates/);
 
     const nearDuplicateIntentInput = structuredClone(input);
-    nearDuplicateIntentInput.candidates[1].keyword = "enter a prepared ai roleplay story";
+    nearDuplicateIntentInput.candidates[1].keyword = "enter a prepared d&d campaign story";
     nearDuplicateIntentInput.candidates[1].decisionEvidence.searcherJob =
-      "Assess a self-authored prompt against a supplied AI story and select which starting route fits this session.";
+      "Assess a self-authored prompt against a supplied D&D campaign story and select which starting route fits this tabletop session.";
     await writeFile(inputPath, `${JSON.stringify(nearDuplicateIntentInput, null, 2)}\n`);
     const nearDuplicateIntentBuild = spawnSync(process.execPath, [builderPath, inputPath], {
       cwd: workspace,
@@ -546,11 +607,20 @@ test("report generation cannot publish before a separate approval artifact", asy
     const pagesDirectory = join(workspace, "data", "pages");
     await mkdir(pagesDirectory, { recursive: true });
     const existingPage = JSON.parse(await readFile(
-      join(repoRoot, "data", "pages", "how-to-choose-an-ai-roleplay-app.json"),
+      join(repoRoot, "data", "pages", "ai-roleplay-prompt-vs-existing-story.json"),
       "utf8",
     ));
+    Object.assign(existingPage, {
+      slug: "unrelated-campaign-archive",
+      path: "/unrelated-campaign-archive",
+      keyword: "tabletop campaign archive workflow",
+      title: "Tabletop Campaign Archive Workflow",
+      h1: "Tabletop Campaign Archive Workflow",
+      metaDescription: "Organize a mature tabletop campaign archive around unresolved threads, faction state, and the next preparation decision.",
+      heroMarkdown: "This unrelated fixture represents a campaign-record workflow rather than the prompt-versus-story decision tested by the candidate batch.",
+    });
     await writeFile(
-      join(pagesDirectory, "how-to-choose-an-ai-roleplay-app.json"),
+      join(pagesDirectory, `${existingPage.slug}.json`),
       `${JSON.stringify(existingPage, null, 2)}\n`,
     );
     const unavailablePortfolioInput = structuredClone(input);
@@ -719,6 +789,8 @@ test("report generation cannot publish before a separate approval artifact", asy
         { id: "presentation-distinctness", passed: true, detail: "The nocturne decision grid is explicit and passes the recipe reuse policy." },
         { id: "signature-module", passed: true, detail: "The route evidence switchboard is useful, original, and present in initial HTML." },
         { id: "rendered-preview", passed: true, detail: "The structured renderer contract includes the hero, layers, signature, FAQ, CTA, and optional-decoration states." },
+        { id: "adult-tabletop-audience", passed: true, detail: "The visible copy serves adult tabletop players and Game Masters without child-directed framing." },
+        { id: "original-ip-boundary", passed: true, detail: "The editor confirmed that all examples and visible assets are original tabletop fantasy and use D&D only as an audience reference." },
       ],
       visualAudit: {
         schemaVersion: 1,
@@ -775,6 +847,25 @@ test("report generation cannot publish before a separate approval artifact", asy
     const tamperedStrategyPublish = spawnSync(process.execPath, [publisherPath, reportPath, reviewPath], { cwd: workspace, encoding: "utf8" });
     assert.notEqual(tamperedStrategyPublish.status, 0);
     assert.match(tamperedStrategyPublish.stderr, /SHA-256 digest/);
+
+    const protectedPublisherReport = structuredClone(reportBeforeReview);
+    protectedPublisherReport.draft.heroMarkdown += " Continue the campaign in the Sword Coast.";
+    const protectedPublisherDigest = createHash("sha256")
+      .update(JSON.stringify({
+        draft: protectedPublisherReport.draft,
+        contentStrategy: protectedPublisherReport.contentStrategy,
+      }))
+      .digest("hex");
+    protectedPublisherReport.publication.draftDigest = protectedPublisherDigest;
+    const protectedPublisherReview = structuredClone(review);
+    protectedPublisherReview.draftDigest = protectedPublisherDigest;
+    protectedPublisherReview.visualAudit.draftDigest = protectedPublisherDigest;
+    await writeFile(reportPath, `${JSON.stringify(protectedPublisherReport, null, 2)}\n`);
+    await writeFile(reviewPath, `${JSON.stringify(protectedPublisherReview, null, 2)}\n`);
+    const protectedPublisherPublish = spawnSync(process.execPath, [publisherPath, reportPath, reviewPath], { cwd: workspace, encoding: "utf8" });
+    assert.notEqual(protectedPublisherPublish.status, 0);
+    assert.match(protectedPublisherPublish.stderr, /blocked third-party reference/);
+    await writeFile(reviewPath, `${JSON.stringify(review, null, 2)}\n`);
 
     const missingTrendPublisherBypass = structuredClone(reportBeforeReview);
     missingTrendPublisherBypass.trendSignals = [];
@@ -873,9 +964,9 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.equal(reportAfterReview.publication.status, "published");
 
     const falselyNewIntentInput = structuredClone(input);
-    falselyNewIntentInput.candidates[0].keyword = "enter a prepared ai roleplay story";
+    falselyNewIntentInput.candidates[0].keyword = "enter a prepared d&d campaign story";
     falselyNewIntentInput.candidates[0].decisionEvidence.searcherJob =
-      "Compare a self-authored prompt with entering a supplied AI story, then select the starting route that fits this session.";
+      "Compare a self-authored prompt with entering a supplied D&D campaign story, then select the starting route that fits this tabletop session.";
     falselyNewIntentInput.trendSignals[0].keyword = falselyNewIntentInput.candidates[0].keyword;
     falselyNewIntentInput.evidence = falselyNewIntentInput.evidence.map((item) => ({
       ...item,
@@ -896,24 +987,24 @@ test("report generation cannot publish before a separate approval artifact", asy
     updateInput.generatedAt = "2099-01-02T09:15:00+08:00";
     updateInput.publicationMode = "update";
     const updateKeywords = [
-      "personalize an ai roleplay story",
-      "audit an ai roleplay first reply",
-      "diagnose a stalled ai roleplay scene",
-      "check ai roleplay character continuity",
-      "tune ai roleplay reply pacing",
-      "balance ai roleplay dialogue and action",
-      "clarify an ai roleplay character motivation",
-      "strengthen an ai roleplay choice consequence",
+      "personalize a d&d campaign story",
+      "audit a d&d player character first reply",
+      "diagnose a stalled d&d campaign session",
+      "check d&d player character continuity",
+      "tune d&d session reply pacing",
+      "balance d&d encounter dialogue and action",
+      "clarify a d&d player character motivation",
+      "strengthen a d&d campaign choice consequence",
     ];
     const updateSearcherJobs = [
-      "Improve the existing story-entry decision page by clarifying how a reader chooses between authoring a prompt and entering a prepared story.",
-      "Audit one first AI roleplay reply for a grounded scene detail, an in-character action, and a hook that another turn can answer.",
-      "Diagnose a stalled AI roleplay scene and identify the smallest observation, action, or decision that can restore momentum.",
-      "Check whether an AI roleplay response maintains the selected character perspective after the opening exchange has begun.",
-      "Tune the length and pacing of an AI roleplay reply to match the amount of movement required by the current scene.",
-      "Balance dialogue and action in an AI roleplay response without making either mode carry the entire story beat.",
-      "Clarify one immediate motivation for an AI roleplay character so the next response follows a coherent objective.",
-      "Strengthen one AI roleplay choice by naming a visible consequence that changes the immediate scene.",
+      "Improve the existing D&D campaign entry page by clarifying how a Game Master chooses between authoring a prompt and entering a prepared story.",
+      "Audit one first D&D player character reply for a grounded session detail, an in-character action, and a hook that another turn can answer.",
+      "Diagnose a stalled D&D campaign session and identify the smallest observation, action, or decision that can restore table momentum.",
+      "Check whether a D&D response maintains the selected player character perspective after the campaign exchange has begun.",
+      "Tune the length and pacing of a D&D session reply to match the amount of movement required by the current table scene.",
+      "Balance dialogue and action in a D&D encounter without making either mode carry the entire campaign beat.",
+      "Clarify one immediate motivation for a D&D player character so the next session response follows a coherent objective.",
+      "Strengthen one D&D campaign choice by naming a visible consequence that changes the immediate session.",
     ];
     updateInput.candidates = updateInput.candidates.map((candidate, index) => ({
       ...candidate,
@@ -993,6 +1084,39 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.equal(updateReport.publication.slug, "play-an-ai-roleplay-story");
     assert.equal(updateReport.brief.slug, "/play-an-ai-roleplay-story");
     assert.deepEqual(updateReport.trendSignals, []);
+
+    const publishedReport = JSON.parse(await readFile(reportPath, "utf8"));
+    await rm(join(workspace, "data", "pages", "play-an-ai-roleplay-story.json"));
+    await mkdir(join(workspace, "data", "maintenance"), { recursive: true });
+    await writeFile(
+      join(workspace, "data", "maintenance", "2099-01-01-retirement.json"),
+      `${JSON.stringify({
+        schemaVersion: 1,
+        authorization: "Direct test authorization to retire this publication.",
+        retiredPages: ["play-an-ai-roleplay-story"],
+        retiredPublications: [{
+          schemaVersion: 1,
+          action: "retire_published_page",
+          originalPublicationDate: "2099-01-01",
+          slug: "play-an-ai-roleplay-story",
+          reportId: publishedReport.id,
+          draftDigest: publishedReport.publication.draftDigest,
+          publishedAt: publishedReport.publication.publishedAt,
+          retiredAt: "2099-01-01T13:00:00.000Z",
+          reason: "The fixture explicitly retires the published page while preserving its historical review chain.",
+        }],
+      }, null, 2)}\n`,
+    );
+    const republishAfterRetirement = spawnSync(
+      process.execPath,
+      [publisherPath, reportPath, reviewPath],
+      { cwd: workspace, encoding: "utf8" },
+    );
+    assert.notEqual(republishAfterRetirement.status, 0);
+    assert.match(
+      republishAfterRetirement.stderr,
+      /already ended with retired publication \/play-an-ai-roleplay-story; the daily slot cannot be reused/,
+    );
   } finally {
     await rm(workspace, { recursive: true, force: true });
   }

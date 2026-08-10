@@ -111,6 +111,103 @@ test("daily state advances a complete local delivery to release verification", (
   assert.equal(state.resumeAt, "release_verification");
 });
 
+test("an explicit same-day retirement receipt is terminal without authorizing a second page", () => {
+  const publishedReport = {
+    ...report,
+    publication: {
+      ...report.publication,
+      status: "published",
+      slug: "daily-page",
+      publishedAt: page.publishedAt,
+    },
+  };
+  const maintenanceRecords = [{
+    schemaVersion: 1,
+    createdAt: "2026-08-07T02:00:00.000Z",
+    authorization: "Direct user instruction recorded for this exact page retirement.",
+    retiredPages: ["daily-page"],
+    retiredPublications: [{
+      schemaVersion: 1,
+      action: "retire_published_page",
+      originalPublicationDate: date,
+      slug: "daily-page",
+      reportId: report.id,
+      draftDigest: review.draftDigest,
+      publishedAt: page.publishedAt,
+      retiredAt: "2026-08-07T02:00:00.000Z",
+    }],
+  }];
+  const state = deriveDailyRunState({
+    date,
+    growth,
+    research,
+    report: publishedReport,
+    review,
+    pages: [],
+    pdfExists: true,
+    maintenanceRecords,
+  });
+  assert.equal(state.state, "retired_publication_complete");
+  assert.equal(state.resumeAt, null);
+  assert.equal(state.mayCreatePage, false);
+  assert.equal(state.retiredSlug, "daily-page");
+  assert.deepEqual(state.retiredSlugs, ["daily-page"]);
+});
+
+test("daily retirement state validates every publication from the same historical report", () => {
+  const firstSlug = "legacy-morning-page";
+  const secondSlug = "legacy-afternoon-page";
+  const legacyReport = {
+    id: `seo-${date}`,
+    date,
+    publication: {
+      status: "published",
+      slug: firstSlug,
+      publishedAt: "2026-08-07T01:30:00.000Z",
+    },
+    publications: [
+      { status: "published", slug: firstSlug, publishedAt: "2026-08-07T01:30:00.000Z" },
+      { status: "published", slug: secondSlug, publishedAt: "2026-08-07T03:30:00.000Z" },
+    ],
+  };
+  const receipts = legacyReport.publications.map((publication) => ({
+    schemaVersion: 1,
+    action: "retire_published_page",
+    originalPublicationDate: date,
+    slug: publication.slug,
+    reportId: legacyReport.id,
+    draftDigest: null,
+    publishedAt: publication.publishedAt,
+    retiredAt: "2026-08-08T02:00:00.000Z",
+  }));
+  const maintenanceRecord = {
+    schemaVersion: 1,
+    authorization: "Direct user instruction recorded for both exact historical page retirements.",
+    retiredPages: [firstSlug, secondSlug],
+    retiredPublications: receipts,
+  };
+
+  const complete = deriveDailyRunState({
+    date,
+    report: legacyReport,
+    pages: [],
+    maintenanceRecords: [maintenanceRecord],
+  });
+  assert.equal(complete.state, "retired_publication_complete");
+  assert.equal(complete.retiredSlug, firstSlug);
+  assert.deepEqual(complete.retiredSlugs, [firstSlug, secondSlug]);
+  assert.equal(complete.retirementReceipts.length, 2);
+
+  const incomplete = deriveDailyRunState({
+    date,
+    report: legacyReport,
+    pages: [],
+    maintenanceRecords: [{ ...maintenanceRecord, retiredPublications: [receipts[0]] }],
+  });
+  assert.equal(incomplete.state, "conflict");
+  assert.match(incomplete.conflicts.join(" "), /missing its retirement receipt/i);
+});
+
 test("daily state fails closed on inconsistent or duplicate publication", () => {
   const publishedReport = { ...report, publication: { ...report.publication, status: "published", slug: "daily-page" } };
   const duplicate = { ...page, slug: "second-page" };

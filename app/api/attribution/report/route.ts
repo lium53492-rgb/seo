@@ -2,6 +2,7 @@ import {
   isPrivateAttributionAccessConfigured,
   isPrivateAttributionRequestAuthorized,
 } from "@/lib/seo/auth";
+import seoPolicy from "@/data/config/seo-policy.json";
 import { readLiveGrowthFunnel } from "@/lib/seo/growth-funnel";
 import { readPublishedPage } from "@/lib/seo/page-store";
 import { privateJson } from "@/lib/seo/private-response";
@@ -9,6 +10,11 @@ import { shanghaiReportingWindow } from "@/lib/seo/reporting-period";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+
+const retiredPageSlugs = new Set(
+  (seoPolicy.retiredPageSlugs || []).filter((slug) =>
+    /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)),
+);
 
 function defaultPeriod() {
   return shanghaiReportingWindow(30);
@@ -23,7 +29,7 @@ export async function GET(request: Request) {
   }
   const url = new URL(request.url);
   const sourceSlug = url.searchParams.get("sourceSlug") || "";
-  if (!await readPublishedPage(sourceSlug)) {
+  if (!retiredPageSlugs.has(sourceSlug) && !await readPublishedPage(sourceSlug)) {
     return privateJson({ error: "Unknown SEO source slug" }, { status: 404 });
   }
   const fallback = defaultPeriod();

@@ -4,6 +4,7 @@ import seoPolicy from "../../data/config/seo-policy.json" with { type: "json" };
 import architecturePolicy from "../../data/config/content-architecture.json" with { type: "json" };
 import unattendedPolicy from "../../data/config/unattended-publishing.json" with { type: "json" };
 import { validatePipelineReviewContract } from "../../lib/seo/pipeline-contract.mjs";
+import { assessPublicationRetirement } from "../../lib/seo/retirement-receipt.mjs";
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const DIGEST_PATTERN = /^[a-f0-9]{64}$/;
@@ -103,6 +104,7 @@ export function deriveDailyRunState({
   pages = [],
   pdfExists = false,
   noPublishReceipt = null,
+  maintenanceRecords = [],
 }) {
   if (!DATE_PATTERN.test(String(date || ""))) throw new Error("Daily state requires YYYY-MM-DD");
   const todayPages = pages.filter((page) => pagePublishedOn(page, date));
@@ -142,9 +144,38 @@ export function deriveDailyRunState({
     report?.publication?.status === "ready_for_review" &&
     publicationDraftSlug === todayPage?.slug);
   const noPublishReceiptValid = isDailyNoPublishReceipt(noPublishReceipt, date);
+  const retirementAssessment = assessPublicationRetirement({
+    maintenanceRecords,
+    date,
+    report,
+    review,
+  });
+  const retirementReceiptValid = retirementAssessment.state === "valid";
+  const retiredPublicationComplete = retirementReceiptValid && todayPages.length === 0;
   const conflicts = [];
 
   if (noPublishReceipt && !noPublishReceiptValid) conflicts.push("The no-publish receipt is invalid.");
+  if (retirementAssessment.state === "invalid") {
+    conflicts.push(`The publication-retirement receipt is invalid: ${retirementAssessment.reason}`);
+  }
+  if (retirementReceiptValid && todayPages.length > 0) {
+    conflicts.push("A retired publication receipt cannot coexist with its published page.");
+  }
+  if (retiredPublicationComplete && !noPublishReceipt) {
+    return {
+      schemaVersion: 1,
+      date,
+      state: "retired_publication_complete",
+      resumeAt: null,
+      mayCreatePage: false,
+      publishedSlug: null,
+      retiredSlug: retirementAssessment.slug,
+      retiredSlugs: retirementAssessment.slugs,
+      retirementReceipt: retirementAssessment.receipt,
+      retirementReceipts: retirementAssessment.receipts,
+      conflicts: [],
+    };
+  }
   if (noPublishReceiptValid && !growth) conflicts.push("A no-publish receipt requires the same-day growth snapshot.");
   if (noPublishReceiptValid && todayPages.length > 0) {
     conflicts.push("A no-publish receipt cannot coexist with a page published on the Shanghai day.");
@@ -156,7 +187,9 @@ export function deriveDailyRunState({
   if (research && !growth) conflicts.push("Research exists without the required growth snapshot.");
   if (report && !research) conflicts.push("A report exists without its research input.");
   if (review && !report) conflicts.push("A review exists without its report.");
-  if (pdfExists && todayPages.length === 0) conflicts.push("A PDF exists before today's page publication.");
+  if (pdfExists && todayPages.length === 0 && !retiredPublicationComplete) {
+    conflicts.push("A PDF exists before today's page publication.");
+  }
   if (research?.date && research.date !== date) conflicts.push("The research date does not match the daily chain.");
   if (report?.date && report.date !== date) conflicts.push("The report date does not match the daily chain.");
   if (report && !noPublishReceiptValid && date >= seoPolicy.contentArchitecture.enforcedFromReportDate &&
@@ -181,7 +214,7 @@ export function deriveDailyRunState({
   if (reviewContractValid && !reportReadyForPublication && report?.publication?.status !== "published") {
     conflicts.push("An approved review is attached to a report that is not ready for publication.");
   }
-  if (reportedSlug && !todayPages.some((page) => page.slug === reportedSlug)) {
+  if (reportedSlug && !retiredPublicationComplete && !todayPages.some((page) => page.slug === reportedSlug)) {
     conflicts.push("The report claims publication but the matching page is not published today.");
   }
   if (todayPages.length === 1 && !publicationNeedsFinalization &&
@@ -268,6 +301,12 @@ export function readDailyRunState({
       .filter((name) => name.endsWith(".json"))
       .map((name) => readJson(resolve(pagesDirectory, name)))
     : [];
+  const maintenanceDirectory = resolve(root, "data/maintenance");
+  const maintenanceRecords = existsSync(maintenanceDirectory)
+    ? readdirSync(maintenanceDirectory)
+      .filter((name) => name.endsWith(".json"))
+      .map((name) => readJson(resolve(maintenanceDirectory, name)))
+    : [];
   return deriveDailyRunState({
     date,
     growth: artifact("growth"),
@@ -277,5 +316,6 @@ export function readDailyRunState({
     pages,
     pdfExists: existsSync(resolve(root, `output/pdf/seo-daily-${date}.pdf`)),
     noPublishReceipt,
+    maintenanceRecords,
   });
 }

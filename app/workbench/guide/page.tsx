@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import seoPolicy from "@/data/config/seo-policy.json";
 import { createDisconnectedReport } from "@/lib/seo/default-report";
 import { readLatestReport } from "@/lib/seo/report-store";
 import type { IntegrationStatus } from "@/lib/seo/types";
@@ -46,6 +47,22 @@ export default async function WorkbenchGuidePage() {
   } catch {
     // The guide stays usable even when a remote report is temporarily unavailable.
   }
+  const publications = report.publications?.length
+    ? report.publications
+    : report.publication
+      ? [report.publication]
+      : [];
+  const latestPublication = publications[0] ?? null;
+  const latestPublicationIsRetired = Boolean(
+    latestPublication?.slug && seoPolicy.retiredPageSlugs.includes(latestPublication.slug),
+  );
+  const retiredPreviewSlug = latestPublicationIsRetired && latestPublication?.slug &&
+    report.draft?.schemaVersion === 2 && report.draft.architecture && report.draft.signatureModule &&
+    report.draft?.slug.replace(/^\//, "") === latestPublication.slug
+    ? latestPublication.slug
+    : null;
+  const latestPublicationIsLive = latestPublication?.status === "published" &&
+    Boolean(latestPublication.path) && !latestPublicationIsRetired;
 
   return (
     <main className="wb-shell">
@@ -76,8 +93,10 @@ export default async function WorkbenchGuidePage() {
           <p>每天沿同一条可恢复链路完成采集、研究、反馈、评分、写作、独立审稿和质检；候选失败会自动换下一个，任务中断会在晚间续跑。工作台会明确区分代理分、真实页面数据、部署、收录和外链状态。</p>
           <div className="wb-hero-actions">
             <a className="wb-primary-link" href="/workbench">打开今日任务</a>
-            {report.publication?.status === "published" && report.publication.path ? (
-              <a className="wb-secondary-link" href={report.publication.path}>打开最新线上页面</a>
+            {latestPublicationIsLive ? (
+              <a className="wb-secondary-link" href={latestPublication?.path}>打开最新线上页面</a>
+            ) : retiredPreviewSlug ? (
+              <a className="wb-secondary-link" href={`/workbench/preview/${encodeURIComponent(retiredPreviewSlug)}`}>RETIRED · 查看历史草稿</a>
             ) : (
               <a className="wb-secondary-link" href="#connections">查看可选数据增强</a>
             )}

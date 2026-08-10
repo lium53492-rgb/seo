@@ -13,23 +13,23 @@ const releaseRevision = getReleaseRevision();
 export const metadata: Metadata = {
   metadataBase: getSiteUrl(),
   title: {
-    default: "Story-Led AI Voice Roleplay | NovelAI Story Guide",
-    template: "%s | NovelAI Story Guide",
+    default: "D&D Field Guides for Players and Game Masters",
+    template: "%s | Tabletop Field Notes",
   },
   description:
-    "Explore a story-led AI voice roleplay format that begins with an existing plot and lets you choose an available story character.",
+    "Original, adult-oriented field guides for D&D campaign prep, character craft, at-table improvisation, and campaign continuity.",
   openGraph: {
-    title: "Story-Led AI Voice Roleplay",
+    title: "D&D Field Guides for Players and Game Masters",
     description:
-      "Begin with an existing story plot, choose an available character, and perform inside the scene.",
+      "Table-ready answers for campaign pressure, player agency, character decisions, and Game Master preparation.",
     type: "website",
     url: "/",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Story-Led AI Voice Roleplay",
+    title: "D&D Field Guides for Players and Game Masters",
     description:
-      "Enter an existing story, choose an available role, and perform inside the scene.",
+      "Original, unofficial field notes for adult D&D players and Game Masters.",
   },
   ...(releaseRevision
     ? { other: { "git-revision": releaseRevision } }

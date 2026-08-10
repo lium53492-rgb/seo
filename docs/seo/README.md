@@ -1,90 +1,45 @@
-# NovelAI SEO Production System
+# D&D-first SEO production system
 
-This folder is the operating kit for shipping one SEO page per day for NovelAI.
+This directory supports the repository's current overseas SEO workflow. The
+authoritative rules remain `AGENTS.md`, `data/config/seo-policy.json`,
+`data/config/product-facts.json`, and the production SOP; old plans and briefs
+under this directory are historical evidence, not current publishing orders.
 
-## Goal
+## Current goal
 
-Build a repeatable pipeline that turns product features, story categories, roleplay scenarios, and user search demand into indexable landing pages.
+Publish at most one evidence-led page per Shanghai day for adult D&D players
+or Game Masters. Each page must solve one concrete tabletop job and provide a
+different answer structure, worked example, visual world, pain point, and CTA.
+Pages are not released merely to satisfy a daily count.
 
-Primary business goal:
+Current editorial lanes include:
 
-- Acquire users searching for AI interactive story, AI roleplay, AI character chat, and voice roleplay experiences.
+- Game Master preparation and campaign continuity;
+- encounter, NPC, and improvisation repair;
+- player-character hooks, agency, and party-tone alignment;
+- adult tool and workflow decisions with a real trial or purchase job.
 
-Primary SEO goal:
+## Product and IP boundary
 
-- Publish useful, crawlable pages that match one clear search intent each.
+The D&D direction and adult tabletop audience are approved facts, but they do
+not prove an official license or a product capability. Every page must cite
+separate approved capability facts and pass the configured product-fit gate.
+Automated production uses original tabletop-fantasy material until a
+machine-validated SRD version, license basis, and attribution contract exists.
 
-## Page Types
+## Release contract
 
-1. Product pages
-   - Purpose: rank for high-value product category terms.
-   - Examples: `/voice-roleplay`, `/ai-interactive-story-game`, `/ai-roleplay-game`.
+- Collect the full active-page growth portfolio before research.
+- Use official Google Trends evidence for the selected new-page candidate.
+- Keep Search Console observations separate from demand proxies.
+- Require a distinct intent, adult D&D/tabletop audience term, concrete table
+  job, approved pain point, and all configured content layers.
+- Require an independent editorial review and visual-audit receipt.
+- Publish through `/go/novelai/{slug}` attribution; never restore legacy
+  `/go/story/` redirects.
+- Run `npm.cmd run verify` before any release.
+- Do not claim a page is live until push, deployment readiness, rendered-page,
+  canonical, CTA, sitemap, and production checks all succeed.
 
-2. Scenario pages
-   - Purpose: rank for long-tail user intents.
-   - Examples: `/roleplay/romance`, `/roleplay/fantasy`, `/story-game/life-simulator`.
-
-3. Explainer pages
-   - Purpose: educate users and support internal linking.
-   - Examples: `/guides/what-is-ai-roleplay`, `/guides/how-to-play-ai-text-rpg`.
-
-4. Product update pages
-   - Purpose: show freshness and explain new features.
-   - Examples: `/updates/voice-roleplay-launch`.
-
-5. Story and character detail pages
-   - Purpose: capture specific long-tail searches and convert directly into play sessions.
-
-## Non-Negotiables
-
-- One page = one main keyword and one search intent.
-- Every page must include a visible product action, such as starting a story or choosing a character.
-- Every page must link to at least 3 related internal pages.
-- Avoid using unlicensed third-party IP names as primary SEO targets.
-- AI-generated drafts must be edited for real product detail before publishing.
-- Every published URL must be added to the tracking sheet.
-
-## Two-Day Launch Plan
-
-Day 1:
-
-- Ship `/voice-roleplay`.
-- Add title, meta description, canonical URL, FAQ schema, and internal links.
-- Add URL to sitemap.
-- Record URL in `docs/seo/page-tracker.csv`.
-
-Day 2:
-
-- Ship `/ai-interactive-story-game`.
-- Reuse the same landing page structure.
-- Link both pages to each other.
-
-## Weekly Cadence
-
-Monday:
-
-- Choose 7 topics for the week.
-- Check indexed pages and impressions.
-
-Tuesday to Sunday:
-
-- Publish one page per day.
-- Record URL, keyword, status, and notes.
-
-Friday:
-
-- Improve 2 existing pages based on data.
-- Update titles, descriptions, internal links, or FAQs where needed.
-
-## Current Implementation Notes
-
-The live SEO site is a Next.js App Router project deployed on Vercel.
-
-Use:
-
-- Next.js native metadata for titles, descriptions, canonicals, and Open Graph.
-- `next-seo` for structured data JSON-LD, such as `FAQJsonLd`.
-- Vercel Analytics for page views and Play CTA click events.
-- Internal `/go/story/{slug}` routes for redirect logging and click tracking.
-
-See `docs/seo/engineering-workflow.md` for the engineering production system.
+See `docs/seo/free-research-robot.md`, `docs/seo/content-production-sop.md`, and
+`docs/seo/dnd-content-boundary.md` for the active procedure.

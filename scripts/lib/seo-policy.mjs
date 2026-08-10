@@ -1,3 +1,5 @@
+import { audienceCandidateBlockers } from "../../lib/seo/audience-policy.mjs";
+
 export const clampScore = (value) =>
   Math.min(100, Math.max(0, Number(value) || 0));
 
@@ -164,9 +166,10 @@ export function normalizeResearchCandidate(raw, policy) {
   };
 }
 
-export function evaluatePublicationGates(candidate, policy) {
+export function evaluatePublicationGates(candidate, policy, context = {}) {
   const blockers = [];
   const gates = policy.hardGates;
+  blockers.push(...audienceCandidateBlockers(candidate, policy, context));
   if (!policy.allowedSearchIntents.includes(candidate.intent)) {
     blockers.push(`search intent ${candidate.intent} is not trial-ready`);
   }
@@ -185,7 +188,7 @@ export function evaluatePublicationGates(candidate, policy) {
   return { passed: blockers.length === 0, blockers };
 }
 
-export function scoreResearchCandidate(raw, policy) {
+export function scoreResearchCandidate(raw, policy, context = {}) {
   const candidate = normalizeResearchCandidate(raw, policy);
   const weights = policy.weights;
   const penalties = policy.penalties;
@@ -200,7 +203,7 @@ export function scoreResearchCandidate(raw, policy) {
       candidate.ipRisk * penalties.ipRisk -
       candidate.cannibalizationRisk * penalties.cannibalizationRisk,
   ));
-  const gate = evaluatePublicationGates(candidate, policy);
+  const gate = evaluatePublicationGates(candidate, policy, context);
   const action = candidate.cannibalizationRisk > policy.hardGates.maxCannibalizationRisk
     ? "consolidate"
     : candidate.existingUrl

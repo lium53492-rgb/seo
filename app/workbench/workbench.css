@@ -68,6 +68,7 @@
 .wb-mode-badge.disconnected { background: rgba(255,255,255,.12); color: #d9dedb; }
 .wb-mode-badge.draft { background: #eceae2; color: #747b76; }
 .wb-mode-badge.blocked { background: #f7dfdc; color: #98453c; }
+.wb-mode-badge.retired { background: #e7e2da; color: #5f554b; }
 .wb-label { margin: 60px 0 12px; color: var(--wb-lime); font-size: .7rem; font-weight: 800; }
 .wb-decision-strip + .wb-label { margin-top: 32px; }
 .wb-hero h2 { max-width: 760px; font-size: clamp(2.25rem, 5.5vw, 5.2rem); line-height: .94; letter-spacing: -.055em; }

@@ -66,7 +66,7 @@ export type CandidateDecisionEvidence = {
   searcherJob: string;
   productFactIds: string[];
   productSignals: Array<
-    "voice_roleplay" | "story_premise" | "role_selection" | "interactive_fiction"
+    "voice_roleplay" | "story_premise" | "role_selection" | "interactive_fiction" | "dnd_content" | "adult_tabletop_audience"
   >;
   trialSignals: Array<
     "solution_aware" | "immediate_use" | "experience_seeking" | "action_language"
@@ -288,7 +288,16 @@ export type PageArchitecture = {
       | "format_confusion"
       | "discovery_need"
       | "quality_repair"
-      | "product_fit_uncertainty";
+      | "product_fit_uncertainty"
+      | "campaign_prep_overload"
+      | "improv_pressure"
+      | "session_stall"
+      | "encounter_flatness"
+      | "npc_sameness"
+      | "player_agency_gap"
+      | "character_hook_gap"
+      | "party_tone_mismatch"
+      | "worldbuilding_sprawl";
     decisionToEnable: string;
     oneSentenceAnswer: string;
     nonGoals: string[];
@@ -363,6 +372,14 @@ export type SignatureModule = {
   }>;
 };
 
+export type OriginalIpBoundary = {
+  schemaVersion: 1;
+  contentBasis: "original_tabletop_fantasy";
+  dndReferenceScope: "audience_reference_only";
+  srdMaterialUsed: false;
+  thirdPartyNames: [];
+};
+
 export type NoveltyAudit = {
   schemaVersion: 1;
   passed: boolean;
@@ -422,6 +439,7 @@ export type GeneratedPageDraft = {
   }>;
   architecture?: PageArchitecture;
   signatureModule?: SignatureModule;
+  ipBoundary?: OriginalIpBoundary;
   factIdsUsed: string[];
   internalLinks: Array<{
     anchor: string;
@@ -455,6 +473,7 @@ export type PublishedSeoPage = {
   pagePattern?: ContentStrategy["pagePattern"];
   architecture?: PageArchitecture;
   signatureModule?: SignatureModule;
+  ipBoundary?: OriginalIpBoundary;
   title: string;
   metaDescription: string;
   h1: string;
@@ -679,6 +698,23 @@ export type GrowthPortfolioEntry =
       reason: string;
     };
 
+export type RetiredUrlGrowthEntry =
+  | {
+      sourceSlug: string;
+      path: string;
+      retiredAt?: string;
+      state: "collected";
+      searchPerformance: SearchConsolePerformanceSnapshot;
+      urlInspection: SearchConsoleUrlInspectionSnapshot;
+    }
+  | {
+      sourceSlug: string;
+      path: string;
+      retiredAt?: string;
+      state: "unavailable";
+      reason: string;
+    };
+
 export type GrowthPortfolioSnapshot = {
   schemaVersion: 2;
   privacyClass: "public_growth_evidence";
@@ -698,6 +734,7 @@ export type GrowthPortfolioSnapshot = {
     hasSearchValidatedLandingPage: boolean;
   };
   entries: GrowthPortfolioEntry[];
+  retiredUrls?: RetiredUrlGrowthEntry[];
 };
 
 export type GrowthPortfolioDecision = {

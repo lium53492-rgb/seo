@@ -111,6 +111,20 @@ test("schema 2 draft cannot become review_ready without all architecture checks"
   );
 });
 
+test("schema 3 review keeps audience and original-IP judgments independent", () => {
+  const complete = [...baseChecks, ...architectureChecks];
+  for (const requiredId of ["adult-tabletop-audience", "original-ip-boundary"]) {
+    assert.equal(
+      validate(
+        reviewWith(complete.filter((check) => check.id !== requiredId)),
+        architecturePolicy.requiredDraftSchemaVersion,
+      ),
+      false,
+      `review must fail without ${requiredId}`,
+    );
+  }
+});
+
 test("architecture checks use the publisher's passed and detail contract", () => {
   const checks = [...baseChecks, ...architectureChecks].map((check) =>
     check.id === "rendered-preview" ? { ...check, detail: "too short" } : check

@@ -22,7 +22,16 @@
     "format_confusion",
     "discovery_need",
     "quality_repair",
-    "product_fit_uncertainty"
+    "product_fit_uncertainty",
+    "campaign_prep_overload",
+    "improv_pressure",
+    "session_stall",
+    "encounter_flatness",
+    "npc_sameness",
+    "player_agency_gap",
+    "character_hook_gap",
+    "party_tone_mismatch",
+    "worldbuilding_sprawl"
   ],
   "archetypes": [
     "procedure",
@@ -113,6 +122,8 @@
     "content-distinctness",
     "presentation-distinctness",
     "signature-module",
-    "rendered-preview"
+    "rendered-preview",
+    "adult-tabletop-audience",
+    "original-ip-boundary"
   ]
 }

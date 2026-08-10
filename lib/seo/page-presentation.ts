@@ -34,6 +34,8 @@ const rendererIds: ReadonlyArray<PresentationRecipe["rendererId"]> = [
   "orbital_mission_log",
   "playful_story_workshop",
 ];
+const retiredRecipeIds = new Set(seoPolicy.retiredRecipeIds || []);
+const retiredPaletteIds = new Set(seoPolicy.retiredPaletteIds || []);
 
 export function resolveRelatedSeoPages(
   page: PublishedSeoPage,
@@ -62,7 +64,8 @@ export function resolvePagePresentation(page: PublishedSeoPage): PresentationRec
   const recipe = presentationCatalog.recipes.find(
     (recipe) => recipe.id === page.architecture?.presentation.recipeId,
   );
-  if (!recipe || !rendererIds.includes(recipe.rendererId as PresentationRecipe["rendererId"]) ||
+  if (!recipe || retiredRecipeIds.has(recipe.id) || retiredPaletteIds.has(recipe.paletteId) ||
+    !rendererIds.includes(recipe.rendererId as PresentationRecipe["rendererId"]) ||
     (recipe.companion !== "none" && recipe.companion !== "story_companion") || recipe.gallery !== "none") {
     return null;
   }
@@ -78,24 +81,13 @@ export function resolvePagePresentation(page: PublishedSeoPage): PresentationRec
   };
 }
 
-const legacyCompanionBySlug: Readonly<Record<string, "story_companion">> = {
-  "interactive-voice-story": "story_companion",
-};
-
 export function resolveCompanionPolicy(
   page: PublishedSeoPage,
   recipe: PresentationRecipe | null,
 ): "none" | "story_companion" {
-  return recipe?.companion ?? legacyCompanionBySlug[page.slug] ?? "none";
+  return recipe?.companion ?? "none";
 }
 
-const legacyFamilyBySlug: Record<string, SeoPageFamily> = {
-  "ai-voice-roleplay-story": "experience_explainer",
-  "choose-a-role-ai-story": "task_guide",
-  "interactive-voice-story": "decision_page",
-  "story-based-ai-roleplay": "narrative_essay",
-};
-
 export function resolveSeoPageFamily(page: PublishedSeoPage): SeoPageFamily {
-  return page.pagePattern ?? legacyFamilyBySlug[page.slug] ?? "experience_explainer";
+  return page.pagePattern ?? "experience_explainer";
 }

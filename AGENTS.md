@@ -13,8 +13,9 @@ Resolve conflicts in this order:
    routes/components.
 3. `data/config/seo-policy.json`, `data/config/content-architecture.json`,
    `data/config/presentation-recipes.json`, `data/config/product-facts.json`,
-   `docs/seo/content-architecture.md`, `docs/seo/content-production-sop.md`,
-   `docs/seo/free-research-robot.md`, and `data/seo-feedback/pending.md`.
+   `docs/seo/content-architecture.md`, `docs/seo/dnd-content-boundary.md`,
+   `docs/seo/content-production-sop.md`, `docs/seo/free-research-robot.md`, and
+   `data/seo-feedback/pending.md`.
 4. Unconsumed files in `data/seo-feedback/inbox/`, then current
    `data/pages/`, research reports, and the active seven-day plan.
 5. Older READMEs, workflows, briefs, tracker rows, and historic plans only for
@@ -42,6 +43,15 @@ Before a new page or update:
 - Exclude unlicensed third-party IP. Use only approved `factIds` and never
   claim unapproved availability, price, privacy, latency, voice technology,
   real-time operation, groups, friends, multiplayer, or safety guarantees.
+- Future SEO production is D&D-player-first and uses an adult hobbyist tone.
+  Every candidate must include the approved `dnd_content` and
+  `adult_tabletop_audience` qualifiers, then solve a specific player or Game
+  Master job rather than a generic children's story task. Those zero/low-weight
+  direction qualifiers cannot replace an approved capability fact or clear the
+  product-fit threshold by themselves. The direction fact does not establish official Dungeons & Dragons
+  affiliation or trademark permission. New production is original
+  tabletop-fantasy only until the artifact schemas implement and test an exact
+  SRD version, license URL, and required Creative Commons attribution contract.
 - Record the complete search-to-revenue funnel as observed or unavailable.
   The shared SEO-tool account is a research source, not a UV or revenue source.
 - Aggregate Search Console and landing UV by source slug and reporting period.
@@ -49,7 +59,9 @@ Before a new page or update:
 - Run `npm.cmd run growth:collect` before candidate research. The resulting
   `data/growth/YYYY-MM-DD.json` must cover every published page over the same
   complete Shanghai-day window, ending after the configured finalized-data
-  lag, even when an entry is explicitly unavailable.
+  lag, even when an entry is explicitly unavailable. URLs with a validated
+  retirement receipt stay in the separate `retiredUrls` Search Console/URL
+  Inspection monitor; they never count as active pages or readiness evidence.
 - Run `npm.cmd run growth:check` after changing analytics credentials or
   callbacks. Run `npm.cmd run growth:probe` from the NovelAI server
   environment after callback deployment or secret rotation. Do not describe
@@ -67,6 +79,10 @@ Before a new page or update:
 
 - One distinct search intent and one H1 per page. Select a new answer, not a
   near-duplicate keyword variant.
+- Prefer mature tabletop jobs such as campaign preparation, at-table improv,
+  encounter and NPC craft, character motivation, player agency, continuity,
+  and session repair. Do not revive child-directed workshop, sticker, mascot,
+  or generic "choose a story" framing for new production.
 - New work must use content-strategy schema 2 and draft schema 2. Define the
   reader state, outcome, stable `painPointId`, specific pain point, answer archetype, opening move, ordered
   section roles/formats, FAQ jobs, signature module, nearest-page differences,
@@ -100,6 +116,11 @@ Before a new page or update:
 - The English draft must be review-required, 600-1,000 words, have at least
   four sections and three FAQs, use approved facts only, contain a real CTA,
   and pass the builder's source, IP, duplicate, slug, and link gates.
+- From 2026-08-11, every schema-2 draft that can become a schema-3 page must
+  carry the exact digest-bound `ipBoundary` original-only contract. Builder,
+  publisher, and page store independently scan visible copy for configured
+  third-party references and child-directed framing. Editorial approval must
+  separately pass `original-ip-boundary` and `adult-tabletop-audience` checks.
 - A new-page CTA must name the page-specific outcome and pass an independent
   similarity gate. Generic labels such as `Learn more`, `Get started`, or
   generic `Explore`/`Try NovelAI` copy cannot authorize publication.

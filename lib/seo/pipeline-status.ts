@@ -1,6 +1,6 @@
 import "server-only";
 
-import { access, readFile } from "node:fs/promises";
+import { access, readFile, readdir } from "node:fs/promises";
 import * as path from "node:path";
 import seoPolicy from "@/data/config/seo-policy.json";
 import architecturePolicy from "@/data/config/content-architecture.json";
@@ -8,6 +8,7 @@ import {
   repositoryPublicationStage,
   validatePipelineReviewContract,
 } from "./pipeline-contract.mjs";
+import { assessPublicationRetirement } from "./retirement-receipt.mjs";
 import { parseReport } from "./report-store";
 
 type ArtifactKey = "growth" | "research" | "report" | "review" | "pdf";
@@ -23,6 +24,7 @@ export type DailyPipelineStatus = {
     | "report_ready"
     | "review_ready"
     | "repository_published"
+    | "repository_retired"
     /** @deprecated A report's local `published` state is not deployment evidence. */
     | "published"
     | "blocked";
@@ -37,6 +39,11 @@ export type DailyPipelineStatus = {
     contractValid: boolean | null;
   };
   publicationStatus: string | null;
+  retirement: {
+    state: "none" | "valid" | "invalid";
+    slug: string | null;
+    retiredAt: string | null;
+  };
   blockers: string[];
 };
 
@@ -79,6 +86,30 @@ async function localPdfExists(date: string) {
     if (isMissingFile(error)) return false;
     throw error;
   }
+}
+
+async function readMaintenanceRecords() {
+  const directory = path.join(process.cwd(), "data", "maintenance");
+  let names: string[];
+  try {
+    names = (await readdir(directory))
+      .filter((name) => name.endsWith(".json"))
+      .sort();
+  } catch (error) {
+    if (isMissingFile(error)) return { records: [], errors: [] };
+    throw error;
+  }
+
+  const records: Record<string, unknown>[] = [];
+  const errors: string[] = [];
+  for (const name of names) {
+    try {
+      records.push(readJson(await readFile(path.join(directory, name), "utf8")));
+    } catch (error) {
+      errors.push(`${name}: ${error instanceof Error ? error.message : "unknown error"}`);
+    }
+  }
+  return { records, errors };
 }
 
 async function hasPublishedPageForReport(reportId: string, slug: string | null) {
@@ -135,7 +166,7 @@ function validateResearchContract(research: Record<string, unknown>) {
 
 export async function readDailyPipelineStatus(now = new Date()): Promise<DailyPipelineStatus> {
   const date = shanghaiDate(now);
-  const [growthSource, researchSource, reportSource, reviewSource] = await Promise.all([
+  const [growthSource, researchSource, reportSource, reviewSource, maintenance] = await Promise.all([
     readOptionalFile(() =>
       readFile(path.join(process.cwd(), "data", "growth", `${date}.json`), "utf8")
     ),
@@ -148,6 +179,7 @@ export async function readDailyPipelineStatus(now = new Date()): Promise<DailyPi
     readOptionalFile(() =>
       readFile(path.join(process.cwd(), "data", "reviews", `${date}.json`), "utf8")
     ),
+    readMaintenanceRecords(),
   ]);
   const fileArtifacts = {
     growth: growthSource !== null,
@@ -163,6 +195,8 @@ export async function readDailyPipelineStatus(now = new Date()): Promise<DailyPi
   };
 
   const blockers: string[] = [];
+  blockers.push(...maintenance.errors.map((error) =>
+    `Maintenance record cannot be parsed: ${error}`));
   let research = {
     policyVersion: null as number | null,
     candidateCount: null as number | null,
@@ -191,12 +225,15 @@ export async function readDailyPipelineStatus(now = new Date()): Promise<DailyPi
   let currentReportGeneratedAt: string | null = null;
   let currentPublicationSlug: string | null = null;
   let currentDraftSchemaVersion: number | null = null;
+  let currentReport: Record<string, unknown> | null = null;
+  let currentReview: Record<string, unknown> | null = null;
   if (reportSource) {
     try {
       const dailyReport = parseReport(
         reportSource,
         `data/reports/${date}.json`,
       );
+      currentReport = dailyReport as unknown as Record<string, unknown>;
       currentReportId = dailyReport.id;
       currentReportGeneratedAt = dailyReport.generatedAt;
       currentDraftDigest = dailyReport.publication?.draftDigest ?? null;
@@ -220,8 +257,9 @@ export async function readDailyPipelineStatus(now = new Date()): Promise<DailyPi
 
   if (reviewSource) {
     try {
+      currentReview = readJson(reviewSource);
       if (!validatePipelineReviewContract({
-        review: readJson(reviewSource),
+        review: currentReview,
         reportId: currentReportId,
         expectedSlug: currentPublicationSlug,
         expectedDigest: currentDraftDigest,
@@ -249,14 +287,36 @@ export async function readDailyPipelineStatus(now = new Date()): Promise<DailyPi
   if (artifacts.review && !artifacts.report) {
     blockers.push("今日审稿文件存在，但缺少其绑定的 builder-backed 日报。");
   }
+
+  const retirementAssessment = assessPublicationRetirement({
+    maintenanceRecords: maintenance.records,
+    date,
+    report: currentReport,
+    review: currentReview,
+  }) as {
+    state: "none" | "valid" | "invalid";
+    slug: string | null;
+    retiredAt: string | null;
+    reason: string | null;
+  };
+  if (retirementAssessment.state === "invalid") {
+    blockers.push(`The publication-retirement receipt is invalid: ${retirementAssessment.reason ?? "unknown reason"}`);
+  }
+
+  const publishedPageExists = currentReportId
+    ? await hasPublishedPageForReport(currentReportId, currentPublicationSlug)
+    : false;
+  const retirementComplete = retirementAssessment.state === "valid" && !publishedPageExists;
   if (currentPublicationStatus === "published") {
     if (!artifacts.review) {
       blockers.push("日报声称 published，但缺少独立审稿记录。");
     }
-    if (!currentReportId ||
-      !await hasPublishedPageForReport(currentReportId, currentPublicationSlug)) {
+    if (!currentReportId || (!publishedPageExists && !retirementComplete)) {
       blockers.push("日报声称 published，但 data/pages 中没有与 reportId 绑定的已发布页面。");
     }
+  }
+  if (retirementAssessment.state === "valid" && publishedPageExists) {
+    blockers.push("A valid retirement receipt cannot coexist with its published page in data/pages.");
   }
 
   if (artifacts.pdf === true && !artifacts.report) {
@@ -272,6 +332,7 @@ export async function readDailyPipelineStatus(now = new Date()): Promise<DailyPi
   if (artifacts.report) stage = "report_ready";
   if (artifacts.review) stage = "review_ready";
   stage = repositoryPublicationStage(currentPublicationStatus) ?? stage;
+  if (retirementComplete) stage = "repository_retired";
   if (blockers.length) stage = "blocked";
 
   return {
@@ -280,7 +341,12 @@ export async function readDailyPipelineStatus(now = new Date()): Promise<DailyPi
     stage,
     artifacts,
     research,
-    publicationStatus: currentPublicationStatus,
+    publicationStatus: retirementComplete ? "retired" : currentPublicationStatus,
+    retirement: {
+      state: retirementAssessment.state,
+      slug: retirementAssessment.slug,
+      retiredAt: retirementAssessment.retiredAt,
+    },
     blockers,
   };
 }

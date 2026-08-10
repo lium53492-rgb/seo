@@ -50,9 +50,19 @@ test("unattended release proof is wired to the canonical production origin", () 
 });
 
 test("user-retired pages cannot be recreated by the unattended pipeline", () => {
-  assert.deepEqual(seoPolicy.retiredPageSlugs, ["ai-roleplay-scene-recovery"]);
-  assert.deepEqual(seoPolicy.retiredRecipeIds, ["specimen-catalog-v1"]);
-  assert.deepEqual(seoPolicy.retiredPaletteIds, ["museum-cobalt"]);
+  assert.deepEqual(seoPolicy.retiredPageSlugs, [
+    "ai-roleplay-dialogue-vs-action",
+    "ai-roleplay-first-message",
+    "ai-roleplay-scene-recovery",
+    "ai-voice-roleplay-story",
+    "choose-a-role-ai-story",
+    "how-to-choose-an-ai-roleplay-app",
+    "how-to-start-ai-roleplay",
+    "interactive-voice-story",
+    "story-based-ai-roleplay",
+  ]);
+  assert.deepEqual(seoPolicy.retiredRecipeIds, ["playful-story-workshop-v1", "specimen-catalog-v1"]);
+  assert.deepEqual(seoPolicy.retiredPaletteIds, ["craft-paper-orange", "museum-cobalt"]);
   const builder = readFileSync(join(root, "scripts", "build-free-research-report.mjs"), "utf8");
   const publisher = readFileSync(join(root, "scripts", "publish-reviewed-page.mjs"), "utf8");
   assert.match(builder, /retiredPageSlugs\.has\(pageSlug\)/);

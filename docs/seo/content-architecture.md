@@ -33,7 +33,9 @@ are separate layers with independent rejection gates.
   review checks.
 - `data/config/presentation-recipes.json`: seven implemented visual recipes,
   each with its own renderer ID, layout, palette, domain concepts, rejected
-  defaults, and reuse policy.
+  defaults, and reuse policy. The policy retirement arrays currently remove
+  the specimen catalog and playful story workshop from future production;
+  implemented legacy code does not make a recipe eligible.
 - `lib/seo/content-contract.mjs`: fail-closed policy validation and exact
   architecture-to-copy mapping.
 - `lib/seo/served-content.mjs`: canonical rendered-copy inventory and runtime
@@ -96,7 +98,10 @@ snapshot.
 The seven renderer IDs correspond one-to-one with implemented DOM/layout
 grammars: rehearsal slate, nocturne decision grid, product field manual,
 editorial argument, specimen catalog, orbital mission log, and playful story
-workshop. This is more than a palette switch.
+workshop. This is more than a palette switch. Current D&D-first production may
+use only recipes not listed as retired, and the selected visual world must
+support the page's adult tabletop job rather than re-skinning a generic story
+worksheet.
 
 Signature types also change runtime semantics: comparison/diagnostic/
 myth-fact modules use definition groups; inventory/checklist modules use
@@ -115,6 +120,12 @@ published pages use the schema declared by `seo-policy.json` (currently 3).
 The page store recomputes the served-content digest, validates architecture
 mapping and per-layer depth, and rejects post-release edits that retain an old
 approval record.
+
+From 2026-08-11, a schema-2 draft on the schema-3 publication path includes a
+digest-bound original-only `ipBoundary`. The builder, guarded publisher reread,
+and page store all validate the exact contract and scan visible content. The
+schema-3 review contract also requires separate adult-tabletop-audience and
+original-IP-boundary judgments so metadata alone cannot certify the prose.
 
 Architecture work does not authorize overwriting same-day growth, research,
 report, review, page, or PDF artifacts. Existing routes migrate only through

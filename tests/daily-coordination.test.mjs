@@ -112,6 +112,31 @@ function writeNoPublishGrowth(worktreeRoot, date, generatedAt) {
   }, null, 2)}\n`);
 }
 
+const canonicalDailyPagePath = "data/pages/ai-roleplay-first-message.json";
+const canonicalDailyPage = {
+  schemaVersion: 2,
+  slug: "ai-roleplay-first-message",
+  status: "published",
+  publishedAt: "2026-08-06T02:50:30.000Z",
+  generatedFromReport: "seo-2026-08-06",
+  draftDigest: "f3beb13d8847ea9c2a3fa912da477ca99e01937101198f42d6489dbdba0c9770",
+  editorialReview: {
+    reportId: "seo-2026-08-06",
+    draftDigest: "f3beb13d8847ea9c2a3fa912da477ca99e01937101198f42d6489dbdba0c9770",
+    decision: "approved",
+  },
+};
+
+function copyDailyCoordinationFixture(worktreeRoot, relativePath) {
+  const destination = join(worktreeRoot, relativePath);
+  mkdirSync(dirname(destination), { recursive: true });
+  if (relativePath === canonicalDailyPagePath) {
+    writeFileSync(destination, `${JSON.stringify(canonicalDailyPage, null, 2)}\n`);
+    return;
+  }
+  copyFileSync(join(process.cwd(), relativePath), destination);
+}
+
 test("a stale daily lease is taken over while a fresh lease blocks a second worktree", () => {
   const date = "2099-01-01";
   const { coordinationRoot, worktreeA, worktreeB } = roots("lease");
@@ -533,9 +558,7 @@ test("completion requires a complete matching local chain and LoreLens receipt",
     "data/pages/ai-roleplay-first-message.json",
     `output/pdf/seo-daily-${date}.pdf`,
   ]) {
-    const destination = join(worktreeA, relativePath);
-    mkdirSync(dirname(destination), { recursive: true });
-    copyFileSync(join(process.cwd(), relativePath), destination);
+    copyDailyCoordinationFixture(worktreeA, relativePath);
   }
   const revision = "a".repeat(40);
   const verification = {
@@ -602,9 +625,7 @@ test("a release verified after midnight occupies the carryover production day", 
     "data/pages/ai-roleplay-first-message.json",
     `output/pdf/seo-daily-${date}.pdf`,
   ]) {
-    const destination = join(worktreeA, relativePath);
-    mkdirSync(dirname(destination), { recursive: true });
-    copyFileSync(join(process.cwd(), relativePath), destination);
+    copyDailyCoordinationFixture(worktreeA, relativePath);
   }
   const revision = "b".repeat(40);
   prepareAndStartRelease({
@@ -663,9 +684,7 @@ test("an unresolved multi-day release stays fenced and the recovery owner can re
     "data/pages/ai-roleplay-first-message.json",
     `output/pdf/seo-daily-${date}.pdf`,
   ]) {
-    const destination = join(worktreeA, relativePath);
-    mkdirSync(dirname(destination), { recursive: true });
-    copyFileSync(join(process.cwd(), relativePath), destination);
+    copyDailyCoordinationFixture(worktreeA, relativePath);
   }
   prepareAndStartRelease({
     coordinationRoot,
@@ -741,9 +760,7 @@ test("a complete checkpoint before pinning is recovered instead of being skipped
     `data/pages/${slug}.json`,
     `output/pdf/seo-daily-${date}.pdf`,
   ]) {
-    const destination = join(worktreeA, relativePath);
-    mkdirSync(dirname(destination), { recursive: true });
-    copyFileSync(join(process.cwd(), relativePath), destination);
+    copyDailyCoordinationFixture(worktreeA, relativePath);
   }
   const checkpoint = saveDailyCheckpoint({
     coordinationRoot,
@@ -803,9 +820,7 @@ test("a complete checkpoint cannot be saved after the Shanghai cutoff or poison 
     `data/pages/${slug}.json`,
     `output/pdf/seo-daily-${date}.pdf`,
   ]) {
-    const destination = join(worktreeA, relativePath);
-    mkdirSync(dirname(destination), { recursive: true });
-    copyFileSync(join(process.cwd(), relativePath), destination);
+    copyDailyCoordinationFixture(worktreeA, relativePath);
   }
   assert.throws(() => saveDailyCheckpoint({
     coordinationRoot,
@@ -875,9 +890,7 @@ test("a durable release preparation survives a cross-day crash before pinning", 
     `data/pages/${slug}.json`,
     `output/pdf/seo-daily-${date}.pdf`,
   ]) {
-    const destination = join(worktreeA, relativePath);
-    mkdirSync(dirname(destination), { recursive: true });
-    copyFileSync(join(process.cwd(), relativePath), destination);
+    copyDailyCoordinationFixture(worktreeA, relativePath);
   }
   const proof = releaseProof(date, revision, slug);
   const prepared = prepareDailyRelease({
@@ -921,9 +934,7 @@ test("a durable release preparation survives a cross-day crash before pinning", 
     `data/pages/${slug}.json`,
     `output/pdf/seo-daily-${date}.pdf`,
   ]) {
-    const destination = join(worktreeB, relativePath);
-    mkdirSync(dirname(destination), { recursive: true });
-    copyFileSync(join(process.cwd(), relativePath), destination);
+    copyDailyCoordinationFixture(worktreeB, relativePath);
   }
   const promoted = startDailyRelease({
     coordinationRoot,
@@ -996,9 +1007,7 @@ test("an orphaned recovery pin is discovered and promoted after a cross-day cras
     `data/pages/${slug}.json`,
     `output/pdf/seo-daily-${date}.pdf`,
   ]) {
-    const destination = join(worktreeB, relativePath);
-    mkdirSync(dirname(destination), { recursive: true });
-    copyFileSync(join(process.cwd(), relativePath), destination);
+    copyDailyCoordinationFixture(worktreeB, relativePath);
   }
   const proof = releaseProof(date, revision, slug);
   const prepared = prepareDailyRelease({
@@ -1041,9 +1050,7 @@ test("release supersession is append-only and requires equivalent artifact and p
     `data/pages/${slug}.json`,
     `output/pdf/seo-daily-${date}.pdf`,
   ]) {
-    const destination = join(worktreeA, relativePath);
-    mkdirSync(dirname(destination), { recursive: true });
-    copyFileSync(join(process.cwd(), relativePath), destination);
+    copyDailyCoordinationFixture(worktreeA, relativePath);
   }
   const currentRevision = "a".repeat(40);
   const nextRevision = "b".repeat(40);

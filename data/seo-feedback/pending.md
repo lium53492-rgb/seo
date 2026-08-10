@@ -28,6 +28,15 @@ Last updated: 2026-08-10 (Asia/Shanghai)
 - Verbatim: 像8月7号的这种页面  就不用上线了  风格配色都不行  删除吧  我要内容能吸引人的  不是发布页面凑数的
 - Decision: adopted. Retire the 2026-08-07 scene-recovery page and its museum-cobalt specimen presentation. A scheduled run may end with no publication; missing Google Trends or complete GSC/landing-UV/attribution readiness is a hard stop, and rendered desktop/mobile appeal must be inspected rather than inferred from recipe metadata.
 
+- Verbatim: 8月1号的那个页面是最好的  其他的我都觉得不是特别好  你现在把内容分层做一做  你自己思考一下  看内容分哪些方面、每个方面具体怎么做 比较能有流量
+- Decision: adopted. Preserve the August 1 page as the visual-quality benchmark and require each future page to have an intent-specific content hierarchy, mature worked example, and useful reader action rather than a reused page shell.
+
+- Verbatim: 这些还是很普通  没有创意和新颖度  不要那种充数的  像8月1号的那个  有个黑衣人 在黑暗中  就很美式  美国人都喜欢什么风格  你多做哪些风格  最终都是为了数据
+- Decision: adopted. Reject layout-only variation. Require an original character, event, or consequential object in the first screen, distinct visual worlds by intent, and observed exposure-to-action and revenue evidence instead of subjective declarations of a winner.
+
+- Verbatim: 1、冷启动额度不是已经删除了吗  为什么还会对现在产生影响 / 2、现在我们海外也制作dnd了  后续的页面制作  都以dnd为主 / 3、以前大同小异的页面可以都删除了  但是像8月1号的不要删  其他的页面我觉得不适合玩dnd的玩家  更适合小孩
+- Decision: adopted. The cold-start gate was already retired and must not be cited again. Preserve only the August 1 public SEO page, retire the remaining generic page slugs and child-directed workshop presentation, and make adult D&D players and Game Masters the primary audience within the documented product and IP boundary.
+
 ## User feedback awaiting intake
 
 - 2026-08-03 (Asia/Shanghai): “后面的页面设计  可以把风格铺开  比如 暗黑风 科幻风 产品说明风 都错开做一做  然后痛点也都分散开 比如对比 说明 玩法 趣味性 作好内容分层”

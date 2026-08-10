@@ -185,17 +185,18 @@ test("section-layer drift and internal repetition are blocked independently", ()
   assert.ok(novelty.violations.some((item) => item.code === "internal-section-repetition"));
 });
 
-test("the previously accepted first-message page now fails the nearest-page differentiation gate", async () => {
-  const today = await readJson("../data/pages/ai-roleplay-first-message.json");
-  const previous = await readJson("../data/pages/how-to-start-ai-roleplay.json");
+test("a near-duplicate draft fails the nearest-page differentiation gate", () => {
   const architectureFixture = fixture();
-  const draft = {
-    ...today,
-    schemaVersion: 2,
-    slug: `/${today.slug}`,
-    architecture: architectureFixture.draft.architecture,
-    signatureModule: architectureFixture.draft.signatureModule,
+  const previous = {
+    ...structuredClone(architectureFixture.draft),
+    schemaVersion: 3,
+    slug: "previous-first-response",
+    path: "/previous-first-response",
+    status: "published",
+    publishedAt: "2098-12-31T00:00:00.000Z",
+    updatedAt: "2098-12-31T00:00:00.000Z",
   };
+  const draft = structuredClone(architectureFixture.draft);
   const novelty = analyzeContentNovelty({
     draft,
     pages: [previous],

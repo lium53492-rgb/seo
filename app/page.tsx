@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import { FAQJsonLd } from "next-seo";
 import { listPublishedPages } from "@/lib/seo/page-store";
 
-const pageTitle = "Story-Led AI Voice Roleplay";
+const pageTitle = "D&D Field Guides for Players and Game Masters";
 const pageDescription =
-  "Explore first-party guides to story-led AI voice roleplay, existing plots, and choosing an available story character.";
+  "Original, adult-oriented field guides for D&D campaign prep, character craft, at-table improvisation, and campaign continuity.";
 
 export const metadata: Metadata = {
-  title: `${pageTitle} | Interactive AI Story Guides`,
+  title: { absolute: `${pageTitle} | Tabletop Field Notes` },
   description: pageDescription,
   alternates: {
     canonical: "/",
@@ -22,19 +22,19 @@ export const metadata: Metadata = {
 
 const faqs = [
   {
-    question: "What is story-led AI voice roleplay?",
+    question: "Who are these D&D field guides for?",
     answer:
-      "It is an AI voice cosplay and roleplay format built around acting inside a story. You begin from an existing plot rather than an empty chat box.",
+      "They are written for adult D&D players and Game Masters who want practical help with campaign preparation, character decisions, improvisation pressure, and continuity at the table.",
   },
   {
-    question: "Do I need to create the story first?",
+    question: "Is this an official D&D website?",
     answer:
-      "No. Each playable experience starts from an existing story plot, so the opening situation is already in place before you choose a role.",
+      "No. This is independent, unofficial content. D&D identifies the tabletop audience; it does not imply affiliation with or endorsement by Wizards of the Coast.",
   },
   {
-    question: "How do I choose a role?",
+    question: "What material will the guides use?",
     answer:
-      "Review the characters available in the story and select the one you want to perform as. Your role gives you a point of view inside the scene.",
+      "The automated editorial baseline is original tabletop fantasy. SRD-derived material remains blocked until the workflow can record its exact version, license basis, and required attribution on every artifact.",
   },
 ];
 
@@ -47,75 +47,75 @@ export default async function Home() {
 
       <section className="hero">
         <nav className="homeNav" aria-label="Primary navigation">
-          <a className="wordmark" href="/" aria-label="Interactive AI Story Guides home">
-            <span className="wordmarkMark" aria-hidden="true">S</span>
-            <span>STORY / VOICE</span>
+          <a className="wordmark" href="/" aria-label="Tabletop Field Notes home">
+            <span className="wordmarkMark" aria-hidden="true">20</span>
+            <span>TABLETOP / FIELD NOTES</span>
           </a>
           <a className="navGuide" href="#guide-library">
-            Browse guides <span aria-hidden="true">↘</span>
+            Open the archive <span aria-hidden="true">-&gt;</span>
           </a>
         </nav>
 
         <div className="heroCopy">
-          <p className="eyebrow">Interactive story guides</p>
-          <h1>Enter a story.<br /><em>Choose your role.</em></h1>
+          <p className="eyebrow">For D&amp;D players and Game Masters</p>
+          <h1>Make the next session<br /><em>hit harder.</em></h1>
           <p className="lede">
-            Learn how a story-led roleplay begins with an existing plot, presents
-            available characters, and gives you a clear point of view inside the scene.
+            Adult, table-ready field guides for campaign prep, character pressure,
+            improvised turns, and the continuity problems that surface after session three.
           </p>
           <div className="actions">
             <a className="primaryAction" href="#guide-library">
-              Browse story guides
+              Read the field guides
             </a>
-            <a className="secondaryAction" href="#story-preview">
-              See how it works
+            <a className="secondaryAction" href="#campaign-pressure">
+              See the editorial lanes
             </a>
           </div>
         </div>
 
-        <div className="poster" aria-label="An abstract story scene and character choice interface">
+        <div className="poster" aria-label="A dark campaign pressure board for a Game Master">
           <div className="posterChrome">
-            <span className="posterStatus"><i /> Scene loaded</span>
-            <span>01 / 03</span>
+            <span className="posterStatus"><i /> Session pressure: active</span>
+            <span>Night 07 / Act II</span>
           </div>
           <div className="sceneGlow" />
           <div className="sceneFrame">
-            <p>THE OPENING SCENE</p>
-            <strong>The room is waiting.<br />Who will you be?</strong>
+            <p>THE TABLE GOES QUIET</p>
+            <strong>The plan just broke.<br />What changes now?</strong>
           </div>
           <div className="characterRail" aria-hidden="true">
-            <div className="characterChoice active"><b>01</b><span>YOUR ROLE</span></div>
-            <div className="characterChoice"><b>02</b><span>THE SETTING</span></div>
-            <div className="characterChoice"><b>03</b><span>THE SCENE</span></div>
+            <div className="characterChoice active"><b>01</b><span>PRESSURE</span></div>
+            <div className="characterChoice"><b>02</b><span>PLAYER AGENCY</span></div>
+            <div className="characterChoice"><b>03</b><span>CONSEQUENCE</span></div>
           </div>
         </div>
       </section>
 
-      <section className="contentBand" id="story-preview">
+      <section className="contentBand" id="campaign-pressure">
         <div className="sectionIntro">
-          <p className="eyebrow">A clear way in</p>
-          <h2>Start with a story and a role, not a blank prompt.</h2>
+          <p className="eyebrow">Three pressures, one table</p>
+          <h2>Useful content starts where a session can actually fail.</h2>
         </div>
         <div className="copyGrid">
           <article>
-            <h3>Begin from an existing plot</h3>
+            <h3>The GM cannot prep everything</h3>
             <p>
-              Each playable experience begins with a story plot that supplies a
-              setting, situation, and reason to enter the scene.
+              Build only the factions, stakes, and movable pieces that survive contact
+              with player choices. Skip lore that never reaches the table.
             </p>
           </article>
           <article>
-            <h3>Choose an available character</h3>
+            <h3>The character needs a live wire</h3>
             <p>
-              You choose from the characters available in the featured story.
-              That choice gives you a point of view inside the opening situation.
+              Turn background material into wants, debts, suspicions, and decisions
+              another player can challenge during the next session.
             </p>
           </article>
           <article>
-            <h3>Perform from inside the scene</h3>
+            <h3>The table will leave the plan</h3>
             <p>
-              With a plot and role already in view, you can focus on the
-              character&apos;s immediate circumstances and the scene in front of them.
+              Prepare consequence ladders and pressure questions so improvisation
+              preserves agency without making the world feel weightless.
             </p>
           </article>
         </div>
@@ -123,33 +123,33 @@ export default async function Home() {
 
       <section className="splitBand">
         <div>
-          <p className="eyebrow">What these guides explain</p>
-          <h2>A story-first format gives roleplay a concrete starting point.</h2>
+          <p className="eyebrow">The editorial contract</p>
+          <h2>Every guide must earn a place behind the GM screen.</h2>
           <p>
-            Read focused explanations of the plot, role, and scene structure behind
-            story-led AI voice roleplay. Every guide stays with approved product facts
-            and original material rather than borrowed characters or fictional worlds.
+            The answer comes first, followed by the failure mode, a usable tool, a mature
+            original example, and meaningful variation. No sticker-workshop layouts, no
+            borrowed worlds, and no page published merely to fill a calendar slot.
           </p>
         </div>
         <ul className="featureList">
-          <li>An existing story premise</li>
-          <li>Available story characters</li>
-          <li>A role-led point of view</li>
-          <li>A scene to perform inside</li>
-          <li>Original, first-party guidance</li>
+          <li>Game Master preparation</li>
+          <li>Player character craft</li>
+          <li>At-table improvisation</li>
+          <li>Campaign continuity</li>
+          <li>Original, adult-oriented examples</li>
         </ul>
       </section>
 
       {publishedPages.length ? (
         <section className="publishedBand" id="guide-library">
-          <p className="eyebrow">Story-led roleplay library</p>
-          <h2>Choose the guide that matches what you want to understand.</h2>
+          <p className="eyebrow">Current archive</p>
+          <h2>One strong page stays. New work must clear a higher bar.</h2>
           <div className="publishedLinks">
             {publishedPages.map((page) => (
               <a href={page.path} key={page.slug}>
                 <small>{page.keyword}</small>
                 <strong>{page.h1}</strong>
-                <span>Read the guide →</span>
+                <span>Read the guide -&gt;</span>
               </a>
             ))}
           </div>
@@ -158,7 +158,7 @@ export default async function Home() {
 
       <section className="faqBand">
         <p className="eyebrow">FAQ</p>
-        <h2>Before you choose a guide</h2>
+        <h2>Before the next session</h2>
         <div className="faqList">
           {faqs.map((faq) => (
             <article key={faq.question}>
@@ -170,12 +170,13 @@ export default async function Home() {
       </section>
 
       <section className="finalCta">
-        <h2>Keep exploring on this site</h2>
+        <h2>Bring one sharper decision to the table</h2>
         <p>
-          Return to the guide library and choose a focused explanation of story-led roleplay.
+          Start with the current archive. Future pages will focus on distinct D&amp;D player
+          and Game Master problems, with their own voice, visual world, and table-ready tool.
         </p>
         <a className="primaryAction" href="#guide-library">
-          View all story guides
+          Open the field guide archive
         </a>
       </section>
     </main>
