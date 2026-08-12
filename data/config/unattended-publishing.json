@@ -26,6 +26,7 @@
       "growth_unavailable",
       "attribution_blocked",
       "trends_unavailable",
+      "trends_not_observed",
       "trends_below_threshold",
       "research_insufficient",
       "content_quality_failed",

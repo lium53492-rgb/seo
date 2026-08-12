@@ -14,6 +14,10 @@ npm install
 npm run dev
 npm run growth:check
 npm run growth:collect
+npm run trends:configure -- /path/to/service-account.json
+npm run trends:check
+npm run trends:collect -- --stdout --candidate "keyword"
+npm run trends:collect -- --research data/research/YYYY-MM-DD.json
 npm run feedback:sync
 npm run daily:state
 npm run daily:coord -- status
@@ -30,10 +34,12 @@ observations into zero.
 Open `/workbench/guide` for the Chinese operating manual, the daily review
 checklist, the data-to-design decision rules, and direct authorization links.
 
-The default zero-extra-data-cost pipeline is:
+The default production order is:
 
 ```text
-Codex public-web research
+growth snapshot
+-> official Google Trends BigQuery discovery/enrichment
+-> Codex public-web research
 -> source URLs + transparent demand/competition proxy scores
 -> opportunity scoring
 -> recommended action
@@ -64,14 +70,25 @@ verification.
 These schedules are local Codex jobs, so unattended production requires the
 computer and Codex application to remain online during a publishing window.
 
-The dashboard also keeps official Google Trends relative-interest signals
-separate from keyword volume, ranks published pages only with observed
-page-level data, and exposes today's artifact/blocker state. Publishing,
+The dashboard keeps official Google Trends observations separate from keyword
+volume, ranks published pages only with observed page-level data, and exposes
+today's artifact/blocker state. Daily Trends collection reads Google's US
+BigQuery `top_terms` and `top_rising_terms` public tables. Those tables contain
+the Top 25 and Rising 25 terms per DMA, not an arbitrary-keyword or nationwide
+volume service: a DMA `score` is never presented as national relative interest,
+and no exact match means `not_observed`, not zero demand. Publishing,
 Vercel deployment, Google indexing, and a live third-party backlink are
 independent statuses; none is guaranteed or inferred from another.
 Retired URLs remain in a separate Search Console and URL Inspection monitor so
 their residual impressions can be observed without treating them as active
 landing pages or allowing them to influence publication readiness.
+
+For unattended schema-v2 research, only an exact normalized
+`top_rising_terms` match can clear the Trends gate. `top_terms` is discovery
+context only, and legacy schema-v1 UI observations are retained solely for
+historical/manual compatibility. Trends never substitutes for GSC, landing UV,
+attribution, independent breakout evidence, IP safety, content distinctness,
+or editorial and visual approval.
 
 Semrush is replaced by the free Codex research path. Vercel Web Analytics pageview
 instrumentation is installed; enable the project-level switch in Vercel to begin
@@ -102,12 +119,42 @@ Copy `.env.example` to `.env.local` and configure only the integrations you have
 - `GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL`
 - `GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY`
 - `GOOGLE_SEARCH_CONSOLE_SITE_URL`
+- `GOOGLE_TRENDS_BIGQUERY_PROJECT_ID`
+- `GOOGLE_TRENDS_BIGQUERY_CLIENT_EMAIL`
+- `GOOGLE_TRENDS_BIGQUERY_PRIVATE_KEY`
 - `GITHUB_REPORTS_TOKEN`
 - `GITHUB_REPORTS_REPO`
 
-The Google service account must be added as a user on the Search Console
-property. The GitHub token should be fine-grained and limited to Contents access
-on this repository. Generate `SEO_AUTOMATION_TOKEN` from at least 32 random
+The Search Console service account must be added as a user on the Search
+Console property. The Google Trends service account needs permission to run
+BigQuery jobs (`roles/bigquery.jobUser`) in a project with the BigQuery API
+enabled; the public Trends tables remain read-only and need no write grant.
+Google Cloud's BigQuery free query allowance applies, but query usage still
+belongs to that project. Configure a downloaded service-account JSON locally
+with `npm run trends:configure -- /path/to/service-account.json`. It validates
+the account and atomically updates only `GOOGLE_TRENDS_BIGQUERY_*` in this
+worktree's ignored `.env.local`, preserves other variables, never prints the
+private key, and refuses non-empty existing Trends values unless `--force` is
+explicitly supplied. Delete the downloaded JSON from its original location
+after securely backing it up according to your credential policy.
+`npm run trends:check` checks the three independent
+environment variables without making a network request and exits with status
+2 when configuration is incomplete. `trends:collect` defaults to JSON on
+stdout, accepts repeated `--candidate` values, and can atomically enrich a raw
+research file with `--research`; it refuses to overwrite an existing
+`trendCollection` or `trendSignals` section. An unavailable research-mode run
+prints diagnostics, exits 2, and leaves the file untouched for a same-day
+retry. Persisted collection schema 2 is compact (result counts/digests, exact
+matches, and bounded deterministic D&D leads) and is signed with RSA-SHA256 by
+the same server-only service-account key. Build, coordination, and publication
+verify the configured client email and derived public-key fingerprint; the
+private key is never written to an artifact. `--as-of YYYY-MM-DD` selects the
+production date and queries the preceding `refresh_date`; in `--research`
+mode it must match the research document date. The
+limited-access official Google Trends API Alpha is a later upgrade path, not a
+dependency of this BigQuery collector. The GitHub token should be fine-grained
+and limited to Contents access on this repository. Generate
+`SEO_AUTOMATION_TOKEN` from at least 32 random
 bytes and configure the same value in Vercel and the trusted automation
 environment; `WORKBENCH_PASSWORD` is optional and only for
 interactive human access. Run `npm run growth:check` after changing any analytics

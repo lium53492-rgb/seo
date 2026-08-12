@@ -14,7 +14,8 @@ Resolve conflicts in this order:
 3. `data/config/seo-policy.json`, `data/config/content-architecture.json`,
    `data/config/presentation-recipes.json`, `data/config/product-facts.json`,
    `docs/seo/content-architecture.md`, `docs/seo/dnd-content-boundary.md`,
-   `docs/seo/content-production-sop.md`, `docs/seo/free-research-robot.md`, and
+   `docs/seo/content-production-sop.md`, `docs/seo/free-research-robot.md`,
+   `docs/seo/research-signal-contract.md`, and
    `data/seo-feedback/pending.md`.
 4. Unconsumed files in `data/seo-feedback/inbox/`, then current
    `data/pages/`, research reports, and the active seven-day plan.
@@ -62,6 +63,24 @@ Before a new page or update:
   lag, even when an entry is explicitly unavailable. URLs with a validated
   retirement receipt stay in the separate `retiredUrls` Search Console/URL
   Inspection monitor; they never count as active pages or readiness evidence.
+- After growth collection, run `npm.cmd run trends:check` and then
+  `npm.cmd run trends:collect -- --research data/research/YYYY-MM-DD.json`
+  before the report builder; use the default `--stdout` mode with repeated
+  `--candidate` arguments during discovery. The collector reads
+  Google's official US BigQuery `top_terms` and `top_rising_terms` public
+  tables for discovery and enrichment. Missing credentials, query failure, or
+  no exact normalized rising-term match must stay explicit and must not be
+  replaced with public-web proxy scores. Research enrichment is atomic and
+  must refuse to overwrite existing `trendCollection` or `trendSignals`.
+  An unavailable attempt must print diagnostics and leave the research file
+  unchanged so a later same-day retry remains possible. Persist only the
+  compact schema-v2 result counts/digests, exact candidate matches, and bounded
+  deterministic D&D leads, never the full DMA result. The collector signs the
+  canonical snapshot digest with the configured BigQuery service-account key;
+  the builder, daily coordinator, and both publisher reads must load the same
+  server-only environment and verify the configured client email, derived
+  public-key fingerprint, and RSA-SHA256 signature. A self-hash alone is not
+  provider provenance.
 - Run `npm.cmd run growth:check` after changing analytics credentials or
   callbacks. Run `npm.cmd run growth:probe` from the NovelAI server
   environment after callback deployment or secret rotation. Do not describe
@@ -103,11 +122,16 @@ Before a new page or update:
   provide the required decision-evidence signals and rationales. The builder,
   not the generating model, derives product-fit, trial-intent, revenue-intent,
   intent-specificity, originality, IP, and cannibalization scores.
-- A selected `create_page` draft must have a same-day observed Google Trends
-  signal from an official Trends URL. It must be rising or have relative
-  interest of at least 50 in its declared geography and comparison period.
-  Empty, unavailable, stale, falling-low, or model-only trend claims cannot
-  authorize publication.
+- A selected `create_page` draft must have a same-day schema-v2 Google Trends
+  observation derived from Google's official BigQuery public dataset. Only an
+  exact normalized match in US `top_rising_terms` can clear the Trends gate.
+  `top_terms` rows and non-exact matches are discovery leads only. Per-DMA
+  `score` values must never be relabelled as nationwide `relativeInterest`.
+  Missing credentials or a failed/stale collection means `unavailable`; a
+  successful collection without the exact term means `not_observed`. Both
+  mean no publication and neither proves zero search volume. Legacy
+  schema-v1 Trends UI signals remain historical/manual compatibility input and
+  cannot clear this unattended v2 gate.
 - From the date configured in `seo-policy.json`, a selected `create_page`
   candidate also needs a same-day, page-specific, independent
   `breakout_page` evidence record. Its numeric signal, unit, basis, detail,
@@ -175,6 +199,11 @@ Before a new page or update:
   draft and content strategy, including architecture and presentation.
 - Run the research builder, publisher, and `npm.cmd run verify` before release.
   Generate, render, and visually inspect the daily PDF when required.
+- The production order is growth collection, Trends discovery/enrichment,
+  research build, independent review, then guarded publication. A Trends hit
+  never replaces Search Console/landing-UV/attribution readiness, independent
+  breakout evidence, IP and product-fact checks, content distinctness, or
+  rendered visual review.
 - The candidate batch must contain 8-12 semantically distinct searcher jobs and,
   after scoring and current-corpus cannibalization derivation, at least the
   daily target plus seven eligible `create_page` intents. Model-supplied

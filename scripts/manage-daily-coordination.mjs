@@ -1,3 +1,5 @@
+import "./load-env.mjs";
+
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, rmSync } from "node:fs";
 import { delimiter, dirname, join, resolve } from "node:path";

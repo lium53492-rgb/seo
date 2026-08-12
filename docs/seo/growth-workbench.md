@@ -23,7 +23,7 @@ Codex desktop automation
 -> growth:check
 -> growth:collect (all published pages, one finalized Shanghai-day window)
 -> policy-v4 public-web and authorized-tool research
--> optional official Google Trends signal
+-> required official Google Trends BigQuery collection for unattended new pages
 -> deterministic candidate scoring
 -> research:build (READY FOR REVIEW only)
 -> independent approval record
@@ -49,8 +49,10 @@ job.
 - A page leaderboard ordered by data availability, exact-page Search Console
   impressions and clicks, landing UV, and qualified outbound clicks.
   Unavailable values render as `—`, not zero.
-- Official Google Trends relative-interest observations when collected. A
-  Trends value is not monthly search volume; missing access stays unavailable.
+- Official Google Trends BigQuery Top/Rising observations when collected. A
+  DMA score stays DMA-scoped, only an exact normalized `top_rising_terms`
+  candidate match can clear the unattended new-page gate, and a successful
+  exact miss stays `not_observed` instead of becoming zero.
 - The committable decision view contains exact-page Search Console, indexed
   URL Inspection, page-level landing UV, qualified outbound aggregates, and
   boolean attribution readiness/blocking state. The complete commercial
@@ -117,11 +119,22 @@ when it is same-origin with the inspected page.
 ```bash
 npm run growth:check
 npm run growth:collect
+npm run trends:check
+npm run trends:collect -- --research data/research/YYYY-MM-DD.json
 npm run feedback:sync
 npm run research:build -- data/research/YYYY-MM-DD.json
 npm run research:publish -- data/reports/YYYY-MM-DD.json data/reviews/YYYY-MM-DD.json
 npm run verify
 ```
+
+The Trends step enriches the same research file with the official US BigQuery
+public-dataset snapshot. Only an exact match in `top_rising_terms` is eligible
+for unattended page creation; a top-only match, an exact miss, or an
+unavailable provider remains a non-publishing result and must not be converted
+to zero demand. The repository keeps compact per-table counts/digests, exact
+candidate matches, and bounded deterministic D&D leads rather than the full
+DMA result. Builder and publisher verify the RSA-SHA256 service-account
+attestation before the collection can authorize the Trends gate.
 
 Run `growth:probe` from the NovelAI server environment after callback deployment
 or secret rotation. Do not describe the revenue loop as ready until the

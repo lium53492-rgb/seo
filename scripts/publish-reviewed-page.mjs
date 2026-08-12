@@ -1,3 +1,5 @@
+import "./load-env.mjs";
+
 import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
@@ -13,6 +15,10 @@ import { validatePipelineReviewContract } from "../lib/seo/pipeline-contract.mjs
 import { hasExplicitMarkdownList, unsupportedMarkdownReason } from "../lib/seo/markdown-semantics.mjs";
 import { audienceDraftBlockers } from "../lib/seo/audience-policy.mjs";
 import { assertOriginalIpBoundary } from "../lib/seo/ip-boundary.mjs";
+import {
+  isQualifyingGoogleTrendsSignal,
+  validateGoogleTrendsEvidence,
+} from "../lib/seo/google-trends-contract.mjs";
 import {
   coordinationOwner,
   withDailyPublicationGuard,
@@ -38,6 +44,12 @@ const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const retiredPageSlugs = new Set(Array.isArray(policy.retiredPageSlugs) ? policy.retiredPageSlugs : []);
 const retiredRecipeIds = new Set(Array.isArray(policy.retiredRecipeIds) ? policy.retiredRecipeIds : []);
 const retiredPaletteIds = new Set(Array.isArray(policy.retiredPaletteIds) ? policy.retiredPaletteIds : []);
+const trendsAttestationVerificationKey = String(
+  process.env.GOOGLE_TRENDS_BIGQUERY_PRIVATE_KEY || "",
+).replace(/\\n/g, "\n").trim();
+const trendsAttestationClientEmail = String(
+  process.env.GOOGLE_TRENDS_BIGQUERY_CLIENT_EMAIL || "",
+).trim();
 
 validateSeoArchitectureBridge(policy, architecturePolicy);
 
@@ -53,6 +65,19 @@ function assertDailyPublicationWasNotRetired(date) {
 
 function sha256(value) {
   return createHash("sha256").update(JSON.stringify(value)).digest("hex");
+}
+
+function reviewedReportDigest(candidateReport) {
+  if (candidateReport.draft?.schemaVersion !== architecturePolicy.requiredDraftSchemaVersion) {
+    return sha256(candidateReport.draft);
+  }
+  return sha256({
+    draft: candidateReport.draft,
+    contentStrategy: candidateReport.contentStrategy,
+    ...(candidateReport.date >= policy.googleTrends.automatedCollectionEnforcedFromReportDate
+      ? { googleTrendsSnapshotDigest: candidateReport.trendCollection?.snapshotDigest ?? null }
+      : {}),
+  });
 }
 
 function writeJsonAtomic(path, value) {
@@ -257,35 +282,22 @@ function assertPublishedBreakoutEvidence(candidateReport, selectedKeyword) {
   }
 }
 
-function isOfficialObservedTrendSignal(signal, reportDate, selectedKeyword) {
-  let sourceUrl;
-  try {
-    sourceUrl = new URL(signal?.sourceUrl);
-  } catch {
-    return false;
-  }
-  let collectedDate;
-  try {
-    collectedDate = shanghaiDate(signal?.collectedAt);
-  } catch {
-    return false;
-  }
-  return String(signal?.keyword || "").trim().toLowerCase() === selectedKeyword &&
-    signal?.source === "google_trends" &&
-    signal?.state === "observed" &&
-    sourceUrl.protocol === "https:" &&
-    !sourceUrl.username &&
-    !sourceUrl.password &&
-    sourceUrl.hostname === "trends.google.com" &&
-    sourceUrl.pathname.startsWith("/trends/") &&
-    collectedDate === reportDate &&
-    Number.isInteger(signal?.relativeInterest) &&
-    signal.relativeInterest >= 0 &&
-    signal.relativeInterest <= 100 &&
-    (signal.direction === "rising" || signal.relativeInterest >= 50);
-}
-
 function assertCreatePagePublicationReadiness(candidateReport) {
+  const requireBigQuery = candidateReport.date >=
+    policy.googleTrends.automatedCollectionEnforcedFromReportDate;
+  const validatedTrends = validateGoogleTrendsEvidence({
+    trendSignals: candidateReport.trendSignals ?? [],
+    trendCollection: candidateReport.trendCollection,
+    candidateKeywords: (candidateReport.opportunities || []).map((item) => item?.keyword),
+    reportDate: candidateReport.date,
+    attestationVerificationKey: requireBigQuery
+      ? trendsAttestationVerificationKey
+      : undefined,
+    expectedAttestationClientEmail: requireBigQuery
+      ? trendsAttestationClientEmail
+      : undefined,
+    requireVerifiedAttestation: requireBigQuery,
+  });
   if (candidateReport.publicationMode === "update") return;
   if (candidateReport.portfolioDecision?.action !== "create_page") {
     throw new Error("Create-page publication requires portfolioDecision.action=create_page");
@@ -315,13 +327,23 @@ function assertCreatePagePublicationReadiness(candidateReport) {
     );
   }
   const selectedKeyword = String(candidateReport.draft?.keyword || "").trim().toLowerCase();
-  const trendReady = Array.isArray(candidateReport.trendSignals) &&
-    candidateReport.trendSignals.some((signal) =>
-      isOfficialObservedTrendSignal(signal, candidateReport.date, selectedKeyword));
+  const trendReady = validatedTrends.trendSignals.some((signal) =>
+    isQualifyingGoogleTrendsSignal(signal, {
+      selectedKeyword,
+      reportDate: candidateReport.date,
+      trendCollection: validatedTrends.trendCollection,
+      requireBigQuery,
+      attestationVerificationKey: trendsAttestationVerificationKey,
+      expectedAttestationClientEmail: trendsAttestationClientEmail,
+    }));
   if (!trendReady) {
+    const requiredEvidence = requireBigQuery
+      ? "official same-day BigQuery collection with an exact top_rising_terms match"
+      : "official same-day observation: Explore direction=rising/relativeInterest>=50 or an exact " +
+        "BigQuery top_rising_terms match";
     throw new Error(
       `Create-page Google Trends gate failed: selected draft ${selectedKeyword || "<empty>"} needs an ` +
-      "official same-day observed signal with direction=rising or relativeInterest>=50",
+      requiredEvidence,
     );
   }
   assertPublishedBreakoutEvidence(candidateReport, selectedKeyword);
@@ -375,9 +397,7 @@ if (report.publication?.status !== "ready_for_review" || !report.draft?.quality?
   throw new Error("Report does not contain a draft that passed automated gates");
 }
 assertCreatePagePublicationReadiness(report);
-const draftDigest = report.draft?.schemaVersion === architecturePolicy.requiredDraftSchemaVersion
-  ? sha256({ draft: report.draft, contentStrategy: report.contentStrategy })
-  : sha256(report.draft);
+const draftDigest = reviewedReportDigest(report);
 if (!/^[a-f0-9]{64}$/.test(report.publication.draftDigest || "") ||
   review.draftDigest !== report.publication.draftDigest ||
   draftDigest !== report.publication.draftDigest) {
@@ -614,9 +634,7 @@ withDailyPublicationGuard({
   }
   const currentPages = publishedPagesFromDisk();
   const currentSameSlug = currentPages.find((candidate) => candidate.slug === review.slug);
-  const currentDigest = currentReport.draft?.schemaVersion === architecturePolicy.requiredDraftSchemaVersion
-    ? sha256({ draft: currentReport.draft, contentStrategy: currentReport.contentStrategy })
-    : sha256(currentReport.draft);
+  const currentDigest = reviewedReportDigest(currentReport);
   if (currentReport.id !== report.id || currentReport.generatedAt !== report.generatedAt ||
     currentReport.publication?.draftDigest !== draftDigest || currentDigest !== draftDigest) {
     throw new Error("Reviewed report changed before the guarded publication write");

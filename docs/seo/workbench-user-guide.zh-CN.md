@@ -5,7 +5,7 @@
 ## 每天怎么用
 
 1. 每天 09:15 主任务自动启动；若未完成，18:30 和 21:30 恢复任务会从共享断点续跑。工作台显示增长、研究、日报、审稿、PDF 和部署验收的当前阶段。
-2. 再看 Google Trends、研究热点和机会分；Trends 是相对热度，需求/竞争是代理分，都不是月搜索量。
+2. 再看 Google Trends、研究热点和机会分；Trends 来自美国各 DMA 的官方 Top 25/Rising 25 公共表，需求/竞争仍是代理分，二者都不是月搜索量。
 3. 看 SEO 页面榜单。只有 exact-page GSC、UV、出站和付费返回观测值时才参与对应指标排序；`—` 不等于 0。
 4. 打开完整内容预览，确认搜索任务、产品事实、原创素材、内链和归因 CTA 均真实可用。
 5. 独立审稿后再发布；`READY FOR REVIEW`、`PUBLISHED`、Vercel `READY`、Google `indexed`、外链 `live` 是五个独立状态。
@@ -23,7 +23,7 @@
 | Codex Content | 事实约束草稿 | 已有 | Brief、英文页面、FAQ、素材需求 |
 | GitHub Reports | 自动提交到 `data/reports` | 0 | 每日版本记录和 Vercel 部署来源 |
 | Product Analytics | Vercel Web Analytics | 0 | 页面访问、来源和地域；Hobby 不含自定义事件 |
-| Google Trends | 官方网页或获批的官方 API | 0/需授权 | 记录相对热度和方向；不可用时明确写原因 |
+| Google Trends | 官方 BigQuery 美国 Top 25/Rising 25 公共数据集 | 免费额度内 0/需 Google Cloud 项目 | 每日发现与增强；只允许精确 rising 命中通过 v2 门槛 |
 
 ## 数据怎样改变页面
 
@@ -66,10 +66,16 @@
 
 ### Google Trends
 
-1. 只使用 Google Trends 官方网页中可见的数据，或已获批的官方 Trends API。
-2. 记录关键词、地区、期间、采集时间、官方 URL、0–100 相对热度和方向。
-3. 相对热度不能换算成月搜索量，也不能替代 Search Console 或 SEO 工具的观测值。
-4. 没有登录、没有 API 资格或页面未显示数据时写 `unavailable` 和原因，不抓取非官方镜像补数。
+1. 在 Google Cloud 项目启用 BigQuery API，并给采集服务账号授予运行查询任务的权限；公共 Trends 数据表保持只读。
+2. 配置 `GOOGLE_TRENDS_BIGQUERY_PROJECT_ID`、`GOOGLE_TRENDS_BIGQUERY_CLIENT_EMAIL` 和 `GOOGLE_TRENDS_BIGQUERY_PRIVATE_KEY`。
+3. 先运行 `npm run trends:check`。该命令只检查本地配置，不联网；缺少变量时输出 JSON 并以状态码 2 退出。
+4. 热点发现可先运行 `npm run trends:collect -- --stdout`，读取最多 50 条确定性 D&D 线索；也可重复传入 `--candidate "keyword"` 做精确候选核对。写好当日原始研究文件后，运行 `npm run trends:collect -- --research data/research/YYYY-MM-DD.json` 原子补入 `trendCollection` 和 `trendSignals`，已有同名字段时拒绝覆盖。显式 `--as-of` 必须与研究文件日期一致。
+5. 采集器每天读取官方 `bigquery-public-data.google_trends.top_terms` 和 `top_rising_terms`。它们是美国各 DMA 的 Top 25/Rising 25，不支持任意关键词查询。DMA `score` 不能汇总或改名为全美 `relativeInterest`。
+6. 持久化的 collection schema 2 不保存上万条完整 DMA 行，只保存两表行数与结果摘要、精确候选命中和最多 50 条 D&D 线索，且硬限制在 256 KiB 内。采集器用服务账号私钥做 RSA-SHA256 签名；构建、每日协调和发布都会按配置的账号与公钥指纹验签，私钥不会写入产物。
+7. 自动发布的 schema-v2 Trends 门槛只接受规范化后与 `top_rising_terms.term` 完全一致的候选词。只命中 `top_terms`、近似词或没有命中都记为 `not_observed`/不发布；这只表示没有进入可用的 Rising 25，不表示搜索量为 0。
+8. 凭据缺失、授权失败或查询超时时，research 模式只打印诊断并以状态码 2 退出，不写文件；服务恢复后当天可以重试。已经成功写入的 observed/not_observed 证据仍禁止覆盖。
+9. 顺序固定为增长采集 → Trends 发现/增强 → 研究构建 → 独立审稿 → 发布。Trends 不替代 GSC、落地 UV、归因、独立 breakout、IP、内容差异化或视觉审查门槛。
+10. 旧 schema-v1 网页信号只保留历史/人工兼容。Google Trends 官方 API Alpha 仍是限量资格，后续获批后再升级，不是当前采集器的依赖。
 
 ## 收录与外链
 

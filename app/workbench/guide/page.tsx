@@ -21,7 +21,7 @@ const stateLabels: Record<IntegrationStatus["state"], string> = {
 
 const dailySteps = [
   ["09:15 主任务启动", "先识别当天流水线阶段并续跑，再覆盖全部已发布页面读取可用的真实信号；没有数据就记录不可用原因，不能把 unavailable 当成 0。"],
-  ["研究高意图候选", "结合公开网页、授权 SEO 工具和可用的官方 Google Trends 相对热度，为候选词选择可审计证据；系统再按 policy v4 确定性计算试玩、付费、具体度、产品匹配和竞争代理分。"],
+  ["研究高意图候选", "先读取官方 Google Trends BigQuery 美国 DMA Top/Rising 榜单，再结合公开网页和授权 SEO 工具选择可审计证据；系统按 policy v4 确定性计算试玩、付费、具体度、产品匹配和竞争代理分。"],
   ["处理内容反馈", "逐字读取所有未消费指导，为每条记录采用或拒绝及原因，再把决定带进选题和 Brief。"],
   ["硬门槛筛选", "系统先排除宽泛信息词、弱试玩意图、产品不匹配、第三方 IP、内容蚕食和重复答案。"],
   ["生成事实受控草稿", "第一名合格机会变成 Brief、英文内容和待审页面，但此时不会写入已发布目录。"],
@@ -109,7 +109,7 @@ export default async function WorkbenchGuidePage() {
           </div>
           <div className="wb-guide-cards">
             <article><span>01</span><h3>看今日流水线</h3><p>先确认增长、研究、日报、审稿和 PDF 哪一步存在，以及是否使用 policy v4。</p></article>
-            <article><span>02</span><h3>看机会与页面榜单</h3><p>Google Trends 只看相对热度；真正的胜出页面按 GSC、UV、出站和付费观测值比较。</p></article>
+            <article><span>02</span><h3>看机会与页面榜单</h3><p>Google Trends 看 Rising 排名与 DMA 覆盖；真正的胜出页面按 GSC、UV、出站和付费观测值比较。</p></article>
             <article><span>03</span><h3>看独立状态</h3><p>READY FOR REVIEW、PUBLISHED、Vercel READY、Google indexed 和 backlink-live 互不替代。</p></article>
           </div>
         </section>
@@ -140,7 +140,7 @@ export default async function WorkbenchGuidePage() {
               <tbody>{decisionRows.map(([signal, change, why]) => <tr key={signal}><td><strong>{signal}</strong></td><td>{change}</td><td>{why}</td></tr>)}</tbody>
             </table>
           </div>
-          <div className="wb-guide-note"><strong>读数原则：</strong>“需求分/竞争分”来自公开研究，只用于方向判断；Google Trends 的 0–100 是所选地区和期间内的相对热度，也不是月搜索量。曝光、点击、UV、试玩、付费和营收只有在对应数据源返回观测值后才显示。空数组和未连接一律不当作 0。</div>
+          <div className="wb-guide-note"><strong>读数原则：</strong>“需求分/竞争分”来自公开研究，只用于方向判断；BigQuery Trends 的排名、涨幅与 DMA 覆盖不是全美相对热度或月搜索量，精确词未进入 Rising 25 也不等于搜索量为 0。曝光、点击、UV、试玩、付费和营收只有在对应数据源返回观测值后才显示。</div>
         </section>
 
         <section className="wb-section" id="connections">

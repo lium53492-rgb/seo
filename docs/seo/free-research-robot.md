@@ -23,6 +23,27 @@ This is the active zero-additional-API-cost production protocol. It uses public 
    Formally retired slugs are collected separately in `retiredUrls` with only
    Search Console and URL Inspection fields; they do not count as published
    pages and cannot improve or block active-portfolio readiness.
+7. Run `npm.cmd run trends:check`, then use
+   `npm.cmd run trends:collect -- --stdout --candidate "keyword"` for discovery
+   or `npm.cmd run trends:collect -- --research data/research/YYYY-MM-DD.json`
+   to atomically enrich a candidate file before the report builder. Candidate
+   flags are repeatable; `--stdout` is the default. Configure
+   `GOOGLE_TRENDS_BIGQUERY_PROJECT_ID`,
+   `GOOGLE_TRENDS_BIGQUERY_CLIENT_EMAIL`, and
+   `GOOGLE_TRENDS_BIGQUERY_PRIVATE_KEY`. The daily collector queries Google's
+   official US BigQuery public tables
+   `bigquery-public-data.google_trends.top_terms` and
+   `bigquery-public-data.google_trends.top_rising_terms`. Missing
+   configuration, a failed query, or no relevant row stays explicit; do not
+   replace it with a web proxy or an invented trend observation. Research-file
+   mode refuses to overwrite existing `trendCollection` or `trendSignals`.
+   To configure the local worktree from a downloaded Google service-account
+   JSON, run `npm.cmd run trends:configure -- C:\path\to\service-account.json`.
+   The importer validates the account, atomically preserves unrelated
+   `.env.local` entries, never prints the private key, and refuses to replace
+   non-empty Trends values unless an intentional `--force` is supplied.
+   It also leaves the file unchanged and exits 2 when collection is
+   unavailable, allowing a same-day retry after recovery.
 
 ## Candidate research
 
@@ -53,11 +74,16 @@ party tone, or continuity. A generic AI-story candidate that merely mentions
 toward product-fit by itself; the page must also cite approved, currently true
 product capabilities.
 
-The selected `create_page` candidate also needs a same-day `observed` Google
-Trends signal from an official Trends URL. Its direction must be `rising`, or
-its relative interest must be at least 50 for the declared geography and
-period. An empty array, unavailable observation, or unsupported model claim is
-a no-publication result, not permission to choose a weaker fallback.
+The selected `create_page` candidate also needs a same-day schema-v2 Google
+Trends observation produced from the official BigQuery collection. Only an
+exact normalized candidate-term match in US `top_rising_terms` can authorize
+the Trends gate. A `top_terms` row, a partial/semantic match, or a per-DMA
+`score` is useful for discovery only. Never aggregate or rename DMA scores as a
+nationwide `relativeInterest` value. No exact rising match is
+`not_observed`/no publication; it does not mean that the keyword has zero
+searches. Legacy schema-v1 Trends UI records are historical/manual
+compatibility input and cannot clear the unattended v2 gate. The official
+limited-access Trends API Alpha is reserved as a later provider upgrade.
 
 The builder derives `productFit`, `trialIntent`, `revenueIntent`, `intentSpecificity`, `originality`, `ipRisk`, and `cannibalizationRisk` from the versioned signal weights. Raw AI-supplied values for those fields are ignored. New pages must pass every hard gate in `data/config/seo-policy.json`; demand cannot override a failed trial, revenue, specificity, product, IP, or cannibalization gate. See `research-signal-contract.md` for the exact contract and formulas.
 
@@ -99,12 +125,41 @@ canonicals. Otherwise record `observe`; the builder rejects consolidation.
 
 ```text
 npm run growth:collect
+npm run trends:check
+npm run trends:collect -- --research data/research/YYYY-MM-DD.json
 npm run research:build -- data/research/YYYY-MM-DD.json
 npm run research:publish -- data/reports/YYYY-MM-DD.json data/reviews/YYYY-MM-DD.json
 npm run verify
 ```
 
-The readiness command probes the live private data path and exits non-zero while
+`trends:check` is a local configuration check: it prints JSON, makes no
+network request, and exits 2 when any of the three Trends variables is absent.
+`trends:collect` returns `{trendCollection, trendSignals}` in stdout mode. Its
+optional `--as-of YYYY-MM-DD` uses that production date and queries
+`refresh_date = as-of - 1 day`. In `--research` mode it must exactly match the
+research document date, and the collection must be made on that Shanghai day.
+Collection state is `observed` or
+`unavailable`; per-candidate signal state is `observed`, `not_observed`, or
+`unavailable`. `not_observed` uses `relativeInterest: null` and
+`direction: unknown`. An exact normalized `top_rising_terms` match produces an
+observed/rising signal.
+
+Collection schema 2 persists no full DMA row set. It stores per-table row
+counts and canonical result digests, exact candidate-match rows, and at most 50
+deterministically selected D&D discovery leads. Each lead keeps list type,
+rank, DMA coverage, applicable score/gain, and source table. A rising lead
+clears only the Google Trends gate when selected exactly; every intent,
+product, IP, growth, quality, and editorial gate remains independent. The
+collector signs the canonical snapshot digest with RSA-SHA256 using the same
+server-only BigQuery service-account private key. Artifacts contain only the
+client email, derived public-key fingerprint, algorithm, and signature. The
+builder, daily coordinator, and both publisher reads load the same environment
+and verify that attestation; recomputing the SHA-256 digest locally is not
+provider proof.
+
+The production order is growth collection, Trends discovery/enrichment,
+research build, independent review, then guarded publication. The growth
+readiness command probes the live private data path and exits non-zero while
 the full loop is incomplete. The growth command writes a privacy-classified
 schema-v2 `data/growth/YYYY-MM-DD.json` and refuses to overwrite it. The
 collector holds the full private response only long enough to derive the safe
@@ -128,15 +183,21 @@ recipe metadata is not visual inspection.
 A Codex review must identify itself as `codex_editor`; it must never be labelled
 human.
 
-The publisher enforces one page per report/day, revalidates Google Trends and
-same-day breakout-page evidence, reruns CTA/content novelty and recipe
-gates against the latest page corpus, then obtains the shared publication guard
-and re-reads the report, review, screenshot files, and corpus before writing.
+The publisher enforces one page per report/day, revalidates the exact
+schema-v2 `top_rising_terms` match and same-day breakout-page evidence, reruns
+CTA/content novelty and recipe gates against the latest page corpus, then
+obtains the shared publication guard and re-reads the report, review,
+screenshot files, and corpus before writing.
 This closes both approval-tampering and two-publisher races. It
 writes schema-version 3 page data, attaches the approval record, and updates the
 report to `published`. Existing schema-version 1/2 pages remain readable through
 the isolated legacy path; all new pages use version 3. Publishing is rejected at
 or after 23:45 Asia/Shanghai.
+
+Google Trends is one independent demand-freshness gate. It never substitutes
+for complete GSC and landing-UV observation, attribution readiness, independent
+`breakout_page` evidence, product and IP truth, content/presentation
+distinctness, or editorial and rendered-preview approval.
 
 ## Release verification
 

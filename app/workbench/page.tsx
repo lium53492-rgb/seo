@@ -6,7 +6,7 @@ import { isBasicAuthHeaderAuthorized } from "@/lib/seo/auth";
 import { createDisconnectedReport, createUnavailableFunnel, redactPrivateReportData } from "@/lib/seo/default-report";
 import { readDailyPipelineStatus } from "@/lib/seo/pipeline-status";
 import { readLatestReport, readReportHistory } from "@/lib/seo/report-store";
-import type { DailySeoReport, GoogleTrendsDirection, GrowthPortfolioEntry, ObservedMetric, RecommendedAction } from "@/lib/seo/types";
+import type { DailySeoReport, GoogleTrendsDirection, GoogleTrendsSignal, GrowthPortfolioEntry, ObservedMetric, RecommendedAction } from "@/lib/seo/types";
 import { FeedbackForm } from "./FeedbackForm";
 import { FeedbackQueue } from "./FeedbackQueue";
 import { RunPipelineButton } from "./RunPipelineButton";
@@ -31,6 +31,25 @@ const trendDirectionLabels: Record<GoogleTrendsDirection, string> = {
   falling: "下降",
   unknown: "方向未知",
 };
+
+function trendSignalState(signal: GoogleTrendsSignal) {
+  if ("schemaVersion" in signal && signal.schemaVersion === 2) {
+    if (signal.state === "observed") {
+      const gain = signal.maxPercentGain === null ? "涨幅未提供" : `最高涨幅 ${signal.maxPercentGain}%`;
+      return `Rising · ${signal.dmaCount ?? 0} 个 DMA · ${gain}`;
+    }
+    return signal.state === "not_observed" ? "未进入 Rising 25" : "采集不可用";
+  }
+  return signal.state === "observed" ? trendDirectionLabels[signal.direction] : "明确不可用";
+}
+
+function trendSignalValue(signal: GoogleTrendsSignal) {
+  if ("schemaVersion" in signal && signal.schemaVersion === 2) {
+    if (signal.state === "observed" && signal.bestRank !== null) return `#${signal.bestRank}`;
+    return signal.state === "not_observed" ? "未命中" : "不可用";
+  }
+  return signal.state === "observed" ? signal.relativeInterest : "不可用";
+}
 
 function formatTime(value: string) {
   return new Intl.DateTimeFormat("zh-CN", {
@@ -454,14 +473,14 @@ export default async function WorkbenchPage() {
                   <li key={`${signal.keyword}-${signal.geo}-${signal.period}`}>
                     <div>
                       <strong><a href={signal.sourceUrl} target="_blank" rel="noreferrer">{signal.keyword}</a></strong>
-                      <span>{signal.geo} · {signal.period} · {signal.state === "observed" ? trendDirectionLabels[signal.direction] : "明确不可用"} · 采集 {formatCollectedAt(signal.collectedAt)}</span>
+                      <span>{signal.geo} · {signal.period} · {trendSignalState(signal)} · 采集 {formatCollectedAt(signal.collectedAt)}</span>
                       <span>{signal.detail}</span>
                     </div>
-                    <b>{signal.state === "observed" ? signal.relativeInterest : "不可用"}</b>
+                    <b>{trendSignalValue(signal)}</b>
                   </li>
                 ))}</ul>
               ) : <p>本日报没有 Google Trends 官方观测；工作台不会用机会分、第三方估算或演示值补位。</p>}
-              <small>相对热度为所选地区与周期内归一化的 0–100 指数，不是关键词搜索量；点击关键词可回到官方来源。</small>
+              <small>BigQuery 显示美国各 DMA 的 Top/Rising 榜单证据；排名、涨幅和 DMA 覆盖都不是全美搜索量。旧 Explore 记录才显示 0–100 相对热度。</small>
             </article>
           </div>
         </section>

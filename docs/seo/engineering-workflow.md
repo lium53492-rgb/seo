@@ -53,16 +53,23 @@ A new page is eligible only when all policy-v4 hard gates pass. Raw model-suppli
 
 1. `npm run growth:collect`
    queries every published page for the same 28 completed Shanghai days ending after the policy-defined finalized-data lag and writes an immutable portfolio snapshot. A missing credential or source creates an explicit unavailable entry. Run `npm run growth:check` first after any credential or callback change.
-2. `npm run research:build -- data/research/YYYY-MM-DD.json`
+2. `npm run trends:check`, then
+   `npm run trends:collect -- --research data/research/YYYY-MM-DD.json`
+   enriches that day's research input with the official US BigQuery public
+   Trends snapshot. Only an exact `top_rising_terms` match qualifies; top-only,
+   not-observed, and unavailable results do not authorize publication. The
+   persisted snapshot is a compact projection signed by the configured
+   service account; unavailable attempts leave research unchanged for retry.
+3. `npm run research:build -- data/research/YYYY-MM-DD.json`
    validates the all-page portfolio, its create/improve/consolidate/observe
    decision, evidence, candidates, product claims, and content quality, then
    writes a report with `ready_for_review`. It never writes a public page.
-3. An independent human or explicitly identified Codex editor reviews search intent, product truth, conversion path, and source accuracy, then creates `data/reviews/YYYY-MM-DD.json`.
-4. `npm run research:publish -- data/reports/YYYY-MM-DD.json data/reviews/YYYY-MM-DD.json`
-   verifies the approval artifact and writes a schema-version 2 page.
-5. `npm run verify`
+4. An independent human or explicitly identified Codex editor reviews search intent, product truth, conversion path, source accuracy, and the digest-bound Trends snapshot, then creates `data/reviews/YYYY-MM-DD.json`.
+5. `npm run research:publish -- data/reports/YYYY-MM-DD.json data/reviews/YYYY-MM-DD.json`
+   verifies the approval artifact and writes a schema-version 3 page.
+6. `npm run verify`
    runs deterministic tests, TypeScript, and the production Next.js build.
-6. Push only the intended artifacts and code. Verify Vercel READY, rendered H1, canonical, attributed CTA, JSON-LD, and sitemap inclusion before reporting production success.
+7. Push only the intended artifacts and code. Verify Vercel READY, rendered H1, canonical, attributed CTA, JSON-LD, and sitemap inclusion before reporting production success.
 
 ## Runtime structure
 

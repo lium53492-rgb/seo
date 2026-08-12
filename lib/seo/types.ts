@@ -134,11 +134,12 @@ export type PagePerformance = {
 
 export type GoogleTrendsSourceUrl =
   | `https://trends.google.com/${string}`
-  | `https://developers.google.com/search/apis/trends${string}`;
+  | `https://developers.google.com/search/apis/trends${string}`
+  | `https://support.google.com/trends/answer/12764470${string}`;
 
 export type GoogleTrendsDirection = "rising" | "flat" | "falling" | "unknown";
 
-type GoogleTrendsSignalBase = {
+type GoogleTrendsLegacySignalBase = {
   keyword: string;
   source: "google_trends";
   sourceUrl: GoogleTrendsSourceUrl;
@@ -149,21 +150,116 @@ type GoogleTrendsSignalBase = {
 };
 
 export type GoogleTrendsSignal =
-  | (GoogleTrendsSignalBase & {
+  | (GoogleTrendsLegacySignalBase & {
       state: "observed";
       relativeInterest: number;
       direction: GoogleTrendsDirection;
     })
-  | (GoogleTrendsSignalBase & {
+  | (GoogleTrendsLegacySignalBase & {
       state: "unavailable";
       relativeInterest: null;
       direction: "unknown";
-    });
+    })
+  | {
+      schemaVersion: 2;
+      keyword: string;
+      source: "google_trends";
+      collectionMethod: "bigquery_public_dataset";
+      sourceUrl: `https://support.google.com/trends/answer/12764470${string}`;
+      sourceTable: "bigquery-public-data.google_trends.top_rising_terms";
+      state: "observed" | "not_observed" | "unavailable";
+      relativeInterest: null;
+      direction: "rising" | "unknown";
+      geo: "US";
+      period: string;
+      collectedAt: string;
+      detail: string;
+      refreshDate: string | null;
+      week: string | null;
+      bestRank: number | null;
+      maxPercentGain: number | null;
+      dmaCount: number | null;
+      snapshotDigest: string;
+    };
+
+export type GoogleTrendsBigQueryTerm = {
+  term: string;
+  normalizedTerm: string;
+  week: string;
+  bestRank: number;
+  dmaCount: number;
+  sourceTable:
+    | "bigquery-public-data.google_trends.top_terms"
+    | "bigquery-public-data.google_trends.top_rising_terms";
+  maxDmaScore?: number;
+  maxPercentGain?: number | null;
+};
+
+export type GoogleTrendsBigQueryCollection = {
+  schemaVersion: 2;
+  provider: "google_trends_bigquery_public_dataset";
+  state: "observed" | "unavailable";
+  collectedAt: string;
+  sourceUrl: `https://support.google.com/trends/answer/12764470${string}`;
+  geo: "US";
+  coverage: {
+    label: "Top 25 and Top 25 Rising Google Trends terms by US DMA";
+    topTermsPerDma: 25;
+    topRisingTermsPerDma: 25;
+    arbitraryQueryCoverage: false;
+    absenceMeansZero: false;
+  };
+  query: {
+    location: "US";
+    useLegacySql: false;
+    maximumBytesBilled: string;
+    timeoutMs: number;
+    asOfDate: string;
+    refreshDateRule: "as_of_date_minus_1_day";
+    topTermsSqlDigest: string;
+    topRisingTermsSqlDigest: string;
+  };
+  refreshDate: string | null;
+  week: string | null;
+  results: {
+    topTerms: { rowCount: number; resultDigest: string };
+    topRisingTerms: { rowCount: number; resultDigest: string };
+  };
+  exactCandidateMatches: Array<{
+    keyword: string;
+    normalizedKeyword: string;
+    topTerm: GoogleTrendsBigQueryTerm | null;
+    risingTerm: GoogleTrendsBigQueryTerm | null;
+  }>;
+  discoveryLeads: Array<{
+    term: string;
+    normalizedTerm: string;
+    listType: "top" | "rising";
+    week: string;
+    bestRank: number;
+    dmaCount: number;
+    maxDmaScore: number | null;
+    maxPercentGain: number | null;
+    sourceTable:
+      | "bigquery-public-data.google_trends.top_terms"
+      | "bigquery-public-data.google_trends.top_rising_terms";
+    googleTrendsGateEligibleOnExactCandidateMatch: boolean;
+  }>;
+  detail: string;
+  snapshotDigest: string;
+  attestation: {
+    algorithm: "RSA-SHA256";
+    clientEmail: string;
+    keyFingerprint: string;
+    signature: string;
+  } | null;
+};
 
 export type IntegrationStatus = {
   id:
     | "semrush"
     | "codex_research"
+    | "google_trends"
     | "search_console"
     | "ai_gateway"
     | "github"
@@ -766,6 +862,8 @@ export type DailySeoReport = {
   performance: PagePerformance[];
   /** Official Google Trends observations. Relative interest is not search volume. */
   trendSignals?: GoogleTrendsSignal[];
+  /** Auditable Google Trends BigQuery collection bound to version 2 signals. */
+  trendCollection?: GoogleTrendsBigQueryCollection;
   /** Verbatim disposition of every locally unconsumed workbench input at build time. */
   feedbackDecisions?: ReportFeedbackDecision[];
   actions: DailyAction[];

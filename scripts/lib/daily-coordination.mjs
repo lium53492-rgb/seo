@@ -1,3 +1,5 @@
+import "../load-env.mjs";
+
 import { createHash, randomUUID } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import {
@@ -15,6 +17,11 @@ import {
 import { hostname } from "node:os";
 import { dirname, relative, resolve, sep } from "node:path";
 import unattendedPolicy from "../../data/config/unattended-publishing.json" with { type: "json" };
+import seoPolicy from "../../data/config/seo-policy.json" with { type: "json" };
+import {
+  summarizeGoogleTrendsEvidence,
+  validateGoogleTrendsEvidence,
+} from "../../lib/seo/google-trends-contract.mjs";
 import { isDailyNoPublishReceipt, readDailyRunState, shanghaiDate } from "./daily-run-state.mjs";
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
@@ -1113,19 +1120,45 @@ function noPublishEvidence(worktreeRoot, date, dailyState) {
   const trendSignals = Array.isArray(report?.trendSignals)
     ? report.trendSignals
     : Array.isArray(research?.trendSignals) ? research.trendSignals : [];
-  const observedTrends = trendSignals.filter((signal) => signal?.source === "google_trends" &&
-    signal?.state === "observed");
-  const qualifyingTrends = observedTrends.filter((signal) => {
-    let sourceUrl;
-    try {
-      sourceUrl = new URL(signal.sourceUrl);
-    } catch {
-      return false;
-    }
-    return sourceUrl.protocol === "https:" && sourceUrl.hostname === "trends.google.com" &&
-      sourceUrl.pathname.startsWith("/trends/") &&
-      Number.isFinite(Date.parse(signal.collectedAt || "")) && shanghaiDate(signal.collectedAt) === date &&
-      (signal.direction === "rising" || (Number.isInteger(signal.relativeInterest) && signal.relativeInterest >= 50));
+  const trendCollection = report?.trendCollection ?? research?.trendCollection;
+  const requireBigQuery = date >=
+    seoPolicy.googleTrends.automatedCollectionEnforcedFromReportDate;
+  const requireVerifiedAttestation = requireBigQuery &&
+    trendCollection?.state === "observed";
+  const attestationVerificationKey = String(
+    process.env.GOOGLE_TRENDS_BIGQUERY_PRIVATE_KEY || "",
+  ).replace(/\\n/g, "\n").trim();
+  const expectedAttestationClientEmail = String(
+    process.env.GOOGLE_TRENDS_BIGQUERY_CLIENT_EMAIL || "",
+  ).trim();
+  const candidateKeywords = Array.isArray(report?.opportunities)
+    ? report.opportunities.map((item) => item?.keyword)
+    : Array.isArray(research?.candidates) ? research.candidates.map((item) => item?.keyword) : [];
+  if ((trendSignals.length || trendCollection) && !candidateKeywords.length) {
+    throw new Error("No-publish Google Trends evidence has no candidate bindings");
+  }
+  if (trendSignals.length || trendCollection) {
+    validateGoogleTrendsEvidence({
+      trendSignals,
+      trendCollection,
+      candidateKeywords,
+      reportDate: date,
+      attestationVerificationKey: requireVerifiedAttestation
+        ? attestationVerificationKey
+        : undefined,
+      expectedAttestationClientEmail: requireVerifiedAttestation
+        ? expectedAttestationClientEmail
+        : undefined,
+      requireVerifiedAttestation,
+    });
+  }
+  const trendSummary = summarizeGoogleTrendsEvidence({
+    trendSignals,
+    trendCollection,
+    reportDate: date,
+    requireBigQuery,
+    attestationVerificationKey,
+    expectedAttestationClientEmail,
   });
 
   return {
@@ -1138,11 +1171,7 @@ function noPublishEvidence(worktreeRoot, date, dailyState) {
         unavailablePages: growthSummary.unavailablePages,
         attributionJoinReady: growthSummary.attributionJoinReady,
       },
-      trends: {
-        recorded: trendSignals.length,
-        observed: observedTrends.length,
-        qualifying: qualifyingTrends.length,
-      },
+      trends: trendSummary,
       publicationStatus: typeof report?.publication?.status === "string"
         ? report.publication.status
         : "absent",
@@ -1158,8 +1187,14 @@ function assertNoPublishReasonEvidence(reasonCode, summary) {
   if (reasonCode === "attribution_blocked" && summary.growth.attributionJoinReady !== false) {
     throw new Error("attribution_blocked requires attributionJoinReady=false");
   }
-  if (reasonCode === "trends_unavailable" && summary.trends.observed !== 0) {
-    throw new Error("trends_unavailable requires zero observed Google Trends signals");
+  if (reasonCode === "trends_unavailable" &&
+    (summary.trends.observed !== 0 || !["absent", "unavailable"].includes(summary.trends.providerState))) {
+    throw new Error("trends_unavailable requires an absent or unavailable Google Trends provider");
+  }
+  if (reasonCode === "trends_not_observed" &&
+    (summary.trends.providerState !== "observed" || summary.trends.notObserved < 1 ||
+      summary.trends.qualifying !== 0)) {
+    throw new Error("trends_not_observed requires a successful collection with exact candidate misses");
   }
   if (reasonCode === "trends_below_threshold" &&
     (summary.trends.observed < 1 || summary.trends.qualifying !== 0)) {

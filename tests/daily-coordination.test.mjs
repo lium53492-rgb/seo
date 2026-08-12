@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { generateKeyPairSync } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { after, test } from "node:test";
 import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, utimesSync, writeFileSync } from "node:fs";
@@ -22,8 +23,24 @@ import {
   supersedeDailyRelease,
   withDailyPublicationGuard,
 } from "../scripts/lib/daily-coordination.mjs";
+import {
+  GOOGLE_TRENDS_BIGQUERY_SOURCE_URL,
+  GOOGLE_TRENDS_TOP_RISING_TERMS_TABLE,
+  GOOGLE_TRENDS_TOP_RISING_TERMS_SQL_DIGEST,
+  GOOGLE_TRENDS_TOP_TERMS_SQL_DIGEST,
+  attestGoogleTrendsCollection,
+} from "../lib/seo/google-trends-contract.mjs";
 
 const sandbox = mkdtempSync(join(tmpdir(), "lorelens-daily-coordination-"));
+const trendsTestClientEmail =
+  "trends-reader@seo-trends-fixture.iam.gserviceaccount.com";
+const { privateKey: trendsTestPrivateKey } = generateKeyPairSync("rsa", {
+  modulusLength: 2048,
+  privateKeyEncoding: { type: "pkcs8", format: "pem" },
+  publicKeyEncoding: { type: "spki", format: "pem" },
+});
+process.env.GOOGLE_TRENDS_BIGQUERY_CLIENT_EMAIL = trendsTestClientEmail;
+process.env.GOOGLE_TRENDS_BIGQUERY_PRIVATE_KEY = trendsTestPrivateKey;
 after(() => rmSync(sandbox, { recursive: true, force: true }));
 
 function roots(name) {
@@ -109,6 +126,84 @@ function writeNoPublishGrowth(worktreeRoot, date, generatedAt) {
       sourceSlug: `page-${index + 1}`,
       state: "unavailable",
     })),
+  }, null, 2)}\n`);
+}
+
+function writeNoPublishTrendMiss(worktreeRoot, date) {
+  const keyword = "d&d campaign prep";
+  let trendCollection = {
+    schemaVersion: 2,
+    provider: "google_trends_bigquery_public_dataset",
+    state: "observed",
+    collectedAt: `${date}T09:05:00+08:00`,
+    sourceUrl: GOOGLE_TRENDS_BIGQUERY_SOURCE_URL,
+    geo: "US",
+    coverage: {
+      label: "Top 25 and Top 25 Rising Google Trends terms by US DMA",
+      topTermsPerDma: 25,
+      topRisingTermsPerDma: 25,
+      arbitraryQueryCoverage: false,
+      absenceMeansZero: false,
+    },
+    query: {
+      location: "US",
+      useLegacySql: false,
+      maximumBytesBilled: "104857600",
+      timeoutMs: 15000,
+      asOfDate: date,
+      refreshDateRule: "as_of_date_minus_1_day",
+      topTermsSqlDigest: GOOGLE_TRENDS_TOP_TERMS_SQL_DIGEST,
+      topRisingTermsSqlDigest: GOOGLE_TRENDS_TOP_RISING_TERMS_SQL_DIGEST,
+    },
+    refreshDate: "2099-01-09",
+    week: "2099-01-04",
+    results: {
+      topTerms: { rowCount: 1, resultDigest: "c".repeat(64) },
+      topRisingTerms: { rowCount: 1, resultDigest: "d".repeat(64) },
+    },
+    exactCandidateMatches: [{
+      keyword,
+      normalizedKeyword: keyword,
+      topTerm: null,
+      risingTerm: null,
+    }],
+    discoveryLeads: [],
+    detail: "Official collection succeeded without an exact rising candidate match.",
+    snapshotDigest: "",
+    attestation: null,
+  };
+  trendCollection = attestGoogleTrendsCollection(trendCollection, {
+    privateKey: trendsTestPrivateKey,
+    clientEmail: trendsTestClientEmail,
+  });
+  const trendSignals = [{
+    schemaVersion: 2,
+    keyword,
+    source: "google_trends",
+    collectionMethod: "bigquery_public_dataset",
+    sourceUrl: GOOGLE_TRENDS_BIGQUERY_SOURCE_URL,
+    sourceTable: GOOGLE_TRENDS_TOP_RISING_TERMS_TABLE,
+    state: "not_observed",
+    relativeInterest: null,
+    direction: "unknown",
+    geo: "US",
+    period: "week starting 2099-01-04",
+    collectedAt: trendCollection.collectedAt,
+    detail: "The exact term did not appear in Rising 25; this does not mean zero demand.",
+    refreshDate: trendCollection.refreshDate,
+    week: trendCollection.week,
+    bestRank: null,
+    maxPercentGain: null,
+    dmaCount: null,
+    snapshotDigest: trendCollection.snapshotDigest,
+  }];
+  const path = join(worktreeRoot, "data", "research", `${date}.json`);
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, `${JSON.stringify({
+    date,
+    candidates: [{ keyword }],
+    trendCollection,
+    trendSignals,
   }, null, 2)}\n`);
 }
 
@@ -235,6 +330,29 @@ test("a durable no-publish receipt ends same-day recovery without claiming a pub
     now: new Date("2099-01-11T01:00:00.000Z"),
   }).state, "none");
   assert.throws(() => assertDailyLease({ coordinationRoot, date, owner: ownerA }), /does not own/);
+});
+
+test("an exact BigQuery Rising miss closes the day as not observed without claiming zero demand", () => {
+  const date = "2099-01-10";
+  const now = new Date("2099-01-10T01:00:00.000Z");
+  const { coordinationRoot, worktreeA } = roots("no-publish-trends-not-observed");
+  const owner = coordinationOwner(worktreeA, "run-a");
+  acquireDailyLease({ coordinationRoot, date, owner, now, staleAfterMinutes: 60 });
+  writeNoPublishGrowth(worktreeA, date, "2099-01-10T00:55:00.000Z");
+  writeNoPublishTrendMiss(worktreeA, date);
+  const completed = completeDailyNoPublish({
+    coordinationRoot,
+    worktreeRoot: worktreeA,
+    date,
+    owner,
+    reasonCode: "trends_not_observed",
+    reason: "The official collection succeeded, but no exact candidate entered the US Rising 25 feed.",
+    now,
+  });
+  assert.equal(completed.status, "completed_no_publish");
+  assert.equal(completed.noPublishReceipt.evidenceSummary.trends.providerState, "observed");
+  assert.equal(completed.noPublishReceipt.evidenceSummary.trends.notObserved, 1);
+  assert.equal(completed.noPublishReceipt.evidenceSummary.trends.qualifying, 0);
 });
 
 test("no-publish completion refuses to hide a page already published that day", () => {

@@ -145,6 +145,24 @@
     "reportingLagDays": 3,
     "callbackProbeMaxAgeHours": 168
   },
+  "googleTrends": {
+    "schemaVersion": 1,
+    "automatedCollectionEnforcedFromReportDate": "2026-08-11",
+    "collectionMethod": "bigquery_public_dataset",
+    "geo": "US",
+    "sourceUrl": "https://support.google.com/trends/answer/12764470?hl=en",
+    "sourceTables": [
+      "bigquery-public-data.google_trends.top_terms",
+      "bigquery-public-data.google_trends.top_rising_terms"
+    ],
+    "maximumBytesBilled": "104857600",
+    "timeoutMs": 15000,
+    "exactCandidateMatchRequired": true,
+    "topTermsQualifyForPublication": false,
+    "topRisingTermsQualifyForPublication": true,
+    "absenceMeansZero": false,
+    "allowLegacyExploreForHistoricalReports": true
+  },
   "candidateCount": {
     "min": 5,
     "max": 12

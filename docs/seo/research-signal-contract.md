@@ -83,6 +83,89 @@ Raw input values for product fit, trial intent, revenue intent, specificity, ori
 
 `demandScore` and `difficulty` remain 0-100 public-web research proxies. They need evidence and rationale, but they never masquerade as Search Console or provider observations. Search Console impressions, clicks, CTR, and position stay in `performance`; landing UV and conversion outcomes stay in the growth portfolio.
 
+## Google Trends provider contract
+
+The automated provider is Google's official BigQuery public dataset for the
+United States:
+
+- `bigquery-public-data.google_trends.top_terms` contains up to the Top 25
+  terms for each US DMA and is discovery context only;
+- `bigquery-public-data.google_trends.top_rising_terms` contains up to the
+  Rising 25 terms for each US DMA and is the only table that can satisfy the
+  unattended schema-v2 Trends gate;
+- collection runs daily with `npm run trends:check` followed by stdout
+  discovery or
+  `npm run trends:collect -- --research data/research/YYYY-MM-DD.json`, using
+  `GOOGLE_TRENDS_BIGQUERY_PROJECT_ID`,
+  `GOOGLE_TRENDS_BIGQUERY_CLIENT_EMAIL`, and
+  `GOOGLE_TRENDS_BIGQUERY_PRIVATE_KEY`.
+
+A schema-v2 observation qualifies only when NFKC normalization, lowercasing,
+trimming, and whitespace folding make the selected candidate keyword exactly
+equal to an observed `top_rising_terms.term` value. Collection must run on the
+same Shanghai production day; by default it queries the preceding day's
+`refresh_date`. A substring, related phrase, semantic match,
+`top_terms` row, public-web proxy, or model assertion cannot qualify. The
+collector and publisher both enforce this boundary.
+
+The embedded `trendCollection` uses compact, attested collection schema 2.
+Instead of committing the full DMA result (which can exceed normal repository
+file limits), it stores each table's row count and canonical result digest,
+the exact candidate-match rows needed by the gate, and at most 50
+deterministically selected D&D discovery leads. Each lead identifies its list,
+rank, DMA count, source table, and applicable score/gain. A rising lead says
+only that an exact future candidate could clear the Trends gate; intent,
+product, IP, originality, growth, and review gates still apply.
+
+The canonical snapshot digest binds those compact results, the two exact SQL
+digests, and the signer identity. The collector signs that digest with
+RSA-SHA256 using the already configured BigQuery service-account private key;
+the artifact stores only the client email, derived public-key fingerprint,
+algorithm, and signature. The builder and both publisher reads load the same
+server-only environment, derive the public key, bind the configured client
+email and fingerprint, and verify the signature. A locally recomputed SHA-256
+digest is not publication authorization. Each BigQuery-derived `trendSignals`
+entry repeats the verified snapshot digest. From the enforcement date, that
+digest is also part of the editorial review digest, so evidence cannot be
+replaced after approval without invalidating the review.
+
+The public tables are DMA-granular. A row's `score` is retained only with its
+DMA/week provenance; it must not be aggregated, averaged, or renamed as
+nationwide `relativeInterest`. The dataset is not proof of arbitrary-keyword
+volume. If the exact term is absent, record `not_observed` and do not publish.
+That state means only that the term did not appear in the available Rising 25
+rows; it does not mean zero searches.
+
+`trends:check` validates the three independent environment variables without a
+network request, prints JSON, and exits 2 when configuration is incomplete.
+`trends:collect` defaults to stdout JSON containing `trendCollection` and
+`trendSignals`; repeated `--candidate` flags select explicit terms.
+Both GoogleSQL queries run in the `US` location with legacy SQL disabled, a
+15-second timeout, a 100 MiB `maximumBytesBilled` ceiling, and a date-bound
+parameter.
+`--research` atomically adds those two top-level sections to the named raw
+research file and refuses to overwrite either section. When collection is
+`unavailable`, it exits 2 and prints the diagnostic JSON but does not write
+either field, so the same day can retry after a transient outage. `--as-of YYYY-MM-DD`
+overrides the production date, but in `--research` mode it must match the
+document date and the collection day. The collector does not create a separate
+`data/trends` snapshot; the digest-bound collection travels with the research
+and report artifacts. Collection state is `observed` or
+`unavailable`. Candidate state is `observed`, `not_observed`, or `unavailable`;
+non-observed candidates retain `relativeInterest: null` and
+`direction: unknown`, while an exact rising match is `observed`/`rising`.
+
+Legacy schema-v1 observations from the Google Trends UI remain readable only
+for historical or explicitly manual compatibility. They cannot clear the
+unattended schema-v2 publication gate. Google's limited-access Trends API Alpha
+is a future provider option; it is not the current automation dependency.
+
+Trends is independent of the complete portfolio and quality contract. A
+qualifying rising-term observation does not replace exact-page Search Console,
+landing UV, attribution readiness, independent `breakout_page` evidence,
+approved product facts, IP safety, content and presentation distinctness, or
+review and visual-audit approval.
+
 The publication decision therefore uses two layers:
 
 1. Evidence-derived intent and safety gates decide whether a candidate is eligible.

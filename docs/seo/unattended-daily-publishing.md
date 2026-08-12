@@ -9,14 +9,28 @@ no-publication outcome with its reason. It must not require a user to identify
 the next step after a timeout, network interruption, or partial run.
 
 This contract does not relax product truth, originality, IP, review, build, or
-one-page-per-day safeguards. A `create_page` release requires an observed
-same-day Google Trends signal for the selected keyword and a complete all-page
-measurement portfolio with observed Search Console and landing UV states plus
-a ready attribution join. Missing evidence is recorded as unavailable and
-blocks publication without being converted to zero. A confirmed orphan
+one-page-per-day safeguards. From the configured enforcement date, a
+`create_page` release requires a same-day schema-v2 collection from the official
+US Google Trends BigQuery public dataset and an exact normalized candidate
+match in `top_rising_terms`. A successful collection without that exact row is
+`not_observed`; a failed provider is `unavailable`. Neither state means zero
+searches, and neither permits publication. The release also requires a complete
+all-page measurement portfolio with observed Search Console and landing UV
+states plus a ready attribution join. Missing evidence blocks publication
+without being converted to zero. A confirmed orphan
 callback, unsupported claim, third-party IP, duplicate intent, failed review,
 failed verification, unrelated user work, or irreconcilable Git conflict also
 stops publication rather than shipping unsafe content.
+
+The BigQuery result persisted with research is compact collection schema 2:
+per-table row counts and canonical result digests, exact candidate matches,
+and a bounded deterministic D&D discovery list, not the full DMA result. The
+collector signs its canonical snapshot digest with RSA-SHA256 using the
+server-only BigQuery service-account private key. The report builder, daily
+coordination entrypoint, and the publisher before and inside its guarded reread
+load the same environment and verify the configured client email plus derived
+public-key fingerprint. An unavailable `--research` attempt exits 2 without
+writing Trends fields, so a transient outage can be retried that day.
 
 ## Idempotent state machine
 
@@ -59,7 +73,7 @@ chain or more than one page for the Shanghai day is a conflict and must not be
 overwritten. Once a page is published for the day, all resumed runs switch to
 verification and delivery; they never create another page.
 
-After growth, research, report, review, publication, and PDF stages, run
+After growth, Trends enrichment, research, report, review, publication, and PDF stages, run
 `npm.cmd run daily:coord -- save YYYY-MM-DD`. Checkpoints are immutable,
 digest-bound snapshots of only the daily artifact allowlist. Restore refuses
 to overwrite a different file. This makes the recovery worktree able to continue

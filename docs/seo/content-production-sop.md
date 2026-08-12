@@ -22,7 +22,25 @@ Do not create near-duplicate keyword variants. A keyword is only a discovery han
 - Give every evidence record a stable ID. For policy version 4, each candidate must reference at least two directly supporting records from two independent domains and explain every selected product, trial, revenue, specificity, IP, and cannibalization signal.
 - Never copy model-supplied hard-gate scores into a report. The builder derives them from the versioned signal policy; demand and difficulty remain explicitly labelled research proxies with rationales.
 - Prefer official pages, credible editorial sources, public communities, and observable first-party Search Console data. Keep Search Console metrics separate from proxy demand and difficulty scores.
-- Treat trend or hot-topic signals as leads, not facts. They need a source, freshness date, product-fit check, and intellectual-property risk check before they can influence a brief. An unattended `create_page` draft additionally needs a same-day observed Google Trends signal for its exact candidate; unavailable or empty Trends evidence means no publication. From the configured enforcement date it also needs a page-specific independent `breakout_page` record with a numeric signal, unit, basis, detail, same-day timestamp, and exact keyword support.
+- Treat trend or hot-topic signals as leads, not product facts. Run the official
+  US Google Trends BigQuery collector daily after growth collection and before
+  research. The public dataset exposes Top 25 and Rising 25 rows per DMA; it is
+  not an arbitrary-keyword or national-volume endpoint. For the unattended
+  schema-v2 gate, only an exact normalized match in `top_rising_terms` is an
+  observed qualifying signal. `top_terms`, related terms, and DMA `score`
+  values can enrich discovery but cannot be relabelled as nationwide
+  `relativeInterest`. Missing credentials or query failure is `unavailable`;
+  a successful query without the exact term is `not_observed`. Both mean no
+  publication, not zero search volume. Legacy
+  schema-v1 UI observations remain historical/manual compatibility only. From
+  the configured enforcement date, a selected page also needs a page-specific
+  independent `breakout_page` record with a numeric signal, unit, basis,
+  detail, same-day timestamp, and exact keyword support.
+- Persist only the compact schema-v2 Trends projection: signed per-table result
+  counts/digests, exact candidate matches, and bounded deterministic D&D
+  discovery leads. Verify its RSA-SHA256 service-account attestation before a
+  report or page can use it. An unavailable research-mode attempt must leave
+  the research file unchanged so a same-day retry remains possible.
 - Monitor Google policy or ranking-system changes through official Google Search Status Dashboard and Search Central documentation. Do not treat screenshots or third-party summaries as authoritative policy.
 
 ## 3. Draft with AI, finish with editorial judgment
@@ -127,7 +145,12 @@ When a draft includes a contextual internal link, the published template must re
 - Treat organic clicks as search-result clicks, not unique visitors. Do not promise a fixed traffic outcome.
 - Aggregate Search Console clicks and landing UV by source page and reporting period. Join qualified outbounds, trials, signups, payments, and revenue with `seo_click_id`; do not use the shared keyword-research account as an analytics source.
 - Before scoring the next page, run `npm run growth:check` and then
-  `npm run growth:collect`. The collector records every published page in one
+  `npm run growth:collect`, followed by `npm run trends:check` and
+  `npm run trends:collect -- --research data/research/YYYY-MM-DD.json`.
+  Use stdout mode with repeatable `--candidate` during discovery. Trends
+  discovery/enrichment must finish before the research builder; review and
+  publication come afterward. The growth
+  collector records every published page in one
   atomic 28-complete-Shanghai-day portfolio ending after the configured
   three-day finalized-data lag. Include it through `portfolioSnapshot` or
   `portfolioFunnels`; do not hand-pick only the best-performing page. A failed
@@ -148,8 +171,17 @@ When a draft includes a contextual internal link, the published template must re
   allowed, and same-site self-referencing user and Google canonicals. Otherwise
   the correct action is `observe`.
 - Every funnel field must be observed with a named source or unavailable with a reason. Never infer zero from a missing export, empty UI, or disconnected callback.
+- A Google Trends row does not repair or replace unavailable Search Console,
+  landing UV, attribution, IP/product facts, independent breakout evidence,
+  originality, content quality, or visual-review evidence. All gates remain
+  independent.
 - Use report history to identify pages that need improved titles, clearer intent, stronger internal connections, or a product-fact correction. Only set `publicationMode: "update"` when actual Search Console evidence supports an update.
 
 ## 7. Workbench acceptance criteria
 
-The workbench must show the evidence and freshness behind every trend or hot signal, distinguish proxy scores from observed performance, expose a durable feedback queue, and provide a manual free research/report path that does not call a paid AI Gateway. Every visible action must have an observable result or a clear unavailable-state explanation.
+The workbench must show the evidence and freshness behind every trend or hot
+signal, identify whether it came from `top_terms` or `top_rising_terms`, keep
+per-DMA values distinct from national measures, distinguish proxy scores from
+observed performance, expose a durable feedback queue, and provide a manual
+free research/report path that does not call a paid AI Gateway. Every visible
+action must have an observable result or a clear unavailable-state explanation.

@@ -7,6 +7,7 @@ import architecturePolicy from "@/data/config/content-architecture.json";
 import type { DailySeoReport } from "./types";
 import { isReportDraft } from "./report-draft-validation.mjs";
 import { validateSeoArchitectureBridge } from "./content-contract.mjs";
+import { validateGoogleTrendsEvidence } from "./google-trends-contract.mjs";
 
 validateSeoArchitectureBridge(seoPolicy, architecturePolicy);
 
@@ -37,19 +38,6 @@ const recommendedActions = new Set(["create_page", "improve_page", "consolidate"
 const priorities = new Set(["P0", "P1", "P2"]);
 const integrationStates = new Set(["connected", "configured", "replaced", "missing", "error"]);
 const metricSources = new Set(["search_console", "vercel_analytics", "seo_redirect", "product_analytics", "payments"]);
-const googleTrendsDirections = new Set(["rising", "flat", "falling", "unknown"]);
-const googleTrendsFields = new Set([
-  "keyword",
-  "source",
-  "sourceUrl",
-  "state",
-  "relativeInterest",
-  "direction",
-  "geo",
-  "period",
-  "collectedAt",
-  "detail",
-]);
 const safeRepository = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
 const safeBranch = /^[A-Za-z0-9._/-]+$/;
 const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -193,79 +181,26 @@ function isPerformance(value: unknown) {
     isString(value.recommendedAction);
 }
 
-function shanghaiCalendarDate(value: string) {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Shanghai",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date(value));
-}
-
-function isOfficialGoogleTrendsUrl(value: string, observed: boolean) {
-  try {
-    const url = new URL(value);
-    if (url.protocol !== "https:" || url.username || url.password) return false;
-    const isTrendsUi =
-      url.hostname === "trends.google.com" && url.pathname.startsWith("/trends/");
-    if (observed) return isTrendsUi;
-    return isTrendsUi ||
-      (url.hostname === "developers.google.com" &&
-        url.pathname.startsWith("/search/apis/trends"));
-  } catch {
-    return false;
-  }
-}
-
-function hasValidTrendSignals(
+function hasValidTrendEvidence(
   signals: unknown,
+  collection: unknown,
   opportunities: unknown[],
   reportDate: string,
 ) {
   if (!Array.isArray(signals)) return false;
-  const candidateKeywords = new Set(
-    opportunities
-      .filter(isRecord)
-      .map((opportunity) => String(opportunity.keyword).trim().toLowerCase()),
-  );
-  const identities = new Set<string>();
-
-  return signals.every((signal) => {
-    if (!isRecord(signal) ||
-      Object.keys(signal).length !== googleTrendsFields.size ||
-      Object.keys(signal).some((field) => !googleTrendsFields.has(field)) ||
-      !isString(signal.keyword) ||
-      !candidateKeywords.has(signal.keyword.trim().toLowerCase()) ||
-      signal.source !== "google_trends" ||
-      !isString(signal.sourceUrl) ||
-      !isString(signal.geo) ||
-      !/^(?:Worldwide|[A-Z]{2}(?:-[A-Z0-9]{1,3})?)$/.test(signal.geo) ||
-      !isString(signal.period) ||
-      !isString(signal.collectedAt) ||
-      !Number.isFinite(Date.parse(signal.collectedAt)) ||
-      shanghaiCalendarDate(signal.collectedAt) !== reportDate ||
-      !isString(signal.detail) ||
-      signal.detail.trim().length < 12 ||
-      !isString(signal.direction) ||
-      !googleTrendsDirections.has(signal.direction)) return false;
-
-    const observed = signal.state === "observed";
-    if (!observed && signal.state !== "unavailable") return false;
-    if (!isOfficialGoogleTrendsUrl(signal.sourceUrl, observed)) return false;
-    if (observed) {
-      if (!Number.isInteger(signal.relativeInterest) ||
-        Number(signal.relativeInterest) < 0 ||
-        Number(signal.relativeInterest) > 100) return false;
-    } else if (signal.relativeInterest !== null || signal.direction !== "unknown") {
-      return false;
-    }
-
-    const identity =
-      `${signal.keyword.trim().toLowerCase()}|${signal.geo}|${signal.period.trim()}`;
-    if (identities.has(identity)) return false;
-    identities.add(identity);
+  try {
+    validateGoogleTrendsEvidence({
+      trendSignals: signals,
+      trendCollection: collection,
+      candidateKeywords: opportunities
+        .filter(isRecord)
+        .map((opportunity) => String(opportunity.keyword)),
+      reportDate,
+    });
     return true;
-  });
+  } catch {
+    return false;
+  }
 }
 
 function isAction(value: unknown) {
@@ -611,9 +546,8 @@ function hasValidContentStrategy(value: unknown) {
     "measurementPlan",
   ];
   return requiredFields.every((field) => isString(value[field]) && value[field].trim().length >= 20) &&
-    ["blank_start", "choice_uncertainty", "context_gap", "stalled_exchange", "format_confusion",
-      "discovery_need", "quality_repair", "product_fit_uncertainty"].includes(String(value.painPointId)) &&
-    ["task_guide", "experience_explainer", "decision_page", "original_inventory", "narrative_essay"].includes(String(value.pagePattern)) &&
+    architecturePolicy.painPointIds.includes(String(value.painPointId)) &&
+    seoPolicy.allowedPagePatterns.includes(String(value.pagePattern)) &&
     ["qualified_outbound_click", "trial_start", "purchase"].includes(String(value.primaryConversion));
 }
 
@@ -664,8 +598,13 @@ export function parseReport(raw: string, source: string): DailySeoReport {
       !Array.isArray(value.evidence) ||
       !value.evidence.every((item) => isEvidenceItem(item, requiresDecisionEvidence))
     )) ||
-    (value.trendSignals !== undefined &&
-      !hasValidTrendSignals(value.trendSignals, value.opportunities, value.date)) ||
+    ((value.trendSignals !== undefined || value.trendCollection !== undefined) &&
+      !hasValidTrendEvidence(
+        value.trendSignals ?? [],
+        value.trendCollection,
+        value.opportunities,
+        value.date,
+      )) ||
     (value.feedbackDecisions !== undefined &&
       !hasValidFeedbackDecisions(value.feedbackDecisions)) ||
     !hasValidEvidenceReferences(value) ||

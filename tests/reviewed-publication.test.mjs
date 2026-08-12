@@ -1,22 +1,53 @@
 import assert from "node:assert/strict";
-import { createHash } from "node:crypto";
+import { createHash, generateKeyPairSync } from "node:crypto";
 import { existsSync } from "node:fs";
 import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { spawnSync } from "node:child_process";
+import { spawnSync as nodeSpawnSync } from "node:child_process";
 import { registerHooks } from "node:module";
 import test from "node:test";
 
 import { isReportDraft } from "../lib/seo/report-draft-validation.mjs";
 import { listMarkdownRenderBlocks, parseMarkdownBlocks } from "../lib/seo/markdown-semantics.mjs";
+import {
+  GOOGLE_TRENDS_BIGQUERY_SOURCE_URL,
+  GOOGLE_TRENDS_TOP_RISING_TERMS_TABLE,
+  GOOGLE_TRENDS_TOP_RISING_TERMS_SQL_DIGEST,
+  GOOGLE_TRENDS_TOP_TERMS_SQL_DIGEST,
+  attestGoogleTrendsCollection,
+  computeGoogleTrendsCollectionDigest,
+  computeGoogleTrendsResultDigest,
+  normalizeGoogleTrendsTerm,
+} from "../lib/seo/google-trends-contract.mjs";
 import { acquireDailyLease, coordinationOwner } from "../scripts/lib/daily-coordination.mjs";
 
 const repoRoot = dirname(dirname(fileURLToPath(import.meta.url)));
+const trendsTestClientEmail =
+  "trends-reader@seo-trends-fixture.iam.gserviceaccount.com";
+const { privateKey: trendsTestPrivateKey } = generateKeyPairSync("rsa", {
+  modulusLength: 2048,
+  privateKeyEncoding: { type: "pkcs8", format: "pem" },
+  publicKeyEncoding: { type: "spki", format: "pem" },
+});
+delete process.env.GOOGLE_TRENDS_BIGQUERY_CLIENT_EMAIL;
+delete process.env.GOOGLE_TRENDS_BIGQUERY_PRIVATE_KEY;
 const builderPath = join(repoRoot, "scripts", "build-free-research-report.mjs");
 const publisherPath = join(repoRoot, "scripts", "publish-reviewed-page.mjs");
 const emptyServerOnlyModule = "data:text/javascript,export {}";
+
+function spawnSync(command, args, options = {}) {
+  const env = {
+    ...process.env,
+    ...(options.env ?? {}),
+  };
+  delete env.__NEXT_PROCESSED_ENV;
+  return nodeSpawnSync(command, args, {
+    ...options,
+    env,
+  });
+}
 
 registerHooks({
   resolve(specifier, context, nextResolve) {
@@ -53,9 +84,112 @@ function nestedKeys(value, keys = []) {
   return keys;
 }
 
+function bindBigQueryTrendEvidence(input, { selectedObserved = true } = {}) {
+  const selectedKeyword = input.candidates[0].keyword;
+  const normalizedSelectedKeyword = normalizeGoogleTrendsTerm(selectedKeyword);
+  const risingTerm = {
+    term: selectedKeyword,
+    normalizedTerm: normalizedSelectedKeyword,
+    week: "2098-12-28",
+    bestRank: 4,
+    maxPercentGain: 320,
+    dmaCount: 12,
+    sourceTable: GOOGLE_TRENDS_TOP_RISING_TERMS_TABLE,
+  };
+  const unrelatedRisingTerm = {
+    ...risingTerm,
+    term: "unrelated rising fixture",
+    normalizedTerm: "unrelated rising fixture",
+  };
+  const persistedResultRow = selectedObserved ? risingTerm : unrelatedRisingTerm;
+  let trendCollection = {
+    schemaVersion: 2,
+    provider: "google_trends_bigquery_public_dataset",
+    state: "observed",
+    collectedAt: "2099-01-01T09:05:00+08:00",
+    sourceUrl: GOOGLE_TRENDS_BIGQUERY_SOURCE_URL,
+    geo: "US",
+    coverage: {
+      label: "Top 25 and Top 25 Rising Google Trends terms by US DMA",
+      topTermsPerDma: 25,
+      topRisingTermsPerDma: 25,
+      arbitraryQueryCoverage: false,
+      absenceMeansZero: false,
+    },
+    query: {
+      location: "US",
+      useLegacySql: false,
+      maximumBytesBilled: "104857600",
+      timeoutMs: 15000,
+      asOfDate: input.date,
+      refreshDateRule: "as_of_date_minus_1_day",
+      topTermsSqlDigest: GOOGLE_TRENDS_TOP_TERMS_SQL_DIGEST,
+      topRisingTermsSqlDigest: GOOGLE_TRENDS_TOP_RISING_TERMS_SQL_DIGEST,
+    },
+    refreshDate: "2098-12-31",
+    week: "2098-12-28",
+    results: {
+      topTerms: {
+        rowCount: 1,
+        resultDigest: computeGoogleTrendsResultDigest([persistedResultRow]),
+      },
+      topRisingTerms: {
+        rowCount: 1,
+        resultDigest: computeGoogleTrendsResultDigest([persistedResultRow]),
+      },
+    },
+    exactCandidateMatches: input.candidates.map((candidate, index) => ({
+      keyword: candidate.keyword,
+      normalizedKeyword: normalizeGoogleTrendsTerm(candidate.keyword),
+      topTerm: null,
+      risingTerm: selectedObserved && index === 0 ? risingTerm : null,
+    })),
+    discoveryLeads: [],
+    detail: "Official US DMA Top 25 and Top 25 Rising test collection completed.",
+    snapshotDigest: "",
+    attestation: null,
+  };
+  trendCollection = attestGoogleTrendsCollection(trendCollection, {
+    privateKey: trendsTestPrivateKey,
+    clientEmail: trendsTestClientEmail,
+  });
+  const trendSignals = trendCollection.exactCandidateMatches.map((match, index) => ({
+    schemaVersion: 2,
+    keyword: match.keyword,
+    source: "google_trends",
+    collectionMethod: "bigquery_public_dataset",
+    sourceUrl: GOOGLE_TRENDS_BIGQUERY_SOURCE_URL,
+    sourceTable: GOOGLE_TRENDS_TOP_RISING_TERMS_TABLE,
+    state: selectedObserved && index === 0 ? "observed" : "not_observed",
+    relativeInterest: null,
+    direction: selectedObserved && index === 0 ? "rising" : "unknown",
+    geo: "US",
+    period: "week starting 2098-12-28",
+    collectedAt: trendCollection.collectedAt,
+    detail: selectedObserved && index === 0
+      ? "Exact candidate appeared in the official US top-rising feed; no nationwide score was inferred."
+      : "The exact candidate did not appear in the successful US top-rising collection; this is not zero demand.",
+    refreshDate: trendCollection.refreshDate,
+    week: trendCollection.week,
+    bestRank: selectedObserved && index === 0 ? risingTerm.bestRank : null,
+    maxPercentGain: selectedObserved && index === 0 ? risingTerm.maxPercentGain : null,
+    dmaCount: selectedObserved && index === 0 ? risingTerm.dmaCount : null,
+    snapshotDigest: trendCollection.snapshotDigest,
+  }));
+  input.trendCollection = trendCollection;
+  input.trendSignals = trendSignals;
+}
+
 test("report generation cannot publish before a separate approval artifact", async () => {
   const workspace = await mkdtemp(join(tmpdir(), "seo-workflow-"));
   try {
+    const trendsEnvFixture = [
+      `GOOGLE_TRENDS_BIGQUERY_CLIENT_EMAIL=${trendsTestClientEmail}`,
+      `GOOGLE_TRENDS_BIGQUERY_PRIVATE_KEY=${trendsTestPrivateKey.trim().replace(/\n/g, "\\n")}`,
+      "",
+    ].join("\n");
+    await writeFile(join(workspace, ".env.local"), trendsEnvFixture);
+    await writeFile(join(workspace, ".env.test.local"), trendsEnvFixture);
     await mkdir(join(workspace, "data", "config"), { recursive: true });
     await cp(join(repoRoot, "data", "config"), join(workspace, "data", "config"), { recursive: true });
     await mkdir(join(workspace, "data", "research"), { recursive: true });
@@ -380,6 +514,7 @@ test("report generation cannot publish before a separate approval artifact", asy
         quality: { checks: [{ id: "distinct-intent", label: "Answers one trial-ready job", passed: true, detail: "The page targets a reader who wants to enter a story now." }] },
       },
     };
+    bindBigQueryTrendEvidence(input);
     const inputPath = join(workspace, "data", "research", "2099-01-01.json");
 
     const architectureClaimInput = structuredClone(input);
@@ -427,7 +562,7 @@ test("report generation cannot publish before a separate approval artifact", asy
     const protectedKeyword = "vecna d&d campaign prep";
     protectedKeywordInput.candidates[0].keyword = protectedKeyword;
     protectedKeywordInput.draft.keyword = protectedKeyword;
-    protectedKeywordInput.trendSignals[0].keyword = protectedKeyword;
+    bindBigQueryTrendEvidence(protectedKeywordInput);
     protectedKeywordInput.evidence = protectedKeywordInput.evidence.map((item) => ({
       ...item,
       supports: [...item.supports, protectedKeyword],
@@ -474,14 +609,21 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.match(unboundCannibalizationBuild.stderr, /needs nearestExistingSlug/);
 
     const unofficialTrendInput = structuredClone(input);
-    unofficialTrendInput.trendSignals[0].sourceUrl = "https://example.com/trends";
+    unofficialTrendInput.trendCollection.sourceUrl = "https://example.com/trends";
+    unofficialTrendInput.trendCollection.snapshotDigest =
+      computeGoogleTrendsCollectionDigest(unofficialTrendInput.trendCollection);
+    unofficialTrendInput.trendSignals = unofficialTrendInput.trendSignals.map((signal) => ({
+      ...signal,
+      sourceUrl: unofficialTrendInput.trendCollection.sourceUrl,
+      snapshotDigest: unofficialTrendInput.trendCollection.snapshotDigest,
+    }));
     await writeFile(inputPath, `${JSON.stringify(unofficialTrendInput, null, 2)}\n`);
     const unofficialTrendBuild = spawnSync(process.execPath, [builderPath, inputPath], {
       cwd: workspace,
       encoding: "utf8",
     });
     assert.notEqual(unofficialTrendBuild.status, 0);
-    assert.match(unofficialTrendBuild.stderr, /official Google Trends URL/);
+    assert.match(unofficialTrendBuild.stderr, /official Google Trends BigQuery dataset page/);
 
     const invalidTrendValueInput = structuredClone(input);
     invalidTrendValueInput.trendSignals[0].relativeInterest = 101;
@@ -491,10 +633,11 @@ test("report generation cannot publish before a separate approval artifact", asy
       encoding: "utf8",
     });
     assert.notEqual(invalidTrendValueBuild.status, 0);
-    assert.match(invalidTrendValueBuild.stderr, /relativeInterest must be an integer from 0 to 100/);
+    assert.match(invalidTrendValueBuild.stderr, /must not infer nationwide relativeInterest/);
 
     const missingTrendInput = structuredClone(input);
     delete missingTrendInput.trendSignals;
+    delete missingTrendInput.trendCollection;
     await writeFile(inputPath, `${JSON.stringify(missingTrendInput, null, 2)}\n`);
     const missingTrendBuild = spawnSync(process.execPath, [builderPath, inputPath], {
       cwd: workspace,
@@ -504,12 +647,7 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.match(missingTrendBuild.stderr, /Create-page Google Trends gate failed/);
 
     const unavailableSelectedTrendInput = structuredClone(input);
-    unavailableSelectedTrendInput.trendSignals[0] = {
-      ...unavailableSelectedTrendInput.trendSignals[0],
-      state: "unavailable",
-      relativeInterest: null,
-      direction: "unknown",
-    };
+    bindBigQueryTrendEvidence(unavailableSelectedTrendInput, { selectedObserved: false });
     await writeFile(inputPath, `${JSON.stringify(unavailableSelectedTrendInput, null, 2)}\n`);
     const unavailableSelectedTrendBuild = spawnSync(process.execPath, [builderPath, inputPath], {
       cwd: workspace,
@@ -519,18 +657,26 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.match(unavailableSelectedTrendBuild.stderr, /Create-page Google Trends gate failed/);
 
     const weakSelectedTrendInput = structuredClone(input);
-    weakSelectedTrendInput.trendSignals[0] = {
-      ...weakSelectedTrendInput.trendSignals[0],
-      relativeInterest: 49,
-      direction: "flat",
-    };
+    delete weakSelectedTrendInput.trendCollection;
+    weakSelectedTrendInput.trendSignals = [{
+      keyword: keywords[0],
+      source: "google_trends",
+      sourceUrl: "https://trends.google.com/trends/explore?geo=US&q=ai%20roleplay%20story",
+      state: "observed",
+      relativeInterest: 100,
+      direction: "rising",
+      geo: "US",
+      period: "past 12 months",
+      collectedAt: "2099-01-01T09:05:00+08:00",
+      detail: "A legacy Explore signal cannot clear the unattended BigQuery v2 gate.",
+    }];
     await writeFile(inputPath, `${JSON.stringify(weakSelectedTrendInput, null, 2)}\n`);
     const weakSelectedTrendBuild = spawnSync(process.execPath, [builderPath, inputPath], {
       cwd: workspace,
       encoding: "utf8",
     });
     assert.notEqual(weakSelectedTrendBuild.status, 0);
-    assert.match(weakSelectedTrendBuild.stderr, /direction=rising or relativeInterest>=50/);
+    assert.match(weakSelectedTrendBuild.stderr, /exact top_rising_terms match/);
 
     const missingBreakoutEvidenceInput = structuredClone(input);
     missingBreakoutEvidenceInput.evidence = missingBreakoutEvidenceInput.evidence.map((item) => {
@@ -696,6 +842,8 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.equal(build.status, 0, build.stderr);
     const reportPath = join(workspace, "data", "reports", "2099-01-01.json");
     const reportBeforeReview = JSON.parse(await readFile(reportPath, "utf8"));
+    const { parseReport } = await import("../lib/seo/report-store.ts?bigquery-v2-report");
+    assert.doesNotThrow(() => parseReport(JSON.stringify(reportBeforeReview), "bigquery-v2-report.json"));
     assert.equal(reportBeforeReview.policyVersion, 4);
     assert.equal(reportBeforeReview.opportunities[0].scoreBasis, "evidence_signals_v1");
     assert.deepEqual(
@@ -745,10 +893,13 @@ test("report generation cannot publish before a separate approval artifact", asy
     );
     assert.ok(reportBeforeReview.candidateIntentGate.eligibleFallbacks.every((fallback) =>
       fallback.action === "create_page" && fallback.keyword !== keywords[0]));
-    assert.equal(reportBeforeReview.trendSignals[0].relativeInterest, 67);
+    assert.equal(reportBeforeReview.trendSignals[0].relativeInterest, null);
     assert.equal(reportBeforeReview.trendSignals[0].source, "google_trends");
-    assert.equal(reportBeforeReview.trendSignals[1].state, "unavailable");
+    assert.equal(reportBeforeReview.trendSignals[0].schemaVersion, 2);
+    assert.equal(reportBeforeReview.trendSignals[1].state, "not_observed");
     assert.equal(reportBeforeReview.trendSignals[1].relativeInterest, null);
+    assert.equal(reportBeforeReview.trendCollection.provider, "google_trends_bigquery_public_dataset");
+    assert.equal(reportBeforeReview.trendSignals[0].snapshotDigest, reportBeforeReview.trendCollection.snapshotDigest);
     assert.equal(reportBeforeReview.evidence[2].kind, "breakout_page");
     assert.deepEqual(reportBeforeReview.evidence[2].signal, input.evidence[2].signal);
     assert.equal(reportBeforeReview.feedbackDecisions.length, 1);
@@ -848,12 +999,27 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.notEqual(tamperedStrategyPublish.status, 0);
     assert.match(tamperedStrategyPublish.stderr, /SHA-256 digest/);
 
+    const tamperedTrendEvidence = structuredClone(reportBeforeReview);
+    tamperedTrendEvidence.trendCollection.detail =
+      "A different, structurally valid collection detail was inserted after editorial approval.";
+    tamperedTrendEvidence.trendCollection.snapshotDigest =
+      computeGoogleTrendsCollectionDigest(tamperedTrendEvidence.trendCollection);
+    tamperedTrendEvidence.trendSignals = tamperedTrendEvidence.trendSignals.map((signal) => ({
+      ...signal,
+      snapshotDigest: tamperedTrendEvidence.trendCollection.snapshotDigest,
+    }));
+    await writeFile(reportPath, `${JSON.stringify(tamperedTrendEvidence, null, 2)}\n`);
+    const tamperedTrendPublish = spawnSync(process.execPath, [publisherPath, reportPath, reviewPath], { cwd: workspace, encoding: "utf8" });
+    assert.notEqual(tamperedTrendPublish.status, 0);
+    assert.match(tamperedTrendPublish.stderr, /signature verification failed/);
+
     const protectedPublisherReport = structuredClone(reportBeforeReview);
     protectedPublisherReport.draft.heroMarkdown += " Continue the campaign in the Sword Coast.";
     const protectedPublisherDigest = createHash("sha256")
       .update(JSON.stringify({
         draft: protectedPublisherReport.draft,
         contentStrategy: protectedPublisherReport.contentStrategy,
+        googleTrendsSnapshotDigest: protectedPublisherReport.trendCollection.snapshotDigest,
       }))
       .digest("hex");
     protectedPublisherReport.publication.draftDigest = protectedPublisherDigest;
@@ -869,6 +1035,7 @@ test("report generation cannot publish before a separate approval artifact", asy
 
     const missingTrendPublisherBypass = structuredClone(reportBeforeReview);
     missingTrendPublisherBypass.trendSignals = [];
+    delete missingTrendPublisherBypass.trendCollection;
     await writeFile(reportPath, `${JSON.stringify(missingTrendPublisherBypass, null, 2)}\n`);
     const missingTrendBypassPublish = spawnSync(process.execPath, [publisherPath, reportPath, reviewPath], { cwd: workspace, encoding: "utf8" });
     assert.notEqual(missingTrendBypassPublish.status, 0);
@@ -967,7 +1134,7 @@ test("report generation cannot publish before a separate approval artifact", asy
     falselyNewIntentInput.candidates[0].keyword = "enter a prepared d&d campaign story";
     falselyNewIntentInput.candidates[0].decisionEvidence.searcherJob =
       "Compare a self-authored prompt with entering a supplied D&D campaign story, then select the starting route that fits this tabletop session.";
-    falselyNewIntentInput.trendSignals[0].keyword = falselyNewIntentInput.candidates[0].keyword;
+    bindBigQueryTrendEvidence(falselyNewIntentInput);
     falselyNewIntentInput.evidence = falselyNewIntentInput.evidence.map((item) => ({
       ...item,
       supports: [...item.supports, falselyNewIntentInput.candidates[0].keyword],
@@ -983,6 +1150,7 @@ test("report generation cannot publish before a separate approval artifact", asy
 
     const updateInput = structuredClone(input);
     delete updateInput.trendSignals;
+    delete updateInput.trendCollection;
     updateInput.date = "2099-01-02";
     updateInput.generatedAt = "2099-01-02T09:15:00+08:00";
     updateInput.publicationMode = "update";

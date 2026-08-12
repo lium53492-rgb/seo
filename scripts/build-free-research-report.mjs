@@ -1,3 +1,5 @@
+import "./load-env.mjs";
+
 import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { dirname, relative, resolve } from "node:path";
@@ -24,6 +26,10 @@ import {
   evaluateGrowthFeedbackGate,
   projectPrivateGrowthReport,
 } from "./lib/growth-portfolio.mjs";
+import {
+  isQualifyingGoogleTrendsSignal,
+  validateGoogleTrendsEvidence,
+} from "../lib/seo/google-trends-contract.mjs";
 
 const inputPath = process.argv[2];
 if (!inputPath) throw new Error("Usage: npm run research:build -- data/research/YYYY-MM-DD.json");
@@ -37,6 +43,14 @@ const presentationCatalog = readJson("data/config/presentation-recipes.json");
 const unattendedPolicy = readJson("data/config/unattended-publishing.json");
 const siteConfig = readJson("data/config/site.json");
 const date = String(input.date || "");
+const requireBigQueryTrends = date >=
+  policy.googleTrends.automatedCollectionEnforcedFromReportDate;
+const trendsAttestationVerificationKey = String(
+  process.env.GOOGLE_TRENDS_BIGQUERY_PRIVATE_KEY || "",
+).replace(/\\n/g, "\n").trim();
+const trendsAttestationClientEmail = String(
+  process.env.GOOGLE_TRENDS_BIGQUERY_CLIENT_EMAIL || "",
+).trim();
 const retiredPageSlugs = new Set(Array.isArray(policy.retiredPageSlugs) ? policy.retiredPageSlugs : []);
 const retiredRecipeIds = new Set(Array.isArray(policy.retiredRecipeIds) ? policy.retiredRecipeIds : []);
 const retiredPaletteIds = new Set(Array.isArray(policy.retiredPaletteIds) ? policy.retiredPaletteIds : []);
@@ -276,130 +290,26 @@ for (const item of input.evidence) {
   }
 }
 
-function validateTrendSignals(rawSignals, candidateKeywordSet) {
-  if (rawSignals === undefined) return [];
-  if (!Array.isArray(rawSignals)) {
-    throw new Error("trendSignals must be an array when supplied");
-  }
-
-  const allowedFields = new Set([
-    "keyword",
-    "source",
-    "sourceUrl",
-    "state",
-    "relativeInterest",
-    "direction",
-    "geo",
-    "period",
-    "collectedAt",
-    "detail",
-  ]);
-  const directions = new Set(["rising", "flat", "falling", "unknown"]);
-  const identities = new Set();
-
-  return rawSignals.map((item, index) => {
-    if (!item || typeof item !== "object" || Array.isArray(item)) {
-      throw new Error(`trendSignals[${index}] must be an object`);
-    }
-    const unknownField = Object.keys(item).find((field) => !allowedFields.has(field));
-    if (unknownField) {
-      throw new Error(`trendSignals[${index}] has an unknown field: ${unknownField}`);
-    }
-
-    const keyword = String(item.keyword || "").trim().toLowerCase();
-    if (!candidateKeywordSet.has(keyword)) {
-      throw new Error(`Google Trends signal must reference a research candidate: ${keyword || "<empty>"}`);
-    }
-    if (item.source !== "google_trends") {
-      throw new Error(`Google Trends signal has an invalid source: ${keyword}`);
-    }
-
-    let sourceUrl;
-    try {
-      sourceUrl = new URL(item.sourceUrl);
-    } catch {
-      throw new Error(`Google Trends signal needs a valid sourceUrl: ${keyword}`);
-    }
-    const isTrendsUi = sourceUrl.protocol === "https:" &&
-      !sourceUrl.username && !sourceUrl.password &&
-      sourceUrl.hostname === "trends.google.com" &&
-      sourceUrl.pathname.startsWith("/trends/");
-    const isTrendsDocumentation = sourceUrl.protocol === "https:" &&
-      !sourceUrl.username && !sourceUrl.password &&
-      sourceUrl.hostname === "developers.google.com" &&
-      sourceUrl.pathname.startsWith("/search/apis/trends");
-    if (!isTrendsUi && !isTrendsDocumentation) {
-      throw new Error(`Google Trends sourceUrl must use an official Google Trends URL: ${keyword}`);
-    }
-
-    const geo = String(item.geo || "").trim();
-    if (!/^(?:Worldwide|[A-Z]{2}(?:-[A-Z0-9]{1,3})?)$/.test(geo)) {
-      throw new Error(`Google Trends signal needs an explicit geo such as Worldwide, US, or US-CA: ${keyword}`);
-    }
-    const period = String(item.period || "").trim();
-    if (period.length < 3) {
-      throw new Error(`Google Trends signal needs an explicit period: ${keyword}`);
-    }
-    const collectedAt = String(item.collectedAt || "");
-    if (!Number.isFinite(Date.parse(collectedAt)) || shanghaiCalendarDate(collectedAt) !== date) {
-      throw new Error(`Google Trends signal must be collected on the report's Shanghai date: ${keyword}`);
-    }
-    const detail = String(item.detail || "").trim();
-    if (detail.length < 12) {
-      throw new Error(`Google Trends signal needs a specific detail: ${keyword}`);
-    }
-
-    if (!["observed", "unavailable"].includes(item.state)) {
-      throw new Error(`Google Trends signal has an invalid state: ${keyword}`);
-    }
-    if (!directions.has(item.direction)) {
-      throw new Error(`Google Trends signal has an invalid direction: ${keyword}`);
-    }
-    if (item.state === "observed") {
-      if (!isTrendsUi) {
-        throw new Error(`Observed Google Trends signals must link to trends.google.com: ${keyword}`);
-      }
-      if (!Number.isInteger(item.relativeInterest) ||
-        item.relativeInterest < 0 || item.relativeInterest > 100) {
-        throw new Error(`Observed Google Trends relativeInterest must be an integer from 0 to 100: ${keyword}`);
-      }
-    } else if (item.relativeInterest !== null || item.direction !== "unknown") {
-      throw new Error(`Unavailable Google Trends signals must use relativeInterest null and direction unknown: ${keyword}`);
-    }
-
-    const identity = `${keyword}|${geo}|${period}`;
-    if (identities.has(identity)) {
-      throw new Error(`Duplicate Google Trends signal: ${identity}`);
-    }
-    identities.add(identity);
-
-    return {
-      keyword,
-      source: "google_trends",
-      sourceUrl: sourceUrl.toString(),
-      state: item.state,
-      relativeInterest: item.relativeInterest,
-      direction: item.direction,
-      geo,
-      period,
-      collectedAt,
-      detail,
-    };
-  });
-}
-
-function assertSelectedCreateTrendReadiness(selectedDraftKeyword, signals) {
+function assertSelectedCreateTrendReadiness(selectedDraftKeyword, signals, collection) {
   const keyword = String(selectedDraftKeyword || "").trim().toLowerCase();
+  const requireBigQuery = requireBigQueryTrends;
   const qualifyingSignal = signals.find((signal) =>
-    signal.keyword === keyword &&
-    signal.source === "google_trends" &&
-    signal.state === "observed" &&
-    shanghaiCalendarDate(signal.collectedAt) === date &&
-    (signal.direction === "rising" || signal.relativeInterest >= 50));
+    isQualifyingGoogleTrendsSignal(signal, {
+      selectedKeyword: keyword,
+      reportDate: date,
+      trendCollection: collection,
+      requireBigQuery,
+      attestationVerificationKey: trendsAttestationVerificationKey,
+      expectedAttestationClientEmail: trendsAttestationClientEmail,
+    }));
   if (!qualifyingSignal) {
+    const requiredEvidence = requireBigQuery
+      ? "official same-day BigQuery collection with an exact top_rising_terms match"
+      : "official same-day observation: Explore direction=rising/relativeInterest>=50 or an exact " +
+        "BigQuery top_rising_terms match";
     throw new Error(
       `Create-page Google Trends gate failed: selected draft ${keyword || "<empty>"} needs an ` +
-      "official same-day observed signal with direction=rising or relativeInterest>=50",
+      requiredEvidence,
     );
   }
 }
@@ -518,7 +428,21 @@ if (candidateIntentBatch.distinctCount < requiredDistinctIntents) {
 if (candidateIntentBatch.distinctCount - policy.dailyPageLimit < unattendedPolicy.minimumFallbackIntents) {
   throw new Error(`Research must retain at least ${unattendedPolicy.minimumFallbackIntents} fallback intents`);
 }
-const trendSignals = validateTrendSignals(input.trendSignals, new Set(candidateKeywords));
+const validatedTrends = validateGoogleTrendsEvidence({
+  trendSignals: input.trendSignals ?? [],
+  trendCollection: input.trendCollection,
+  candidateKeywords,
+  reportDate: date,
+  attestationVerificationKey: requireBigQueryTrends
+    ? trendsAttestationVerificationKey
+    : undefined,
+  expectedAttestationClientEmail: requireBigQueryTrends
+    ? trendsAttestationClientEmail
+    : undefined,
+  requireVerifiedAttestation: requireBigQueryTrends,
+});
+const trendSignals = validatedTrends.trendSignals;
+const trendCollection = validatedTrends.trendCollection;
 const feedbackDecisions = validateFeedbackDecisions(
   input.feedbackDecisions,
   readUnconsumedFeedback(),
@@ -1492,7 +1416,7 @@ if (rawDrafts.length > policy.dailyPageLimit) {
   throw new Error(`A daily report may contain at most ${policy.dailyPageLimit} publishable draft`);
 }
 if (isCreatePageDecision && rawDrafts.length) {
-  assertSelectedCreateTrendReadiness(rawDrafts[0]?.keyword, trendSignals);
+  assertSelectedCreateTrendReadiness(rawDrafts[0]?.keyword, trendSignals, trendCollection);
 }
 
 const preparedDrafts = rawDrafts.map((rawDraft, index) => {
@@ -1673,7 +1597,19 @@ const reportId = `seo-${date}`;
 const publication = !draft
   ? { status: "not_requested", reason: "No draft was supplied for editorial review." }
   : draft.quality.passed
-    ? { status: "ready_for_review", slug: preparedDrafts[0].pageSlug, path: `/${preparedDrafts[0].pageSlug}`, draftDigest: sha256({ draft, contentStrategy }), reason: "Automated gates passed. A separate editorial approval record bound to the content and presentation contract is required before publication." }
+    ? {
+        status: "ready_for_review",
+        slug: preparedDrafts[0].pageSlug,
+        path: `/${preparedDrafts[0].pageSlug}`,
+        draftDigest: sha256({
+          draft,
+          contentStrategy,
+          ...(date >= policy.googleTrends.automatedCollectionEnforcedFromReportDate
+            ? { googleTrendsSnapshotDigest: trendCollection?.snapshotDigest ?? null }
+            : {}),
+        }),
+        reason: "Automated gates passed. A separate editorial approval record bound to the content, presentation, and trend-evidence contract is required before publication.",
+      }
     : { status: "blocked", reason: "Draft did not pass all automated quality gates." };
 const phrase = titleCase(selectedOpportunity.keyword);
 const pageType = /how|what|ideas|guide/.test(selectedOpportunity.keyword) ? "guide" : /romance|fantasy|mystery|school|life/.test(selectedOpportunity.keyword) ? "scenario" : "product";
@@ -1718,6 +1654,7 @@ const report = {
   opportunities,
   performance,
   trendSignals,
+  ...(trendCollection ? { trendCollection } : {}),
   feedbackDecisions,
   portfolioFunnels,
   portfolioDecision,
@@ -1749,6 +1686,19 @@ const report = {
   integrations: [
     { id: "semrush", name: "SEO Research Tools", state: "configured", detail: "The shared GURU/PRO account is used for human-assisted keyword and competitor research; provider metrics must be labelled as observed when copied into evidence." },
     { id: "codex_research", name: "Codex Research", state: "connected", detail: `${input.evidence.length} public evidence links support ${input.candidates.length} candidates.`, lastCheckedAt: checkedAt },
+    {
+      id: "google_trends",
+      name: "Google Trends",
+      state: trendCollection?.state === "observed" || trendSignals.some((signal) => signal.state === "observed")
+        ? "connected"
+        : trendCollection?.state === "unavailable" ? "error" : "missing",
+      detail: trendCollection?.state === "observed"
+        ? `Official US DMA Top/Rising feed collected for ${trendCollection.week}; ${trendSignals.filter((signal) => signal.state === "observed").length} exact rising candidate match(es).`
+        : trendCollection?.detail || "No same-day official Google Trends collection is bound to this report.",
+      ...(trendCollection?.collectedAt ? { lastCheckedAt: trendCollection.collectedAt } : {}),
+      href: "https://support.google.com/trends/answer/12764470?hl=en",
+      actionLabel: "Open Google Trends dataset guide",
+    },
     { id: "search_console", name: "Google Search Console", state: performance.length ? "connected" : "missing", detail: performance.length ? `${performance.length} visible query/page rows recorded.` : "No visible Search Console rows were available; no metrics were inferred.", href: "https://search.google.com/search-console", actionLabel: "Open Search Console" },
     { id: "ai_gateway", name: "Codex Content", state: draft ? "connected" : "configured", detail: draft ? "A fact-constrained draft is ready for a separate editorial review." : "Research is ready for drafting." },
     { id: "github", name: "GitHub Reports", state: "configured", detail: "Daily reports and approved pages are committed only after verification.", href: "https://github.com/lium53492-rgb/seo/tree/main/data/reports", actionLabel: "Open report history" },
@@ -1773,7 +1723,7 @@ const report = {
   caveats: [
     "Product fit, trial intent, revenue intent, specificity, originality, IP risk, and cannibalization risk are derived from policy-versioned evidence signals rather than AI-supplied scores.",
     "Demand and difficulty remain transparent 0-100 research proxies and require candidate-level rationales and evidence references unless an evidence record explicitly names an observed provider metric.",
-    "Google Trends relative interest is a normalized 0-100 signal for the selected geography and period, not search volume; unavailable access remains explicit.",
+    "Google Trends Explore relative interest is a normalized 0-100 signal, not search volume. BigQuery Top/Rising observations preserve DMA provenance and never infer a nationwide relative-interest score; an exact miss is not zero demand.",
     "Every locally unconsumed editorial instruction is preserved verbatim with an adopted or rejected decision before it may be marked consumed.",
     "Missing Search Console, UV, trial, payment, or revenue data stays unavailable rather than being converted to zero.",
     "The report builder never publishes a page; scripts/publish-reviewed-page.mjs requires a separate approval record.",

@@ -52,6 +52,19 @@ test("the workbench labels retired publications and never links them as live pag
   );
 });
 
+test("the workbench distinguishes BigQuery Rising evidence from legacy relative interest", () => {
+  assert.match(workbench, /function trendSignalState\(signal: GoogleTrendsSignal\)/);
+  assert.match(workbench, /signal\.state === "not_observed" \? "未进入 Rising 25"/);
+  assert.match(workbench, /signal\.bestRank !== null\) return `#\$\{signal\.bestRank\}`/);
+  assert.match(workbench, /排名、涨幅和 DMA 覆盖都不是全美搜索量/);
+  assert.doesNotMatch(
+    workbench,
+    /<b>\{signal\.state === "observed" \? signal\.relativeInterest/,
+  );
+  assert.match(guide, /Google Trends 看 Rising 排名与 DMA 覆盖/);
+  assert.match(guide, /精确词未进入 Rising 25 也不等于搜索量为 0/);
+});
+
 test("the pipeline turns an exact retirement receipt into a terminal repository status", () => {
   assert.match(pipelineStatus, /assessPublicationRetirement\(\{/);
   assert.match(pipelineStatus, /const retirementComplete = retirementAssessment\.state === "valid" && !publishedPageExists/);
