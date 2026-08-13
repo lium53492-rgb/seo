@@ -192,7 +192,7 @@ test("durable cohorts and Vercel UV expose compatible live inputs", async () => 
       assert.match(value, /web-analytics\/visits\/count/);
       assert.equal(
         new URL(value).searchParams.get("filter"),
-        "requestPath eq '/play-an-ai-roleplay-story' and requestHostname eq 'lorelens.novelai.ai'",
+        "requestPath eq '/play-an-ai-roleplay-story'",
       );
       return Response.json({ data: { visitors: 12, pageviews: 18 } });
     };

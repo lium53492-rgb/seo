@@ -3,8 +3,8 @@
 // @ts-expect-error TS5097: the Next.js bundler and Node 24 both resolve this file.
 import { getSiteUrl } from "./site.ts";
 
-const defaultProjectId = "prj_Qd3p3ml63hElGzar9myWPNuT9wVJ";
-const defaultTeamId = "team_ciR2KmsqedGg5FIi1nqjSJCu";
+const defaultProjectId = "prj_Wcu8wFAePajKbNMIKl2eUd2O3K4p";
+const defaultTeamId = "team_KY6ZZwNyFhuy7ORN6EKIbfVr";
 const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export type LandingUvResult = {
@@ -60,10 +60,10 @@ export async function readLandingUv(input: {
   endpoint.searchParams.set("since", start.toISOString());
   endpoint.searchParams.set("until", end.toISOString());
   const publicHostname = getSiteUrl().hostname;
-  endpoint.searchParams.set(
-    "filter",
-    `requestPath eq '/${input.sourceSlug}' and requestHostname eq '${publicHostname}'`,
-  );
+  // The Web Analytics count endpoint is already scoped to one Vercel project.
+  // `requestHostname` is not a supported OData subject and makes the live API
+  // reject an otherwise valid query with HTTP 400.
+  endpoint.searchParams.set("filter", `requestPath eq '/${input.sourceSlug}'`);
 
   let response: Response;
   try {
