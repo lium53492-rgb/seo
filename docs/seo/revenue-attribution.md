@@ -2,7 +2,7 @@
 
 ## Goal
 
-Measure the complete search-to-revenue path without pretending every source exposes user-level data. Search Console clicks and Vercel landing UV aggregate by source slug and reporting period. The qualified NovelAI outbound, trial, signup, payment, and attributed revenue events join with `seo_click_id`, which contains no personal information.
+Measure the complete search-to-revenue path without pretending every source exposes user-level data. Search Console clicks and the selected landing-UV provider aggregate by source slug and reporting period. First-party Upstash analytics is preferred; the Vercel Web Analytics API is a complete-period fallback, never an additive source. The qualified NovelAI outbound, trial, signup, payment, and attributed revenue events join with `seo_click_id`, which contains no personal information.
 
 ## Outbound request
 
@@ -64,8 +64,10 @@ SEO Vercel project:
 - `WORKBENCH_PASSWORD`: optional Basic-auth password for interactive human access to the private workbench and attribution views. Without it, the complete `/workbench` and `/api/workbench` route families fail closed; `SEO_AUTOMATION_TOKEN` is not accepted as a browser credential.
 - `SEO_AUTOMATION_TOKEN`: required machine-only bearer token for `growth:check`, `growth:collect`, and other private report automation. Generate it from at least 32 random bytes, configure the same value in the SEO Vercel project and trusted automation environment, and never expose it in browser JavaScript.
 - `ATTRIBUTION_SECRET`: required for conversion callbacks.
+- `CRON_SECRET`: protects the daily landing-coverage rollover endpoint. This Vercel cron records measurement continuity only; it does not run content research or publishing.
 - `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`: durable, atomic attribution storage. The Vercel Marketplace Upstash integration can inject these variables.
-- `VERCEL_ANALYTICS_TOKEN`: server-only Vercel access token used by the public Web Analytics API to read page-level visitors and pageviews.
+- `FIRST_PARTY_LANDING_ANALYTICS_STARTED_AT`: immutable UTC ISO-8601 rollout watermark for the first-party landing beacon. A period can be reported by the first-party source only after this watermark and when every complete Shanghai day has rollover-written start/end checkpoints.
+- `VERCEL_ANALYTICS_TOKEN`: optional server-only Vercel access token used by the Web Analytics API when a complete requested period needs the fallback provider.
 - `VERCEL_ANALYTICS_PROJECT_ID` and `VERCEL_ANALYTICS_TEAM_ID`: optional explicit API scope; this repository defaults to its current Vercel project and team IDs.
 - `GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL` and `GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY`: server-only Google service-account credentials for the Search Console API.
 - `GOOGLE_SEARCH_CONSOLE_SITE_URL`: optional Search Console property identifier; defaults to the URL-prefix form of `NEXT_PUBLIC_SITE_URL`.
@@ -83,12 +85,13 @@ NovelAI application:
 - Trial, signup, and purchase callbacks deduplicate by `eventId`.
 - Trial, signup, and paid-conversion counts are unique per click. Multiple unique purchase events may add revenue, while one acquired click still counts as one paid conversion.
 - Conversion revenue is added to the Shanghai-day acquisition cohort of the original click, not the payment day. This makes page-level revenue per acquired UV meaningful.
-- Report requests are rounded outward to complete Shanghai calendar days before Redis cohorts, Vercel UV, and Search Console are queried. Portfolio collection ends after the policy-defined three-day finalized-data lag. The returned `periodStart` and `periodEnd` are the actual normalized boundaries, so numerator and denominator always cover the same release window. Search Console labels query dates in Pacific Time; that source-timezone detail remains visible in its provenance.
+- Report requests are rounded outward to complete Shanghai calendar days before Redis cohorts, landing UV, and Search Console are queried. First-party landing pageviews are exact daily counters; UV is a page-scoped Redis HyperLogLog estimate with approximately 0.81% standard error. The one `CRON_SECRET`-protected `0 16 * * *` UTC (Shanghai 00:00) rollover closes the previous day and opens the current one in one invocation, allowing Vercel's within-hour schedule drift. A request before the watermark or with any missing daily start/end proof is unavailable from the first-party source. A configured Vercel result may replace it only when it covers the complete requested period; the report never sums providers or combines partial windows. Portfolio collection ends after the policy-defined three-day finalized-data lag. The returned `periodStart` and `periodEnd` are the actual normalized boundaries, so numerator and denominator always cover the same release window. Search Console labels query dates in Pacific Time; that source-timezone detail remains visible in its provenance.
 - Revenue is stored separately for each ISO currency. The workbench never sums unlike currencies.
 - If a signed callback arrives without its outbound event, it is retained under the supplied source and callback date, and `orphanCallbacks` exposes the broken join.
 - Event and cohort keys expire after 400 days. No email, account ID, payment ID, IP address, or other direct personal data is stored.
 - The callback returns `202` only when the internal Redis store or an explicitly configured external sink durably accepts the event. Missing storage returns `503`; transient failures return `502`; NovelAI must retry both.
 - The signed integration handshake is stored separately for eight days. Readiness requires a successful handshake within the policy-defined seven-day window, so merely setting a secret on the SEO project cannot create a false full-loop status.
+- The landing-view endpoint has a Redis fixed-window limiter to protect metric writes. It is not the platform cost or attack-protection boundary; Vercel WAF/DDoS and project-level controls remain responsible for that layer.
 
 ## Funnel report
 
@@ -104,7 +107,7 @@ amounts, purchase events, callback counts, or CTA-location detail.
 - `observed`: non-negative value, named source, and collection note; or
 - `unavailable`: `null` value, named expected source, and a specific reason.
 
-Vercel Analytics supplies UV but is not the payment system. The shared SEO-tool account supplies keyword research but is not a traffic or revenue source. The workbench must keep those boundaries visible.
+First-party Upstash analytics normally supplies UV; Vercel Analytics can supply the full-period fallback but is not the payment system. The shared SEO-tool account supplies keyword research but is not a traffic or revenue source. The workbench must name the provider used and keep those boundaries visible.
 
 The protected live view is `/workbench/attribution`. Its JSON contract is:
 
@@ -117,7 +120,7 @@ Interactive workbench users may continue to use `Authorization: Basic <workbench
 
 `node scripts/collect-growth-funnel.mjs <slug> <from> <to>` reads the same endpoint for a daily automation using `SEO_AUTOMATION_TOKEN`. The endpoint queries finalized Search Console data for the exact page and period plus Google URL Inspection for the indexed version of that canonical URL; a successful empty Search Analytics row is observed zero, while missing credentials, authorization, API access, or index data remains unavailable.
 
-Run `npm run growth:probe` from a server environment holding the same `ATTRIBUTION_SECRET` as NovelAI, then run `npm run growth:check`. The readiness command calls the protected endpoint, performs a one-day live source probe, and exits non-zero until Search Console, Vercel UV, Upstash attribution, and a recent signed NovelAI callback handshake are all ready.
+Run `npm run growth:probe` from a server environment holding the same `ATTRIBUTION_SECRET` as NovelAI, then run `npm run growth:check`. The readiness command calls the protected endpoint, performs a one-day live source probe, and exits non-zero until Search Console, one complete-period landing-UV source, Upstash attribution, and a recent signed NovelAI callback handshake are all ready.
 
 The normal production command is `npm run growth:collect`. It queries every
 published page for the prior 28 complete Shanghai calendar days ending after

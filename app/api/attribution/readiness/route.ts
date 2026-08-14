@@ -12,7 +12,7 @@ import { listPublishedPages } from "@/lib/seo/page-store";
 import { privateJson } from "@/lib/seo/private-response";
 import { shanghaiReportingWindow } from "@/lib/seo/reporting-period";
 import { searchConsoleStatus } from "@/lib/seo/search-console";
-import { vercelAnalyticsStatus } from "@/lib/seo/vercel-analytics";
+import { landingAnalyticsStatus } from "@/lib/seo/landing-analytics";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -107,9 +107,9 @@ export async function GET(request: Request) {
     read: searchConsoleStatus,
   });
   const landingUv = readSourceStatus({
-    provider: "vercel_web_analytics",
-    label: "Vercel Web Analytics",
-    read: vercelAnalyticsStatus,
+    provider: "landing_analytics",
+    label: "Landing analytics",
+    read: landingAnalyticsStatus,
   });
   const attributionStore = readSourceStatus({
     provider: "upstash_redis",

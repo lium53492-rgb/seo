@@ -90,15 +90,30 @@ historical/manual compatibility. Trends never substitutes for GSC, landing UV,
 attribution, independent breakout evidence, IP safety, content distinctness,
 or editorial and visual approval.
 
-Semrush is replaced by the free Codex research path. Vercel Web Analytics pageview
-instrumentation is installed; enable the project-level switch in Vercel to begin
-collection. Google Search Console remains free but requires a verified property
-and service-account authorization before daily query/page metrics can be read.
+Semrush is replaced by the free Codex research path. Landing UV now prefers the
+first-party beacon and Upstash aggregates: pageviews are exact daily counters,
+while UV is a page-scoped Redis HyperLogLog estimate with approximately 0.81%
+standard error. `FIRST_PARTY_LANDING_ANALYTICS_STARTED_AT` is the immutable
+coverage watermark. The single `CRON_SECRET`-protected rollover job in
+`vercel.json` runs daily at `0 16 * * *` UTC (Shanghai 00:00); one call closes the previous Shanghai
+day and opens the current one in Upstash, allowing Vercel's within-hour schedule
+drift. A first-party period is observed only after the watermark and when every
+included day has both proofs; otherwise it stays `unavailable`, never synthetic
+zero. This job does not run the content pipeline, which remains on the local
+Codex schedule. When
+configured, the Vercel Web Analytics API is a full-requested-period fallback;
+the collector chooses one provider and never adds or splices the two sources.
+The landing endpoint's Redis fixed-window guard protects metric writes, not the
+platform cost boundary; Vercel WAF/DDoS controls remain responsible for
+platform-level abuse protection. Google Search Console remains free but
+requires a verified property and service-account authorization before daily
+query/page metrics can be read.
 
-Search Console, Vercel Analytics, Upstash, and the NovelAI conversion callback
-are explicit data connections. Missing connections stay `unavailable`; they
-never become synthetic zeroes. Automated collection uses a dedicated bearer
-token; it does not reuse the interactive workbench password.
+Search Console, first-party landing analytics, the optional Vercel fallback,
+Upstash attribution, and the NovelAI conversion callback are explicit data
+connections. Missing connections stay `unavailable`; they never become
+synthetic zeroes. Automated collection uses a dedicated bearer token; it does
+not reuse the interactive workbench password.
 
 Copy `.env.example` to `.env.local` and configure only the integrations you have. Never commit `.env.local`.
 
@@ -115,6 +130,7 @@ Copy `.env.example` to `.env.local` and configure only the integrations you have
 - `CRON_SECRET`
 - `UPSTASH_REDIS_REST_URL`
 - `UPSTASH_REDIS_REST_TOKEN`
+- `FIRST_PARTY_LANDING_ANALYTICS_STARTED_AT`
 - `VERCEL_ANALYTICS_TOKEN`
 - `GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL`
 - `GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY`

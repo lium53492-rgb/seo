@@ -637,7 +637,7 @@ const funnelMetricNames = [
   "paidConversions",
   "revenueMinor",
 ];
-const allowedMetricSources = new Set(["search_console", "vercel_analytics", "seo_redirect", "product_analytics", "payments"]);
+const allowedMetricSources = new Set(["search_console", "vercel_analytics", "first_party_analytics", "seo_redirect", "product_analytics", "payments"]);
 
 function validateFunnel(rawFunnel) {
   const conversionJoinKey = rawFunnel?.conversionJoinKey ?? rawFunnel?.joinKey;
@@ -949,11 +949,12 @@ function findForbiddenGrowthKey(value) {
   return null;
 }
 
-function publicDecisionMetric(value, name, source) {
+function publicDecisionMetric(value, name, allowedSources) {
+  const sources = Array.isArray(allowedSources) ? allowedSources : [allowedSources];
   if (
     !value ||
     !["observed", "unavailable"].includes(value.status) ||
-    value.source !== source ||
+    !sources.includes(value.source) ||
     typeof value.detail !== "string" ||
     value.detail.trim().length < 20
   ) {
@@ -966,15 +967,19 @@ function publicDecisionMetric(value, name, source) {
   }
   const detail = name === "landingUv"
     ? observed
-      ? "Observed the exact landing page's aggregate UV through Vercel Web Analytics for this reporting period."
-      : "Exact-page landing UV was unavailable from Vercel Web Analytics for this reporting period."
+      ? value.source === "first_party_analytics"
+        ? "Observed the exact landing page's aggregate estimated UV through privacy-minimized first-party analytics for this reporting period."
+        : "Observed the exact landing page's aggregate UV through Vercel Web Analytics for this reporting period."
+      : value.source === "first_party_analytics"
+        ? "Exact-page landing UV was unavailable from first-party analytics for this reporting period."
+        : "Exact-page landing UV was unavailable from Vercel Web Analytics for this reporting period."
     : observed
       ? "Observed the page-level qualified outbound aggregate through the private attribution service for this reporting period."
       : "The page-level qualified outbound aggregate was unavailable from the private attribution service for this reporting period.";
   return {
     status: observed ? "observed" : "unavailable",
     value: metricValue,
-    source,
+    source: value.source,
     detail,
   };
 }
@@ -1028,7 +1033,7 @@ function publicPortfolioReport(rawReport, page, rawPortfolio) {
   const landingUv = publicDecisionMetric(
     rawReport.metrics?.landingUv,
     "landingUv",
-    "vercel_analytics",
+    ["vercel_analytics", "first_party_analytics"],
   );
   const qualifiedOutboundClicks = publicDecisionMetric(
     rawReport.metrics?.qualifiedOutboundClicks,

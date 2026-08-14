@@ -74,7 +74,9 @@ A new page is eligible only when all policy-v4 hard gates pass. Raw model-suppli
 ## Runtime structure
 
 ```text
-app/[slug]/page.tsx                         static SEO route and next-seo JSON-LD
+app/[slug]/page.tsx                         static SEO route, JSON-LD, and landing beacon
+app/api/analytics/landing-view/route.ts     first-party landing pageview/UV ingestion
+app/api/cron/landing-analytics/[phase]/route.ts protected daily coverage rollover
 app/go/novelai/[slug]/route.ts              attributed redirect + background durable outbound write
 app/api/attribution/conversion/route.ts     protected, idempotent trial/signup/purchase callback
 app/api/attribution/probe/route.ts          signed NovelAI callback handshake with no funnel mutation
@@ -83,9 +85,10 @@ app/api/attribution/readiness/route.ts      protected live configuration and sou
 app/workbench/                              research, review, funnel, and status views
 lib/seo/page-store.ts                       published-page schema guard
 lib/seo/attribution.ts                      destination allowlist and attribution contract
-lib/seo/attribution-store.ts                atomic Upstash event and cohort persistence
+lib/seo/attribution-store.ts                atomic Upstash attribution + landing aggregates
 lib/seo/search-console.ts                   official finalized exact-page search API reader
-lib/seo/vercel-analytics.ts                 official page-level UV/pageview API reader
+lib/seo/landing-analytics.ts                preferred-source selection and whole-period fallback
+lib/seo/vercel-analytics.ts                 optional page-level UV/pageview API fallback
 lib/seo/growth-funnel.ts                    observed/unavailable funnel composition
 scripts/build-free-research-report.mjs      research -> review-required report
 scripts/publish-reviewed-page.mjs           approved report -> published page
@@ -105,11 +108,31 @@ Use native Next.js metadata for title, description, canonical, Open Graph, and T
 ## Measurement contract
 
 - Search Console supplies finalized impressions, organic clicks, CTR, and position through its official API, filtered to the exact source page and reporting period.
-- Vercel Web Analytics supplies landing-page UV on the same source-page and period dimensions.
+- First-party landing analytics is the preferred UV source on the same
+  source-page and period dimensions. Upstash keeps exact Shanghai-day pageview
+  counters and page-scoped Redis HyperLogLog membership; UV therefore has
+  approximately 0.81% standard error.
+- `FIRST_PARTY_LANDING_ANALYTICS_STARTED_AT` is an immutable rollout watermark.
+  The one `CRON_SECRET`-protected `0 16 * * *` UTC (Shanghai 00:00) rollover closes the previous
+  Shanghai day and opens the current day in one cron invocation;
+  its validation window allows Vercel's within-hour scheduler drift. A period
+  is observed only when it is after the watermark and every included day has
+  both checkpoints. A missing checkpoint is unavailable, not zero. If the
+  preferred source cannot cover the request, a configured Vercel Web Analytics
+  result may replace it only for the whole requested period. Provider values
+  are never added or partially spliced.
+- The rollover proves landing-measurement continuity only. It does not run the
+  research, review, publication, or release pipeline; those remain on the
+  local Codex schedule.
+- The landing endpoint's Redis fixed-window limiter protects metric writes
+  from local bursts. It is not a platform-level cost or attack-control
+  guarantee; that boundary remains Vercel WAF/DDoS and project configuration.
 - `/go/novelai/{slug}` creates a `seo_click_id`, persists a bot-resistant outbound signal by acquisition page/day, and forwards UTM fields plus that ID to NovelAI.
 - NovelAI must retain the ID and send it with trial, signup, and payment events. Only the outbound-to-revenue segment is joined event by event with `seo_click_id`.
 - After NovelAI deployment or secret rotation, its server environment runs `npm run growth:probe`. The signed probe is stored outside funnel cohorts and must be recent before readiness reports `outboundToRevenue` or `fullLoop`.
-- Upstash stores idempotent event records and page/day cohort aggregates for 400 days. Vercel Web Analytics remains the privacy-friendly UV source; Redis does not create a second visitor cookie.
+- Upstash stores idempotent attribution events, landing pageview counters,
+  page-scoped landing HLL aggregates, and page/day cohorts for 400 days. Raw
+  landing visitor IDs are not persisted in those aggregates.
 - `/workbench/attribution` combines those sources. A page can only show a numeric zero after the corresponding source was queried successfully for an explicit period; missing credentials, callbacks, or API access remain unavailable.
 - The daily report records each funnel metric as either `observed` with a source or `unavailable` with a reason.
 - Before generating a new daily draft, run `npm run growth:check` and `npm run growth:collect`. The report builder requires a snapshot covering every published page for one identical complete-Shanghai-day period and the configured three-day lag. Page count, landing UV, and exact-page Search Console impressions inform prioritization but do not independently block a distinct new page.

@@ -8,7 +8,7 @@ import {
 } from "./search-console";
 import { absoluteSiteUrl } from "./site";
 import type { ObservedMetric, SeoGrowthFunnel } from "./types";
-import { readLandingUv, type LandingUvResult } from "./vercel-analytics";
+import { landingAnalyticsStatus, readLandingAnalytics } from "./landing-analytics";
 
 function observedMetric(
   source: ObservedMetric["source"],
@@ -59,7 +59,7 @@ export async function readLiveGrowthFunnel(input: {
   const reportingInput = { ...input, ...period };
   const [aggregate, landing, searchPerformance, urlInspection] = await Promise.all([
     readAttributionAggregate(reportingInput),
-    readLandingUv(reportingInput),
+    readLandingAnalytics(reportingInput),
     readSearchConsolePagePerformance(reportingInput),
     readSearchConsoleUrlInspection({ sourceSlug: input.sourceSlug }),
   ]);
@@ -71,8 +71,8 @@ export async function readLiveGrowthFunnel(input: {
       ? unavailableMetric("payments", `Attributed revenue spans multiple currencies: ${currencies.join(", ")}.`)
       : observedMetric("payments", currency ? aggregate.revenueByCurrency[currency] : 0, aggregate.detail);
   const landingUv = landing.state === "observed" && landing.visitors !== null
-    ? observedMetric("vercel_analytics", landing.visitors, landing.detail)
-    : unavailableMetric("vercel_analytics", landing.detail);
+    ? observedMetric(landing.source, landing.visitors, landing.detail)
+    : unavailableMetric(landing.source, landing.detail);
   const organicClicks = input.organicClicks ?? (
     searchPerformance.state === "observed" && searchPerformance.clicks !== null
       ? observedMetric("search_console", searchPerformance.clicks, searchPerformance.detail)
@@ -128,6 +128,14 @@ export function unavailableLiveGrowthFunnel(input: {
   detail: string;
 }): LiveGrowthFunnel {
   const unavailableStore = unavailableMetric("product_analytics", input.detail);
+  let landingSource: ObservedMetric["source"] = "first_party_analytics";
+  try {
+    if (landingAnalyticsStatus().provider === "vercel_web_analytics") {
+      landingSource = "vercel_analytics";
+    }
+  } catch {
+    // Keep the preferred first-party source when status inspection itself fails.
+  }
   return {
     sourceSlug: input.sourceSlug,
     funnel: {
@@ -139,7 +147,7 @@ export function unavailableLiveGrowthFunnel(input: {
       periodEnd: input.periodEnd,
       metrics: {
         organicClicks: unavailableMetric("search_console", input.detail),
-        landingUv: unavailableMetric("vercel_analytics", input.detail),
+        landingUv: unavailableMetric(landingSource, input.detail),
         qualifiedOutboundClicks: unavailableMetric("seo_redirect", input.detail),
         trialStarts: unavailableStore,
         signups: unavailableStore,

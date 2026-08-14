@@ -18,8 +18,34 @@ This is the active zero-additional-API-cost production protocol. It uses public 
    and boolean readiness/blocking state only. Never copy trial, signup, payment,
    revenue, currency, purchase-event, callback-count, click-ID, or cohort detail
    into `data/growth` or `data/reports`.
-5. Run `npm.cmd run growth:probe` from the NovelAI server environment after callback deployment or secret rotation, then run `npm.cmd run growth:check`. Full-loop readiness requires observed Search Console, Vercel landing UV, and attribution-store probes plus a recent signed NovelAI callback handshake.
-6. Run `npm.cmd run growth:collect` before researching candidates. It uses the official Search Console and Vercel APIs over the configured 28-day finalized-data window, currently ending three complete Shanghai days before the run. Observed zero is valid, but an unattended `create_page` draft is illegal unless every published page has observed exact-page Search Console and landing UV states and the attribution join is ready. After retries, record no publication when any required measurement remains unavailable.
+5. Run `npm.cmd run growth:probe` from the NovelAI server environment after
+   callback deployment or secret rotation, then run `npm.cmd run growth:check`.
+   Full-loop readiness requires observed Search Console, an observed landing-UV
+   provider, and attribution-store probes plus a recent signed NovelAI callback
+   handshake.
+6. Run `npm.cmd run growth:collect` before researching candidates. It uses the
+   official Search Console API and the landing-analytics adapter over the
+   configured 28-day finalized-data window, currently ending three complete
+   Shanghai days before the run. First-party Upstash analytics is preferred:
+   pageviews are exact daily counters and page-scoped UV is a Redis HyperLogLog
+   estimate with approximately 0.81% standard error.
+   `FIRST_PARTY_LANDING_ANALYTICS_STARTED_AT` is an immutable coverage
+   watermark. The `CRON_SECRET`-protected rollover at `0 16 * * *` UTC
+   (Shanghai 00:00) closes the
+   previous Shanghai day and opens the current one in one call, allowing
+   Vercel's within-hour schedule drift. First-party data is observed only when
+   the period is after the watermark and every included day has both coverage
+   proofs; otherwise it is unavailable, not zero. The rollover does not run
+   research or publishing, which remains on the local Codex schedule. If the
+   first-party source cannot cover the request, a configured Vercel Web
+   Analytics result may replace it only for the complete requested period.
+   Never add provider values or splice partial periods. The Redis fixed-window
+   guard protects metric writes only; platform-level cost and attack protection
+   remain the responsibility of Vercel WAF/DDoS configuration. Observed zero
+   is valid, but an unattended `create_page` draft is illegal unless every
+   published page has observed exact-page Search Console and landing UV states
+   and the attribution join is ready. After retries, record no publication when
+   any required measurement remains unavailable.
    Formally retired slugs are collected separately in `retiredUrls` with only
    Search Console and URL Inspection fields; they do not count as published
    pages and cannot improve or block active-portfolio readiness.

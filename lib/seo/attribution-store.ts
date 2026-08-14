@@ -1,10 +1,40 @@
+import { createHash, createHmac } from "node:crypto";
 import type { OutboundLocation } from "./attribution";
 
 const keyPrefix = "seo:v1:";
 const retentionSeconds = 400 * 24 * 60 * 60;
 const integrationProbeRetentionSeconds = 8 * 24 * 60 * 60;
+const landingEventRetentionSeconds = 8 * 24 * 60 * 60;
+const landingRateLimitWindowSeconds = 60;
+const landingRateLimitRequestsPerWindow = 60;
+const dayMilliseconds = 86_400_000;
 const requestTimeoutMs = 2_500;
 const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const visitorIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+const landingViewScript = `
+if redis.call("EXISTS", KEYS[1]) == 1 then return 0 end
+local requests = redis.call("INCR", KEYS[4])
+if requests == 1 then redis.call("EXPIRE", KEYS[4], ARGV[4]) end
+if requests > tonumber(ARGV[5]) then return -1 end
+redis.call("SET", KEYS[1], "1", "EX", ARGV[2])
+redis.call("HINCRBY", KEYS[2], "pageviews", 1)
+redis.call("EXPIRE", KEYS[2], ARGV[3])
+redis.call("PFADD", KEYS[3], ARGV[1])
+redis.call("EXPIRE", KEYS[3], ARGV[3])
+return 1
+`;
+
+const landingCoverageScript = `
+if ARGV[1] == "start" then
+  redis.call("HSETNX", KEYS[1], "startAt", ARGV[2])
+else
+  redis.call("HSET", KEYS[1], "endAt", ARGV[2])
+end
+redis.call("HINCRBY", KEYS[1], "checkpointCount", 1)
+redis.call("EXPIRE", KEYS[1], ARGV[3])
+return 1
+`;
 
 const outboundScript = `
 local existingSource = redis.call("HGET", KEYS[2], "sourceSlug")
@@ -87,6 +117,33 @@ export type AttributionWriteResult = {
   orphan?: boolean;
 };
 
+export type LandingViewWriteResult = AttributionWriteResult | {
+  state: "rate_limited";
+  detail: string;
+};
+
+export type FirstPartyLandingAnalyticsStatus = {
+  configured: boolean;
+  provider: "first_party_upstash";
+  startedAt?: string;
+  firstCompleteShanghaiDayStart?: string;
+  detail?: string;
+};
+
+export type FirstPartyLandingAnalyticsResult = {
+  state: "observed" | "unavailable";
+  visitors: number | null;
+  pageviews: number | null;
+  detail: string;
+};
+
+export type LandingCoverageCheckpointResult = {
+  state: "stored" | "unavailable";
+  day: string;
+  phase: "start" | "end";
+  detail: string;
+};
+
 export type AttributionAggregate = {
   state: "observed" | "unavailable";
   sourceSlug: string;
@@ -132,6 +189,51 @@ export function attributionStoreStatus() {
         provider: "upstash_redis" as const,
         detail: "UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are not configured.",
       };
+}
+
+function firstPartyAnalyticsCoverage() {
+  const raw = process.env.FIRST_PARTY_LANDING_ANALYTICS_STARTED_AT?.trim();
+  if (!raw) return null;
+  const startedAt = new Date(raw);
+  if (
+    !Number.isFinite(startedAt.getTime()) ||
+    startedAt.getTime() > Date.now() + 5 * 60 * 1000
+  ) return null;
+  const firstShanghaiDay = shanghaiDay(startedAt);
+  const containingDayStart = new Date(`${firstShanghaiDay}T00:00:00.000+08:00`);
+  const firstCompleteShanghaiDayStart = new Date(
+    startedAt.getTime() === containingDayStart.getTime()
+      ? containingDayStart.getTime()
+      : containingDayStart.getTime() + dayMilliseconds,
+  );
+  return {
+    startedAt: startedAt.toISOString(),
+    firstCompleteShanghaiDayStart: firstCompleteShanghaiDayStart.toISOString(),
+  };
+}
+
+export function firstPartyLandingAnalyticsStatus(): FirstPartyLandingAnalyticsStatus {
+  const store = attributionStoreStatus();
+  const coverage = firstPartyAnalyticsCoverage();
+  if (!store.configured) {
+    return {
+      configured: false,
+      provider: "first_party_upstash",
+      detail: store.detail,
+    };
+  }
+  if (!coverage) {
+    return {
+      configured: false,
+      provider: "first_party_upstash",
+      detail: "FIRST_PARTY_LANDING_ANALYTICS_STARTED_AT is missing or invalid.",
+    };
+  }
+  return {
+    configured: true,
+    provider: "first_party_upstash",
+    ...coverage,
+  };
 }
 
 function shanghaiDay(value: string | Date) {
@@ -227,6 +329,128 @@ export async function recordOutboundClick(input: {
   return response.result === 0
     ? { state: "duplicate", detail: "The outbound click was already stored." }
     : { state: "stored", detail: input.qualified ? "Verified user navigation stored." : "Unverified navigation stored for audit only." };
+}
+
+export async function recordLandingView(input: {
+  sourceSlug: string;
+  visitorId: string;
+  viewId: string;
+  rateLimitIdentity: string;
+  occurredAt: string;
+}): Promise<LandingViewWriteResult> {
+  assertSlug(input.sourceSlug);
+  if (!visitorIdPattern.test(input.visitorId) || !visitorIdPattern.test(input.viewId)) {
+    throw new Error("Landing analytics visitor or view ID is invalid");
+  }
+  const occurredAt = new Date(input.occurredAt);
+  if (!Number.isFinite(occurredAt.getTime())) {
+    throw new Error("Landing analytics timestamp is invalid");
+  }
+  const status = firstPartyLandingAnalyticsStatus();
+  if (!status.configured || !status.startedAt) {
+    return {
+      state: "unavailable",
+      detail: status.detail ?? "First-party landing analytics is not configured.",
+    };
+  }
+  if (occurredAt.getTime() < Date.parse(status.startedAt)) {
+    return {
+      state: "unavailable",
+      detail: "The landing view predates the configured analytics coverage start.",
+    };
+  }
+  const config = redisConfig();
+  if (!config) {
+    return {
+      state: "unavailable",
+      detail: "Attribution store is not configured.",
+    };
+  }
+  const cohortDay = shanghaiDay(occurredAt);
+  const visitorHash = createHash("sha256")
+    .update(`uv:v1\0${input.sourceSlug}\0${input.visitorId.toLowerCase()}`)
+    .digest("hex");
+  const rateLimitHash = createHmac("sha256", config.token)
+    .update(`landing-rate:v1\0${input.rateLimitIdentity}`)
+    .digest("hex");
+  const rateLimitWindow = Math.floor(occurredAt.getTime() / 60_000);
+  const response = await redisCommand([
+    "EVAL",
+    landingViewScript,
+    4,
+    `${keyPrefix}landing:event:{${input.sourceSlug}}:${input.viewId.toLowerCase()}`,
+    `${keyPrefix}landing:day:{${input.sourceSlug}}:${cohortDay}`,
+    `${keyPrefix}landing:hll:{${input.sourceSlug}}:${cohortDay}`,
+    `${keyPrefix}landing:rate:{${input.sourceSlug}}:${rateLimitHash}:${rateLimitWindow}`,
+    visitorHash,
+    landingEventRetentionSeconds,
+    retentionSeconds,
+    landingRateLimitWindowSeconds * 2,
+    landingRateLimitRequestsPerWindow,
+  ]);
+  if (!response.configured) {
+    return {
+      state: "unavailable",
+      detail: attributionStoreStatus().detail ?? "Attribution store is not configured.",
+    };
+  }
+  return response.result === -1
+    ? {
+        state: "rate_limited",
+        detail: "The landing view rate limit was exceeded.",
+      }
+    : response.result === 0
+    ? {
+        state: "duplicate",
+        detail: "The landing view was already stored.",
+      }
+    : response.result === 1
+    ? {
+        state: "stored",
+        detail: "Anonymous first-party landing view stored in the Shanghai-day cohort.",
+      }
+    : {
+        state: "unavailable",
+        detail: "Attribution store did not confirm the landing view.",
+      };
+}
+
+export async function recordLandingCoverageCheckpoint(input: {
+  phase: "start" | "end";
+  occurredAt: string;
+}): Promise<LandingCoverageCheckpointResult> {
+  const occurredAt = new Date(input.occurredAt);
+  if (!Number.isFinite(occurredAt.getTime())) {
+    throw new Error("Landing analytics coverage timestamp is invalid");
+  }
+  const target = input.phase === "end"
+    ? new Date(occurredAt.getTime() - 2 * 60 * 60 * 1_000)
+    : occurredAt;
+  const day = shanghaiDay(target);
+  const response = await redisCommand([
+    "EVAL",
+    landingCoverageScript,
+    1,
+    `${keyPrefix}landing:coverage:${day}`,
+    input.phase,
+    occurredAt.toISOString(),
+    retentionSeconds,
+  ]);
+  if (!response.configured || response.result !== 1) {
+    return {
+      state: "unavailable",
+      day,
+      phase: input.phase,
+      detail: attributionStoreStatus().detail ??
+        "Attribution store did not confirm the landing analytics coverage checkpoint.",
+    };
+  }
+  return {
+    state: "stored",
+    day,
+    phase: input.phase,
+    detail: `Stored the ${input.phase} coverage checkpoint for Shanghai day ${day}.`,
+  };
 }
 
 export async function recordConversionEvent(event: AttributionConversionEvent): Promise<AttributionWriteResult> {
@@ -426,5 +650,93 @@ export async function readAttributionAggregate(input: {
     revenueByCurrency,
     ctaLocations,
     detail: `Read ${days.length} Shanghai-day acquisition cohort${days.length === 1 ? "" : "s"} from Upstash Redis.`,
+  };
+}
+
+export async function readFirstPartyLandingAnalytics(input: {
+  sourceSlug: string;
+  periodStart: string;
+  periodEnd: string;
+}): Promise<FirstPartyLandingAnalyticsResult> {
+  assertSlug(input.sourceSlug);
+  const days = periodDays(input.periodStart, input.periodEnd);
+  const status = firstPartyLandingAnalyticsStatus();
+  if (!status.configured || !status.firstCompleteShanghaiDayStart) {
+    return {
+      state: "unavailable",
+      visitors: null,
+      pageviews: null,
+      detail: status.detail ?? "First-party landing analytics is not configured.",
+    };
+  }
+  if (Date.parse(input.periodStart) < Date.parse(status.firstCompleteShanghaiDayStart)) {
+    return {
+      state: "unavailable",
+      visitors: null,
+      pageviews: null,
+      detail: `The requested period begins before complete first-party coverage on ${status.firstCompleteShanghaiDayStart}.`,
+    };
+  }
+  const hllKeys = days.map(
+    (day) => `${keyPrefix}landing:hll:{${input.sourceSlug}}:${day}`,
+  );
+  const response = await redisPipeline([
+    ["PFCOUNT", ...hllKeys],
+    ...days.map((day) => [
+      "HGET",
+      `${keyPrefix}landing:day:{${input.sourceSlug}}:${day}`,
+      "pageviews",
+    ]),
+    ...days.map((day) => [
+      "HGETALL",
+      `${keyPrefix}landing:coverage:${day}`,
+    ]),
+  ]);
+  if (!response.configured) {
+    return {
+      state: "unavailable",
+      visitors: null,
+      pageviews: null,
+      detail: attributionStoreStatus().detail ?? "Attribution store is not configured.",
+    };
+  }
+  const visitors = Number(response.results[0] ?? 0);
+  const pageviews = response.results
+    .slice(1, 1 + days.length)
+    .reduce<number>((total, value) => total + Number(value ?? 0), 0);
+  const coverage = response.results.slice(1 + days.length);
+  const uncoveredDay = days.find((day, index) => {
+    const checkpoint = hashResult(coverage[index]);
+    const startAt = Date.parse(checkpoint.startAt || "");
+    const endAt = Date.parse(checkpoint.endAt || "");
+    const dayStart = Date.parse(`${day}T00:00:00.000+08:00`);
+    const dayEnd = dayStart + dayMilliseconds;
+    return !Number.isFinite(startAt) || !Number.isFinite(endAt) ||
+      startAt < dayStart - 60_000 ||
+      startAt > dayStart + 70 * 60_000 ||
+      endAt < dayEnd - 10 * 60_000 ||
+      endAt > dayEnd + 70 * 60_000;
+  });
+  if (uncoveredDay) {
+    return {
+      state: "unavailable",
+      visitors: null,
+      pageviews: null,
+      detail: `First-party landing analytics has no complete start/end coverage proof for Shanghai day ${uncoveredDay}.`,
+    };
+  }
+  if (!Number.isFinite(visitors) || visitors < 0 || !Number.isFinite(pageviews) || pageviews < 0) {
+    return {
+      state: "unavailable",
+      visitors: null,
+      pageviews: null,
+      detail: "First-party landing analytics returned invalid aggregate counts.",
+    };
+  }
+  return {
+    state: "observed",
+    visitors,
+    pageviews,
+    detail: `Observed ${days.length} complete Shanghai-day cohort${days.length === 1 ? "" : "s"} through privacy-minimized first-party Upstash analytics; UV is a HyperLogLog estimate and pageviews are exact counters.`,
   };
 }

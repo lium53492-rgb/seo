@@ -266,9 +266,14 @@ export default async function WorkbenchPage() {
         }
       }),
   ).size;
+  const landingUvSourceLabel = funnel.metrics.landingUv.source === "first_party_analytics"
+    ? "First-party landing analytics"
+    : funnel.metrics.landingUv.source === "vercel_analytics"
+      ? "Vercel Analytics"
+      : "Landing analytics";
   const funnelRows = [
     ["Google organic clicks", funnel.metrics.organicClicks, "Search Console", "count"],
-    ["SEO landing UV", funnel.metrics.landingUv, "Vercel Analytics", "count"],
+    ["SEO landing UV", funnel.metrics.landingUv, landingUvSourceLabel, "count"],
     ["Qualified outbound", funnel.metrics.qualifiedOutboundClicks, "SEO redirect", "count"],
     ["Trial starts", funnel.metrics.trialStarts, "NovelAI callback", "count"],
     ["Signups", funnel.metrics.signups, "NovelAI callback", "count"],

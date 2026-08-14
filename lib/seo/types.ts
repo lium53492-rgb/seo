@@ -673,7 +673,7 @@ export type EditorialReview = {
 export type ObservedMetric = {
   status: "observed" | "unavailable";
   value: number | null;
-  source: "search_console" | "vercel_analytics" | "seo_redirect" | "product_analytics" | "payments";
+  source: "search_console" | "vercel_analytics" | "first_party_analytics" | "seo_redirect" | "product_analytics" | "payments";
   detail: string;
 };
 
@@ -755,7 +755,7 @@ export type SearchConsoleUrlInspectionSnapshot = {
 export type PublicGrowthMetric = {
   status: "observed" | "unavailable";
   value: number | null;
-  source: "vercel_analytics" | "seo_redirect";
+  source: "vercel_analytics" | "first_party_analytics" | "seo_redirect";
   detail: string;
 };
 

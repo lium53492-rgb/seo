@@ -37,7 +37,8 @@ const intents = new Set(["commercial", "informational", "navigational", "transac
 const recommendedActions = new Set(["create_page", "improve_page", "consolidate", "observe"]);
 const priorities = new Set(["P0", "P1", "P2"]);
 const integrationStates = new Set(["connected", "configured", "replaced", "missing", "error"]);
-const metricSources = new Set(["search_console", "vercel_analytics", "seo_redirect", "product_analytics", "payments"]);
+const metricSources = new Set(["search_console", "vercel_analytics", "first_party_analytics", "seo_redirect", "product_analytics", "payments"]);
+const landingUvSources = new Set(["vercel_analytics", "first_party_analytics"]);
 const safeRepository = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
 const safeBranch = /^[A-Za-z0-9._/-]+$/;
 const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -326,10 +327,11 @@ function isUrlInspection(value: unknown, sourceSlug: string) {
   return nullableFields.some((field) => value[field] !== null);
 }
 
-function isPublicGrowthMetric(value: unknown, source: "vercel_analytics" | "seo_redirect") {
+function isPublicGrowthMetric(value: unknown, sources: ReadonlySet<string>) {
   return isObservedMetric(value) &&
     isRecord(value) &&
-    value.source === source;
+    isString(value.source) &&
+    sources.has(value.source);
 }
 
 function hasOnlyKeys(value: Record<string, unknown>, allowedKeys: Set<string>) {
@@ -412,8 +414,8 @@ function isGrowthPortfolio(value: unknown) {
     if (entry.state !== "collected" || !isRecord(entry.report) ||
       entry.report.sourceSlug !== entry.sourceSlug ||
       !isRecord(entry.report.metrics) ||
-      !isPublicGrowthMetric(entry.report.metrics.landingUv, "vercel_analytics") ||
-      !isPublicGrowthMetric(entry.report.metrics.qualifiedOutboundClicks, "seo_redirect") ||
+      !isPublicGrowthMetric(entry.report.metrics.landingUv, landingUvSources) ||
+      !isPublicGrowthMetric(entry.report.metrics.qualifiedOutboundClicks, new Set(["seo_redirect"])) ||
       !isSearchPerformance(entry.report.searchPerformance, entry.sourceSlug) ||
       !isUrlInspection(entry.report.urlInspection, entry.sourceSlug) ||
       !isRecord(entry.report.decisionState)) return false;

@@ -57,6 +57,24 @@ Before a new page or update:
   The shared SEO-tool account is a research source, not a UV or revenue source.
 - Aggregate Search Console and landing UV by source slug and reporting period.
   Use `seo_click_id` only for the qualified-outbound-to-revenue event chain.
+- Prefer first-party landing analytics stored in Upstash: pageviews are exact
+  daily counters and UV is a privacy-minimized, page-scoped Redis HyperLogLog
+  estimate with approximately 0.81% standard error. Treat
+  `FIRST_PARTY_LANDING_ANALYTICS_STARTED_AT` as an immutable coverage
+  watermark. A period is observed only when it begins on or after the first
+  complete Shanghai day allowed by that watermark and every included day has
+  valid start/end checkpoints written by the `CRON_SECRET`-protected daily
+  Vercel rollover job. That single `0 16 * * *` UTC (Shanghai 00:00) run closes the previous
+  Shanghai day and opens the current one, allowing the platform's within-hour
+  schedule drift. A missing checkpoint makes the first-party result
+  unavailable, not zero. Vercel Web Analytics may replace it only when it
+  observes the entire requested period; never add provider values or splice
+  partial periods together. This Vercel job proves measurement coverage only;
+  content research and publishing remain on the local Codex schedule.
+- Treat the Redis fixed-window guard on landing-view writes only as metric
+  integrity protection. It does not provide platform-level attack or cost
+  protection; that boundary remains the Vercel WAF/DDoS layer and its project
+  configuration.
 - Run `npm.cmd run growth:collect` before candidate research. The resulting
   `data/growth/YYYY-MM-DD.json` must cover every published page over the same
   complete Shanghai-day window, ending after the configured finalized-data

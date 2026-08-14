@@ -68,6 +68,8 @@ function snapshotEnvironment() {
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     VERCEL_ANALYTICS_TOKEN: process.env.VERCEL_ANALYTICS_TOKEN,
     VERCEL_TOKEN: process.env.VERCEL_TOKEN,
+    FIRST_PARTY_LANDING_ANALYTICS_STARTED_AT:
+      process.env.FIRST_PARTY_LANDING_ANALYTICS_STARTED_AT,
   };
 }
 
@@ -219,7 +221,7 @@ test("readiness reports a source configuration failure without bypassing auth or
       detail:
         "Search Console status check failed: GOOGLE_SEARCH_CONSOLE_SITE_URL URL-prefix property must match the public canonical origin",
     });
-    assert.equal(body.sources.landingUv.provider, "vercel_web_analytics");
+    assert.equal(body.sources.landingUv.provider, "landing_analytics");
     assert.equal(body.sources.attributionStore.provider, "upstash_redis");
     assert.equal(body.readyFor.searchEvidence, false);
     assert.equal(body.readyFor.searchToUv, false);

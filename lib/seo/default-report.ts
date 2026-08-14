@@ -23,7 +23,7 @@ export function createUnavailableFunnel(date = shanghaiDate()): SeoGrowthFunnel 
     periodEnd: `${date}T23:59:59+08:00`,
     metrics: {
       organicClicks: unavailableMetric("search_console", "Search Console has not returned a visible row."),
-      landingUv: unavailableMetric("vercel_analytics", "Vercel Web Analytics has not been copied into this report."),
+      landingUv: unavailableMetric("first_party_analytics", "No complete-period landing analytics evidence has been copied into this report."),
       qualifiedOutboundClicks: unavailableMetric("seo_redirect", "The outbound redirect event has not been aggregated."),
       trialStarts: unavailableMetric("product_analytics", "NovelAI trial callbacks are not connected."),
       signups: unavailableMetric("product_analytics", "NovelAI signup callbacks are not connected."),
@@ -111,7 +111,10 @@ export function redactPrivateReportData(report: DailySeoReport): DailySeoReport 
       attributionStatus: "unavailable",
       metrics: {
         ...funnel.metrics,
-        landingUv: unavailableMetric("vercel_analytics", "Protected metric. Configure workbench authentication to view it."),
+        landingUv: unavailableMetric(
+          funnel.metrics.landingUv.source,
+          "Protected metric. Configure workbench authentication to view it.",
+        ),
         qualifiedOutboundClicks: unavailableMetric("seo_redirect", "Protected metric. Configure workbench authentication to view it."),
         trialStarts: unavailableMetric("product_analytics", "Protected metric. Configure workbench authentication to view it."),
         signups: unavailableMetric("product_analytics", "Protected metric. Configure workbench authentication to view it."),

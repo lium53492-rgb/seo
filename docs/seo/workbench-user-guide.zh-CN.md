@@ -22,7 +22,7 @@
 | Google Search Console | 官方 API 自动采集，待服务账号配置 | 0 | 真实曝光、点击、CTR、排名 |
 | Codex Content | 事实约束草稿 | 已有 | Brief、英文页面、FAQ、素材需求 |
 | GitHub Reports | 自动提交到 `data/reports` | 0 | 每日版本记录和 Vercel 部署来源 |
-| Product Analytics | Vercel Web Analytics | 0 | 页面访问、来源和地域；Hobby 不含自定义事件 |
+| Product Analytics | 第一方 Upstash HLL（首选）+ Vercel API（完整周期回退） | Upstash 按量；Vercel 依套餐 | 按页面和周期统计落地 UV 与浏览量，不混加供应商数据 |
 | Google Trends | 官方 BigQuery 美国 Top 25/Rising 25 公共数据集 | 免费额度内 0/需 Google Cloud 项目 | 每日发现与增强；只允许精确 rising 命中通过 v2 门槛 |
 
 ## 数据怎样改变页面
@@ -50,12 +50,16 @@
 
 采集只读取 `dataState=final` 的最终数据。每日 28 天组合窗口默认延迟 3 个完整日，避免把 Google 尚未稳定的近几日数据误判为流量下降。
 
-### Vercel Web Analytics
+### 落地页 UV（第一方优先）
 
-1. 打开 Vercel 项目的 Analytics 页面。
-2. 点击 **Enable Web Analytics**。
-3. 等待首次真实访问。项目已经安装并渲染 `@vercel/analytics` 采集组件。
-4. 创建只在服务端使用的 Vercel Access Token，并在 Production 环境配置 `VERCEL_ANALYTICS_TOKEN`；项目和团队 ID 已列在 `.env.example`。
+1. 在 Vercel Marketplace 连接 Upstash Redis，确认 `UPSTASH_REDIS_REST_URL` 和 `UPSTASH_REDIS_REST_TOKEN` 已进入 Production 环境。
+2. 首次部署第一方落地页埋点时，把实际启用时刻以 UTC ISO-8601 写入 `FIRST_PARTY_LANDING_ANALYTICS_STARTED_AT`。这是不可回填的覆盖水位线，不要为了让旧日期变成可用而往前修改。
+3. 在 Production 配置 `CRON_SECRET`。`vercel.json` 只有一个每日 `0 16 * * *` UTC（上海 00:00）rollover：一次调用给上一上海自然日写 end、给当前日写 start，并允许 Vercel Hobby 在该小时内发生的调度漂移。
+4. 第一方统计按页面和上海自然日保存精确浏览量；UV 使用页面范围内的 Redis HyperLogLog 估算，标准误差约 0.81%。
+5. 只有查询周期位于水位线之后，并且其中每个完整上海自然日都有 start/end 覆盖证明，第一方结果才可以是 `observed`（包括真实的 0）；缺任一证明都必须显示 `unavailable`。
+6. 这个 Vercel Cron 只证明落地统计连续性，不负责研究、写页面或发布；内容生产仍由本机 Codex 的 09:15/18:30/21:30 任务运行。
+7. 如需回退，启用 Vercel Web Analytics，创建仅服务端使用的 Vercel Access Token，并在 Production 配置 `VERCEL_ANALYTICS_TOKEN`；项目和团队 ID 已列在 `.env.example`。Vercel 只在能够返回整个请求周期时替代第一方结果；一次报表只选一个供应商，绝不相加或拼接部分周期。
+8. 接口内部的 Redis 固定窗口限流只保护指标写入，不能当作平台费用或攻击防护。平台级边界仍是 Vercel WAF/DDoS 与项目配置。
 
 ### 出站到营收
 

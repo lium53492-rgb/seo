@@ -15,7 +15,13 @@ The production scheduler uses a 09:15 primary Codex desktop automation and
 18:30 / 21:30 recovery passes. All runs use the same daily state contract, so the
 recovery run resumes an incomplete page and never creates a second page after
 the day is complete. Vercel serves the site and the read-only workbench; it does
-not run the research pipeline. `vercel.json` intentionally contains no cron job.
+not run the research pipeline. `vercel.json` contains one measurement-only
+rollover cron at `0 16 * * *` UTC (Shanghai 00:00):
+`/api/cron/landing-analytics/rollover`. The `CRON_SECRET`-protected invocation
+closes the previous Shanghai day and opens the current day in Upstash, with the
+coverage validator allowing Vercel Hobby's within-hour schedule drift. It does
+not research, write, review, publish, or deploy content; those actions remain on
+the local Codex schedule.
 
 ```text
 Codex desktop automation
@@ -58,6 +64,11 @@ job.
   boolean attribution readiness/blocking state. The complete commercial
   funnel remains available only through the authenticated private API and
   process memory.
+- First-party landing UV is eligible for `observed` only after its immutable
+  rollout watermark and when every included complete Shanghai day has both
+  rollover-written start/end checkpoints. Missing proof is `unavailable`, not
+  zero. Vercel Web Analytics may replace the result only for the whole requested
+  period; provider totals are never added or partially spliced.
 - A durable, verbatim feedback queue. Each unconsumed item must receive an
   adopted/rejected decision and rationale before it is marked consumed.
 - Separate `ready_for_review`, `published`, deployed, indexed, and backlink-live
@@ -80,6 +91,9 @@ job.
 - An update requires an observed Search Console row for the exact target page.
 - A broken attribution join blocks publication. The public snapshot exposes
   only that boolean blocker, never callback counts or event detail.
+- The landing endpoint's Redis fixed-window limiter protects metric writes
+  from local bursts only. It is not a platform cost or attack-protection
+  guarantee; that boundary remains Vercel WAF/DDoS and project configuration.
 - Consolidation additionally requires distinct source/target pages, an
   overlapping query observed on both pages, at least 20 exact-page impressions
   for each page in the same finalized period, and a successfully fetched,

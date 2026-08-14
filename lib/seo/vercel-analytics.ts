@@ -9,6 +9,7 @@ const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export type LandingUvResult = {
   state: "observed" | "unavailable";
+  source: "vercel_analytics";
   visitors: number | null;
   pageviews: number | null;
   detail: string;
@@ -48,6 +49,7 @@ export async function readLandingUv(input: {
   if (!config) {
     return {
       state: "unavailable",
+      source: "vercel_analytics",
       visitors: null,
       pageviews: null,
       detail: "VERCEL_ANALYTICS_TOKEN is not configured for the public Web Analytics API.",
@@ -75,6 +77,7 @@ export async function readLandingUv(input: {
   } catch (error) {
     return {
       state: "unavailable",
+      source: "vercel_analytics",
       visitors: null,
       pageviews: null,
       detail: `Vercel Web Analytics request failed: ${error instanceof Error ? error.name : "network_error"}.`,
@@ -83,6 +86,7 @@ export async function readLandingUv(input: {
   if (!response.ok) {
     return {
       state: "unavailable",
+      source: "vercel_analytics",
       visitors: null,
       pageviews: null,
       detail: `Vercel Web Analytics API returned ${response.status}.`,
@@ -96,6 +100,7 @@ export async function readLandingUv(input: {
   if (!Number.isFinite(visitors) || visitors < 0 || !Number.isFinite(pageviews) || pageviews < 0) {
     return {
       state: "unavailable",
+      source: "vercel_analytics",
       visitors: null,
       pageviews: null,
       detail: "Vercel Web Analytics returned an invalid count response.",
@@ -103,6 +108,7 @@ export async function readLandingUv(input: {
   }
   return {
     state: "observed",
+    source: "vercel_analytics",
     visitors,
     pageviews,
     detail: `Observed ${publicHostname}/${input.sourceSlug} through Vercel Web Analytics for the requested period.`,

@@ -144,6 +144,21 @@ When a draft includes a contextual internal link, the published template must re
 - Track publication date, evidence count, intent/cluster, approved fact IDs, rendering checks, page-level Search Console metrics, and 28-day outcome.
 - Treat organic clicks as search-result clicks, not unique visitors. Do not promise a fixed traffic outcome.
 - Aggregate Search Console clicks and landing UV by source page and reporting period. Join qualified outbounds, trials, signups, payments, and revenue with `seo_click_id`; do not use the shared keyword-research account as an analytics source.
+- For landing UV, prefer the first-party Upstash source: exact daily pageview
+  counters plus a page-scoped Redis HyperLogLog UV estimate with approximately
+  0.81% standard error. Keep
+  `FIRST_PARTY_LANDING_ANALYTICS_STARTED_AT` as the immutable coverage
+  watermark. The single `CRON_SECRET`-protected Vercel rollover at
+  `0 16 * * *` UTC (Shanghai 00:00) closes the previous day and opens the current one,
+  allowing within-hour scheduler drift. A first-party period is observed only
+  when it is after the watermark and every included day has both coverage
+  checkpoints; otherwise it remains unavailable. The rollover is not a
+  content-production scheduler. Use a configured Vercel Web Analytics result
+  only as a full-requested-period fallback; never add or splice providers.
+- Treat the landing endpoint's Redis fixed-window limit as metric-write
+  protection only. Platform cost and attack protection still belong at the
+  Vercel WAF/DDoS boundary; do not describe the application limit as a
+  platform-level guarantee.
 - Before scoring the next page, run `npm run growth:check` and then
   `npm run growth:collect`, followed by `npm run trends:check` and
   `npm run trends:collect -- --research data/research/YYYY-MM-DD.json`.

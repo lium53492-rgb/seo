@@ -12,6 +12,7 @@ import { absoluteSiteUrl } from "@/lib/seo/site";
 import { CinematicExperiencePage } from "./CinematicExperiencePage";
 import { DecisionMapPage } from "./DecisionMapPage";
 import { InventoryCatalogPage } from "./InventoryCatalogPage";
+import { LandingViewBeacon } from "./LandingViewBeacon";
 import { NarrativeEssayPage } from "./NarrativeEssayPage";
 import { TaskGuidePage } from "./TaskGuidePage";
 import { StoryCompanion } from "./StoryCompanion";
@@ -88,6 +89,7 @@ export default async function PublishedSeoPage({ params }: PageProps) {
         scriptId={`faq-jsonld-${page.slug}`}
       />
       {view}
+      <LandingViewBeacon sourceSlug={page.slug} />
       {companionPolicy === "story_companion"
         ? <StoryCompanion sourceSlug={page.slug} />
         : null}

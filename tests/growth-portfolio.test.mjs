@@ -360,6 +360,15 @@ test("direct growth projection keeps its optional-origin API and requires both e
   const report = collectedReport(page, period);
   assert.equal(projectPrivateGrowthReport(report, page, period).sourceSlug, page.slug);
 
+  const firstParty = structuredClone(report);
+  firstParty.funnel.metrics.landingUv.source = "first_party_analytics";
+  const firstPartyProjection = projectPrivateGrowthReport(firstParty, page, period);
+  assert.equal(firstPartyProjection.metrics.landingUv.source, "first_party_analytics");
+  assert.match(
+    firstPartyProjection.metrics.landingUv.detail,
+    /estimated UV.*first-party analytics/,
+  );
+
   const mismatched = structuredClone(report);
   mismatched.urlInspection.pageUrl =
     `https://seo-pi-fawn.vercel.app/${page.slug}`;

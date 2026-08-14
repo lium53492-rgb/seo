@@ -293,14 +293,16 @@ function validateCollectedReport(report, page, period) {
   return report;
 }
 
-function publicMetric(rawMetric, source, observedDetail, unavailableDetail) {
+function publicMetric(rawMetric, allowedSources, observedDetail, unavailableDetail) {
+  const sources = Array.isArray(allowedSources) ? allowedSources : [allowedSources];
   if (
     !isRecord(rawMetric) ||
     !["observed", "unavailable"].includes(rawMetric.status) ||
-    rawMetric.source !== source
+    !sources.includes(rawMetric.source)
   ) {
-    throw new Error(`The attribution endpoint returned an invalid ${source} metric`);
+    throw new Error(`The attribution endpoint returned an invalid ${sources.join("/")} metric`);
   }
+  const source = rawMetric.source;
   if (rawMetric.status === "observed") {
     const value = Number(rawMetric.value);
     if (!Number.isFinite(value) || value < 0) {
@@ -515,9 +517,13 @@ export function projectPrivateGrowthReport(report, page, period, expectedOrigin)
   );
   const landingUv = publicMetric(
     privateReport.funnel.metrics?.landingUv,
-    "vercel_analytics",
-    "Observed the exact landing page's aggregate UV through Vercel Web Analytics for this reporting period.",
-    "Exact-page landing UV was unavailable from Vercel Web Analytics for this reporting period.",
+    ["vercel_analytics", "first_party_analytics"],
+    privateReport.funnel.metrics?.landingUv?.source === "first_party_analytics"
+      ? "Observed the exact landing page's aggregate estimated UV through privacy-minimized first-party analytics for this reporting period."
+      : "Observed the exact landing page's aggregate UV through Vercel Web Analytics for this reporting period.",
+    privateReport.funnel.metrics?.landingUv?.source === "first_party_analytics"
+      ? "Exact-page landing UV was unavailable from first-party analytics for this reporting period."
+      : "Exact-page landing UV was unavailable from Vercel Web Analytics for this reporting period.",
   );
   const qualifiedOutboundClicks = publicMetric(
     privateReport.funnel.metrics?.qualifiedOutboundClicks,
