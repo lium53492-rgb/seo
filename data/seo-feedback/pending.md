@@ -1,13 +1,13 @@
 # Pending SEO feedback
 
-Last updated: 2026-08-10 (Asia/Shanghai)
+Last updated: 2026-08-16 (Asia/Shanghai)
 
 ## Operating constraints
 
 - Publish at most one new English SEO page per day.
 - Treat 20 organic visits per page as a 28-day performance target, not a guaranteed outcome. Use only observed Search Console data for evaluation.
 - Do not create pages around unlicensed events, teams, players, celebrities, or other third-party intellectual property. Seasonal and topical demand may be researched only through original, generic intents.
-- SEO-page CTAs should lead to the approved NovelAI destination once the production CTA deployment has completed.
+- Future SEO-page copy and CTA labels use the approved Playworlds product identity. Current-schema pages use the versioned `/go/playworlds/{slug}` contract and exact official Steam listing; the retired NovelAI route must not be used for new pages. The signed Playworlds callback and production domain/GSC verification remain separate blockers.
 
 ## Production methodology adopted 2026-07-21
 
@@ -36,6 +36,11 @@ Last updated: 2026-08-10 (Asia/Shanghai)
 
 - Verbatim: 1、冷启动额度不是已经删除了吗  为什么还会对现在产生影响 / 2、现在我们海外也制作dnd了  后续的页面制作  都以dnd为主 / 3、以前大同小异的页面可以都删除了  但是像8月1号的不要删  其他的页面我觉得不适合玩dnd的玩家  更适合小孩
 - Decision: adopted. The cold-start gate was already retired and must not be cited again. Preserve only the August 1 public SEO page, retire the remaining generic page slugs and child-directed workshop presentation, and make adult D&D players and Game Masters the primary audience within the documented product and IP boundary.
+
+## User feedback adopted 2026-08-16
+
+- Verbatim: “这个是我们的新产品 playworld，前面的novel.ai就不做了 页面中就不要再有novel.ai了 我们现在全部都是dnd了，也就是playworld。你把页面重新修改一下 我看还有novel.ai”
+- Decision: adopted. Use the official Steam spelling **Playworlds** for the current product. Remove NovelAI from future page copy, CTA labels, and product positioning. Keep D&D as an adult tabletop audience/search reference only; do not imply official affiliation, endorsement, licensing, or 5e compatibility. Preserve dated NovelAI research and feedback as history. The Playworlds outbound route and event/UTM contract are now implemented in code; do not claim the whole site or revenue loop is migrated until the signed callback and replacement production domain/GSC property are implemented and independently verified.
 
 ## User feedback awaiting intake
 

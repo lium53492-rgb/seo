@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { TrackedNovelAiHomeLink } from "@/app/components/TrackedNovelAiHomeLink";
+import { TrackedPlayworldsLink } from "@/app/components/TrackedPlayworldsLink";
 import type { SeoPageViewProps } from "./page-family-types";
 import { StageStarterSelector } from "./StageStarterSelector";
 import styles from "./stage-decision.module.css";
@@ -8,8 +8,8 @@ export function StageDecisionPage({ page, relatedPages }: SeoPageViewProps) {
   return (
     <main className={styles.stage}>
       <nav className={styles.nav} aria-label="Primary navigation">
-        <a className={styles.brand} href="#decision">N <span>THE OPENING ACT</span></a>
-        <TrackedNovelAiHomeLink className={styles.navLink} sourceSlug={page.slug} location="header">OPEN NOVELAI ↗</TrackedNovelAiHomeLink>
+        <a className={styles.brand} href="#decision">P <span>PLAYWORLDS GUIDES</span></a>
+        <TrackedPlayworldsLink className={styles.navLink} sourceSlug={page.slug} location="header">VIEW PLAYWORLDS ↗</TrackedPlayworldsLink>
       </nav>
 
       <header className={styles.hero}>
@@ -30,7 +30,7 @@ export function StageDecisionPage({ page, relatedPages }: SeoPageViewProps) {
             <a href="#starter-selector"><span>01</span> Find your cue</a>
             <a href="#route-stop-3"><span>02</span> Perform the scene</a>
           </div>
-          <TrackedNovelAiHomeLink className={styles.heroCta} sourceSlug={page.slug} location="hero">Take the stage <span aria-hidden="true">↗</span></TrackedNovelAiHomeLink>
+          <TrackedPlayworldsLink className={styles.heroCta} sourceSlug={page.slug} location="hero">View Playworlds on Steam <span aria-hidden="true">↗</span></TrackedPlayworldsLink>
         </div>
         <p className={styles.cue} aria-hidden="true">SCENE CUE — A beginning is already moving.</p>
       </header>
@@ -88,7 +88,7 @@ export function StageDecisionPage({ page, relatedPages }: SeoPageViewProps) {
       <footer className={styles.finalCta}>
         <p>CURTAIN UP</p>
         <h2>The comparison ends where the story begins.</h2>
-        <TrackedNovelAiHomeLink className={styles.finalLink} sourceSlug={page.slug} location="final_cta">Explore stories on NovelAI ↗</TrackedNovelAiHomeLink>
+        <TrackedPlayworldsLink className={styles.finalLink} sourceSlug={page.slug} location="final_cta">View Playworlds on Steam ↗</TrackedPlayworldsLink>
       </footer>
     </main>
   );

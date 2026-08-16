@@ -35,7 +35,8 @@ machine-validated SRD version, license basis, and attribution contract exists.
 - Require a distinct intent, adult D&D/tabletop audience term, concrete table
   job, approved pain point, and all configured content layers.
 - Require an independent editorial review and visual-audit receipt.
-- Publish through `/go/novelai/{slug}` attribution; never restore legacy
+- Publish current-schema pages through `/go/playworlds/{slug}` attribution;
+  retain `/go/novelai/{slug}` only for historical compatibility and never restore legacy
   `/go/story/` redirects.
 - Run `npm.cmd run verify` before any release.
 - Do not claim a page is live until push, deployment readiness, rendered-page,

@@ -203,6 +203,92 @@ function unavailableEntry(page, reason) {
   };
 }
 
+function unavailablePlayworldsAttributionReadiness(detail) {
+  return {
+    schemaVersion: 1,
+    product: "playworlds",
+    state: "unavailable",
+    attributionJoinReady: false,
+    detail,
+  };
+}
+
+function validatePublicPlayworldsAttributionReadiness(value) {
+  if (
+    value?.schemaVersion !== 1 ||
+    value?.product !== "playworlds" ||
+    !["observed", "unavailable"].includes(value?.state) ||
+    typeof value?.attributionJoinReady !== "boolean" ||
+    typeof value?.detail !== "string" ||
+    value.detail.trim().length < 10 ||
+    (value.state !== "observed" && value.attributionJoinReady)
+  ) {
+    throw new Error("Global Playworlds attribution readiness is invalid");
+  }
+  return {
+    schemaVersion: 1,
+    product: "playworlds",
+    state: value.state,
+    attributionJoinReady: value.attributionJoinReady,
+    detail: value.detail.trim(),
+  };
+}
+
+function projectPrivatePlayworldsAttributionReadiness(value) {
+  const callback = value?.sources?.conversionCallback;
+  const callbackHandshake = callback?.handshake;
+  const attributionStore = value?.sources?.attributionStore;
+  const ready =
+    value?.readyFor?.outboundToRevenue === true &&
+    callback?.provider === "playworlds_callback" &&
+    callback?.configured === true &&
+    callbackHandshake?.state === "observed" &&
+    callbackHandshake?.recent === true &&
+    attributionStore?.provider === "upstash_redis" &&
+    attributionStore?.configured === true;
+  return validatePublicPlayworldsAttributionReadiness({
+    schemaVersion: 1,
+    product: "playworlds",
+    state: "observed",
+    attributionJoinReady: ready,
+    detail: ready
+      ? "The independent Playworlds callback handshake and attribution store probe are ready."
+      : "The independent Playworlds callback handshake or attribution store probe is not ready.",
+  });
+}
+
+async function collectPlayworldsAttributionReadiness({
+  authorization,
+  siteUrl,
+  fetchImpl,
+}) {
+  if (!authorization) {
+    return unavailablePlayworldsAttributionReadiness(
+      "SEO_AUTOMATION_TOKEN is unavailable, so the independent Playworlds readiness probe was not collected.",
+    );
+  }
+  try {
+    const endpoint = new URL("/api/attribution/readiness", siteUrl);
+    const response = await fetchImpl(endpoint, {
+      headers: { authorization },
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (!response.ok) {
+      await response.body?.cancel();
+      return unavailablePlayworldsAttributionReadiness(
+        `Independent Playworlds readiness returned HTTP ${response.status}.`,
+      );
+    }
+    const body = await response.text();
+    if (body.length > 100_000) throw new Error("readiness response exceeded 100 KB");
+    return projectPrivatePlayworldsAttributionReadiness(JSON.parse(body));
+  } catch (error) {
+    return unavailablePlayworldsAttributionReadiness(
+      `Independent Playworlds readiness could not be collected (${error instanceof Error ? error.name : "unknown error"}).`,
+    );
+  }
+}
+
 function unavailableRetiredUrl(page, reason) {
   return {
     sourceSlug: page.slug,
@@ -601,6 +687,7 @@ export async function collectGrowthPortfolio({
   reportingLagDays = 3,
   now = new Date(),
   fetchImpl = fetch,
+  globalAttributionReadiness,
 }) {
   const normalizedPages = validatePages(pages);
   const normalizedRetiredPages = validateRetiredPages(
@@ -616,6 +703,13 @@ export async function collectGrowthPortfolio({
     Buffer.byteLength(automationToken, "utf8") >= 32
     ? `Bearer ${automationToken}`
     : null;
+  const globalAttribution = globalAttributionReadiness === undefined
+    ? await collectPlayworldsAttributionReadiness({
+        authorization,
+        siteUrl: normalizedSiteUrl,
+        fetchImpl,
+      })
+    : validatePublicPlayworldsAttributionReadiness(globalAttributionReadiness);
 
   const entries = await Promise.all(normalizedPages.map(async (page) => {
     if (!authorization) {
@@ -719,9 +813,7 @@ export async function collectGrowthPortfolio({
   const attributionJoinBlocked = collectedEntries.some(
     (entry) => entry.report.decisionState.attributionJoinBlocked,
   );
-  const attributionJoinReady =
-    collectedEntries.length === entries.length &&
-    collectedEntries.every((entry) => entry.report.decisionState.attributionJoinChecked);
+  const attributionJoinReady = globalAttribution.attributionJoinReady;
   const hasSearchValidatedLandingPage = countSearchValidatedLandingPages(entries) > 0;
 
   return {
@@ -741,6 +833,7 @@ export async function collectGrowthPortfolio({
       attributionJoinBlocked,
       hasSearchValidatedLandingPage,
     },
+    globalAttribution,
     entries,
     retiredUrls,
   };

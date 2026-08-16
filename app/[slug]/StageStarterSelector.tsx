@@ -1,4 +1,4 @@
-import { TrackedNovelAiHomeLink } from "@/app/components/TrackedNovelAiHomeLink";
+import { TrackedPlayworldsLink } from "@/app/components/TrackedPlayworldsLink";
 
 type StageStarterSelectorProps = {
   sourceSlug: string;
@@ -57,9 +57,9 @@ export function StageStarterSelector({ sourceSlug }: StageStarterSelectorProps) 
               </ol>
               <div className="stageStarter__resultActions">
                 <a href="#route-stop-3">Read the story-first route <span aria-hidden="true">→</span></a>
-                <TrackedNovelAiHomeLink sourceSlug={sourceSlug} location="inline">
-                  Open a story <span aria-hidden="true">↗</span>
-                </TrackedNovelAiHomeLink>
+                <TrackedPlayworldsLink sourceSlug={sourceSlug} location="inline">
+                  View Playworlds on Steam <span aria-hidden="true">↗</span>
+                </TrackedPlayworldsLink>
               </div>
             </article>
           </div>

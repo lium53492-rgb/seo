@@ -1,135 +1,99 @@
-# SEO to revenue attribution contract
+# Playworlds SEO revenue attribution
 
-## Goal
+## Current boundary
 
-Measure the complete search-to-revenue path without pretending every source exposes user-level data. Search Console clicks and the selected landing-UV provider aggregate by source slug and reporting period. First-party Upstash analytics is preferred; the Vercel Web Analytics API is a complete-period fallback, never an additive source. The qualified NovelAI outbound, trial, signup, payment, and attributed revenue events join with `seo_click_id`, which contains no personal information.
+Search Console clicks and landing UV are aggregated by source slug and complete
+Shanghai reporting period. A user-initiated product outbound receives a random
+`seo_click_id`; that identifier is reserved for the outbound-to-product event
+chain and contains no personal information.
 
-## Outbound request
-
-Every SEO CTA points to:
+The current outbound route is:
 
 ```text
-/go/novelai/<source-slug>?location=<cta-location>
+/go/playworlds/<source-slug>?location=<cta-location>
 ```
 
-The route validates that the source is a published page, creates a UUID, redirects immediately, and schedules a durable Upstash write with Next.js `after()`. Browser navigations carrying `Sec-Fetch-User: ?1` increment `qualifiedOutboundClicks`; other requests remain in `outboundRequests` for audit and do not inflate the qualified funnel. A later signed conversion can promote an otherwise unverified click.
+It accepts only a currently published source slug. The server creates a UUID,
+normalizes the CTA location, appends the approved attribution parameters, and
+returns a non-cacheable 307 redirect to the official Playworlds Steam listing:
 
 ```text
-utm_source=novelai_seo
+https://store.steampowered.com/app/4911480/Playworlds/
+```
+
+The destination allowlist requires HTTPS, the exact Steam hostname and app
+path, no credentials, and no preloaded query or fragment. An optional
+`PLAYWORLDS_DESTINATION_URL` must resolve to that same approved listing.
+
+## Outbound parameters and events
+
+The redirect carries:
+
+```text
+utm_source=playworlds_guides
 utm_medium=organic_landing
-utm_campaign=seo_revenue
+utm_campaign=playworlds_seo
 utm_content=<source-slug>
 utm_term=<researched-keyword>
 seo_click_id=<uuid>
 seo_source_slug=<source-slug>
-seo_cta_location=<location>
+seo_cta_location=<normalized-location>
+seo_product=playworlds
+seo_attribution_version=1
 ```
 
-The destination host is allowlisted to `novelai.ai` and `www.novelai.ai` over HTTPS.
+The versioned runtime event names are:
 
-## NovelAI integration
+- browser click: `playworlds_outbound_click`;
+- server navigation: `playworlds_outbound_navigation`;
+- qualified stored event: `playworlds_qualified_outbound_click`;
+- non-qualified audit event: `playworlds_outbound_request`;
+- persistence result/failure: `playworlds_outbound_persistence` and
+  `playworlds_outbound_persistence_failed`.
 
-On the NovelAI application:
+A GET with `Sec-Fetch-User: ?1` is a qualified navigation. Other GET requests
+remain audit-only and do not increase `qualifiedOutboundClicks`. HEAD resolves
+the same safe destination without writing a funnel event, so the live release
+verifier can validate the redirect contract without polluting traffic data.
 
-1. Read `seo_click_id`, `seo_source_slug`, and UTM values on first arrival.
-2. Store them with the anonymous session and carry them into the authenticated account when signup occurs.
-3. Create a unique `eventId` for every trial, signup, or payment event.
-4. POST the event server-to-server to `https://lorelens.novelai.ai/api/attribution/conversion` with `Authorization: Bearer <ATTRIBUTION_SECRET>`.
-5. Retry non-2xx responses and deduplicate by `eventId` in the durable analytics or payment sink.
-6. Do not send email, display name, raw payment identifiers, or other personal data.
-7. From the NovelAI server environment, run `npm run growth:probe` after deployment or secret rotation. It signs a non-business handshake to `/api/attribution/probe`; the probe never increments trial, signup, payment, revenue, or outbound metrics.
+Upstash records product-namespaced idempotency keys and page/day aggregates.
+Playworlds click records carry `product=playworlds`; the retained legacy
+NovelAI callback cannot join those clicks. This prevents an old integration
+secret or callback from being mistaken for Playworlds revenue evidence.
 
-Use first-touch acquisition within the product's chosen attribution lifetime: once an anonymous session has an eligible `seo_click_id`, do not replace it with a later direct visit. If the business later adopts another attribution model, version that rule instead of silently changing historical comparisons.
+## Conversion callback status
 
-Example event shape:
+No signed Playworlds trial, signup, purchase, or revenue callback contract has
+been implemented or verified. `/api/attribution/readiness` therefore reports
+`playworlds_callback` as unavailable and keeps `outboundToRevenue` and
+`fullLoop` false. `npm run growth:probe` returns the same unavailable state and
+exits non-zero. Do not infer downstream conversions from Steam visits, old
+NovelAI callbacks, an existing `ATTRIBUTION_SECRET`, or an external sink.
 
-```json
-{
-  "schemaVersion": 1,
-  "eventId": "UUID",
-  "clickId": "UUID from seo_click_id",
-  "sourceSlug": "play-an-ai-roleplay-story",
-  "event": "trial_started",
-  "occurredAt": "ISO-8601 timestamp"
-}
-```
+Implementing the future callback requires separate product-server evidence:
+an approved event schema, secret ownership, retry/idempotency rules, privacy
+review, a signed handshake, and a deployed probe. Until then, reports may use
+observed Search Console, landing, and Playworlds outbound aggregates only, with
+downstream fields explicitly unavailable.
 
-For `purchase_completed`, also send integer `revenueMinor` and an uppercase three-letter `currency` such as `USD`.
+## Legacy compatibility
 
-## Environment variables
+`/go/novelai/{slug}`, the legacy conversion endpoint, the NovelAI handshake,
+and `npm run growth:probe:legacy-novelai` remain only so dated artifacts and
+old integrations can be audited. Current-schema pages and current release
+verification reject that CTA route. Historical reports and page payloads must
+not be rewritten to hide their original contract.
 
-SEO Vercel project:
+## Production configuration
 
-- `NOVELAI_DESTINATION_URL`: optional approved NovelAI URL; defaults to the current Chinese home route.
-- `WORKBENCH_PASSWORD`: optional Basic-auth password for interactive human access to the private workbench and attribution views. Without it, the complete `/workbench` and `/api/workbench` route families fail closed; `SEO_AUTOMATION_TOKEN` is not accepted as a browser credential.
-- `SEO_AUTOMATION_TOKEN`: required machine-only bearer token for `growth:check`, `growth:collect`, and other private report automation. Generate it from at least 32 random bytes, configure the same value in the SEO Vercel project and trusted automation environment, and never expose it in browser JavaScript.
-- `ATTRIBUTION_SECRET`: required for conversion callbacks.
-- `CRON_SECRET`: protects the daily landing-coverage rollover endpoint. This Vercel cron records measurement continuity only; it does not run content research or publishing.
-- `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`: durable, atomic attribution storage. The Vercel Marketplace Upstash integration can inject these variables.
-- `FIRST_PARTY_LANDING_ANALYTICS_STARTED_AT`: immutable UTC ISO-8601 rollout watermark for the first-party landing beacon. A period can be reported by the first-party source only after this watermark and when every complete Shanghai day has rollover-written start/end checkpoints.
-- `VERCEL_ANALYTICS_TOKEN`: optional server-only Vercel access token used by the Web Analytics API when a complete requested period needs the fallback provider.
-- `VERCEL_ANALYTICS_PROJECT_ID` and `VERCEL_ANALYTICS_TEAM_ID`: optional explicit API scope; this repository defaults to its current Vercel project and team IDs.
-- `GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL` and `GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY`: server-only Google service-account credentials for the Search Console API.
-- `GOOGLE_SEARCH_CONSOLE_SITE_URL`: optional Search Console property identifier; defaults to the URL-prefix form of `NEXT_PUBLIC_SITE_URL`.
-- `ATTRIBUTION_SINK_URL`: optional durable event sink. When configured, a sink failure returns 502 so NovelAI can retry.
-- `ATTRIBUTION_SINK_TOKEN`: optional bearer token for the sink.
+- `NEXT_PUBLIC_SITE_URL=https://guides.playworlds.ai`
+- `GOOGLE_SEARCH_CONSOLE_SITE_URL=https://guides.playworlds.ai/` or a verified
+  domain property that covers `guides.playworlds.ai`
+- `PLAYWORLDS_DESTINATION_URL` is optional and may only repeat the approved
+  Steam listing above
+- `SEO_AUTOMATION_TOKEN` protects growth-readiness automation
+- Upstash and landing-analytics variables retain their existing roles
 
-NovelAI application:
-
-- Store the same `ATTRIBUTION_SECRET` only on the server.
-- Never expose it in browser JavaScript.
-
-## Persistence and idempotency
-
-- Outbound events deduplicate by `clickId`.
-- Trial, signup, and purchase callbacks deduplicate by `eventId`.
-- Trial, signup, and paid-conversion counts are unique per click. Multiple unique purchase events may add revenue, while one acquired click still counts as one paid conversion.
-- Conversion revenue is added to the Shanghai-day acquisition cohort of the original click, not the payment day. This makes page-level revenue per acquired UV meaningful.
-- Report requests are rounded outward to complete Shanghai calendar days before Redis cohorts, landing UV, and Search Console are queried. First-party landing pageviews are exact daily counters; UV is a page-scoped Redis HyperLogLog estimate with approximately 0.81% standard error. The one `CRON_SECRET`-protected `0 16 * * *` UTC (Shanghai 00:00) rollover closes the previous day and opens the current one in one invocation, allowing Vercel's within-hour schedule drift. A request before the watermark or with any missing daily start/end proof is unavailable from the first-party source. A configured Vercel result may replace it only when it covers the complete requested period; the report never sums providers or combines partial windows. Portfolio collection ends after the policy-defined three-day finalized-data lag. The returned `periodStart` and `periodEnd` are the actual normalized boundaries, so numerator and denominator always cover the same release window. Search Console labels query dates in Pacific Time; that source-timezone detail remains visible in its provenance.
-- Revenue is stored separately for each ISO currency. The workbench never sums unlike currencies.
-- If a signed callback arrives without its outbound event, it is retained under the supplied source and callback date, and `orphanCallbacks` exposes the broken join.
-- Event and cohort keys expire after 400 days. No email, account ID, payment ID, IP address, or other direct personal data is stored.
-- The callback returns `202` only when the internal Redis store or an explicitly configured external sink durably accepts the event. Missing storage returns `503`; transient failures return `502`; NovelAI must retry both.
-- The signed integration handshake is stored separately for eight days. Readiness requires a successful handshake within the policy-defined seven-day window, so merely setting a secret on the SEO project cannot create a false full-loop status.
-- The landing-view endpoint has a Redis fixed-window limiter to protect metric writes. It is not the platform cost or attack-protection boundary; Vercel WAF/DDoS and project-level controls remain responsible for that layer.
-
-## Funnel report
-
-The authenticated API may return the complete funnel for a stated period, but
-that response is private and may exist only in process memory. A committable
-daily research input uses public growth schema version 2 with
-`aggregationKey: "source_slug+reporting_period"`. It contains finalized
-exact-page Search Console, sanitized indexed-version URL Inspection, aggregate
-landing UV, aggregate qualified outbound, and boolean readiness/blocking state.
-It must not contain click IDs, cohort keys, downstream event counts, currency,
-amounts, purchase events, callback counts, or CTA-location detail.
-
-- `observed`: non-negative value, named source, and collection note; or
-- `unavailable`: `null` value, named expected source, and a specific reason.
-
-First-party Upstash analytics normally supplies UV; Vercel Analytics can supply the full-period fallback but is not the payment system. The shared SEO-tool account supplies keyword research but is not a traffic or revenue source. The workbench must name the provider used and keep those boundaries visible.
-
-The protected live view is `/workbench/attribution`. Its JSON contract is:
-
-```text
-GET /api/attribution/report?sourceSlug=<slug>&from=<ISO>&to=<ISO>
-Authorization: Bearer <SEO_AUTOMATION_TOKEN>
-```
-
-Interactive workbench users may continue to use `Authorization: Basic <workbench credentials>`. Automation uses the separate bearer token, so removing or rotating the human password does not interrupt scheduled collection and does not make revenue data public. If neither private credential is configured, the endpoint fails closed.
-
-`node scripts/collect-growth-funnel.mjs <slug> <from> <to>` reads the same endpoint for a daily automation using `SEO_AUTOMATION_TOKEN`. The endpoint queries finalized Search Console data for the exact page and period plus Google URL Inspection for the indexed version of that canonical URL; a successful empty Search Analytics row is observed zero, while missing credentials, authorization, API access, or index data remains unavailable.
-
-Run `npm run growth:probe` from a server environment holding the same `ATTRIBUTION_SECRET` as NovelAI, then run `npm run growth:check`. The readiness command calls the protected endpoint, performs a one-day live source probe, and exits non-zero until Search Console, one complete-period landing-UV source, Upstash attribution, and a recent signed NovelAI callback handshake are all ready.
-
-The normal production command is `npm run growth:collect`. It queries every
-published page for the prior 28 complete Shanghai calendar days ending after
-the configured three-day lag, projects each private response to the safe public
-schema in memory, and writes `data/growth/YYYY-MM-DD.json`. The daily research
-file either embeds this object as `portfolioFunnels` or points to it with
-`portfolioSnapshot`. The report builder accepts legacy schema version 1 only as
-migration input and always emits the public schema-version 2 projection. It
-rejects missing pages, duplicate slugs, mismatched periods, stale snapshots,
-wrong lag, and a true attribution-join blocker. Page count, landing UV, and
-exact-page Search Console impressions remain recorded decision signals, but
-zero or unavailable values do not independently block a distinct new page.
+The canonical domain, DNS/Vercel attachment, and matching Search Console
+property still require independent production verification. Code configuration
+alone is not deployment evidence.

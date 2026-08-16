@@ -40,8 +40,14 @@ const architecturePolicy = readJson("data/config/content-architecture.json");
 const presentationCatalog = readJson("data/config/presentation-recipes.json");
 const unattendedPolicy = readJson("data/config/unattended-publishing.json");
 const siteConfig = readJson("data/config/site.json");
+const activeProductFacts = factCatalog.facts.filter((fact) => fact.status === "active");
+const activeFactStatements = activeProductFacts.map((fact) => fact.statement);
+const approvedFactIds = new Set(activeProductFacts.map((fact) => fact.id));
 const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const retiredPageSlugs = new Set(Array.isArray(policy.retiredPageSlugs) ? policy.retiredPageSlugs : []);
+const productMigrationHoldSlugs = new Set(
+  Array.isArray(policy.productMigrationHoldSlugs) ? policy.productMigrationHoldSlugs : [],
+);
 const retiredRecipeIds = new Set(Array.isArray(policy.retiredRecipeIds) ? policy.retiredRecipeIds : []);
 const retiredPaletteIds = new Set(Array.isArray(policy.retiredPaletteIds) ? policy.retiredPaletteIds : []);
 const trendsAttestationVerificationKey = String(
@@ -131,12 +137,12 @@ function assertEnhancedDraftRenderContract(candidateReport) {
   if (candidateReport.date < architecturePolicy.enhancedNoveltyEnforcedFromReportDate) return;
   const candidateDraft = candidateReport.draft;
   const keyword = String(candidateDraft?.keyword || "").trim().toLowerCase();
-  const genericCtaPattern = /^(?:click here|learn more|get started|explore stories|explore story-led roleplay|try novelai|start now|read more)(?:\s+(?:on|with)\s+novelai)?[.!]?$/i;
+  const genericCtaPattern = /^(?:click here|learn more|get started|explore stories|explore story-led roleplay|try (?:novelai|playworlds)|start now|read more)(?:\s+(?:on|with)\s+(?:novelai|playworlds))?[.!]?$/i;
   const ctaTokens = new Set(
     `${keyword} ${candidateReport.contentStrategy?.readerOutcome || ""} ${candidateReport.contentStrategy?.primaryPainPoint || ""}`
       .toLowerCase()
       .match(/[a-z0-9]+/g)
-      ?.filter((token) => token.length >= 5 && !["novelai", "story", "stories", "roleplay", "using", "about"].includes(token)) || [],
+      ?.filter((token) => token.length >= 5 && !["novelai", "playworlds", "story", "stories", "roleplay", "using", "about"].includes(token)) || [],
   );
   if (genericCtaPattern.test(String(candidateDraft?.primaryCta || "").trim()) ||
     ![...ctaTokens].some((token) => candidateDraft.primaryCta.toLowerCase().includes(token))) {
@@ -317,13 +323,16 @@ function assertCreatePagePublicationReadiness(candidateReport) {
     summary.collectedPages === summary.publishedPages &&
     summary.unavailablePages === 0 &&
     summary.attributionJoinReady === true &&
+    portfolio?.globalAttribution?.product === "playworlds" &&
+    portfolio?.globalAttribution?.state === "observed" &&
+    portfolio?.globalAttribution?.attributionJoinReady === true &&
     entries.length === summary.publishedPages &&
     pageReadinessFailures.length === 0;
   if (!growthReady) {
     throw new Error(
       "Create-page growth readiness gate failed: every published page must be collected with " +
-      "Search Console, landing UV, and qualified outbound readiness, zero unavailable pages, " +
-      "and attributionJoinReady=true",
+      "observed Search Console, landing UV, and qualified outbound evidence (zero values are allowed), " +
+      "zero unavailable pages, and an independent Playworlds callback/store probe with attributionJoinReady=true",
     );
   }
   const selectedKeyword = String(candidateReport.draft?.keyword || "").trim().toLowerCase();
@@ -430,7 +439,7 @@ function publishedPagesFromDisk() {
     ? readdirSync(pagesDirectory)
       .filter((name) => name.endsWith(".json"))
       .map((name) => readJson(resolve(pagesDirectory, name)))
-      .filter((page) => page.status === "published")
+      .filter((page) => page.status === "published" && !productMigrationHoldSlugs.has(page.slug))
     : [];
 }
 const pages = publishedPagesFromDisk();
@@ -490,18 +499,22 @@ const novelty = analyzeContentNovelty({
   architectureHistory,
   architecturePolicy,
   presentationCatalog,
-  allowedPhrases: factCatalog.facts.map((fact) => fact.statement),
+  allowedPhrases: activeFactStatements,
   enforceEnhancedNovelty: report.date >= architecturePolicy.enhancedNoveltyEnforcedFromReportDate,
 });
 if (!novelty.passed) {
   const first = novelty.violations[0];
   throw new Error(`Content distinctness changed after review [${first.code}]: ${first.detail}`);
 }
-const approvedFactIds = new Set(factCatalog.facts.map((fact) => fact.id));
 if (!Array.isArray(draft.factIdsUsed) || new Set(draft.factIdsUsed).size < 2 ||
   new Set(draft.factIdsUsed).size !== draft.factIdsUsed.length ||
   draft.factIdsUsed.some((id) => !approvedFactIds.has(id))) {
   throw new Error("Reviewed draft uses an unapproved or missing product fact ID");
+}
+if (productMigrationHoldSlugs.has(review.slug)) {
+  throw new Error(
+    `Page /${review.slug} is on product-migration hold. Remove the hold only with a newly approved Playworlds-fact report and matching editorial review.`,
+  );
 }
 
 function assertDraftOriginalIpBoundary(candidateReport) {

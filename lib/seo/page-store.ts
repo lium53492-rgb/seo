@@ -14,6 +14,7 @@ import {
 import { visiblePageText } from "./content-similarity.mjs";
 import { markdownSemanticBlockCount } from "./markdown-semantics.mjs";
 import { servedContentDigest } from "./served-content.mjs";
+import { validateProductMigrationHoldPolicy } from "./product-migration-hold.mjs";
 import { validateVisualAuditContract } from "./pipeline-contract.mjs";
 import { audienceDraftBlockers } from "./audience-policy.mjs";
 import { originalIpBoundaryBlockers } from "./ip-boundary.mjs";
@@ -22,8 +23,12 @@ import type { PublishedSeoPage } from "./types";
 const pagesDirectory = resolve(process.cwd(), "data/pages");
 const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const approvedFactIds = new Set(productFactCatalog.facts.map((fact) => fact.id));
+const activeFactIds = new Set(
+  productFactCatalog.facts.filter((fact) => fact.status === "active").map((fact) => fact.id),
+);
 const forbiddenClaims = productFactCatalog.forbiddenClaimPatterns.map((pattern) => new RegExp(pattern, "i"));
 const retiredPageSlugs = new Set(seoPolicy.retiredPageSlugs || []);
+const productMigrationHoldSlugs = new Set(seoPolicy.productMigrationHoldSlugs || []);
 const retiredRecipeIds = new Set(seoPolicy.retiredRecipeIds || []);
 const retiredPaletteIds = new Set(seoPolicy.retiredPaletteIds || []);
 const legacyGrandfathering = seoPolicy.legacyPageGrandfathering;
@@ -31,6 +36,7 @@ const legacyPublishedBefore = Date.parse(legacyGrandfathering?.publishedBefore |
 const legacyPageAllowlist = new Map(
   (legacyGrandfathering?.allowlist || []).map((entry) => [entry.slug, entry]),
 );
+validateProductMigrationHoldPolicy(seoPolicy);
 
 if (!Number.isFinite(legacyPublishedBefore) ||
   legacyPageAllowlist.size !== (legacyGrandfathering?.allowlist || []).length ||
@@ -135,10 +141,11 @@ function isPublishedPage(value: unknown): value is PublishedSeoPage {
     page.faqs.every((faq) => isNonEmptyString(faq?.question) && isNonEmptyString(faq?.answerMarkdown) &&
       (!isCurrentSchema || (isNonEmptyString(faq?.id) && isNonEmptyString(faq?.job) &&
         englishWordCount(faq.answerMarkdown) >= architecturePolicy.minimumFaqAnswerWords)));
+  const allowedFactIds = isCurrentSchema ? activeFactIds : approvedFactIds;
   const factsAreValid = Array.isArray(page.factIdsUsed) &&
     new Set(page.factIdsUsed).size >= 2 &&
     new Set(page.factIdsUsed).size === page.factIdsUsed.length &&
-    page.factIdsUsed.every((id) => typeof id === "string" && approvedFactIds.has(id));
+    page.factIdsUsed.every((id) => typeof id === "string" && allowedFactIds.has(id));
   const linksAreValid = Array.isArray(page.internalLinks) && page.internalLinks.every((link) =>
     isNonEmptyString(link?.anchor) && typeof link?.href === "string" && link.href !== page.path &&
     (link.href === "/" || /^\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(link.href))
@@ -184,6 +191,7 @@ function isPublishedPage(value: unknown): value is PublishedSeoPage {
     typeof page.slug === "string" &&
     safeSlug.test(page.slug) &&
     !retiredPageSlugs.has(page.slug) &&
+    !productMigrationHoldSlugs.has(page.slug) &&
     page.path === `/${page.slug}` &&
     isNonEmptyString(page.keyword) &&
     isNonEmptyString(page.generatedFromReport) &&

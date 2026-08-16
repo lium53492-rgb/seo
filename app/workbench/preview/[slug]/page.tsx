@@ -83,7 +83,12 @@ export default async function DraftPreviewPage({
           <span>NOINDEX PREVIEW</span>
         </div>
       </aside>
-      <StructuredContentPage page={previewPage} recipe={presentation} relatedPages={relatedPages} />
+      <StructuredContentPage
+        page={previewPage}
+        recipe={presentation}
+        relatedPages={relatedPages}
+        mode="preview"
+      />
       {companionPolicy === "story_companion"
         ? <StoryCompanion sourceSlug={previewPage.slug} />
         : null}

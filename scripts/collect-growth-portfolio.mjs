@@ -30,6 +30,15 @@ if (retiredSlugs.some((slug) => !safeSlug.test(slug))) {
   throw new Error("seo-policy.json contains an invalid retired page slug");
 }
 const retiredSlugSet = new Set(retiredSlugs);
+const productMigrationHoldSlugSet = new Set(
+  (policy.productMigrationHoldSlugs || []).map((slug) => String(slug)),
+);
+if (
+  productMigrationHoldSlugSet.size !== (policy.productMigrationHoldSlugs || []).length ||
+  [...productMigrationHoldSlugSet].some((slug) => !safeSlug.test(slug) || retiredSlugSet.has(slug))
+) {
+  throw new Error("seo-policy.json contains an invalid product-migration hold slug");
+}
 const retirementBySlug = new Map();
 const maintenanceDirectory = resolve("data/maintenance");
 if (existsSync(maintenanceDirectory)) {
@@ -55,7 +64,9 @@ const pages = existsSync(pagesDirectory)
   ? readdirSync(pagesDirectory)
     .filter((name) => name.endsWith(".json"))
     .map((name) => JSON.parse(readFileSync(resolve(pagesDirectory, name), "utf8")))
-    .filter((page) => page.status === "published" && !retiredSlugSet.has(page.slug))
+    .filter((page) => page.status === "published" &&
+      !retiredSlugSet.has(page.slug) &&
+      !productMigrationHoldSlugSet.has(page.slug))
     .map((page) => ({ slug: page.slug, path: page.path, keyword: page.keyword }))
     .sort((left, right) => left.slug.localeCompare(right.slug))
   : [];

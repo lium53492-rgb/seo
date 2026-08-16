@@ -4,41 +4,86 @@
     {
       "id": "voice-roleplay-format",
       "statement": "The product is an AI voice cosplay and roleplay experience built around acting inside a story.",
-      "source": "Product team brief supplied in this project, 2026-07-20"
+      "source": "Legacy NovelAI product-team brief supplied in this project, 2026-07-20",
+      "status": "historical_compatibility"
     },
     {
       "id": "existing-story",
       "statement": "Each playable experience starts from an existing story plot rather than an empty chat box.",
-      "source": "Product team brief supplied in this project, 2026-07-20"
+      "source": "Legacy NovelAI product-team brief supplied in this project, 2026-07-20",
+      "status": "historical_compatibility"
     },
     {
       "id": "role-selection",
       "statement": "Players choose which available story character they want to perform as.",
-      "source": "Product team brief supplied in this project, 2026-07-20"
+      "source": "Legacy NovelAI product-team brief supplied in this project, 2026-07-20",
+      "status": "historical_compatibility"
     },
     {
       "id": "interactive-fiction-history",
       "statement": "The team has previously built AI interactive-fiction and simulator experiences.",
-      "source": "Product team brief supplied in this project, 2026-07-20"
+      "source": "Legacy NovelAI product-team brief supplied in this project, 2026-07-20",
+      "status": "historical_compatibility"
     },
     {
       "id": "dnd-content-direction",
-      "statement": "The overseas product now creates D&D-focused content.",
-      "source": "Product direction supplied by the user, 2026-08-10"
+      "statement": "Future overseas Playworlds content and SEO research are D&D-player-first.",
+      "source": "Product direction supplied by the user, confirmed 2026-08-16",
+      "status": "active"
     },
     {
       "id": "dnd-primary-audience",
       "statement": "Future overseas SEO content prioritizes D&D players and Game Masters with a mature hobbyist presentation rather than child-directed story pages.",
-      "source": "Audience and presentation direction supplied by the user, 2026-08-10"
+      "source": "Audience and presentation direction supplied by the user, confirmed 2026-08-16",
+      "status": "active"
+    },
+    {
+      "id": "playworlds-current-product",
+      "statement": "Playworlds is the current overseas product and replaces NovelAI as the destination for future SEO work.",
+      "source": "Product direction supplied by the user, 2026-08-16; product name corroborated by the official Steam store listing for app 4911480",
+      "status": "active"
+    },
+    {
+      "id": "playworlds-voice-text-single-player-rpg",
+      "statement": "The official Steam listing describes Playworlds as an online, single-player, voice-first AI adventure RPG in which players can speak or type what their character attempts; a microphone is optional.",
+      "source": "Official Playworlds Steam store listing, app 4911480, observed 2026-08-16",
+      "status": "active"
+    },
+    {
+      "id": "playworlds-ai-game-master",
+      "statement": "The official Steam listing says the Playworlds AI game master interprets player actions, describes outcomes, and presents new choices, risks, and opportunities.",
+      "source": "Official Playworlds Steam store listing, app 4911480, observed 2026-08-16",
+      "status": "active"
+    },
+    {
+      "id": "playworlds-in-world-companion",
+      "statement": "The official Steam listing says players can talk, plan, and adventure with an AI teammate that responds from a role inside the story.",
+      "source": "Official Playworlds Steam store listing, app 4911480, observed 2026-08-16",
+      "status": "active"
+    },
+    {
+      "id": "playworlds-persistent-campaigns",
+      "statement": "The official Steam listing says players can create, save, and resume persistent campaigns instead of beginning with a blank conversation each time.",
+      "source": "Official Playworlds Steam store listing, app 4911480, observed 2026-08-16",
+      "status": "active"
+    },
+    {
+      "id": "playworlds-rpg-state",
+      "statement": "The official Steam listing says Playworlds tracks player and party status, action resolution, dice results, inventory, and journey history.",
+      "source": "Official Playworlds Steam store listing, app 4911480, observed 2026-08-16",
+      "status": "active"
     }
   ],
   "constraints": [
     "Do not claim that the product is free, real-time, unlimited, private, or available on a specific platform unless a new approved fact confirms it.",
     "Do not invent player counts, testimonials, rankings, retention, pricing, latency, voice technology, or safety guarantees.",
     "Do not use unlicensed entertainment characters, worlds, trademarks, or recognizable third-party IP.",
+    "The legacy NovelAI fact IDs exist only so historical published pages remain readable; they do not support new or updated Playworlds candidates.",
     "The D&D content-direction fact does not prove official affiliation, endorsement, trademark permission, or access to non-SRD settings, characters, monsters, artwork, or rules text.",
+    "The Playworlds Steam listing does not establish official Dungeons & Dragons affiliation, endorsement, licensing, or 5e compatibility.",
     "The automated publishing path may use only original tabletop-fantasy material until a structured SRD version, license, and Creative Commons attribution contract is implemented.",
-    "Do not imply that a feature is already shipped when the approved facts only describe the product direction."
+    "Do not imply that a feature is already shipped when the approved facts only describe the product direction.",
+    "The Steam listing was marked coming soon when observed on 2026-08-16; revalidate release, availability, platform, and price before making any time-sensitive claim."
   ],
   "forbiddenClaimPatterns": [
     "\\bmultiplayer\\b",
@@ -49,8 +94,11 @@
     "\\bprivate\\b",
     "\\bavailable on (?:ios|android|steam|web)\\b",
     "\\b(?:zero|low) latency\\b",
-    "\\b(?:official|officially licensed|licensed) (?:d&d|dungeons (?:&|and) dragons)\\b",
+    "\\b(?:official|officially licensed|licensed|endorsed) (?:d&d|dungeons (?:&|and) dragons)\\b",
+    "\\b(?:d&d|dungeons (?:&|and) dragons)[- ](?:official|licensed|endorsed|compatible)\\b",
     "\\b(?:5e|fifth[- ]edition)[- ]compatible\\b",
+    "\\b(?:play|download) (?:playworlds )?now\\b",
+    "\\bplayworlds is (?:now )?available\\b",
     "\\b(?:forgotten realms|dragonlance|eberron|greyhawk|ravenloft|waterdeep|baldur'?s gate|strahd|drizzt|beholder|mind flayer|illithid)\\b"
   ],
   "unsupportedKeywordPatterns": [
@@ -59,7 +107,8 @@
     "\\bgroup roleplay\\b",
     "\\breal[- ]?time\\b",
     "\\bunlimited\\b",
-    "\\b(?:official|officially licensed|licensed) (?:d&d|dungeons (?:&|and) dragons)\\b",
+    "\\b(?:official|officially licensed|licensed|endorsed) (?:d&d|dungeons (?:&|and) dragons)\\b",
+    "\\b(?:d&d|dungeons (?:&|and) dragons)[- ](?:official|licensed|endorsed|compatible)\\b",
     "\\b(?:5e|fifth[- ]edition)[- ]compatible\\b",
     "\\b(?:forgotten realms|dragonlance|eberron|greyhawk|ravenloft|waterdeep|baldur'?s gate|strahd|drizzt|beholder|mind flayer|illithid)\\b"
   ]

@@ -1,11 +1,11 @@
-# NovelAI SEO Growth Workbench
+# Playworlds SEO Growth Workbench
 
 A Next.js SEO landing site plus a revenue-first research-to-action workbench for
-NovelAI's overseas D&D-focused content direction. New production serves adult
-tabletop players and Game Masters with original, intent-specific material; the
-retained legacy decision page remains the visual-quality benchmark. Each
+Playworlds' overseas D&D-focused content direction. New production serves adult
+tabletop players and Game Masters with original, intent-specific material. Each
 published page owns one independent search intent and sends qualified readers
-through an attributed NovelAI redirect.
+through the attributed Playworlds Steam redirect. Historical NovelAI artifacts
+and routes remain compatibility-only and cannot qualify a new Playworlds page.
 
 ## Commands
 
@@ -110,16 +110,19 @@ requires a verified property and service-account authorization before daily
 query/page metrics can be read.
 
 Search Console, first-party landing analytics, the optional Vercel fallback,
-Upstash attribution, and the NovelAI conversion callback are explicit data
-connections. Missing connections stay `unavailable`; they never become
-synthetic zeroes. Automated collection uses a dedicated bearer token; it does
-not reuse the interactive workbench password.
+and product-scoped Upstash attribution are explicit data connections. A
+Playworlds conversion callback has not been implemented, so conversion
+readiness deliberately remains fail-closed. The old NovelAI callback is a
+historical compatibility path only. Missing connections stay `unavailable`;
+they never become synthetic zeroes. Automated collection uses a dedicated
+bearer token; it does not reuse the interactive workbench password.
 
 Copy `.env.example` to `.env.local` and configure only the integrations you have. Never commit `.env.local`.
 
 ### Free research mode variables
 
 - `NEXT_PUBLIC_SITE_URL`
+- `PLAYWORLDS_DESTINATION_URL` (optional; must remain the official Steam listing)
 - `CODEX_RESEARCH_MODE=true`
 
 ### Private data and provider variables
@@ -183,7 +186,7 @@ Deploy this repository as a Next.js project on Vercel.
 Current production domain:
 
 ```text
-https://lorelens.novelai.ai
+https://guides.playworlds.ai
 ```
 
 `data/config/site.json` is the source of truth for the canonical production

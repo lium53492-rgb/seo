@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 import siteConfig from "./data/config/site.json" with { type: "json" };
 
 const canonicalOrigin = new URL(siteConfig.canonicalOrigin).origin;
-const legacyHost = new URL(siteConfig.legacyOrigins[0]).host;
+const legacyHosts = siteConfig.legacyOrigins.map((origin) => new URL(origin).host);
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
@@ -29,24 +29,26 @@ const nextConfig: NextConfig = {
     "/": ["./data/pages/**/*.json"],
   },
   async redirects() {
-    const legacyHostMatch = [{ type: "host" as const, value: legacyHost }];
-    return [
-      {
-        source: "/",
-        has: legacyHostMatch,
-        destination: canonicalOrigin,
-        permanent: true,
-      },
-      {
-        // Published SEO routes are single-segment slugs. Keeping this match
-        // narrow leaves /api/** and /go/** on the technical deployment alias
-        // until every authenticated callback client has migrated.
-        source: "/:slug",
-        has: legacyHostMatch,
-        destination: `${canonicalOrigin}/:slug`,
-        permanent: true,
-      },
-    ];
+    return legacyHosts.flatMap((legacyHost) => {
+      const legacyHostMatch = [{ type: "host" as const, value: legacyHost }];
+      return [
+        {
+          source: "/",
+          has: legacyHostMatch,
+          destination: canonicalOrigin,
+          permanent: true,
+        },
+        {
+          // Published SEO routes are single-segment slugs. Keeping this match
+          // narrow leaves /api/** and /go/** available for compatibility and
+          // avoids forwarding authenticated callbacks across product eras.
+          source: "/:slug",
+          has: legacyHostMatch,
+          destination: `${canonicalOrigin}/:slug`,
+          permanent: true,
+        },
+      ];
+    });
   },
   async headers() {
     return [{

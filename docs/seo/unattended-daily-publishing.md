@@ -236,7 +236,7 @@ exact commit to reach Vercel READY when the LoreLens project is visible to the
 current Vercel account, then run:
 
 ```text
-npm.cmd run release:verify -- https://lorelens.novelai.ai FULL_GIT_SHA SLUG
+npm.cmd run release:verify -- https://guides.playworlds.ai FULL_GIT_SHA SLUG
 ```
 
 The release is complete only when LoreLens serves that exact revision and the

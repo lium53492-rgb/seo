@@ -1,0 +1,221 @@
+{
+  "schemaVersion": 1,
+  "status": "draft_for_release",
+  "publicationEligible": false,
+  "createdOn": "2026-08-15",
+  "slug": "story-driven-ai-voice-roleplay-adventure",
+  "previewRoute": "/workbench/concepts/story-driven-ai-voice-roleplay-adventure",
+  "positioning": {
+    "statement": "Playworlds: Voice-First AI Adventure RPG for D&D Players",
+    "keywordSpine": {
+      "category": "AI adventure RPG",
+      "scene": "science-fiction roleplay adventure",
+      "differentiator": "responsive AI game master",
+      "interaction": "voice or text",
+      "userAction": "choose a role and state an action"
+    },
+    "primaryKeyword": "ai roleplay adventure",
+    "supportingKeywords": [
+      "story-driven ai roleplay",
+      "ai voice roleplay",
+      "ai adventure rpg for d&d players",
+      "voice-first d&d adventure",
+      "sci-fi roleplay scenarios",
+      "science fiction roleplay ideas",
+      "choose a role ai story",
+      "sci-fi ai roleplay"
+    ],
+    "intent": "Help adult D&D players understand how a pressured role creates an immediate campaign decision, then evaluate Playworlds as a voice-first single-player AI adventure RPG"
+  },
+  "passageArchitecture": {
+    "rule": "Every section must make complete sense when retrieved in isolation. Each H2 names the subject and each opening sentence directly answers it.",
+    "sectionOrder": [
+      "direct_answer",
+      "three_worked_scenarios",
+      "role_framework",
+      "first_move_exercise",
+      "product_truth",
+      "faq"
+    ],
+    "signatureModule": "Signal Fold Mission Archive + Signal Lock — Want / Secret / Decision",
+    "antiPatterns": [
+      "generic feature-card grid",
+      "full-bleed person with left-aligned poster copy",
+      "decorative glassmorphism without narrative meaning",
+      "copying a franchise character, emblem, costume, world, or mission"
+    ]
+  },
+  "research": {
+    "collectedOn": "2026-08-16",
+    "observedPagePatterns": [
+      {
+        "url": "https://store.steampowered.com/app/4911480/Playworlds/",
+        "learning": "Treat the current Steam listing as the product source of truth: Playworlds is an online, single-player, voice-first AI adventure RPG with voice or text input, a responsive AI game master, an in-world companion, persistent campaigns, and a Q3 2026 Early Access release target."
+      },
+      {
+        "url": "https://aidungeon.com/?id=AIDungeon",
+        "learning": "Define the category in the first screen and show playable story pressure before long product explanation."
+      },
+      {
+        "url": "https://blog.character.ai/introducing-stories-a-new-way-to-create-play-and-share-adventures-with-your-favorite-characters/",
+        "learning": "Separate role choice, story premise, and participation into independently understandable modules."
+      },
+      {
+        "url": "https://reverie.im/en/ai-rpg",
+        "learning": "Use mission state and objectives as the visual grammar instead of generic feature cards."
+      },
+      {
+        "url": "https://anyverse.games/",
+        "learning": "Give the visitor an immediate original world, role identity, and story conflict."
+      },
+      {
+        "url": "https://rpdate.com/en/blog/how-to-start-ai-roleplay",
+        "learning": "Use complete answer-first H2 passages and self-contained FAQ responses."
+      }
+    ],
+    "limits": "Public search visibility and page structure do not prove traffic, rankings, clicks, or conversion performance. The Q3 2026 release window and Early Access feature set are time-sensitive and must be rechecked against Steam before publication."
+  },
+  "googleTrends": {
+    "provider": "google_trends_bigquery_public_dataset",
+    "geo": "US",
+    "collectionState": "observed",
+    "collectedAt": "2026-08-16T05:35:56.786Z",
+    "snapshotDigest": "c6a6f8bc817de09e592a4b037c906e3b6af3c8d506f4ae1d222faf92f1a2b24d",
+    "candidates": [
+      { "keyword": "ai roleplay adventure", "state": "not_observed" },
+      { "keyword": "story-driven ai roleplay", "state": "not_observed" },
+      { "keyword": "ai voice roleplay", "state": "not_observed" },
+      { "keyword": "interactive ai story", "state": "not_observed" },
+      { "keyword": "ai story game with choices", "state": "not_observed" },
+      { "keyword": "ai text adventure", "state": "not_observed" },
+      { "keyword": "choose a role ai story", "state": "not_observed" },
+      { "keyword": "voice narrated ai adventure", "state": "not_observed" }
+    ],
+    "exactRisingMatch": false,
+    "interpretation": "None of the exact candidate phrases appeared in the available US Top Rising feed. This does not mean zero search demand and does not clear the current automated Trends publication gate."
+  },
+  "productTruth": {
+    "factIdsUsed": [
+      "playworlds-current-product",
+      "dnd-content-direction",
+      "dnd-primary-audience",
+      "playworlds-voice-text-single-player-rpg",
+      "playworlds-ai-game-master",
+      "playworlds-in-world-companion",
+      "playworlds-persistent-campaigns",
+      "playworlds-rpg-state"
+    ],
+    "source": {
+      "name": "Playworlds on Steam",
+      "url": "https://store.steampowered.com/app/4911480/Playworlds/",
+      "appId": 4911480,
+      "observedOn": "2026-08-16"
+    },
+    "evidenceRecords": [
+      {
+        "id": "playworlds-steam-product-format",
+        "statement": "Playworlds is described as an online, single-player, voice-first AI adventure RPG."
+      },
+      {
+        "id": "playworlds-steam-input-options",
+        "statement": "Players can speak or type their actions, and a microphone is optional."
+      },
+      {
+        "id": "playworlds-steam-ai-game-master",
+        "statement": "A responsive AI game master interprets actions, describes outcomes, and presents new choices, risks, and opportunities."
+      },
+      {
+        "id": "playworlds-steam-companion",
+        "statement": "An in-world AI companion can talk, plan, and adventure with the player from a role inside the story."
+      },
+      {
+        "id": "playworlds-steam-persistent-campaigns",
+        "statement": "Players can create, save, and resume persistent campaigns."
+      },
+      {
+        "id": "playworlds-steam-rpg-state",
+        "statement": "The announced RPG state includes player and party status, action resolution, dice results, inventory, and journey history."
+      },
+      {
+        "id": "playworlds-steam-release-status",
+        "statement": "Steam lists Playworlds as coming soon in Q3 2026 for Early Access."
+      }
+    ],
+    "supportedBridge": "Playworlds accepts voice or text actions in an online, single-player AI adventure RPG, with a responsive AI game master, an in-world companion, persistent campaigns, tracked RPG state, and generated dialogue and narration.",
+    "explicitExclusions": [
+      "No claim that the three editorial missions or characters are available in Playworlds",
+      "No official D&D affiliation, endorsement, licensing, or 5e compatibility claim",
+      "No multiplayer or human-party claim; the Steam product description is single-player and the in-world companion is AI",
+      "No claim that Playworlds is released or available to play now; Steam currently lists Q3 2026 Early Access",
+      "No voice cloning, voice transformation, scoring, latency, privacy, or safety guarantee",
+      "No guarantee that AI-generated dialogue, narration, or gameplay responses will be consistent"
+    ]
+  },
+  "conceptIpBoundary": {
+    "contentBasis": "original_tabletop_science_fantasy",
+    "thirdPartyNames": [
+      "Dungeons & Dragons"
+    ],
+    "allowedReference": "D&D appears only as an adult tabletop-audience reference and in an explicit non-affiliation statement. It is not used as a product identity, rules claim, compatibility claim, setting, or content source.",
+    "forbiddenReferences": [
+      "Marvel",
+      "DC",
+      "Superman",
+      "Star Wars",
+      "official D&D",
+      "5e-compatible",
+      "named D&D settings, characters, monsters, rules text, or artwork"
+    ],
+    "visualStatement": "Ilexa Vant, Moro Qel, Calyx Orra, the Kyr-Vanta Relay, their costumes, symbols, and missions are original editorial inventions. They are not represented as confirmed Playworlds content. Exact-name collision checks were run before release drafting."
+  },
+  "asset": {
+    "path": "/images/story-driven-ai-voice-adventure.webp",
+    "generationMode": "built-in ImageGen",
+    "sourcePromptUseCase": "stylized concept art for a premium English SEO landing-page hero",
+    "copyrightBoundary": "No text, logo, watermark, franchise character, recognizable superhero costume, or third-party world."
+  },
+  "designDirection": {
+    "human": "Adult English-speaking AI roleplay searchers who want a cinematic story hook they can understand immediately.",
+    "action": "Inspect three original mission signals, understand the Playworlds product format, and recognize the future Steam wishlist action without activating it inside the protected preview.",
+    "feel": "Mature orbital noir with cold signal telemetry, existential urgency, and no child-directed fantasy styling.",
+    "colorWorld": [
+      "vacuum black",
+      "black ice",
+      "ion cyan",
+      "hazard red",
+      "starlight white",
+      "oxidized silver"
+    ],
+    "visualSignature": "A diagonal signal fold connects the hero, mission archive, role framework, and closing boundary while particles and mist remain atmospheric rather than decorative card chrome.",
+    "rejectedDefaults": [
+      "August 1 full-screen poster composition",
+      "left-copy and right-character two-column hero",
+      "repeated bento feature cards",
+      "purple glassmorphism"
+    ]
+  },
+  "userDirection": {
+    "recordedOn": "2026-08-16",
+    "request": "Retire the previous product bridge, make Playworlds the product destination, and remove every old product reference from this concept page while keeping the project aimed at adult D&D audiences.",
+    "decision": "adopted_as_protected_playworlds_concept_preview"
+  },
+  "currentReleaseBoundary": {
+    "productionPolicyAllowsThisLane": false,
+    "reason": "The public /go/playworlds/{slug} CTA route has been migrated against the Playworlds Steam destination, but a Playworlds conversion callback has not been implemented or verified, the replacement production domain and matching Search Console property have not been verified, and the candidate still lacks an exact US Top Rising match from Google Trends.",
+    "requiredBeforePublication": [
+      "Verify the migrated /go/playworlds/{slug} route on the replacement production domain and implement and verify the Playworlds conversion callback contract",
+      "Confirm the replacement production domain and matching Search Console property",
+      "Keep D&D language limited to adult audience context until an exact SRD version, license, attribution, and copy boundary are documented",
+      "Complete the current-day growth and attribution readiness checks",
+      "Produce same-day research, report, editorial review, visual audit, and guarded publication artifacts",
+      "Pass the Google Trends rule or record an explicit user-authorized policy change rather than silently bypassing it"
+    ]
+  },
+  "cta": {
+    "label": "Wishlist Playworlds on Steam",
+    "target": "https://store.steampowered.com/app/4911480/Playworlds/",
+    "state": "disabled_in_preview",
+    "reason": "The protected preview shows the intended Steam action without creating outbound traffic. A public rendering must receive its approved CTA URL through component props."
+  },
+  "reviewBinding": null
+}

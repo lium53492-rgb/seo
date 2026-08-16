@@ -18,11 +18,15 @@ This is the active zero-additional-API-cost production protocol. It uses public 
    and boolean readiness/blocking state only. Never copy trial, signup, payment,
    revenue, currency, purchase-event, callback-count, click-ID, or cohort detail
    into `data/growth` or `data/reports`.
-5. Run `npm.cmd run growth:probe` from the NovelAI server environment after
-   callback deployment or secret rotation, then run `npm.cmd run growth:check`.
+5. After the runtime probe and callback contract are migrated to Playworlds,
+   run `npm.cmd run growth:probe` from the Playworlds server environment after
+   callback deployment or secret rotation, then run
+   `npm.cmd run growth:check`. Until that migration is complete, record callback
+   readiness as unavailable.
    Full-loop readiness requires observed Search Console, an observed landing-UV
-   provider, and attribution-store probes plus a recent signed NovelAI callback
-   handshake.
+   provider, and attribution-store probes plus a recent signed Playworlds
+   callback handshake. A legacy NovelAI callback, route, or event name is not
+   evidence of Playworlds readiness.
 6. Run `npm.cmd run growth:collect` before researching candidates. It uses the
    official Search Console API and the landing-analytics adapter over the
    configured 28-day finalized-data window, currently ending three complete
@@ -96,9 +100,12 @@ new-page candidate must name both the adult tabletop audience and a concrete
 table job: for example Game Master campaign preparation, encounter repair,
 NPC differentiation, at-table improvisation, player-character hooks, agency,
 party tone, or continuity. A generic AI-story candidate that merely mentions
-"session" or "campaign" is ineligible. The audience qualifier does not count
-toward product-fit by itself; the page must also cite approved, currently true
-product capabilities.
+"session" or "campaign" is ineligible. Every new candidate must include the
+`dnd_content`, `adult_tabletop_audience`, and
+`playworlds_current_product` qualifiers. Those zero-weight qualifiers do not
+count toward product fit; the page must also cite approved, currently true
+Playworlds capability facts and earn the required score from the corresponding
+Playworlds capability signals.
 
 The selected `create_page` candidate also needs a same-day schema-v2 Google
 Trends observation produced from the official BigQuery collection. Only an
@@ -232,9 +239,14 @@ Commit only intended artifacts and code, persist
 not claim deployment until the remote push succeeds, the release revision is
 the exact `origin/main` tip, and
 two complete LoreLens checks independently show the exact SHA, expected H1,
-canonical, attributed `/go/novelai/` CTA, `Article`/`FAQPage` JSON-LD, robots,
-and sitemap entry. A READY deployment from a different Vercel project is not
-evidence for LoreLens.
+canonical, approved attributed Playworlds CTA, `Article`/`FAQPage` JSON-LD,
+robots, sitemap entry, `/go/playworlds/{slug}` link, and non-writing HEAD
+redirect to the approved Playworlds Steam listing with the complete attribution
+contract. It must reject the retired `/go/novelai/` path for current-schema
+pages. Until the signed Playworlds callback and the replacement production
+domain/GSC property are implemented and verified, no site-wide migration or
+full-loop completion may be claimed. A READY deployment from a different
+Vercel project is not evidence for LoreLens.
 
 The coordinator first verifies the publishing window, saves the complete
 checkpoint, pins the commit, durably records

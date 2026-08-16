@@ -68,6 +68,8 @@ function snapshotEnvironment() {
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     VERCEL_ANALYTICS_TOKEN: process.env.VERCEL_ANALYTICS_TOKEN,
     VERCEL_TOKEN: process.env.VERCEL_TOKEN,
+    VERCEL_ANALYTICS_PROJECT_ID: process.env.VERCEL_ANALYTICS_PROJECT_ID,
+    VERCEL_ANALYTICS_TEAM_ID: process.env.VERCEL_ANALYTICS_TEAM_ID,
     FIRST_PARTY_LANDING_ANALYTICS_STARTED_AT:
       process.env.FIRST_PARTY_LANDING_ANALYTICS_STARTED_AT,
   };
@@ -223,8 +225,13 @@ test("readiness reports a source configuration failure without bypassing auth or
     });
     assert.equal(body.sources.landingUv.provider, "landing_analytics");
     assert.equal(body.sources.attributionStore.provider, "upstash_redis");
+    assert.equal(body.sources.conversionCallback.provider, "playworlds_callback");
+    assert.equal(body.sources.conversionCallback.configured, false);
+    assert.equal(body.sources.conversionCallback.handshake.state, "unavailable");
+    assert.match(body.sources.conversionCallback.detail, /downstream conversion callbacks remain unavailable/);
     assert.equal(body.readyFor.searchEvidence, false);
     assert.equal(body.readyFor.searchToUv, false);
+    assert.equal(body.readyFor.outboundToRevenue, false);
     assert.equal(body.readyFor.fullLoop, false);
   } finally {
     restoreEnvironment(environment);
@@ -241,8 +248,10 @@ test("search-to-UV readiness requires observed probe results, not configured cre
     delete process.env.WORKBENCH_PASSWORD;
     process.env.GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL = "seo@example.invalid";
     process.env.GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY = "not-a-real-private-key";
-    process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL = "https://lorelens.novelai.ai/";
+    process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL = "https://guides.playworlds.ai/";
     process.env.VERCEL_ANALYTICS_TOKEN = "vercel-token";
+    process.env.VERCEL_ANALYTICS_PROJECT_ID = "prj_explicit_fixture";
+    process.env.VERCEL_ANALYTICS_TEAM_ID = "team_explicit_fixture";
     delete process.env.VERCEL_TOKEN;
     delete process.env.KV_REST_API_TOKEN;
     delete process.env.KV_REST_API_URL;
@@ -267,8 +276,7 @@ test("search-to-UV readiness requires observed probe results, not configured cre
     const body = await response.json();
     assert.equal(body.sources.searchConsole.configured, true);
     assert.equal(body.sources.landingUv.configured, true);
-    assert.equal(body.probe.searchConsole.state, "unavailable");
-    assert.equal(body.probe.landingUv.state, "observed");
+    assert.equal(body.probe, null, "no active pages means there is no page-level probe target");
     assert.equal(body.readyFor.searchToUv, false);
   } finally {
     globalThis.fetch = originalFetch;
@@ -298,7 +306,7 @@ test("growth command entry points use only the machine automation credential", a
     join(projectRoot, "app/api/attribution/conversion/route.ts"),
     "utf8",
   );
-  assert.match(conversionSource, /readPublishedPage\(event\.sourceSlug\)/);
+  assert.match(conversionSource, /resolveLegacyNovelAiSource\(event\.sourceSlug, readPublishedPage, seoPolicy\)/);
   assert.doesNotMatch(conversionSource, /retiredPageSlugs/);
 
   const workflowSource = await readFile(
@@ -307,6 +315,6 @@ test("growth command entry points use only the machine automation credential", a
   );
   assert.match(workflowSource, /secrets\.SEO_AUTOMATION_TOKEN/);
   assert.doesNotMatch(workflowSource, /secrets\.WORKBENCH_PASSWORD/);
-  assert.match(workflowSource, /https:\/\/lorelens\.novelai\.ai/);
+  assert.match(workflowSource, /https:\/\/guides\.playworlds\.ai/);
   assert.doesNotMatch(workflowSource, /seo-pi-fawn\.vercel\.app/);
 });

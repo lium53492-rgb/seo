@@ -1,6 +1,8 @@
 import { z } from "zod";
+import seoPolicy from "@/data/config/seo-policy.json";
 import { isAttributionAuthorized, logSeoGrowthEvent } from "@/lib/seo/attribution";
 import { recordConversionEvent } from "@/lib/seo/attribution-store";
+import { resolveLegacyNovelAiSource } from "@/lib/seo/legacy-novelai-outbound";
 import { readPublishedPage } from "@/lib/seo/page-store";
 import { privateJson } from "@/lib/seo/private-response";
 
@@ -46,7 +48,8 @@ export async function POST(request: Request) {
   }
 
   const event = parsed.data;
-  if (!await readPublishedPage(event.sourceSlug)) {
+  const page = await resolveLegacyNovelAiSource(event.sourceSlug, readPublishedPage, seoPolicy);
+  if (!page) {
     return privateJson({ error: "Unknown SEO source slug" }, { status: 404 });
   }
   let internalPersistence: Awaited<ReturnType<typeof recordConversionEvent>> | null = null;

@@ -36,7 +36,7 @@
     ]
   },
   "releaseVerification": {
-    "origin": "https://lorelens.novelai.ai",
+    "origin": "https://guides.playworlds.ai",
     "expectedOriginRepository": "lium53492-rgb/seo",
     "authoritativeDeploymentEvidence": "live_exact_git_revision",
     "requireOriginMainTip": true,

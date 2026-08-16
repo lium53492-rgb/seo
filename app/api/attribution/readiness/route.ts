@@ -5,7 +5,6 @@ import {
 import seoPolicy from "@/data/config/seo-policy.json";
 import {
   attributionStoreStatus,
-  readNovelAiIntegrationProbe,
 } from "@/lib/seo/attribution-store";
 import { readLiveGrowthFunnel } from "@/lib/seo/growth-funnel";
 import { listPublishedPages } from "@/lib/seo/page-store";
@@ -117,38 +116,20 @@ export async function GET(request: Request) {
     read: attributionStoreStatus,
   });
   const callbackProbeMaxAgeHours = Number(seoPolicy.feedbackLoop.callbackProbeMaxAgeHours);
-  let callbackHandshake;
-  try {
-    callbackHandshake = await readNovelAiIntegrationProbe();
-  } catch (error) {
-    callbackHandshake = {
+  const callbackHandshakeRecent = false;
+  const conversionCallback = {
+    configured: false,
+    provider: "playworlds_callback" as const,
+    callbackProbeMaxAgeHours,
+    handshake: {
       state: "unavailable" as const,
       lastObservedAt: null,
       probeId: null,
-      detail: error instanceof Error ? error.message : "NovelAI callback handshake read failed.",
-    };
-  }
-  const callbackHandshakeAgeHours = callbackHandshake.lastObservedAt
-    ? (Date.now() - Date.parse(callbackHandshake.lastObservedAt)) / 3_600_000
-    : null;
-  const callbackHandshakeRecent = callbackHandshake.state === "observed" &&
-    callbackHandshakeAgeHours !== null &&
-    callbackHandshakeAgeHours >= 0 &&
-    callbackHandshakeAgeHours <= callbackProbeMaxAgeHours;
-  const conversionCallback = {
-    configured: Boolean(process.env.ATTRIBUTION_SECRET),
-    provider: "novelai_callback" as const,
-    callbackProbeMaxAgeHours,
-    handshake: {
-      ...callbackHandshake,
-      recent: callbackHandshakeRecent,
-      ageHours: callbackHandshakeAgeHours,
+      recent: false,
+      ageHours: null,
+      detail: "A signed Playworlds conversion callback contract has not been implemented or verified.",
     },
-    ...(!process.env.ATTRIBUTION_SECRET
-      ? { detail: "ATTRIBUTION_SECRET is not configured." }
-      : !callbackHandshakeRecent
-        ? { detail: "NovelAI has not completed a recent signed callback handshake." }
-      : {}),
+    detail: "Playworlds outbound attribution is active, but downstream conversion callbacks remain unavailable.",
   };
   const sourceProbeReady = probe && !("state" in probe) &&
     probe.searchConsole.state === "observed" &&

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "product": "playworlds",
+  "routePrefix": "/go/playworlds",
+  "destination": "https://store.steampowered.com/app/4911480/Playworlds/",
+  "allowedCtaLocations": [
+    "seo_page",
+    "hero",
+    "header",
+    "inline",
+    "final_cta",
+    "companion"
+  ],
+  "utm": {
+    "source": "playworlds_guides",
+    "medium": "organic_landing",
+    "campaign": "playworlds_seo"
+  },
+  "events": {
+    "clientClick": "playworlds_outbound_click",
+    "navigation": "playworlds_outbound_navigation",
+    "persistence": "playworlds_outbound_persistence",
+    "persistenceFailed": "playworlds_outbound_persistence_failed",
+    "qualifiedOutbound": "playworlds_qualified_outbound_click",
+    "outboundRequest": "playworlds_outbound_request"
+  }
+}

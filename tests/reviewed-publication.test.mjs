@@ -193,6 +193,25 @@ test("report generation cannot publish before a separate approval artifact", asy
     await mkdir(join(workspace, "data", "config"), { recursive: true });
     await cp(join(repoRoot, "data", "config"), join(workspace, "data", "config"), { recursive: true });
     await mkdir(join(workspace, "data", "research"), { recursive: true });
+    const pagesDirectory = join(workspace, "data", "pages");
+    await mkdir(pagesDirectory, { recursive: true });
+    const existingPage = JSON.parse(await readFile(
+      join(repoRoot, "data", "pages", "ai-roleplay-prompt-vs-existing-story.json"),
+      "utf8",
+    ));
+    Object.assign(existingPage, {
+      slug: "unrelated-campaign-archive",
+      path: "/unrelated-campaign-archive",
+      keyword: "tabletop campaign archive workflow",
+      title: "Tabletop Campaign Archive Workflow",
+      h1: "Tabletop Campaign Archive Workflow",
+      metaDescription: "Organize a mature tabletop campaign archive around unresolved threads, faction state, and the next preparation decision.",
+      heroMarkdown: "This unrelated fixture represents a campaign-record workflow rather than the prompt-versus-story decision tested by the candidate batch.",
+    });
+    await writeFile(
+      join(pagesDirectory, `${existingPage.slug}.json`),
+      `${JSON.stringify(existingPage, null, 2)}\n`,
+    );
 
     const keywords = [
       "play an ai roleplay story",
@@ -205,7 +224,7 @@ test("report generation cannot publish before a separate approval artifact", asy
       "d&d campaign choice consequences",
     ];
     const searcherJobs = [
-      "Compare a blank prompt with prepared story context for a D&D campaign, then choose the route that reduces useful Game Master prep.",
+      "Use an AI game master and persistent campaign state to reduce repeat D&D preparation, then choose one original scene action to carry into the next session.",
       "Write one D&D player character reply from a supplied session detail, a small in-character action, and a hook the next turn can answer.",
       "Recover a stalled D&D session by adding one grounded observation, action, or decision that creates a clear next beat at the table.",
       "Maintain a D&D player character perspective during a campaign session after the opening exchange has already begun.",
@@ -251,18 +270,20 @@ test("report generation cannot publish before a separate approval artifact", asy
         productFactIds: [
           "dnd-content-direction",
           "dnd-primary-audience",
-          "voice-roleplay-format",
-          "existing-story",
-          "role-selection",
-          "interactive-fiction-history",
+          "playworlds-current-product",
+          "playworlds-voice-text-single-player-rpg",
+          "playworlds-ai-game-master",
+          "playworlds-persistent-campaigns",
+          "playworlds-rpg-state",
         ],
         productSignals: [
           "dnd_content",
           "adult_tabletop_audience",
-          "voice_roleplay",
-          "story_premise",
-          "role_selection",
-          "interactive_fiction",
+          "playworlds_current_product",
+          "playworlds_voice_text_rpg",
+          "playworlds_ai_game_master",
+          "playworlds_persistent_campaigns",
+          "playworlds_rpg_state",
         ],
         trialSignals: [
           "solution_aware",
@@ -289,11 +310,11 @@ test("report generation cannot publish before a separate approval artifact", asy
     }));
     const supports = [...keywords];
     const sectionBodies = [
-      "A useful D&D campaign entry decision begins by separating two adult tabletop jobs. A blank-prompt route asks the Game Master to supply a premise before play can move. A prepared-story route begins with an existing plot, so the first decision is whether that situation already gives the party a reason to participate. Read the opening for one unresolved pressure, one available perspective, and one immediate consequence. That comparison prevents a generic tavern greeting from standing in for a table-ready choice. It also stays inside approved product facts: the guide can describe D&D-focused content, an existing story, and role selection without promising a named setting, character, platform, price, response speed, or technical voice behavior.",
+      "A useful D&D campaign entry decision separates two jobs. A fresh route asks the player to establish an original premise. A persistent route resumes saved campaign context. This prevents a generic opening from standing in for a table-ready choice. It stays inside approved facts: Playworlds is described as a single-player voice-or-text AI adventure RPG with an AI game master and persistent campaigns. The guide does not promise a named setting, price, release state, response speed, or technical voice behavior.",
       "Find wasted campaign preparation with a compact evidence grid instead of a feature checklist.\n1. In the first column, write what premise, opposition, and stakes the Game Master must invent.\n2. In the second column, write which of those elements the prepared situation already supplies.\nThen mark where player-character perspective comes from and what decision could reach the table this session. If neither route produces a consequential choice, the preparation is still scenery rather than playable pressure. The exercise does not crown a universal winner. It helps a trial-ready tabletop reader identify which starting condition matches tonight's job, while keeping every example original and clear of protected settings, monsters, or characters.",
-      "Use a three-question campaign rule after diagnosing the waste.\n- First, do you want to build the premise or respond to pressure that is already moving?\n- Second, does the party need a fresh character hook, or does an available role already create one?\n- Third, can you name a decision whose consequence will be visible before the session ends?\nThree clear answers produce a bounded preparation plan; uncertainty on any answer identifies the exact gap to solve. This framework is narrower than a beginner tutorial. It gives an adult player or Game Master enough structure to protect agency, preserve campaign tone, and stop before unused lore crowds out the next table decision.",
+      "Use a three-question campaign rule after diagnosing the waste.\n- First, do you want to establish a fresh campaign or resume a pressure already recorded in a persistent one?\n- Second, can the next attempted action give the AI game master enough information to describe an outcome and present a meaningful choice?\n- Third, can you name a consequence that should be visible in the tracked campaign state before the session ends?\nThree clear answers produce a bounded preparation plan; uncertainty on any answer identifies the exact gap to solve. This framework is narrower than a beginner tutorial. It gives an adult player or Game Master enough structure to protect agency, preserve campaign tone, and stop before unused lore crowds out the next table decision.",
       "Consider an original campaign in which a storm-battered river town has one working signal bell. The ferrymaster wants it rung to guide refugees, while the night watch warns that the sound will reveal the crossing to raiders. A prepared route already supplies pressure, two credible interests, and a consequence; the Game Master only needs to frame what the party knows. A blank route is the better choice when the group wants to invent the town, threat, and obligations together. In either case, ask the player characters what risk they accept and let that answer change the next scene. The example proves the framework at table scale without borrowing a licensed world or dictating a correct outcome.",
-      "Carry one qualified campaign choice forward after the example passes the table test. Open the attributed destination intentionally in a new tab, inspect the available original premise, and choose a role only if its pressure fits the party's mature tone. The guide does not start a session, guarantee an outcome, or claim that every imagined scenario exists. Its job is to replace a vague product visit with a measurable one: the reader knows which preparation should survive contact with player agency, which perspective they would take, and which next action matters. The approved redirect can then connect that deliberate visit to downstream attribution without exposing protected commercial data in the public report.",
+      "Carry one qualified campaign choice forward after the example passes the table test. Open the attributed Playworlds Steam destination, inspect the official description of voice-or-text play, the AI game master, and persistent campaigns, then decide whether they fit the preparation job. The guide neither starts a session nor guarantees a scenario or outcome. It replaces a vague visit with a measurable one: the reader knows which state matters and which action to attempt. The redirect records only the product-scoped outbound step; downstream conversion remains unavailable until a verified Playworlds callback exists.",
     ];
     const input = {
       policyVersion: 4,
@@ -303,18 +324,18 @@ test("report generation cannot publish before a separate approval artifact", asy
         schemaVersion: 2,
         searcherJob: candidates[0].decisionEvidence.searcherJob,
         painPointId: "campaign_prep_overload",
-        readerStateBefore: "The reader wants to participate now but has not decided whether to invent a prompt or enter an existing story.",
-        readerOutcome: "The reader can compare the two starting routes, choose one deliberately, and explain the next scene-level action.",
-        primaryPainPoint: "The reader is close to trying a product but cannot tell which starting route removes the right kind of setup work.",
-        oneSentenceAnswer: "Begin with an original plot, choose an available role, and enter the opening scene.",
-        originalContribution: "A decision sequence that maps search intent to plot, role choice, and a measured next step.",
+        readerStateBefore: "The reader wants to reduce repeat D&D preparation but has not decided whether to start fresh or resume persistent campaign state.",
+        readerOutcome: "The reader can choose a campaign route deliberately and explain one scene-level action for the AI game master to resolve.",
+        primaryPainPoint: "The reader is close to evaluating Playworlds but cannot tell which campaign route removes the right kind of setup work.",
+        oneSentenceAnswer: "Use the Playworlds AI game master and persistent campaign state to turn one bounded prep decision into a voice-or-text adventure attempt.",
+        originalContribution: "A decision sequence that maps campaign-prep intent to persistent state, one attempted action, and a measured next step.",
         pagePattern: "decision_page",
-        productBridge: "The approved experience begins with an existing story and lets the player choose an available character.",
-        contextualNextStep: "Send a qualified reader through the attributed NovelAI route after the decision barrier is resolved.",
+        productBridge: "The approved Playworlds facts describe a single-player voice-or-text AI adventure RPG with an AI game master, persistent campaigns, and tracked RPG state.",
+        contextualNextStep: "Send a qualified reader through the attributed Playworlds Steam route after the campaign-prep decision barrier is resolved.",
         evidenceBoundary: "Use only the approved product fact catalog and public evidence for the searcher job.",
-        conversionHypothesis: "Readers searching to play now should start a trial more often after seeing the exact entry sequence.",
-        primaryConversion: "trial_start",
-        measurementPlan: "Join outbound clicks to NovelAI trial and payment callbacks with seo_click_id.",
+        conversionHypothesis: "Readers evaluating an AI game master should produce more qualified Playworlds outbound visits after seeing the exact campaign-prep sequence.",
+        primaryConversion: "qualified_outbound_click",
+        measurementPlan: "Measure the product-scoped Playworlds qualified outbound by seo_click_id and keep downstream conversion unavailable until a verified callback exists.",
       },
       candidates,
       trendSignals: [
@@ -368,8 +389,8 @@ test("report generation cannot publish before a separate approval artifact", asy
         schemaVersion: 1,
         action: "create_page",
         targetSlug: null,
-        rationale: "The portfolio has no previous pages, so a first trial-ready page is the explicit cold-start decision.",
-        evidenceSlugs: [],
+        rationale: "The unrelated archive page has a complete observed readiness snapshot, so the explicit decision is to create a distinct campaign-prep page.",
+        evidenceSlugs: [existingPage.slug],
       },
       funnel: {
         schemaVersion: 1,
@@ -381,28 +402,88 @@ test("report generation cannot publish before a separate approval artifact", asy
           organicClicks: unavailable("search_console", "No visible Search Console rows in the reporting window."),
           landingUv: unavailable("vercel_analytics", "No Vercel Analytics export was available for this fixture."),
           qualifiedOutboundClicks: unavailable("seo_redirect", "No redirect aggregation was available for this fixture."),
-          trialStarts: unavailable("product_analytics", "NovelAI trial callbacks are not connected in this fixture."),
-          signups: unavailable("product_analytics", "NovelAI signup callbacks are not connected in this fixture."),
+          trialStarts: unavailable("product_analytics", "A verified Playworlds trial callback is not implemented in this fixture."),
+          signups: unavailable("product_analytics", "A verified Playworlds signup callback is not implemented in this fixture."),
           paidConversions: unavailable("payments", "Payment callbacks are not connected in this fixture."),
           revenueMinor: unavailable("payments", "Attributed revenue is not connected in this fixture."),
         },
       },
       portfolioFunnels: {
-        schemaVersion: 1,
+        schemaVersion: 2,
+        privacyClass: "public_growth_evidence",
         generatedAt: "2099-01-01T09:00:00+08:00",
         periodBasis: "complete_shanghai_calendar_days",
         reportingWindowDays: 28,
         reportingLagDays: 3,
         aggregationKey: "source_slug+reporting_period",
-        conversionJoinKey: "seo_click_id",
         periodStart: "2098-12-05T00:00:00+08:00",
         periodEnd: "2099-01-01T00:00:00+08:00",
         summary: {
-          publishedPages: 0,
-          collectedPages: 0,
+          publishedPages: 1,
+          collectedPages: 1,
           unavailablePages: 0,
+          attributionJoinReady: true,
+          attributionJoinBlocked: false,
+          hasSearchValidatedLandingPage: false,
         },
-        entries: [],
+        globalAttribution: {
+          schemaVersion: 1,
+          product: "playworlds",
+          state: "observed",
+          attributionJoinReady: true,
+          detail: "The independent Playworlds callback and attribution store fixture probe passed.",
+        },
+        entries: [{
+          sourceSlug: existingPage.slug,
+          path: existingPage.path,
+          keyword: existingPage.keyword,
+          state: "collected",
+          report: {
+            sourceSlug: existingPage.slug,
+            metrics: {
+              landingUv: { status: "observed", value: 0, source: "vercel_analytics", detail: "Observed exact-page landing UV aggregate for the fixture period." },
+              qualifiedOutboundClicks: { status: "observed", value: 0, source: "seo_redirect", detail: "Observed exact-page qualified outbound aggregate for the fixture period." },
+            },
+            searchPerformance: {
+              state: "observed",
+              sourceSlug: existingPage.slug,
+              pageUrl: `https://guides.playworlds.ai/${existingPage.slug}`,
+              startDate: "2098-12-05",
+              endDate: "2098-12-31",
+              clicks: 0,
+              impressions: 0,
+              ctr: 0,
+              position: null,
+              detail: "Observed an exact-page Search Console aggregate with zero rows in this fixture period.",
+            },
+            urlInspection: {
+              state: "observed",
+              sourceSlug: existingPage.slug,
+              pageUrl: `https://guides.playworlds.ai/${existingPage.slug}`,
+              inspectedAt: "2099-01-01T08:55:00+08:00",
+              verdict: "PASS",
+              coverageState: "Submitted and indexed",
+              robotsTxtState: "ALLOWED",
+              indexingState: "INDEXING_ALLOWED",
+              pageFetchState: "SUCCESSFUL",
+              lastCrawlTime: "2098-12-31T08:00:00+08:00",
+              googleCanonical: `https://guides.playworlds.ai/${existingPage.slug}`,
+              userCanonical: `https://guides.playworlds.ai/${existingPage.slug}`,
+              crawledAs: "MOBILE",
+              sitemap: ["https://guides.playworlds.ai/sitemap.xml"],
+              detail: "Observed the exact-page URL Inspection result for the active fixture page.",
+            },
+            decisionState: {
+              landingUvReady: true,
+              qualifiedOutboundReady: true,
+              searchPerformanceReady: true,
+              urlInspectionReady: true,
+              attributionJoinChecked: true,
+              attributionJoinBlocked: false,
+              samePageSearchValidated: false,
+            },
+          },
+        }],
       },
       draft: {
         schemaVersion: 2,
@@ -412,11 +493,11 @@ test("report generation cannot publish before a separate approval artifact", asy
         generatedAt: "2099-01-01T09:15:00+08:00",
         language: "en",
         reviewRequired: true,
-        title: "Choose a D&D Campaign Starting Route Without Wasted Prep",
-        metaDescription: "Compare a blank prompt with prepared story context for a D&D campaign, then choose the route that reduces wasted Game Master preparation.",
-        h1: "Choose a D&D Campaign Starting Route",
-        heroMarkdown: "Start with an original D&D campaign situation, compare the preparation each route demands, and choose the path that preserves useful table decisions.",
-        primaryCta: "Compare starting routes on NovelAI",
+        title: "Choose a D&D AI Game Master Route Without Wasted Prep",
+        metaDescription: "Compare a fresh start with persistent campaign state, then choose one original action for an AI game master to resolve without wasted D&D preparation.",
+        h1: "Choose a D&D AI Game Master Campaign Route",
+        heroMarkdown: "Start with an original D&D campaign situation, compare a fresh route with persistent campaign state, and choose one action the AI game master can resolve.",
+        primaryCta: "Carry the AI roleplay campaign decision into Playworlds",
         ipBoundary: {
           schemaVersion: 1,
           contentBasis: "original_tabletop_fantasy",
@@ -432,23 +513,23 @@ test("report generation cannot publish before a separate approval artifact", asy
           { id: "carry-the-choice", role: "next_step", format: "callout", heading: "Carry one qualified choice forward", bodyMarkdown: sectionBodies[4] },
         ],
         faqs: [
-          { id: "faq-existing-plot", job: "definition", question: "What does an existing plot change about the start?", answerMarkdown: "It supplies an opening situation to inspect, so the reader can focus on choosing a perspective and responding to one immediate pressure instead of inventing an entire premise." },
-          { id: "faq-better-route", job: "decision", question: "Is a story-led route always better than a blank prompt?", answerMarkdown: "No. The comparison is about fit. Choose a story-led route when you want supplied context and an available role; choose another route when inventing the premise is the work you want to do." },
-          { id: "faq-product-boundary", job: "constraint", question: "What can this guide confirm about the product?", answerMarkdown: "It can use the approved story, role-selection, and experience facts. It cannot promise a particular scenario, platform, price, privacy property, response speed, or outcome." },
+          { id: "faq-existing-plot", job: "definition", question: "What does persistent campaign state change about the start?", answerMarkdown: "It lets a returning player resume saved campaign context, so the next preparation decision can focus on one unresolved pressure and one attempted action instead of rebuilding the campaign from scratch." },
+          { id: "faq-better-route", job: "decision", question: "Is a persistent campaign always better than a fresh start?", answerMarkdown: "No. The comparison is about fit. Resume when the saved campaign state contains pressure worth advancing; start fresh when establishing an original premise is the work you want to do." },
+          { id: "faq-product-boundary", job: "constraint", question: "What can this guide confirm about Playworlds?", answerMarkdown: "It can use the approved single-player voice-or-text RPG, AI game master, persistent-campaign, and tracked-state facts. It cannot promise a particular scenario, price, release state, privacy property, response speed, or outcome." },
         ],
         architecture: {
           schemaVersion: 1,
           intent: {
             searcherJob: candidates[0].decisionEvidence.searcherJob,
             painPointId: "campaign_prep_overload",
-            decisionToEnable: "Choose between inventing a blank prompt and entering a supplied story before visiting the product.",
-            oneSentenceAnswer: "Begin with an original plot, choose an available role, and enter the opening scene.",
+            decisionToEnable: "Choose between establishing a fresh campaign and resuming persistent campaign state before visiting Playworlds.",
+            oneSentenceAnswer: "Use the Playworlds AI game master and persistent campaign state to turn one bounded prep decision into a voice-or-text adventure attempt.",
             nonGoals: ["Do not teach a full beginner roleplay workflow.", "Do not rank products or promise an outcome."],
           },
           content: {
             archetype: "comparison",
-            thesis: "The useful decision is not which route is universally best, but which kind of setup work the reader wants to do.",
-            originalContribution: "A decision sequence that maps search intent to plot, role choice, and a measured next step.",
+            thesis: "The useful decision is not which route is universally best, but whether a fresh premise or persistent campaign state removes the right setup work.",
+            originalContribution: "A decision sequence that maps campaign-prep intent to persistent state, one attempted action, and a measured next step.",
             tone: "Precise and mature for an adult tabletop campaign prep discussion.",
             openingMove: "before_after_contrast",
             avoidPhrases: ["unlock your imagination", "endless possibilities", "step into a world"],
@@ -471,7 +552,16 @@ test("report generation cannot publish before a separate approval artifact", asy
               afterSectionId: "compare-the-routes"
             }
           },
-          differentiation: { against: [] },
+          differentiation: {
+            against: [{
+              slug: existingPage.slug,
+              intentDelta: "Playworlds entry choice, not archive upkeep.",
+              answerDelta: "Fresh versus persistent campaign routes.",
+              structureDelta: "Decision switchboard with a worked scenario.",
+              faqDelta: "Product-fit and route-choice objections.",
+              visualDelta: "Nocturne route-control presentation.",
+            }],
+          },
           presentation: {
             recipeId: "nocturne-decision-grid-v1",
             rendererId: "nocturne_decision_grid",
@@ -491,8 +581,8 @@ test("report generation cannot publish before a separate approval artifact", asy
               faqHeading: "Questions to clear before departure",
               relatedHeading: "Continue from this decision",
               finalCtaEyebrow: "Destination confirmed",
-              finalCtaHeading: "Carry the route choice into a story.",
-              finalCtaBody: "Use the attributed destination only after the supplied-context route matches the experience you want.",
+              finalCtaHeading: "Carry the prep choice into Playworlds.",
+              finalCtaBody: "Use the attributed Steam destination only after the fresh-or-persistent campaign route matches the preparation job you want to solve.",
               backToTop: "Return to route control"
             }
           }
@@ -503,15 +593,18 @@ test("report generation cannot publish before a separate approval artifact", asy
           title: "The route evidence switchboard",
           intro: "Move across three signals before choosing a route. Each signal changes what the reader must supply and what can happen next.",
           items: [
-            { label: "Signal 01", title: "Context", bodyMarkdown: "Decide whether you want to invent the premise or inspect an opening situation that already contains pressure." },
-            { label: "Signal 02", title: "Perspective", bodyMarkdown: "Decide whether you want to invent a speaker or narrow the response through an available story role." },
-            { label: "Signal 03", title: "Next action", bodyMarkdown: "Name one scene-level move that follows from the chosen context and perspective before continuing." }
+            { label: "Signal 01", title: "Campaign state", bodyMarkdown: "Decide whether you want to establish a fresh premise or resume a persistent campaign with unresolved pressure." },
+            { label: "Signal 02", title: "Attempt", bodyMarkdown: "Choose one action to speak or type for the AI game master to interpret and resolve." },
+            { label: "Signal 03", title: "Consequence", bodyMarkdown: "Name the player, party, inventory, or journey state that should change if the attempted action matters." }
           ]
         },
-        factIdsUsed: ["dnd-content-direction", "dnd-primary-audience", "voice-roleplay-format", "existing-story", "role-selection"],
-        internalLinks: [],
-        assetBriefs: ["Use only original story and role imagery."],
-        quality: { checks: [{ id: "distinct-intent", label: "Answers one trial-ready job", passed: true, detail: "The page targets a reader who wants to enter a story now." }] },
+        factIdsUsed: ["dnd-content-direction", "dnd-primary-audience", "playworlds-current-product", "playworlds-voice-text-single-player-rpg", "playworlds-ai-game-master", "playworlds-persistent-campaigns", "playworlds-rpg-state"],
+        internalLinks: [{
+          anchor: "Review the unrelated campaign archive workflow",
+          href: existingPage.path,
+        }],
+        assetBriefs: ["Use only original campaign-state and AI game-master imagery."],
+        quality: { checks: [{ id: "distinct-intent", label: "Answers one trial-ready job", passed: true, detail: "The page targets a D&D reader evaluating an AI game master for campaign preparation." }] },
       },
     };
     bindBigQueryTrendEvidence(input);
@@ -529,7 +622,7 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.match(architectureClaimBuild.stderr, /unsupported product claim/);
 
     const duplicateFactInput = structuredClone(input);
-    duplicateFactInput.draft.factIdsUsed = ["existing-story", "existing-story"];
+    duplicateFactInput.draft.factIdsUsed = ["playworlds-ai-game-master", "playworlds-ai-game-master"];
     await writeFile(inputPath, `${JSON.stringify(duplicateFactInput, null, 2)}\n`);
     const duplicateFactBuild = spawnSync(process.execPath, [builderPath, inputPath], {
       cwd: workspace,
@@ -537,6 +630,26 @@ test("report generation cannot publish before a separate approval artifact", asy
     });
     assert.notEqual(duplicateFactBuild.status, 0);
     assert.match(duplicateFactBuild.stderr, /unapproved or missing product fact ID/);
+
+    const historicalFactInput = structuredClone(input);
+    historicalFactInput.draft.factIdsUsed.push("existing-story");
+    await writeFile(inputPath, `${JSON.stringify(historicalFactInput, null, 2)}\n`);
+    const historicalFactBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(historicalFactBuild.status, 0);
+    assert.match(historicalFactBuild.stderr, /unapproved or missing product fact ID/);
+
+    const historicalCandidateFactInput = structuredClone(input);
+    historicalCandidateFactInput.candidates[0].decisionEvidence.productFactIds.push("existing-story");
+    await writeFile(inputPath, `${JSON.stringify(historicalCandidateFactInput, null, 2)}\n`);
+    const historicalCandidateFactBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(historicalCandidateFactBuild.status, 0);
+    assert.match(historicalCandidateFactBuild.stderr, /unapproved product fact ID: existing-story/);
 
     const missingIpBoundaryInput = structuredClone(input);
     delete missingIpBoundaryInput.draft.ipBoundary;
@@ -722,9 +835,9 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.match(undersizedCandidateBuild.stderr, /Research requires 8-12 candidates/);
 
     const nearDuplicateIntentInput = structuredClone(input);
-    nearDuplicateIntentInput.candidates[1].keyword = "enter a prepared d&d campaign story";
+    nearDuplicateIntentInput.candidates[1].keyword = "d&d ai game master campaign preparation";
     nearDuplicateIntentInput.candidates[1].decisionEvidence.searcherJob =
-      "Assess a self-authored prompt against a supplied D&D campaign story and select which starting route fits this tabletop session.";
+      "Use an AI game master with persistent campaign state to reduce repeat D&D preparation, then choose one original scene action for the next session.";
     await writeFile(inputPath, `${JSON.stringify(nearDuplicateIntentInput, null, 2)}\n`);
     const nearDuplicateIntentBuild = spawnSync(process.execPath, [builderPath, inputPath], {
       cwd: workspace,
@@ -750,25 +863,6 @@ test("report generation cannot publish before a separate approval artifact", asy
       /semantically distinct candidates that passed all gates with action=create_page; found 1/,
     );
 
-    const pagesDirectory = join(workspace, "data", "pages");
-    await mkdir(pagesDirectory, { recursive: true });
-    const existingPage = JSON.parse(await readFile(
-      join(repoRoot, "data", "pages", "ai-roleplay-prompt-vs-existing-story.json"),
-      "utf8",
-    ));
-    Object.assign(existingPage, {
-      slug: "unrelated-campaign-archive",
-      path: "/unrelated-campaign-archive",
-      keyword: "tabletop campaign archive workflow",
-      title: "Tabletop Campaign Archive Workflow",
-      h1: "Tabletop Campaign Archive Workflow",
-      metaDescription: "Organize a mature tabletop campaign archive around unresolved threads, faction state, and the next preparation decision.",
-      heroMarkdown: "This unrelated fixture represents a campaign-record workflow rather than the prompt-versus-story decision tested by the candidate batch.",
-    });
-    await writeFile(
-      join(pagesDirectory, `${existingPage.slug}.json`),
-      `${JSON.stringify(existingPage, null, 2)}\n`,
-    );
     const unavailablePortfolioInput = structuredClone(input);
     unavailablePortfolioInput.portfolioFunnels = {
       schemaVersion: 2,
@@ -788,6 +882,13 @@ test("report generation cannot publish before a separate approval artifact", asy
         attributionJoinBlocked: false,
         hasSearchValidatedLandingPage: false,
       },
+      globalAttribution: {
+        schemaVersion: 1,
+        product: "playworlds",
+        state: "unavailable",
+        attributionJoinReady: false,
+        detail: "The independent Playworlds callback fixture probe was unavailable.",
+      },
       entries: [{
         sourceSlug: existingPage.slug,
         path: existingPage.path,
@@ -804,7 +905,6 @@ test("report generation cannot publish before a separate approval artifact", asy
     });
     assert.notEqual(unavailablePortfolioBuild.status, 0);
     assert.match(unavailablePortfolioBuild.stderr, /Create-page growth readiness gate failed/);
-    await rm(pagesDirectory, { recursive: true, force: true });
 
     await mkdir(join(workspace, "data", "seo-feedback", "inbox"), { recursive: true });
     const feedbackMessage = "  Keep the exact page intent narrow.\n\nDo not flatten this feedback.  ";
@@ -851,13 +951,17 @@ test("report generation cannot publish before a separate approval artifact", asy
       ["evidence-1", "evidence-2"],
     );
     assert.equal(isReportDraft(reportBeforeReview.draft), true);
-    assert.equal(reportBeforeReview.publication.status, "ready_for_review");
+    assert.equal(
+      reportBeforeReview.publication.status,
+      "ready_for_review",
+      JSON.stringify({ publication: reportBeforeReview.publication, quality: reportBeforeReview.draft.quality }),
+    );
     assert.equal(reportBeforeReview.publicationMode, "create");
     assert.equal(reportBeforeReview.funnel, undefined);
     assert.equal(reportBeforeReview.portfolioFunnels.schemaVersion, 2);
     assert.equal(reportBeforeReview.portfolioFunnels.privacyClass, "public_growth_evidence");
     assert.equal(reportBeforeReview.portfolioFunnels.conversionJoinKey, undefined);
-    assert.equal(reportBeforeReview.portfolioFunnels.summary.publishedPages, 0);
+    assert.equal(reportBeforeReview.portfolioFunnels.summary.publishedPages, 1);
     assert.equal(reportBeforeReview.portfolioFunnels.periodBasis, "complete_shanghai_calendar_days");
     assert.equal(reportBeforeReview.portfolioFunnels.reportingWindowDays, 28);
     assert.equal(reportBeforeReview.portfolioFunnels.reportingLagDays, 3);
@@ -934,7 +1038,7 @@ test("report generation cannot publish before a separate approval artifact", asy
       checks: [
         { id: "search-intent", passed: true, detail: "The page answers one specific trial-ready searcher job." },
         { id: "product-truth", passed: true, detail: "Every capability statement maps to an approved fact ID." },
-        { id: "conversion-path", passed: true, detail: "The CTA uses the attributed NovelAI redirect contract." },
+        { id: "conversion-path", passed: true, detail: "The CTA uses the attributed Playworlds Steam redirect contract." },
         { id: "source-accuracy", passed: true, detail: "Evidence supports the intent and is not presented as product proof." },
         { id: "content-distinctness", passed: true, detail: "The answer shape, section jobs, FAQ jobs, and wording passed the automated novelty audit." },
         { id: "presentation-distinctness", passed: true, detail: "The nocturne decision grid is explicit and passes the recipe reuse policy." },
@@ -1053,6 +1157,9 @@ test("report generation cannot publish before a separate approval artifact", asy
 
     const unavailableGrowthPublisherBypass = structuredClone(reportBeforeReview);
     unavailableGrowthPublisherBypass.portfolioFunnels.summary.attributionJoinReady = false;
+    unavailableGrowthPublisherBypass.portfolioFunnels.globalAttribution.attributionJoinReady = false;
+    unavailableGrowthPublisherBypass.portfolioFunnels.globalAttribution.detail =
+      "The independent Playworlds callback fixture probe did not pass.";
     await writeFile(reportPath, `${JSON.stringify(unavailableGrowthPublisherBypass, null, 2)}\n`);
     const unavailableGrowthBypassPublish = spawnSync(process.execPath, [publisherPath, reportPath, reviewPath], { cwd: workspace, encoding: "utf8" });
     assert.notEqual(unavailableGrowthBypassPublish.status, 0);
@@ -1148,6 +1255,8 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.match(falselyNewIntentBuild.stderr, /semantic near-duplicate of published \/play-an-ai-roleplay-story/);
     assert.match(falselyNewIntentBuild.stderr, /must use a non-new-intent binding/);
 
+    await rm(join(pagesDirectory, `${existingPage.slug}.json`));
+
     const updateInput = structuredClone(input);
     delete updateInput.trendSignals;
     delete updateInput.trendCollection;
@@ -1210,6 +1319,16 @@ test("report generation cannot publish before a separate approval artifact", asy
         publishedPages: 1,
         collectedPages: 0,
         unavailablePages: 1,
+        attributionJoinReady: false,
+        attributionJoinBlocked: false,
+        hasSearchValidatedLandingPage: false,
+      },
+      globalAttribution: {
+        schemaVersion: 1,
+        product: "playworlds",
+        state: "unavailable",
+        attributionJoinReady: false,
+        detail: "The independent Playworlds callback fixture probe was unavailable.",
       },
       entries: [{
         sourceSlug: "play-an-ai-roleplay-story",
@@ -1231,6 +1350,7 @@ test("report generation cannot publish before a separate approval artifact", asy
     updateInput.draft.keyword = updateKeywords[0];
     updateInput.draft.slug = "/play-an-ai-roleplay-story";
     updateInput.draft.generatedAt = "2099-01-02T09:15:00+08:00";
+    updateInput.draft.architecture.differentiation.against = [];
     updateInput.draft.internalLinks = [{
       anchor: "Review the existing roleplay entry guide",
       href: "/play-an-ai-roleplay-story",

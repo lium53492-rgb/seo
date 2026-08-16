@@ -150,9 +150,12 @@ candidate matches, and bounded deterministic D&D leads rather than the full
 DMA result. Builder and publisher verify the RSA-SHA256 service-account
 attestation before the collection can authorize the Trends gate.
 
-Run `growth:probe` from the NovelAI server environment after callback deployment
-or secret rotation. Do not describe the revenue loop as ready until the
-protected probe sees Search Console, landing UV, attribution storage, and a
+The signed Playworlds callback has not been implemented. `growth:probe` now
+returns an explicit unavailable state and exits non-zero; the retained
+`growth:probe:legacy-novelai` command is audit-only. After a separately approved
+Playworlds callback is deployed, replace the fail-closed probe with its verified
+server handshake. Do not describe the revenue loop as ready until the protected
+probe sees Search Console, landing UV, attribution storage, and a
 recent signed callback handshake.
 
 `research:build` runs `feedback:sync` first. Production submissions are stored

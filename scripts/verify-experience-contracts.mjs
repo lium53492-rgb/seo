@@ -96,11 +96,16 @@ if (!pointerMoveBody) {
 const recipeCatalog = JSON.parse(await readFile(path.join(root, "data/config/presentation-recipes.json"), "utf8"));
 const structuredSource = await readFile(path.join(root, "app/[slug]/StructuredContentPage.tsx"), "utf8");
 const structuredCss = await readFile(path.join(root, "app/[slug]/structured-content.module.css"), "utf8");
+const specializedCss = await readFile(
+  path.join(root, "components/seo/story-driven-adventure/story-driven-adventure.module.css"),
+  "utf8",
+);
+const recipeCss = `${structuredCss}\n${specializedCss}`;
 for (const recipe of recipeCatalog.recipes || []) {
   if (!structuredSource.includes(`case "${recipe.rendererId}"`)) {
     fail(`Structured renderer registry is missing ${recipe.rendererId}.`);
   }
-  if (!structuredCss.includes(`[data-presentation-recipe="${recipe.id}"]`)) {
+  if (!recipeCss.includes(`[data-presentation-recipe="${recipe.id}"]`)) {
     fail(`Structured CSS is missing recipe-scoped tokens for ${recipe.id}.`);
   }
 }

@@ -1,13 +1,22 @@
 # D&D-first SEO content boundary
 
-Last updated: 2026-08-10 (Asia/Shanghai)
+Last updated: 2026-08-16 (Asia/Shanghai)
 
 ## Product and audience direction
 
-The user confirmed that the overseas product now creates D&D-focused content.
-Future SEO work therefore serves adult tabletop players and Game Masters first.
-This direction replaces the retired generic childlike story-page portfolio; it
-does not by itself prove official affiliation, endorsement, or trademark rights.
+The user confirmed that the new overseas product is **Playworlds** and that
+future work is D&D-focused. Future Playworlds SEO therefore serves adult
+tabletop players and Game Masters first. D&D is an audience/search reference,
+not a product-license claim: this direction does not prove that Playworlds is
+official, approved, endorsed, licensed, or 5e-compatible, and it does not grant
+rights to protected D&D material. It replaces the retired generic childlike
+story-page direction and the retired NovelAI product positioning.
+
+The official Steam listing establishes the public product spelling
+`Playworlds`; approved product facts remain the only basis for capability and
+availability claims. A Steam listing does not independently authorize claims
+about rules support, voice technology, multiplayer, pricing, privacy, or any
+other capability not recorded in the product fact catalog.
 
 ## Allowed production basis
 
@@ -35,6 +44,7 @@ does not by itself prove official affiliation, endorsement, or trademark rights.
 
 Official references:
 
+- Playworlds official Steam listing: https://store.steampowered.com/app/4911480/Playworlds/
 - SRD 5.2.1 and licensing overview: https://www.dndbeyond.com/srd
 - Creator FAQ: https://www.dndbeyond.com/creator-faq
 - Wizards Fan Content Policy: https://company.wizards.com/en/legal/fancontentpolicy
@@ -50,14 +60,28 @@ Official references:
 4. Campaign continuity: recap, unresolved threads, faction state, tone, and
    next-session handoff.
 5. Tool and workflow decisions: specific comparisons and trial-ready jobs that
-   connect honestly to approved product facts.
+   connect honestly to approved Playworlds product facts.
 
 ## Page content hierarchy
 
 Every page must open with an answer that can be used at the table, then show
 when the problem appears, why the common response fails, one concrete player or
 Game Master tool, an original mature worked example, useful variation controls,
-the product and IP boundary, and a page-specific attributed next step.
+the product and IP boundary, and a page-specific approved Playworlds next step.
+
+## Product migration boundary
+
+Future page copy and CTA labels must use Playworlds and must not present
+NovelAI as the current product. The Playworlds CTA route now uses
+`/go/playworlds/{slug}`, the exact official Steam app listing, product-scoped
+outbound events, and the versioned UTM contract. This code migration does not
+prove that the site-wide production migration is complete. The signed
+conversion callback, replacement production domain, and matching Search Console
+property still require implementation or independent verification. Until all
+of those boundaries are ready, report them
+as unavailable or blocked and do not claim complete deployment, attribution,
+or revenue-loop migration. Preserve historical NovelAI research, reports,
+reviews, and verbatim feedback as dated audit evidence.
 
 The machine contract enforces an adult D&D pain point and the ordered core
 roles `direct_answer`, `failure_analysis`, `framework`, `worked_example`, and

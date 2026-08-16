@@ -6,18 +6,18 @@ import {
   legacySiteOrigins,
 } from "../scripts/lib/site-origin.mjs";
 
-test("automation scripts share the canonical LoreLens origin contract", () => {
-  assert.equal(canonicalSiteOrigin, "https://lorelens.novelai.ai");
+test("automation scripts share the canonical Playworlds Guides origin contract", () => {
+  assert.equal(canonicalSiteOrigin, "https://guides.playworlds.ai");
   assert.deepEqual(
     [...legacySiteOrigins],
-    ["https://seo-pi-fawn.vercel.app"],
+    ["https://seo-pi-fawn.vercel.app", "https://lorelens.novelai.ai"],
   );
   assert.equal(
     configuredProductionSiteOrigin(undefined, "fixture"),
     canonicalSiteOrigin,
   );
   assert.equal(
-    configuredProductionSiteOrigin("https://lorelens.novelai.ai/", "fixture"),
+    configuredProductionSiteOrigin("https://guides.playworlds.ai/", "fixture"),
     canonicalSiteOrigin,
   );
 });
@@ -25,11 +25,12 @@ test("automation scripts share the canonical LoreLens origin contract", () => {
 test("automation scripts reject stale or non-root public report origins", () => {
   for (const value of [
     "https://seo-pi-fawn.vercel.app",
-    "http://lorelens.novelai.ai",
-    "https://reader:secret@lorelens.novelai.ai",
-    "https://lorelens.novelai.ai/report",
-    "https://lorelens.novelai.ai?preview=1",
-    "https://lorelens.novelai.ai#preview",
+    "https://lorelens.novelai.ai",
+    "http://guides.playworlds.ai",
+    "https://reader:secret@guides.playworlds.ai",
+    "https://guides.playworlds.ai/report",
+    "https://guides.playworlds.ai?preview=1",
+    "https://guides.playworlds.ai#preview",
   ]) {
     assert.throws(
       () => configuredProductionSiteOrigin(value, "fixture"),

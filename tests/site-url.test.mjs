@@ -26,19 +26,22 @@ function withProductionEnvironment(key, callback) {
   }
 }
 
-test("site configuration declares the LoreLens canonical and legacy origins", () => {
+test("site configuration declares the Playworlds Guides canonical and legacy origins", () => {
   assert.deepEqual(siteConfig, {
     schemaVersion: 1,
-    canonicalOrigin: "https://lorelens.novelai.ai",
-    legacyOrigins: ["https://seo-pi-fawn.vercel.app"],
+    canonicalOrigin: "https://guides.playworlds.ai",
+    legacyOrigins: [
+      "https://seo-pi-fawn.vercel.app",
+      "https://lorelens.novelai.ai",
+    ],
   });
 });
 
 test("getSiteUrl defaults to the configured canonical root origin", () => {
   withSiteUrl(undefined, () => {
     const site = getSiteUrl();
-    assert.equal(site.toString(), "https://lorelens.novelai.ai/");
-    assert.equal(site.origin, "https://lorelens.novelai.ai");
+    assert.equal(site.toString(), "https://guides.playworlds.ai/");
+    assert.equal(site.origin, "https://guides.playworlds.ai");
     assert.equal(site.pathname, "/");
     assert.equal(site.search, "");
     assert.equal(site.hash, "");
@@ -46,11 +49,11 @@ test("getSiteUrl defaults to the configured canonical root origin", () => {
 });
 
 test("getSiteUrl normalizes host casing and the root trailing slash", () => {
-  withSiteUrl("  HTTPS://LORELENS.NOVELAI.AI  ", () => {
-    assert.equal(getSiteUrl().toString(), "https://lorelens.novelai.ai/");
+  withSiteUrl("  HTTPS://GUIDES.PLAYWORLDS.AI  ", () => {
+    assert.equal(getSiteUrl().toString(), "https://guides.playworlds.ai/");
     assert.equal(
       absoluteSiteUrl("/sitemap.xml"),
-      "https://lorelens.novelai.ai/sitemap.xml",
+      "https://guides.playworlds.ai/sitemap.xml",
     );
   });
 });
@@ -75,7 +78,7 @@ test("production ignores a stale public override and rejects loopback", () => {
       withSiteUrl("https://seo-pi-fawn.vercel.app/", () => {
         assert.equal(
           getSiteUrl().toString(),
-          "https://lorelens.novelai.ai/",
+          "https://guides.playworlds.ai/",
         );
       });
       withSiteUrl("http://localhost:3000/", () => {
@@ -88,12 +91,12 @@ test("production ignores a stale public override and rejects loopback", () => {
 test("getSiteUrl rejects non-root, credentialed, and non-HTTPS public URLs", () => {
   const invalidValues = [
     "not a URL",
-    "http://lorelens.novelai.ai/",
-    "ftp://lorelens.novelai.ai/",
-    "https://reader:secret@lorelens.novelai.ai/",
-    "https://lorelens.novelai.ai/guides",
-    "https://lorelens.novelai.ai/?preview=1",
-    "https://lorelens.novelai.ai/#preview",
+    "http://guides.playworlds.ai/",
+    "ftp://guides.playworlds.ai/",
+    "https://reader:secret@guides.playworlds.ai/",
+    "https://guides.playworlds.ai/guides",
+    "https://guides.playworlds.ai/?preview=1",
+    "https://guides.playworlds.ai/#preview",
   ];
   for (const value of invalidValues) {
     withSiteUrl(value, () => {

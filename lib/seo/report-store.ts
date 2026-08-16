@@ -397,6 +397,18 @@ function isGrowthPortfolio(value: unknown) {
     typeof value.summary.hasSearchValidatedLandingPage !== "boolean" ||
     !Array.isArray(value.entries)) return false;
 
+  const globalAttribution = value.globalAttribution;
+  const hasGlobalAttribution = globalAttribution !== undefined;
+  if (hasGlobalAttribution && (
+    !isRecord(globalAttribution) ||
+    globalAttribution.schemaVersion !== 1 ||
+    globalAttribution.product !== "playworlds" ||
+    !["observed", "unavailable"].includes(String(globalAttribution.state)) ||
+    typeof globalAttribution.attributionJoinReady !== "boolean" ||
+    !isString(globalAttribution.detail) ||
+    (globalAttribution.state !== "observed" && globalAttribution.attributionJoinReady)
+  )) return false;
+
   const slugs = new Set<string>();
   let collectedPages = 0;
   let attributionJoinBlocked = false;
@@ -462,7 +474,9 @@ function isGrowthPortfolio(value: unknown) {
     hasSearchValidatedLandingPage ||= state.samePageSearchValidated === true;
     collectedPages += 1;
   }
-  attributionJoinReady &&= collectedPages === value.entries.length;
+  attributionJoinReady = hasGlobalAttribution
+    ? globalAttribution.attributionJoinReady === true
+    : attributionJoinReady && collectedPages === value.entries.length;
   if (!isRetiredUrlGrowth(value.retiredUrls, slugs)) return false;
   return value.summary.publishedPages === value.entries.length &&
     value.summary.collectedPages === collectedPages &&

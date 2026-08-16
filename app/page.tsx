@@ -40,6 +40,8 @@ const faqs = [
 
 export default async function Home() {
   const publishedPages = await listPublishedPages();
+  const archiveAvailable = publishedPages.length > 0;
+  const primaryHref = archiveAvailable ? "#guide-library" : "#campaign-pressure";
 
   return (
     <main>
@@ -51,8 +53,8 @@ export default async function Home() {
             <span className="wordmarkMark" aria-hidden="true">20</span>
             <span>TABLETOP / FIELD NOTES</span>
           </a>
-          <a className="navGuide" href="#guide-library">
-            Open the archive <span aria-hidden="true">-&gt;</span>
+          <a className="navGuide" href={primaryHref}>
+            {archiveAvailable ? "Open the archive" : "Read the field notes"} <span aria-hidden="true">-&gt;</span>
           </a>
         </nav>
 
@@ -64,8 +66,8 @@ export default async function Home() {
             improvised turns, and the continuity problems that surface after session three.
           </p>
           <div className="actions">
-            <a className="primaryAction" href="#guide-library">
-              Read the field guides
+            <a className="primaryAction" href={primaryHref}>
+              {archiveAvailable ? "Read the field guides" : "See the editorial lanes"}
             </a>
             <a className="secondaryAction" href="#campaign-pressure">
               See the editorial lanes
@@ -172,11 +174,12 @@ export default async function Home() {
       <section className="finalCta">
         <h2>Bring one sharper decision to the table</h2>
         <p>
-          Start with the current archive. Future pages will focus on distinct D&amp;D player
-          and Game Master problems, with their own voice, visual world, and table-ready tool.
+          {archiveAvailable
+            ? "Start with the current archive. Future pages will focus on distinct D&D player and Game Master problems, with their own voice, visual world, and table-ready tool."
+            : "The Playworlds field-guide archive is being rebuilt around verified product facts. Start with the editorial lanes while the first reviewed guide completes its release checks."}
         </p>
-        <a className="primaryAction" href="#guide-library">
-          Open the field guide archive
+        <a className="primaryAction" href={primaryHref}>
+          {archiveAvailable ? "Open the field guide archive" : "Review the field-guide lanes"}
         </a>
       </section>
     </main>

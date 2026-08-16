@@ -198,7 +198,8 @@
   line-height: 1.65;
 }
 .heroCta,
-.finalCta > a:first-of-type {
+.finalCta > a:first-of-type,
+.disabledCta {
   min-height: 48px;
   display: inline-flex;
   align-items: center;
@@ -211,6 +212,13 @@
   font-weight: 900;
   text-decoration: none;
   text-transform: uppercase;
+}
+
+.disabledCta {
+  border: 1px dashed color-mix(in srgb, var(--page-accent) 72%, transparent);
+  cursor: not-allowed;
+  opacity: .62;
+  user-select: none;
 }
 
 .shortAnswer { align-self: end; padding: 24px 0 4px 24px; border-left: 1px solid var(--page-accent-on-ground); }

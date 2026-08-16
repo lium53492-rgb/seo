@@ -1501,7 +1501,7 @@ export function completeDailyLease({
   } catch {
     throw new Error("Lease completion requires a structured live verification receipt");
   }
-  if (verification?.origin !== "https://lorelens.novelai.ai" || verification.revision !== revision ||
+  if (verification?.origin !== unattendedPolicy.releaseVerification.origin || verification.revision !== revision ||
     verification.slug !== slug || verification.originMainVerified !== true ||
     verification.originMainTip !== revision ||
     !Number.isFinite(Date.parse(verification.verifiedAt)) || liveReceipt.status !== "verified" ||

@@ -5,6 +5,9 @@ import { scoreResearchCandidate } from "../scripts/lib/seo-policy.mjs";
 import { audienceDraftBlockers } from "../lib/seo/audience-policy.mjs";
 
 const policy = JSON.parse(await readFile(new URL("../data/config/seo-policy.json", import.meta.url), "utf8"));
+const productFactCatalog = JSON.parse(
+  await readFile(new URL("../data/config/product-facts.json", import.meta.url), "utf8"),
+);
 const rationale = Object.fromEntries([
   "demand",
   "difficulty",
@@ -26,18 +29,22 @@ const strongDecisionEvidence = {
   productFactIds: [
     "dnd-content-direction",
     "dnd-primary-audience",
-    "voice-roleplay-format",
-    "existing-story",
-    "role-selection",
-    "interactive-fiction-history",
+    "playworlds-current-product",
+    "playworlds-voice-text-single-player-rpg",
+    "playworlds-ai-game-master",
+    "playworlds-in-world-companion",
+    "playworlds-persistent-campaigns",
+    "playworlds-rpg-state",
   ],
   productSignals: [
     "dnd_content",
     "adult_tabletop_audience",
-    "voice_roleplay",
-    "story_premise",
-    "role_selection",
-    "interactive_fiction",
+    "playworlds_current_product",
+    "playworlds_voice_text_rpg",
+    "playworlds_ai_game_master",
+    "playworlds_in_world_companion",
+    "playworlds_persistent_campaigns",
+    "playworlds_rpg_state",
   ],
   trialSignals: [
     "solution_aware",
@@ -79,6 +86,53 @@ const strongCandidate = {
   cannibalizationRisk: 8,
   decisionEvidence: strongDecisionEvidence,
 };
+
+test("Playworlds identity is mandatory while only current capability facts earn product fit", () => {
+  assert.deepEqual(policy.audienceStrategy.requiredProductSignals, [
+    "dnd_content",
+    "adult_tabletop_audience",
+    "playworlds_current_product",
+  ]);
+  assert.equal(policy.decisionEvidence.productSignals.dnd_content.weight, 0);
+  assert.equal(policy.decisionEvidence.productSignals.adult_tabletop_audience.weight, 0);
+  assert.equal(policy.decisionEvidence.productSignals.playworlds_current_product.weight, 0);
+  assert.equal(policy.decisionEvidence.productSignals.playworlds_voice_text_rpg.weight, 30);
+  assert.equal(policy.decisionEvidence.productSignals.playworlds_ai_game_master.weight, 30);
+  assert.equal(policy.decisionEvidence.productSignals.playworlds_in_world_companion.weight, 20);
+  assert.equal(policy.decisionEvidence.productSignals.voice_roleplay.weight, 0);
+  assert.equal(policy.decisionEvidence.productSignals.story_premise.weight, 0);
+  assert.equal(policy.decisionEvidence.productSignals.role_selection.weight, 0);
+  assert.equal(policy.decisionEvidence.productSignals.interactive_fiction.weight, 0);
+});
+
+test("the product catalog separates active Playworlds facts from legacy compatibility facts", () => {
+  const facts = new Map(productFactCatalog.facts.map((fact) => [fact.id, fact]));
+  for (const factId of [
+    "playworlds-current-product",
+    "playworlds-voice-text-single-player-rpg",
+    "playworlds-ai-game-master",
+    "playworlds-in-world-companion",
+    "playworlds-persistent-campaigns",
+    "playworlds-rpg-state",
+  ]) {
+    assert.equal(facts.get(factId)?.status, "active", `${factId} must remain active`);
+  }
+  for (const factId of [
+    "voice-roleplay-format",
+    "existing-story",
+    "role-selection",
+    "interactive-fiction-history",
+  ]) {
+    assert.equal(
+      facts.get(factId)?.status,
+      "historical_compatibility",
+      `${factId} must remain legacy-only`,
+    );
+  }
+  assert.ok(productFactCatalog.facts.every(
+    (fact) => ["active", "historical_compatibility"].includes(fact.status),
+  ));
+});
 
 test("revenue-first policy creates a page only for a strong trial job", () => {
   const result = scoreResearchCandidate(strongCandidate, policy);
@@ -128,6 +182,54 @@ test("a future page cannot bypass the D&D-first audience direction", () => {
   assert.equal(result.productFit, 100);
   assert.equal(result.gate.passed, false);
   assert.match(result.reason, /primary audience requires product signal dnd_content/);
+});
+
+test("a future page cannot omit the current Playworlds product qualifier", () => {
+  const result = scoreResearchCandidate({
+    ...strongCandidate,
+    decisionEvidence: {
+      ...strongDecisionEvidence,
+      productSignals: strongDecisionEvidence.productSignals.filter(
+        (signal) => signal !== "playworlds_current_product",
+      ),
+      productFactIds: strongDecisionEvidence.productFactIds.filter(
+        (factId) => factId !== "playworlds-current-product",
+      ),
+    },
+  }, policy, { reportDate: "2026-08-16" });
+  assert.equal(result.productFit, 100);
+  assert.equal(result.gate.passed, false);
+  assert.match(result.reason, /primary audience requires product signal playworlds_current_product/);
+});
+
+test("legacy NovelAI capability facts cannot earn product fit for a new Playworlds candidate", () => {
+  const result = scoreResearchCandidate({
+    ...strongCandidate,
+    decisionEvidence: {
+      ...strongDecisionEvidence,
+      productFactIds: [
+        "dnd-content-direction",
+        "dnd-primary-audience",
+        "playworlds-current-product",
+        "voice-roleplay-format",
+        "existing-story",
+        "role-selection",
+        "interactive-fiction-history",
+      ],
+      productSignals: [
+        "dnd_content",
+        "adult_tabletop_audience",
+        "playworlds_current_product",
+        "voice_roleplay",
+        "story_premise",
+        "role_selection",
+        "interactive_fiction",
+      ],
+    },
+  }, policy, { reportDate: "2026-08-16" });
+  assert.equal(result.productFit, 0);
+  assert.equal(result.gate.passed, false);
+  assert.match(result.reason, /product fit is below the gate/);
 });
 
 test("a concrete campaign job without a D&D/tabletop audience cannot pass", () => {
@@ -285,7 +387,7 @@ test("AI-supplied perfect scores cannot bypass weak evidence signals", () => {
       specificitySignals: ["defined_task"],
     },
   }, policy);
-  assert.equal(result.productFit, 30);
+  assert.equal(result.productFit, 0);
   assert.equal(result.trialIntent, 0);
   assert.equal(result.revenueIntent, 0);
   assert.equal(result.intentSpecificity, 30);

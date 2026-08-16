@@ -3,8 +3,6 @@
 // @ts-expect-error TS5097: the Next.js bundler and Node 24 both resolve this file.
 import { getSiteUrl } from "./site.ts";
 
-const defaultProjectId = "prj_Wcu8wFAePajKbNMIKl2eUd2O3K4p";
-const defaultTeamId = "team_KY6ZZwNyFhuy7ORN6EKIbfVr";
 const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export type LandingUvResult = {
@@ -17,10 +15,12 @@ export type LandingUvResult = {
 
 function analyticsConfig() {
   const token = process.env.VERCEL_ANALYTICS_TOKEN || process.env.VERCEL_TOKEN;
-  return token ? {
+  const projectId = process.env.VERCEL_ANALYTICS_PROJECT_ID || process.env.VERCEL_PROJECT_ID;
+  const teamId = process.env.VERCEL_ANALYTICS_TEAM_ID || process.env.VERCEL_TEAM_ID;
+  return token && projectId && teamId ? {
     token,
-    projectId: process.env.VERCEL_ANALYTICS_PROJECT_ID || process.env.VERCEL_PROJECT_ID || defaultProjectId,
-    teamId: process.env.VERCEL_ANALYTICS_TEAM_ID || process.env.VERCEL_TEAM_ID || defaultTeamId,
+    projectId,
+    teamId,
   } : null;
 }
 
@@ -30,7 +30,7 @@ export function vercelAnalyticsStatus() {
     : {
         configured: false,
         provider: "vercel_web_analytics" as const,
-        detail: "VERCEL_ANALYTICS_TOKEN is not configured for the public Web Analytics API.",
+        detail: "VERCEL_ANALYTICS_TOKEN, VERCEL_ANALYTICS_PROJECT_ID, and VERCEL_ANALYTICS_TEAM_ID must be configured explicitly for the public Web Analytics API.",
       };
 }
 
@@ -52,7 +52,7 @@ export async function readLandingUv(input: {
       source: "vercel_analytics",
       visitors: null,
       pageviews: null,
-      detail: "VERCEL_ANALYTICS_TOKEN is not configured for the public Web Analytics API.",
+      detail: "VERCEL_ANALYTICS_TOKEN, VERCEL_ANALYTICS_PROJECT_ID, and VERCEL_ANALYTICS_TEAM_ID must be configured explicitly for the public Web Analytics API.",
     };
   }
 

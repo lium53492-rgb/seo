@@ -7,17 +7,18 @@ This repository has one production path. It targets an independent English searc
 ```text
 Independent trial-ready search intent
 -> indexable SEO landing page
--> user clicks /go/novelai/{slug}
--> NovelAI with UTM + seo_click_id
--> trial / signup / purchase callback
--> daily funnel report
+-> user clicks /go/playworlds/{slug}
+-> official Playworlds Steam listing with UTM + seo_click_id
+-> qualified outbound aggregate
+-> downstream conversion unavailable until a signed Playworlds callback exists
+-> daily funnel report with explicit unavailable states
 ```
 
 The bare homepage is a crawlable first-party guide hub. It returns its own 200
 page, links to the published SEO guides, and must never automatically redirect
 a visitor off-site. Each content page still answers a useful search question on
-its own. The attributed conversion path begins only when a visitor intentionally
-clicks a NovelAI CTA on an SEO page.
+its own. The attributed outbound path begins only when a visitor intentionally
+clicks a Playworlds CTA on an SEO page.
 
 ## Single source of truth
 
@@ -77,9 +78,10 @@ A new page is eligible only when all policy-v4 hard gates pass. Raw model-suppli
 app/[slug]/page.tsx                         static SEO route, JSON-LD, and landing beacon
 app/api/analytics/landing-view/route.ts     first-party landing pageview/UV ingestion
 app/api/cron/landing-analytics/[phase]/route.ts protected daily coverage rollover
-app/go/novelai/[slug]/route.ts              attributed redirect + background durable outbound write
-app/api/attribution/conversion/route.ts     protected, idempotent trial/signup/purchase callback
-app/api/attribution/probe/route.ts          signed NovelAI callback handshake with no funnel mutation
+app/go/playworlds/[slug]/route.ts           current attributed Steam redirect + product-scoped outbound write
+app/go/novelai/[slug]/route.ts              historical compatibility redirect only
+app/api/attribution/conversion/route.ts     retained legacy callback; cannot join Playworlds clicks
+app/api/attribution/probe/route.ts          retained legacy NovelAI handshake only
 app/api/attribution/report/route.ts         protected page-period funnel JSON
 app/api/attribution/readiness/route.ts      protected live configuration and source probe
 app/workbench/                              research, review, funnel, and status views
@@ -127,9 +129,14 @@ Use native Next.js metadata for title, description, canonical, Open Graph, and T
 - The landing endpoint's Redis fixed-window limiter protects metric writes
   from local bursts. It is not a platform-level cost or attack-control
   guarantee; that boundary remains Vercel WAF/DDoS and project configuration.
-- `/go/novelai/{slug}` creates a `seo_click_id`, persists a bot-resistant outbound signal by acquisition page/day, and forwards UTM fields plus that ID to NovelAI.
-- NovelAI must retain the ID and send it with trial, signup, and payment events. Only the outbound-to-revenue segment is joined event by event with `seo_click_id`.
-- After NovelAI deployment or secret rotation, its server environment runs `npm run growth:probe`. The signed probe is stored outside funnel cohorts and must be recent before readiness reports `outboundToRevenue` or `fullLoop`.
+- `/go/playworlds/{slug}` creates a `seo_click_id`, persists a bot-resistant,
+  product-scoped outbound signal by acquisition page/day, and forwards the
+  versioned Playworlds UTM contract to the exact approved Steam app listing.
+- HEAD validates the same redirect without writing an outbound event; release
+  verification uses that method so it does not inflate traffic.
+- No signed Playworlds downstream callback exists yet. `growth:probe`,
+  `outboundToRevenue`, and `fullLoop` therefore fail closed. The legacy NovelAI
+  callback/probe remains audit-only and cannot join a Playworlds click record.
 - Upstash stores idempotent attribution events, landing pageview counters,
   page-scoped landing HLL aggregates, and page/day cohorts for 400 days. Raw
   landing visitor IDs are not persisted in those aggregates.

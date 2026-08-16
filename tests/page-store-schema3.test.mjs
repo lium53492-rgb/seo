@@ -6,10 +6,19 @@ import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { registerHooks } from "node:module";
 import test from "node:test";
+import { validatePublishedPageArchitecture } from "../lib/seo/content-contract.mjs";
 import { servedContentDigest, visiblePageText } from "../lib/seo/served-content.mjs";
 
 const projectRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const emptyServerOnlyModule = "data:text/javascript,export {}";
+const architecturePolicy = JSON.parse(await readFile(
+  join(projectRoot, "data", "config", "content-architecture.json"),
+  "utf8",
+));
+const presentationCatalog = JSON.parse(await readFile(
+  join(projectRoot, "data", "config", "presentation-recipes.json"),
+  "utf8",
+));
 
 registerHooks({
   resolve(specifier, context, nextResolve) {
@@ -86,7 +95,7 @@ function schemaThreePage() {
     metaDescription: "Reduce campaign-prep pressure with an original, table-ready D&D framework for adult Game Masters, including a worked example and a concrete next step.",
     h1: "Run Tonight's D&D Campaign With Less Prep",
     heroMarkdown: "Use this mature tabletop framework to identify the one campaign decision that matters tonight, prepare only the evidence your players can reach, and leave the rest open for play.",
-    primaryCta: "Explore D&D-focused campaign content on NovelAI",
+    primaryCta: "Review Playworlds Persistent Campaign Features",
     ipBoundary: {
       schemaVersion: 1,
       contentBasis: "original_tabletop_fantasy",
@@ -107,7 +116,16 @@ function schemaThreePage() {
       question: `What does reviewed FAQ ${index + 1} resolve?`,
       answerMarkdown: `It resolves one specific ${job} obstacle with a direct boundary, a practical distinction, and no unsupported product claim or invented availability statement.`,
     })),
-    factIdsUsed: ["dnd-content-direction", "dnd-primary-audience", "existing-story", "role-selection"],
+    factIdsUsed: [
+      "dnd-content-direction",
+      "dnd-primary-audience",
+      "playworlds-current-product",
+      "playworlds-voice-text-single-player-rpg",
+      "playworlds-ai-game-master",
+      "playworlds-in-world-companion",
+      "playworlds-persistent-campaigns",
+      "playworlds-rpg-state",
+    ],
     internalLinks: [],
     assetBriefs: [],
     architecture: {
@@ -257,6 +275,68 @@ function schemaThreePage() {
   return page;
 }
 
+function storyDrivenSchemaThreePage() {
+  const page = schemaThreePage();
+  const recipe = presentationCatalog.recipes.find((item) => item.id === "story-driven-adventure-v1");
+  assert.ok(recipe);
+  page.pagePattern = "experience_explainer";
+  page.architecture.content.archetype = "worked_examples";
+  page.architecture.content.signature = {
+    id: "three-mission-signal-archive",
+    type: "scenario",
+    readerAction: "Inspect each mission signal",
+    afterSectionId: "compare",
+  };
+  Object.assign(page.architecture.presentation, {
+    recipeId: recipe.id,
+    rendererId: recipe.rendererId,
+    visualSystemId: recipe.visualSystemId,
+    layoutId: recipe.layoutId,
+    paletteId: recipe.paletteId,
+    typographyId: recipe.typographyId,
+    motifId: recipe.motifId,
+    companion: recipe.companion,
+    gallery: recipe.gallery,
+  });
+  const scenarioBody = [
+    "**Role:** An original signal runner carrying incomplete orders through a damaged orbital relay.",
+    "**Situation:** A silent colony transmits one message in the runner's own voice while its shield power falls.",
+    "**Pressure:** The ship can cross the radiation corridor once before its reserve cells become unusable.",
+    "**Decision:** Enter the relay now, preserve the evacuation route, or expose the false transmission first.",
+    "**First line:** Keep the channel open; if it knows my voice, it knows why I returned.",
+    "**Voice direction:** Use measured coordinates, restrained fear, and one pause before the irreversible order.",
+  ].join("\n\n");
+  page.signatureModule = {
+    id: "three-mission-signal-archive",
+    type: "scenario",
+    title: "Three original mission signals",
+    intro: "Read each original mission as a role, pressure, decision, first line, and performable voice direction.",
+    items: [1, 2, 3].map((index) => ({
+      label: `MISSION 0${index}`,
+      title: `Original signal scenario ${index}`,
+      bodyMarkdown: scenarioBody,
+    })),
+  };
+  return page;
+}
+
+test("story-driven publisher validation rejects a malformed scenario signature", () => {
+  const page = storyDrivenSchemaThreePage();
+  assert.doesNotThrow(() => validatePublishedPageArchitecture({
+    page,
+    architecturePolicy,
+    presentationCatalog,
+  }));
+
+  page.signatureModule.items[1].bodyMarkdown = page.signatureModule.items[1].bodyMarkdown
+    .replace("**Decision:**", "**Outcome:**");
+  assert.throws(() => validatePublishedPageArchitecture({
+    page,
+    architecturePolicy,
+    presentationCatalog,
+  }), /must use Role, Situation, Pressure, Decision, First line, and Voice direction in order/);
+});
+
 test("page store exposes a reviewed schema-version 3 route", async () => {
   const originalCwd = process.cwd();
   const workspace = await mkdtemp(join(tmpdir(), "seo-page-store-v3-"));
@@ -282,7 +362,11 @@ test("page store exposes a reviewed schema-version 3 route", async () => {
     ));
     const preservedLegacyPath = join(pagesDirectory, `${preservedLegacyPage.slug}.json`);
     await writeFile(preservedLegacyPath, `${JSON.stringify(preservedLegacyPage, null, 2)}\n`);
-    assert.equal((await readPublishedPage(preservedLegacyPage.slug))?.schemaVersion, 2);
+    assert.equal(
+      await readPublishedPage(preservedLegacyPage.slug),
+      null,
+      "a product-migration hold preserves the artifact without serving it",
+    );
 
     const forgedLegacyPage = structuredClone(preservedLegacyPage);
     forgedLegacyPage.h1 = "A generic legacy page reusing the approved release identity";
@@ -304,6 +388,16 @@ test("page store exposes a reviewed schema-version 3 route", async () => {
       `${JSON.stringify(unlistedLegacyPage, null, 2)}\n`,
     );
     assert.equal(await readPublishedPage(unlistedLegacyPage.slug), null);
+
+    const historicalFactInjection = structuredClone(releasedPage);
+    historicalFactInjection.factIdsUsed.push("existing-story");
+    historicalFactInjection.servedContentDigest = servedContentDigest(historicalFactInjection);
+    await writeFile(pagePath, `${JSON.stringify(historicalFactInjection, null, 2)}\n`);
+    assert.equal(
+      await readPublishedPage("schema-three-route"),
+      null,
+      "schema 3 cannot mix historical compatibility facts into active Playworlds facts",
+    );
 
     const jobOnlyPage = structuredClone(releasedPage);
     jobOnlyPage.keyword = "adult campaign session prep workflow";

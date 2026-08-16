@@ -66,7 +66,7 @@ export default async function WorkbenchAttributionPage() {
       <aside className="wb-sidebar">
         <a className="wb-brand" href="/workbench" aria-label="返回 SEO Growth OS">
           <span className="wb-brand-mark">N</span>
-          <span><strong>Growth OS</strong><small>NovelAI SEO</small></span>
+          <span><strong>Growth OS</strong><small>Playworlds SEO</small></span>
         </a>
         <nav className="wb-nav" aria-label="营收归因导航">
           <a href="/workbench"><span>←</span>返回工作台</a>

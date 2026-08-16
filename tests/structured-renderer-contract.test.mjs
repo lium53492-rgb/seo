@@ -33,3 +33,19 @@ test("hero typography has explicit desktop and mobile bounds", async () => {
   assert.match(css, /@media \(max-width: 820px\)[\s\S]*?\.hero h1 \{ font-size: clamp\(2\.5rem, 12vw, 4\.2rem\); line-height: \.92; \}/);
   assert.doesNotMatch(css, /font-size:\s*clamp\(3\.8rem,\s*9\.5vw,\s*9\.6rem\)/);
 });
+
+test("structured preview CTAs are visible but inert while public CTAs use Playworlds attribution", async () => {
+  const [component, css] = await Promise.all([
+    read("../app/[slug]/StructuredContentPage.tsx"),
+    read("../app/[slug]/structured-content.module.css"),
+  ]);
+
+  assert.match(component, /import \{ TrackedPlayworldsLink \}/);
+  assert.doesNotMatch(component, /TrackedNovelAiHomeLink/);
+  assert.ok((component.match(/mode === "preview"/g) ?? []).length >= 2);
+  assert.match(component, /<span className=\{styles\.disabledCta\} aria-disabled="true">\{page\.primaryCta\}<\/span>/);
+  assert.match(component, /<div className=\{styles\.disabledCta\} aria-disabled="true">\{page\.primaryCta\}<\/div>/);
+  assert.match(component, /<TrackedPlayworldsLink className=\{styles\.heroCta\} sourceSlug=\{page\.slug\} location="hero">/);
+  assert.match(component, /<TrackedPlayworldsLink sourceSlug=\{page\.slug\} location="final_cta">/);
+  assert.match(css, /\.disabledCta\s*\{[^}]*cursor:\s*not-allowed;[^}]*opacity:/s);
+});

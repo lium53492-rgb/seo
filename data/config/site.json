@@ -1,7 +1,8 @@
 {
   "schemaVersion": 1,
-  "canonicalOrigin": "https://lorelens.novelai.ai",
+  "canonicalOrigin": "https://guides.playworlds.ai",
   "legacyOrigins": [
-    "https://seo-pi-fawn.vercel.app"
+    "https://seo-pi-fawn.vercel.app",
+    "https://lorelens.novelai.ai"
   ]
 }

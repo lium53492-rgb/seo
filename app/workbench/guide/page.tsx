@@ -29,7 +29,7 @@ const dailySteps = [
   ["测试后发布", "审批脚本写入页面；测试、类型检查、构建、线上 H1/canonical/CTA/sitemap 全部通过后才报告上线。"],
   ["18:30 / 21:30 自动恢复", "如果前序任务中断，恢复任务从共享检查点继续；如果当天页面已存在，只补 PDF 和部署验收，绝不生成第二篇。"],
   ["跟踪收录与授权分发", "上线、Vercel READY、Google indexed、backlink-live 分别记录；只在获授权渠道投放外链，不把提交收录误报为已收录。"],
-  ["按营收反馈", "页面榜单比较 exact-page GSC、UV、出站和付费；用 seo_click_id 连接 NovelAI 事件，再反向调整下一轮选题。"],
+  ["按数据反馈", "页面榜单比较 exact-page GSC、UV 和 Playworlds 归因出站；转化回调未接入时保持 unavailable，不伪造营收闭环。"],
 ];
 
 const decisionRows = [
@@ -56,20 +56,24 @@ export default async function WorkbenchGuidePage() {
   const latestPublicationIsRetired = Boolean(
     latestPublication?.slug && seoPolicy.retiredPageSlugs.includes(latestPublication.slug),
   );
+  const latestPublicationIsProductMigrationHeld = Boolean(
+    latestPublication?.slug && seoPolicy.productMigrationHoldSlugs.includes(latestPublication.slug),
+  );
   const retiredPreviewSlug = latestPublicationIsRetired && latestPublication?.slug &&
     report.draft?.schemaVersion === 2 && report.draft.architecture && report.draft.signatureModule &&
     report.draft?.slug.replace(/^\//, "") === latestPublication.slug
     ? latestPublication.slug
     : null;
   const latestPublicationIsLive = latestPublication?.status === "published" &&
-    Boolean(latestPublication.path) && !latestPublicationIsRetired;
+    Boolean(latestPublication.path) && !latestPublicationIsRetired &&
+    !latestPublicationIsProductMigrationHeld;
 
   return (
     <main className="wb-shell">
       <aside className="wb-sidebar">
         <a className="wb-brand" href="/workbench" aria-label="返回 SEO Growth OS">
           <span className="wb-brand-mark">N</span>
-          <span><strong>Growth OS</strong><small>NovelAI · SEO</small></span>
+          <span><strong>Growth OS</strong><small>Playworlds · SEO</small></span>
         </a>
         <nav className="wb-nav" aria-label="指南导航">
           <a href="/workbench"><span>←</span>返回工作台</a>
@@ -95,6 +99,8 @@ export default async function WorkbenchGuidePage() {
             <a className="wb-primary-link" href="/workbench">打开今日任务</a>
             {latestPublicationIsLive ? (
               <a className="wb-secondary-link" href={latestPublication?.path}>打开最新线上页面</a>
+            ) : latestPublicationIsProductMigrationHeld ? (
+              <a className="wb-secondary-link" href="#publish">MIGRATION HOLD · 等待 Playworlds 重审</a>
             ) : retiredPreviewSlug ? (
               <a className="wb-secondary-link" href={`/workbench/preview/${encodeURIComponent(retiredPreviewSlug)}`}>RETIRED · 查看历史草稿</a>
             ) : (
@@ -166,7 +172,7 @@ export default async function WorkbenchGuidePage() {
               <p className="wb-kicker">GOOGLE SEARCH CONSOLE</p>
               <h3>免费读取真实搜索曝光与点击</h3>
               <ol>
-                <li>请添加网址前缀属性 <code>https://lorelens.novelai.ai/</code> 并完成验证。</li>
+                <li>请添加网址前缀属性 <code>https://guides.playworlds.ai/</code> 并完成验证。</li>
                 <li>为该属性配置 Search Console API 服务账号，并把账号邮箱加入属性用户。</li>
                 <li>生产环境配置 client email、private key 和准确的 site URL；变更后运行 <code>growth:check</code>。</li>
                 <li>每日组合快照只读取最终数据，并按同一个完整上海日窗口覆盖所有已发布页面。</li>
@@ -183,7 +189,7 @@ export default async function WorkbenchGuidePage() {
                 <li>采集组件已在代码和线上部署中，无需再安装包。</li>
                 <li>等待首次真实访问后查看 Visits、Pages、Referrers 和 Countries。</li>
                 <li>Hobby 免费版页面访问数据可用于 UV；高质量出站由站内跳转路由记录。</li>
-                <li>NovelAI 端需保存 URL 中的 <code>seo_click_id</code>，并在试玩、注册、付费时回传同一个 ID。</li>
+                <li>Playworlds 出站会保存 <code>seo_click_id</code>；产品转化回调尚未实现，因此不得把试玩、注册或付费标记为已接通。</li>
               </ol>
             </article>
           </div>

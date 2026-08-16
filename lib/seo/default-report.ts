@@ -25,8 +25,8 @@ export function createUnavailableFunnel(date = shanghaiDate()): SeoGrowthFunnel 
       organicClicks: unavailableMetric("search_console", "Search Console has not returned a visible row."),
       landingUv: unavailableMetric("first_party_analytics", "No complete-period landing analytics evidence has been copied into this report."),
       qualifiedOutboundClicks: unavailableMetric("seo_redirect", "The outbound redirect event has not been aggregated."),
-      trialStarts: unavailableMetric("product_analytics", "NovelAI trial callbacks are not connected."),
-      signups: unavailableMetric("product_analytics", "NovelAI signup callbacks are not connected."),
+      trialStarts: unavailableMetric("product_analytics", "Playworlds trial callbacks are not implemented or verified."),
+      signups: unavailableMetric("product_analytics", "Playworlds signup callbacks are not implemented or verified."),
       paidConversions: unavailableMetric("payments", "Payment attribution is not connected."),
       revenueMinor: unavailableMetric("payments", "Attributed revenue is not connected."),
     },
@@ -85,6 +85,17 @@ export function redactPrivateReportData(report: DailySeoReport): DailySeoReport 
           attributionJoinBlocked: false,
           hasSearchValidatedLandingPage: false,
         },
+        ...(report.portfolioFunnels.globalAttribution
+          ? {
+              globalAttribution: {
+                schemaVersion: 1 as const,
+                product: "playworlds" as const,
+                state: "unavailable" as const,
+                attributionJoinReady: false,
+                detail: "Protected global attribution readiness. Authenticate to view the current probe state.",
+              },
+            }
+          : {}),
         entries: report.portfolioFunnels.entries.map((entry) => ({
           sourceSlug: entry.sourceSlug,
           path: entry.path,

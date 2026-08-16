@@ -66,6 +66,8 @@ const managedEnv = [
   "KV_REST_API_TOKEN",
   "VERCEL_ANALYTICS_TOKEN",
   "VERCEL_TOKEN",
+  "VERCEL_ANALYTICS_PROJECT_ID",
+  "VERCEL_ANALYTICS_TEAM_ID",
   "FIRST_PARTY_LANDING_ANALYTICS_STARTED_AT",
   "CRON_SECRET",
 ];
@@ -220,6 +222,8 @@ test("zero UV needs daily coverage proof and never falls through to Vercel", asy
   try {
     configureFirstParty();
     process.env.VERCEL_ANALYTICS_TOKEN = "fallback-token";
+    process.env.VERCEL_ANALYTICS_PROJECT_ID = "prj_explicit_fixture";
+    process.env.VERCEL_ANALYTICS_TEAM_ID = "team_explicit_fixture";
     let calls = 0;
     globalThis.fetch = async (url) => {
       calls += 1;
@@ -270,6 +274,8 @@ test("pre-coverage and provider failures use a complete-period fallback without 
   try {
     configureFirstParty("2026-08-12T00:00:00.000Z");
     process.env.VERCEL_ANALYTICS_TOKEN = "fallback-token";
+    process.env.VERCEL_ANALYTICS_PROJECT_ID = "prj_explicit_fixture";
+    process.env.VERCEL_ANALYTICS_TEAM_ID = "team_explicit_fixture";
     let requestedUrl = "";
     globalThis.fetch = async (url) => {
       requestedUrl = String(url);
@@ -286,6 +292,8 @@ test("pre-coverage and provider failures use a complete-period fallback without 
 
     configureFirstParty();
     process.env.VERCEL_ANALYTICS_TOKEN = "fallback-token";
+    process.env.VERCEL_ANALYTICS_PROJECT_ID = "prj_explicit_fixture";
+    process.env.VERCEL_ANALYTICS_TEAM_ID = "team_explicit_fixture";
     let calls = 0;
     globalThis.fetch = async (url) => {
       calls += 1;
@@ -326,12 +334,12 @@ test("coverage checkpoints are authenticated and bind end checks to the closing 
 
     process.env.CRON_SECRET = "coverage-secret-with-at-least-16-characters";
     const unauthorized = await coverageRoute.GET(
-      new Request("https://lorelens.novelai.ai/api/cron/landing-analytics/start"),
+      new Request("https://guides.playworlds.ai/api/cron/landing-analytics/start"),
       { params: Promise.resolve({ phase: "start" }) },
     );
     assert.equal(unauthorized.status, 401);
     const authorized = await coverageRoute.GET(
-      new Request("https://lorelens.novelai.ai/api/cron/landing-analytics/start", {
+      new Request("https://guides.playworlds.ai/api/cron/landing-analytics/start", {
         headers: { authorization: `Bearer ${process.env.CRON_SECRET}` },
       }),
       { params: Promise.resolve({ phase: "start" }) },
@@ -343,10 +351,10 @@ test("coverage checkpoints are authenticated and bind end checks to the closing 
   }
 });
 
-test("public landing endpoint enforces page context, privacy preferences, and secure cookies", async () => {
+test("public landing endpoint rejects product-migration-held page traffic before Redis", async () => {
   const environment = snapshotEnvironment();
   const originalFetch = globalThis.fetch;
-  const origin = "https://lorelens.novelai.ai";
+  const origin = "https://guides.playworlds.ai";
   const slug = "ai-roleplay-prompt-vs-existing-story";
   const viewId = "ca5ddcb2-3450-4fcb-a446-2744cdba17b0";
   try {
@@ -378,42 +386,9 @@ test("public landing endpoint enforces page context, privacy preferences, and se
     );
 
     const first = await landingRoute.POST(request());
-    assert.equal(first.status, 204);
-    assert.equal(writes, 1);
-    const cookie = first.headers.get("set-cookie");
-    assert.match(cookie, /__Host-lorelens_vid=/);
-    assert.match(cookie, /HttpOnly/i);
-    assert.match(cookie, /Secure/i);
-    assert.match(cookie, /SameSite=Lax/i);
-    assert.match(cookie, /Path=\//i);
-
-    const cookieValue = cookie.match(/__Host-lorelens_vid=([^;]+)/)[1];
-    const duplicate = await landingRoute.POST(request({
-      cookie: `__Host-lorelens_vid=${cookieValue}`,
-    }));
-    assert.equal(duplicate.status, 204);
-    assert.equal(writes, 2);
-    assert.equal(duplicate.headers.get("set-cookie"), null);
-
-    const crossOrigin = await landingRoute.POST(request({ origin: "https://evil.example" }));
-    assert.equal(crossOrigin.status, 403);
-    assert.equal(writes, 2);
-
-    const privacy = await landingRoute.POST(request({ "sec-gpc": "1" }));
-    assert.equal(privacy.status, 204);
-    assert.equal(privacy.headers.get("set-cookie"), null);
-    assert.equal(writes, 2);
-
-    globalThis.fetch = async () => {
-      writes += 1;
-      return Response.json({ result: -1 });
-    };
-    const limited = await landingRoute.POST(request({
-      "x-forwarded-for": "203.0.113.11",
-    }));
-    assert.equal(limited.status, 429);
-    assert.equal(limited.headers.get("retry-after"), "60");
-    assert.equal(limited.headers.get("set-cookie"), null);
+    assert.equal(first.status, 404);
+    assert.equal(writes, 0);
+    assert.equal(first.headers.get("set-cookie"), null);
   } finally {
     globalThis.fetch = originalFetch;
     restoreEnvironment(environment);
@@ -423,7 +398,7 @@ test("public landing endpoint enforces page context, privacy preferences, and se
 test("public landing endpoint rejects malformed, cross-context, and retired-page traffic before Redis", async () => {
   const environment = snapshotEnvironment();
   const originalFetch = globalThis.fetch;
-  const origin = "https://lorelens.novelai.ai";
+  const origin = "https://guides.playworlds.ai";
   const slug = "ai-roleplay-prompt-vs-existing-story";
   const viewId = "ca5ddcb2-3450-4fcb-a446-2744cdba17b0";
   try {

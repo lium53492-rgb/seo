@@ -31,7 +31,7 @@ function configureSearchConsole() {
   process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL = "https://seo.example.com";
 }
 
-test("Search Console defaults to the public LoreLens canonical property", () => {
+test("Search Console defaults to the public Playworlds Guides canonical property", () => {
   const environment = environmentSnapshot();
   try {
     delete process.env.NEXT_PUBLIC_SITE_URL;
@@ -42,7 +42,7 @@ test("Search Console defaults to the public LoreLens canonical property", () => 
 
     assert.equal(
       searchConsoleStatus().siteUrl,
-      "https://lorelens.novelai.ai/",
+      "https://guides.playworlds.ai/",
     );
   } finally {
     restoreEnvironment(environment);
@@ -89,14 +89,14 @@ test("Search Console domain properties must cover the canonical hostname", () =>
       "seo-reader@example.iam.gserviceaccount.com";
     process.env.GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY = "test-private-key";
 
-    process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL = "sc-domain:novelai.ai";
-    assert.equal(searchConsoleStatus().siteUrl, "sc-domain:novelai.ai");
+    process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL = "sc-domain:playworlds.ai";
+    assert.equal(searchConsoleStatus().siteUrl, "sc-domain:playworlds.ai");
 
     process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL =
-      "sc-domain:lorelens.novelai.ai.";
+      "sc-domain:guides.playworlds.ai.";
     assert.equal(
       searchConsoleStatus().siteUrl,
-      "sc-domain:lorelens.novelai.ai",
+      "sc-domain:guides.playworlds.ai",
     );
 
     process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL = "sc-domain:example.com";

@@ -6,6 +6,7 @@ import {
   validateArchitecturePolicy,
   validatePageArchitecture,
   validatePresentationRecipeCatalog,
+  validateRendererSpecificContent,
   validateSeoArchitectureBridge,
 } from "../lib/seo/content-contract.mjs";
 import { analyzeContentNovelty } from "../lib/seo/content-similarity.mjs";
@@ -138,6 +139,51 @@ function fixture() {
   return { draft, contentStrategy, candidate };
 }
 
+function storyDrivenFixture() {
+  const input = fixture();
+  const recipe = presentationCatalog.recipes.find((item) => item.id === "story-driven-adventure-v1");
+  assert.ok(recipe);
+  input.contentStrategy.pagePattern = "experience_explainer";
+  input.draft.architecture.content.archetype = "worked_examples";
+  input.draft.architecture.content.signature = {
+    id: "three-mission-signal-archive",
+    type: "scenario",
+    readerAction: "Inspect each mission signal",
+    afterSectionId: input.draft.sections[0].id,
+  };
+  Object.assign(input.draft.architecture.presentation, {
+    recipeId: recipe.id,
+    rendererId: recipe.rendererId,
+    visualSystemId: recipe.visualSystemId,
+    layoutId: recipe.layoutId,
+    paletteId: recipe.paletteId,
+    typographyId: recipe.typographyId,
+    motifId: recipe.motifId,
+    companion: recipe.companion,
+    gallery: recipe.gallery,
+  });
+  const scenarioBody = [
+    "**Role:** An original signal runner carrying incomplete orders through a damaged orbital relay.",
+    "**Situation:** A silent colony transmits one message in the runner's own voice while its shield power falls.",
+    "**Pressure:** The ship can cross the radiation corridor once before its reserve cells become unusable.",
+    "**Decision:** Enter the relay now, preserve the evacuation route, or expose the false transmission first.",
+    "**First line:** Keep the channel open; if it knows my voice, it knows why I returned.",
+    "**Voice direction:** Use measured coordinates, restrained fear, and one pause before the irreversible order.",
+  ].join("\n\n");
+  input.draft.signatureModule = {
+    id: "three-mission-signal-archive",
+    type: "scenario",
+    title: "Three original mission signals",
+    intro: "Read each original mission as a role, pressure, decision, first line, and performable voice direction.",
+    items: [1, 2, 3].map((index) => ({
+      label: `MISSION 0${index}`,
+      title: `Original signal scenario ${index}`,
+      bodyMarkdown: scenarioBody,
+    })),
+  };
+  return input;
+}
+
 test("presentation recipes make visual and decoration policy explicit", () => {
   assert.equal(validatePresentationRecipeCatalog(presentationCatalog, architecturePolicy), presentationCatalog);
   assert.ok(presentationCatalog.recipes.some((recipe) => recipe.companion === "none"));
@@ -208,6 +254,29 @@ test("a near-duplicate draft fails the nearest-page differentiation gate", () =>
   assert.ok(novelty.violations.some((item) =>
     item.code === "missing-nearest-page-difference" && item.slug === previous.slug),
   JSON.stringify(novelty.violations));
+});
+
+test("story-driven builder validation requires the exact six-field scenario signature syntax", () => {
+  const input = storyDrivenFixture();
+  assert.equal(validateRendererSpecificContent({
+    architecture: input.draft.architecture,
+    signatureModule: input.draft.signatureModule,
+  }), true);
+  assert.doesNotThrow(() => validatePageArchitecture({
+    ...input,
+    pages: [],
+    architecturePolicy,
+    presentationCatalog,
+  }));
+
+  input.draft.signatureModule.items[0].bodyMarkdown = input.draft.signatureModule.items[0].bodyMarkdown
+    .replace(/\n\n\*\*Voice direction:\*\*[\s\S]+$/, "");
+  assert.throws(() => validatePageArchitecture({
+    ...input,
+    pages: [],
+    architecturePolicy,
+    presentationCatalog,
+  }), /must contain exactly six labelled prose fields/);
 });
 
 test("a single-use recipe and signature cannot silently become the next page template", () => {

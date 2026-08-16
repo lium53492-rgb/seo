@@ -27,6 +27,13 @@ flow. Do not reintroduce its retired deep links, third-party story claims,
 three-link rule, or unsupported feature descriptions without current product
 evidence and user authorization.
 
+The current product identity for future work is **Playworlds**, as named by its
+official Steam listing. NovelAI is retired from future page copy, CTA labels,
+and product positioning. D&D may be used only as an audience/search reference;
+it does not establish that Playworlds is official, endorsed, licensed, or
+5e-compatible. Preserve dated NovelAI research, reports, reviews, and verbatim
+feedback as audit history rather than rewriting them.
+
 ## Mandatory preflight
 
 Before a new page or update:
@@ -44,12 +51,14 @@ Before a new page or update:
 - Exclude unlicensed third-party IP. Use only approved `factIds` and never
   claim unapproved availability, price, privacy, latency, voice technology,
   real-time operation, groups, friends, multiplayer, or safety guarantees.
-- Future SEO production is D&D-player-first and uses an adult hobbyist tone.
+- Future Playworlds SEO production is D&D-player-first and uses an adult hobbyist tone.
   Every candidate must include the approved `dnd_content` and
-  `adult_tabletop_audience` qualifiers, then solve a specific player or Game
-  Master job rather than a generic children's story task. Those zero/low-weight
-  direction qualifiers cannot replace an approved capability fact or clear the
-  product-fit threshold by themselves. The direction fact does not establish official Dungeons & Dragons
+  `adult_tabletop_audience` qualifiers plus the
+  `playworlds_current_product` identity qualifier, then solve a specific player
+  or Game Master job rather than a generic children's story task. Those
+  zero-weight direction/identity qualifiers cannot replace approved Playworlds
+  capability facts or clear the product-fit threshold by themselves. The
+  direction fact does not establish official Dungeons & Dragons
   affiliation or trademark permission. New production is original
   tabletop-fantasy only until the artifact schemas implement and test an exact
   SRD version, license URL, and required Creative Commons attribution contract.
@@ -100,11 +109,14 @@ Before a new page or update:
   public-key fingerprint, and RSA-SHA256 signature. A self-hash alone is not
   provider provenance.
 - Run `npm.cmd run growth:check` after changing analytics credentials or
-  callbacks. Run `npm.cmd run growth:probe` from the NovelAI server
-  environment after callback deployment or secret rotation. Do not describe
-  the revenue loop as ready unless the protected probe observes Search
-  Console, landing UV, and the attribution store and a recent signed NovelAI
-  callback handshake exists.
+  callbacks. After the runtime probe and callback contract are migrated to
+  Playworlds, run `npm.cmd run growth:probe` from the Playworlds server
+  environment after callback deployment or secret rotation. Until then,
+  record callback readiness as unavailable. Do not describe the revenue loop
+  as ready unless the protected probe observes Search Console, landing UV, the
+  attribution store, and a recent signed Playworlds callback handshake. The old
+  NovelAI route, event names, or callback state cannot serve as evidence of
+  Playworlds readiness.
 - For unattended `create_page` production, require the current all-page
   portfolio to have zero unavailable pages, observed exact-page Search Console
   and landing UV states for every published page, and a ready attribution join.
@@ -165,7 +177,7 @@ Before a new page or update:
   separately pass `original-ip-boundary` and `adult-tabletop-audience` checks.
 - A new-page CTA must name the page-specific outcome and pass an independent
   similarity gate. Generic labels such as `Learn more`, `Get started`, or
-  generic `Explore`/`Try NovelAI` copy cannot authorize publication.
+  generic `Explore`/`Try Playworlds` copy cannot authorize publication.
 - `specimen-catalog-v1`, `museum-cobalt`, and every recipe/palette listed in
   the policy retirement arrays are hard-blocked even when history is missing.
 - From the configured visual-audit date, editorial approval needs digest-bound
@@ -179,9 +191,14 @@ Before a new page or update:
 - The bare homepage is a crawlable first-party guide hub and must return its
   own content without automatically redirecting visitors off-site. The
   conversion path is `SEO landing page -> user-initiated attributed redirect
-  -> NovelAI`; SEO CTAs use `/go/novelai/{slug}` in a new tab. Confirm the live
-  destination on each production run; do not restore the bare-homepage or
-  legacy story-share redirect paths without approval.
+  -> Playworlds`. Current-schema SEO CTAs use `/go/playworlds/{slug}` in a new
+  tab; its official Steam destination, UTM fields, product-scoped event names,
+  and non-writing HEAD verification contract are defined in
+  `data/config/playworlds-attribution.json`. Until the signed Playworlds
+  callback and replacement production domain/GSC property are independently verified, do not claim
+  that the site-wide product migration or revenue loop is complete. Do not use
+  the retired `/go/novelai/{slug}` route for new pages, and do not restore the
+  bare-homepage or legacy story-share redirect paths without approval.
 
 ## Daily production and release boundary
 

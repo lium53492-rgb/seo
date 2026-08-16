@@ -29,8 +29,9 @@ test("the public shell uses one absolute Tabletop Field Notes title and campaign
 
 test("the report archive and guide never present a retired slug as a live page", () => {
   assert.match(reports, /isRetired: Boolean\(item\.slug && seoPolicy\.retiredPageSlugs\.includes\(item\.slug\)\)/);
-  assert.match(reports, /item\.status === "published" && item\.path && !item\.isRetired/);
-  assert.match(reports, /publicationStatus = publications\[0\]\?\.isRetired\s*\? "RETIRED"/);
+  assert.match(reports, /isProductMigrationHeld: Boolean\(/);
+  assert.match(reports, /item\.status === "published" && item\.path && !item\.isRetired && !item\.isProductMigrationHeld/);
+  assert.match(reports, /publicationStatus = publications\[0\]\?\.isProductMigrationHeld\s*\? "MIGRATION HOLD"/);
   assert.match(reports, /reportIndex === 0 && report\.draft\?\.schemaVersion === 2/);
   assert.match(reports, /RETIRED · 查看历史草稿/);
 
@@ -44,8 +45,8 @@ test("the workbench labels retired publications and never links them as live pag
   assert.match(workbench, /seoPolicy\.retiredPageSlugs\.includes\(item\.slug\)/);
   assert.match(workbench, /pipeline\.publicationStatus === "retired" && pipeline\.retirement\.slug === item\.slug/);
   assert.match(workbench, /activePublishedPublications\.map/);
-  assert.match(workbench, /item\.isRetired \? "已下线 · RETIRED"/);
-  assert.match(workbench, /draftPublication\?\.isRetired \? "查看历史草稿（页面已下线）"/);
+  assert.match(workbench, /item\.isProductMigrationHeld \? "产品迁移暂缓 · MIGRATION HOLD"/);
+  assert.match(workbench, /draftPublication\?\.isProductMigrationHeld \? "查看受保护历史草稿（产品迁移暂缓）"/);
   assert.doesNotMatch(
     workbench,
     /publications\.filter\(\(item\) => item\.status === "published" && item\.path\)\.map/,

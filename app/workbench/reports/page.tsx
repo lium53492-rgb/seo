@@ -20,6 +20,9 @@ function publicationsFor(report: DailySeoReport) {
   return publications.map((item) => ({
     ...item,
     isRetired: Boolean(item.slug && seoPolicy.retiredPageSlugs.includes(item.slug)),
+    isProductMigrationHeld: Boolean(
+      item.slug && seoPolicy.productMigrationHoldSlugs.includes(item.slug),
+    ),
   }));
 }
 
@@ -41,7 +44,7 @@ export default async function WorkbenchReportsPage() {
       <aside className="wb-sidebar">
         <a className="wb-brand" href="/workbench" aria-label="返回 SEO Growth OS">
           <span className="wb-brand-mark">N</span>
-          <span><strong>Growth OS</strong><small>NovelAI SEO</small></span>
+          <span><strong>Growth OS</strong><small>Playworlds SEO</small></span>
         </a>
         <nav className="wb-nav" aria-label="日报归档导航">
           <a href="/workbench"><span>←</span>返回工作台</a>
@@ -59,7 +62,9 @@ export default async function WorkbenchReportsPage() {
         {reports.length ? <div className="wb-report-archive">{reports.map((report, reportIndex) => {
           const top = report.opportunities[0];
           const publications = publicationsFor(report);
-          const publicationStatus = publications[0]?.isRetired
+          const publicationStatus = publications[0]?.isProductMigrationHeld
+            ? "MIGRATION HOLD"
+            : publications[0]?.isRetired
             ? "RETIRED"
             : publications[0]?.status ?? "—";
           const retiredPreviewSlug = reportIndex === 0 && report.draft?.schemaVersion === 2 &&
@@ -77,7 +82,7 @@ export default async function WorkbenchReportsPage() {
             <dl className="wb-report-metrics"><div><dt>机会分</dt><dd>{top?.score ?? "—"}</dd></div><div><dt>发布状态</dt><dd>{publicationStatus}</dd></div><div><dt>Google 点击</dt><dd>{hasSearchPerformance ? report.summary.totalClicks : "—"}</dd></div><div><dt>落地页 UV</dt><dd>{landingUv?.status === "observed" ? landingUv.value : "—"}</dd></div><div><dt>付费数</dt><dd>{paidConversions?.status === "observed" ? paidConversions.value : "—"}</dd></div><div><dt>归因营收</dt><dd>{revenue?.status === "observed" && revenue.value !== null && report.funnel?.currency ? new Intl.NumberFormat("zh-CN", { style: "currency", currency: report.funnel.currency }).format(revenue.value / 100) : "—"}</dd></div></dl>
             <p>{top?.reason ?? "该日报没有通过发布闸门的机会。"}</p>
             <div className="wb-report-links">
-              {publications.filter((item) => item.status === "published" && item.path && !item.isRetired).map((item) => <a key={item.path} href={item.path}>已发布页面</a>)}
+              {publications.filter((item) => item.status === "published" && item.path && !item.isRetired && !item.isProductMigrationHeld).map((item) => <a key={item.path} href={item.path}>已发布页面</a>)}
               {retiredPreviewSlug ? <a href={`/workbench/preview/${encodeURIComponent(retiredPreviewSlug)}`}>RETIRED · 查看历史草稿</a> : null}
               <a href={`https://github.com/lium53492-rgb/seo/blob/main/data/reports/${report.date}.json`} target="_blank" rel="noreferrer">查看原始日报</a>
             </div>

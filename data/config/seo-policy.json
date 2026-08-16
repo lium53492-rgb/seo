@@ -12,6 +12,9 @@
     "interactive-voice-story",
     "story-based-ai-roleplay"
   ],
+  "productMigrationHoldSlugs": [
+    "ai-roleplay-prompt-vs-existing-story"
+  ],
   "retiredRecipeIds": [
     "playful-story-workshop-v1",
     "specimen-catalog-v1"
@@ -26,7 +29,8 @@
     "primaryAudience": "adult_dnd_players_and_game_masters",
     "requiredProductSignals": [
       "dnd_content",
-      "adult_tabletop_audience"
+      "adult_tabletop_audience",
+      "playworlds_current_product"
     ],
     "requiredAudienceTerms": [
       "d&d",
@@ -180,28 +184,56 @@
     "minRationaleChars": 30,
     "productSignals": {
       "dnd_content": {
-        "weight": 30,
+        "weight": 0,
         "factId": "dnd-content-direction"
       },
       "adult_tabletop_audience": {
         "weight": 0,
         "factId": "dnd-primary-audience"
       },
-      "voice_roleplay": {
+      "playworlds_current_product": {
+        "weight": 0,
+        "factId": "playworlds-current-product"
+      },
+      "playworlds_voice_text_rpg": {
         "weight": 30,
-        "factId": "voice-roleplay-format"
+        "factId": "playworlds-voice-text-single-player-rpg"
+      },
+      "playworlds_ai_game_master": {
+        "weight": 30,
+        "factId": "playworlds-ai-game-master"
+      },
+      "playworlds_in_world_companion": {
+        "weight": 20,
+        "factId": "playworlds-in-world-companion"
+      },
+      "playworlds_persistent_campaigns": {
+        "weight": 25,
+        "factId": "playworlds-persistent-campaigns"
+      },
+      "playworlds_rpg_state": {
+        "weight": 20,
+        "factId": "playworlds-rpg-state"
+      },
+      "voice_roleplay": {
+        "weight": 0,
+        "factId": "voice-roleplay-format",
+        "legacyCompatibilityOnly": true
       },
       "story_premise": {
-        "weight": 25,
-        "factId": "existing-story"
+        "weight": 0,
+        "factId": "existing-story",
+        "legacyCompatibilityOnly": true
       },
       "role_selection": {
-        "weight": 25,
-        "factId": "role-selection"
+        "weight": 0,
+        "factId": "role-selection",
+        "legacyCompatibilityOnly": true
       },
       "interactive_fiction": {
-        "weight": 20,
-        "factId": "interactive-fiction-history"
+        "weight": 0,
+        "factId": "interactive-fiction-history",
+        "legacyCompatibilityOnly": true
       }
     },
     "trialSignals": {

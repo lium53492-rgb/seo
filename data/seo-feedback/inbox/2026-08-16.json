@@ -1,0 +1,15 @@
+{
+  "date": "2026-08-16",
+  "entries": [
+    {
+      "id": "feedback-2026-08-16-playworlds-product-pivot",
+      "createdAt": "2026-08-16T17:32:37.4010461+08:00",
+      "message": "这个是我们的新产品 playworld，前面的novel.ai就不做了 页面中就不要再有novel.ai了 我们现在全部都是dnd了，也就是playworld。你把页面重新修改一下 我看还有novel.ai",
+      "source": "codex_chat",
+      "kind": "content_guidance",
+      "consumedAt": "2026-08-16T17:32:37.4010461+08:00",
+      "decision": "adopted",
+      "rationale": "Use the official Steam spelling Playworlds for future product positioning and remove NovelAI from new page copy and CTAs. Treat D&D only as an adult tabletop audience/search reference without official, licensed, endorsed, or 5e-compatible claims. Preserve historical artifacts and keep the site-wide migration blocked until the Playworlds CTA, attribution callback, and replacement production domain/GSC property are implemented and verified."
+    }
+  ]
+}

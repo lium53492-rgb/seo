@@ -2,21 +2,31 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import nextConfig from "../next.config.ts";
 
-test("the legacy public host permanently redirects only root and single-segment routes", async () => {
+test("legacy public hosts permanently redirect only root and single-segment routes", async () => {
   const redirects = await nextConfig.redirects();
-  const hostMatch = [{ type: "host", value: "seo-pi-fawn.vercel.app" }];
-
   assert.deepEqual(redirects, [
     {
       source: "/",
-      has: hostMatch,
-      destination: "https://lorelens.novelai.ai",
+      has: [{ type: "host", value: "seo-pi-fawn.vercel.app" }],
+      destination: "https://guides.playworlds.ai",
       permanent: true,
     },
     {
       source: "/:slug",
-      has: hostMatch,
-      destination: "https://lorelens.novelai.ai/:slug",
+      has: [{ type: "host", value: "seo-pi-fawn.vercel.app" }],
+      destination: "https://guides.playworlds.ai/:slug",
+      permanent: true,
+    },
+    {
+      source: "/",
+      has: [{ type: "host", value: "lorelens.novelai.ai" }],
+      destination: "https://guides.playworlds.ai",
+      permanent: true,
+    },
+    {
+      source: "/:slug",
+      has: [{ type: "host", value: "lorelens.novelai.ai" }],
+      destination: "https://guides.playworlds.ai/:slug",
       permanent: true,
     },
   ]);

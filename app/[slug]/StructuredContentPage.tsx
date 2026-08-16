@@ -1,4 +1,5 @@
-import { TrackedNovelAiHomeLink } from "@/app/components/TrackedNovelAiHomeLink";
+import { TrackedPlayworldsLink } from "@/app/components/TrackedPlayworldsLink";
+import { StoryDrivenAdventurePage } from "@/components/seo/story-driven-adventure/StoryDrivenAdventurePage";
 import { listMarkdownRenderBlocks, parseMarkdownBlocks } from "@/lib/seo/markdown-semantics.mjs";
 import type { PresentationRecipe } from "@/lib/seo/page-presentation";
 import type { SeoPageViewProps } from "./page-family-types";
@@ -6,6 +7,7 @@ import styles from "./structured-content.module.css";
 
 type StructuredContentPageProps = SeoPageViewProps & {
   recipe: PresentationRecipe;
+  mode?: "preview" | "public";
 };
 
 function InlineMarkdown({ value }: { value: string }) {
@@ -39,7 +41,12 @@ function SemanticMarkdown({ value, listOrder }: { value: string; listOrder?: boo
   });
 }
 
-export function StructuredContentPage({ page, recipe, relatedPages }: StructuredContentPageProps) {
+export function StructuredContentPage({
+  page,
+  recipe,
+  relatedPages,
+  mode = "public",
+}: StructuredContentPageProps) {
   if (!page.architecture || !page.signatureModule) return null;
   const { architecture, signatureModule } = page;
   const copy = architecture.presentation.surfaceCopy;
@@ -103,9 +110,13 @@ export function StructuredContentPage({ page, recipe, relatedPages }: Structured
         <p className={styles.eyebrow}>{copy.eyebrow}</p>
         <h1>{page.h1}</h1>
         <RichText value={page.heroMarkdown} />
-        <TrackedNovelAiHomeLink className={styles.heroCta} sourceSlug={page.slug} location="hero">
-          {page.primaryCta}
-        </TrackedNovelAiHomeLink>
+        {mode === "preview" ? (
+          <span className={styles.disabledCta} aria-disabled="true">{page.primaryCta}</span>
+        ) : (
+          <TrackedPlayworldsLink className={styles.heroCta} sourceSlug={page.slug} location="hero">
+            {page.primaryCta}
+          </TrackedPlayworldsLink>
+        )}
       </div>
       <aside className={styles.shortAnswer} aria-label={copy.shortAnswerLabel}>
         <span>{copy.shortAnswerLabel}</span>
@@ -200,9 +211,13 @@ export function StructuredContentPage({ page, recipe, relatedPages }: Structured
       <span>{copy.finalCtaEyebrow}</span>
       <h2>{copy.finalCtaHeading}</h2>
       <p>{copy.finalCtaBody}</p>
-      <TrackedNovelAiHomeLink sourceSlug={page.slug} location="final_cta">
-        {page.primaryCta}
-      </TrackedNovelAiHomeLink>
+      {mode === "preview" ? (
+        <div className={styles.disabledCta} aria-disabled="true">{page.primaryCta}</div>
+      ) : (
+        <TrackedPlayworldsLink sourceSlug={page.slug} location="final_cta">
+          {page.primaryCta}
+        </TrackedPlayworldsLink>
+      )}
       <a href="#top">{copy.backToTop}</a>
     </footer>
   );
@@ -223,8 +238,12 @@ export function StructuredContentPage({ page, recipe, relatedPages }: Structured
         return <>{hero(styles.missionHero, true)}<div className={styles.missionConsole}>{contents}{layers(styles.missionLayers)}</div>{faq}{related}{finalCta}</>;
       case "playful_story_workshop":
         return <>{hero(styles.workshopHero)}<section className={styles.workshopTable}>{layers(styles.workshopLayers)}{contents}</section>{faq}{related}{finalCta}</>;
+      case "story_driven_adventure":
+        return <StoryDrivenAdventurePage page={page} relatedPages={relatedPages} mode={mode} />;
     }
   })();
+
+  if (architecture.presentation.rendererId === "story_driven_adventure") return renderer;
 
   return (
     <main

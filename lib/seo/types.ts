@@ -66,7 +66,18 @@ export type CandidateDecisionEvidence = {
   searcherJob: string;
   productFactIds: string[];
   productSignals: Array<
-    "voice_roleplay" | "story_premise" | "role_selection" | "interactive_fiction" | "dnd_content" | "adult_tabletop_audience"
+    | "dnd_content"
+    | "adult_tabletop_audience"
+    | "playworlds_current_product"
+    | "playworlds_voice_text_rpg"
+    | "playworlds_ai_game_master"
+    | "playworlds_in_world_companion"
+    | "playworlds_persistent_campaigns"
+    | "playworlds_rpg_state"
+    | "voice_roleplay"
+    | "story_premise"
+    | "role_selection"
+    | "interactive_fiction"
   >;
   trialSignals: Array<
     "solution_aware" | "immediate_use" | "experience_seeking" | "action_language"
@@ -297,6 +308,8 @@ export type ProductFact = {
   id: string;
   statement: string;
   source: string;
+  /** Catalog validation limits this to active or historical_compatibility. */
+  status: string;
 };
 
 export type DraftQualityCheck = {
@@ -444,7 +457,8 @@ export type PageArchitecture = {
       | "editorial_argument"
       | "specimen_catalog"
       | "orbital_mission_log"
-      | "playful_story_workshop";
+      | "playful_story_workshop"
+      | "story_driven_adventure";
     visualSystemId: string;
     layoutId: string;
     paletteId: string;
@@ -828,6 +842,14 @@ export type GrowthPortfolioSnapshot = {
     attributionJoinReady: boolean;
     attributionJoinBlocked: boolean;
     hasSearchValidatedLandingPage: boolean;
+  };
+  /** Required on newly collected snapshots; optional only for readable historical schema-2 artifacts. */
+  globalAttribution?: {
+    schemaVersion: 1;
+    product: "playworlds";
+    state: "observed" | "unavailable";
+    attributionJoinReady: boolean;
+    detail: string;
   };
   entries: GrowthPortfolioEntry[];
   retiredUrls?: RetiredUrlGrowthEntry[];

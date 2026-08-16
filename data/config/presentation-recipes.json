@@ -133,6 +133,25 @@
       "companion": "story_companion",
       "gallery": "none",
       "reusePolicy": { "kind": "cooldown", "pages": 6 }
+    },
+    {
+      "id": "story-driven-adventure-v1",
+      "rendererId": "story_driven_adventure",
+      "compatiblePagePatterns": ["experience_explainer"],
+      "compatibleArchetypes": ["worked_examples"],
+      "visualSystemId": "story-driven-adventure",
+      "layoutId": "fractured-signal-mission-archive",
+      "paletteId": "black-ice-signal-cyan",
+      "typographyId": "orbital-display-telemetry",
+      "motifId": "role-signal-lock",
+      "sectionMarkerStyle": "transmission",
+      "sectionFlow": "signal_archive",
+      "domainConcepts": ["signal", "relay", "orbit", "eclipse", "mission", "debrief"],
+      "signature": "A three-mission signal archive that turns each original role into a pressure, decision, first line, and voice direction.",
+      "rejectedDefaults": ["generic SaaS hero", "bento feature grid", "purple startup gradient"],
+      "companion": "none",
+      "gallery": "none",
+      "reusePolicy": { "kind": "single_use" }
     }
   ]
 }

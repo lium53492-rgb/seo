@@ -35,7 +35,7 @@ test("unattended policy targets one page with persistent release recovery", () =
 });
 
 test("unattended release proof is wired to the canonical production origin", () => {
-  assert.equal(unattendedPolicy.releaseVerification.origin, "https://lorelens.novelai.ai");
+  assert.equal(unattendedPolicy.releaseVerification.origin, "https://guides.playworlds.ai");
   assert.equal(unattendedPolicy.releaseVerification.expectedOriginRepository, "lium53492-rgb/seo");
   assert.equal(unattendedPolicy.releaseVerification.authoritativeDeploymentEvidence, "live_exact_git_revision");
   assert.equal(unattendedPolicy.releaseVerification.requireOriginMainTip, true);

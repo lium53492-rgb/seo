@@ -1,5 +1,6 @@
 import { createHash, createHmac } from "node:crypto";
 import type { OutboundLocation } from "./attribution";
+import playworldsAttribution from "../../data/config/playworlds-attribution.json" with { type: "json" };
 
 const keyPrefix = "seo:v1:";
 const retentionSeconds = 400 * 24 * 60 * 60;
@@ -38,7 +39,9 @@ return 1
 
 const outboundScript = `
 local existingSource = redis.call("HGET", KEYS[2], "sourceSlug")
+local existingProduct = redis.call("HGET", KEYS[2], "product")
 if existingSource and existingSource ~= ARGV[3] then return -2 end
+if existingProduct and existingProduct ~= ARGV[9] then return -3 end
 if redis.call("EXISTS", KEYS[1]) == 1 then return 0 end
 redis.call("SET", KEYS[1], ARGV[1], "EX", ARGV[2])
 redis.call("HSET", KEYS[2],
@@ -47,7 +50,8 @@ redis.call("HSET", KEYS[2],
   "location", ARGV[5],
   "occurredAt", ARGV[6],
   "cohortDay", ARGV[7],
-  "qualified", ARGV[8])
+  "qualified", ARGV[8],
+  "product", ARGV[9])
 redis.call("EXPIRE", KEYS[2], ARGV[2])
 redis.call("HINCRBY", KEYS[3], "outboundRequests", 1)
 redis.call("HINCRBY", KEYS[3], "cta:" .. ARGV[5], 1)
@@ -62,9 +66,11 @@ const conversionScript = `
 if redis.call("EXISTS", KEYS[1]) == 1 then return 0 end
 local sourceSlug = redis.call("HGET", KEYS[2], "sourceSlug")
 local cohortDay = redis.call("HGET", KEYS[2], "cohortDay")
+local product = redis.call("HGET", KEYS[2], "product")
 local orphan = 0
 if sourceSlug then
   if sourceSlug ~= ARGV[3] then return -2 end
+  if product and product ~= ARGV[10] then return -3 end
 else
   sourceSlug = ARGV[3]
   cohortDay = ARGV[6]
@@ -74,9 +80,10 @@ else
     "cohortDay", cohortDay,
     "occurredAt", ARGV[5],
     "qualified", "1",
+    "product", ARGV[10],
     "orphan", "1")
 end
-local cohortKey = ARGV[9] .. cohortDay .. ":" .. sourceSlug
+local cohortKey = ARGV[9] .. ARGV[10] .. ":" .. cohortDay .. ":" .. sourceSlug
 redis.call("SET", KEYS[1], ARGV[1], "EX", ARGV[2])
 local metricField = ""
 if ARGV[4] == "trial_started" then metricField = "trialStarts" end
@@ -290,29 +297,36 @@ async function redisPipeline(commands: Array<Array<string | number>>) {
   return { configured: true as const, results: payload.map((item) => item.result) };
 }
 
-export async function recordOutboundClick(input: {
+type OutboundClickInput = {
   clickId: string;
   keyword: string;
   location: OutboundLocation;
   sourceSlug: string;
   occurredAt: string;
   qualified: boolean;
-}): Promise<AttributionWriteResult> {
+};
+
+async function recordProductOutboundClick(
+  input: OutboundClickInput,
+  product: "novelai" | "playworlds",
+  eventName: string,
+): Promise<AttributionWriteResult> {
   assertSlug(input.sourceSlug);
   const cohortDay = shanghaiDay(input.occurredAt);
   const event = {
     schemaVersion: 1,
     eventId: input.clickId,
-    event: "qualified_outbound_click",
+    event: input.qualified ? eventName : `${product}_outbound_request`,
+    product,
     ...input,
   };
   const response = await redisCommand([
     "EVAL",
     outboundScript,
     3,
-    `${keyPrefix}event:outbound:${input.clickId}`,
+    `${keyPrefix}event:outbound:${product}:${input.clickId}`,
     `${keyPrefix}click:${input.clickId}`,
-    `${keyPrefix}cohort:${cohortDay}:${input.sourceSlug}`,
+    `${keyPrefix}cohort:${product}:${cohortDay}:${input.sourceSlug}`,
     JSON.stringify(event),
     retentionSeconds,
     input.sourceSlug,
@@ -321,14 +335,31 @@ export async function recordOutboundClick(input: {
     input.occurredAt,
     cohortDay,
     input.qualified ? "1" : "0",
+    product,
   ]);
   if (!response.configured) {
     return { state: "unavailable", detail: attributionStoreStatus().detail ?? "Attribution store is not configured." };
   }
   if (response.result === -2) throw new Error("Click ID is already bound to another source slug");
+  if (response.result === -3) throw new Error("Click ID is already bound to another product");
   return response.result === 0
     ? { state: "duplicate", detail: "The outbound click was already stored." }
     : { state: "stored", detail: input.qualified ? "Verified user navigation stored." : "Unverified navigation stored for audit only." };
+}
+
+/** Historical compatibility for the retired /go/novelai route. */
+export async function recordOutboundClick(input: OutboundClickInput): Promise<AttributionWriteResult> {
+  return recordProductOutboundClick(input, "novelai", "qualified_outbound_click");
+}
+
+export async function recordPlayworldsOutboundClick(
+  input: OutboundClickInput,
+): Promise<AttributionWriteResult> {
+  return recordProductOutboundClick(
+    input,
+    "playworlds",
+    playworldsAttribution.events.qualifiedOutbound,
+  );
 }
 
 export async function recordLandingView(input: {
@@ -471,11 +502,15 @@ export async function recordConversionEvent(event: AttributionConversionEvent): 
     event.revenueMinor ?? 0,
     event.currency ?? "",
     `${keyPrefix}cohort:`,
+    "novelai",
   ]);
   if (!response.configured) {
     return { state: "unavailable", detail: attributionStoreStatus().detail ?? "Attribution store is not configured." };
   }
   if (response.result === -2) throw new Error("Conversion source slug does not match its click ID");
+  if (response.result === -3) {
+    throw new Error("Legacy NovelAI conversion callbacks cannot join a Playworlds outbound click");
+  }
   if (response.result === 0) return { state: "duplicate", detail: "The conversion event was already stored." };
   const orphan = response.result === 2;
   return {
@@ -592,7 +627,7 @@ export async function readAttributionAggregate(input: {
   const days = periodDays(input.periodStart, input.periodEnd);
   const response = await redisPipeline(days.map((day) => [
     "HGETALL",
-    `${keyPrefix}cohort:${day}:${input.sourceSlug}`,
+    `${keyPrefix}cohort:playworlds:${day}:${input.sourceSlug}`,
   ]));
   if (!response.configured) {
     return {
@@ -649,7 +684,7 @@ export async function readAttributionAggregate(input: {
     ...totals,
     revenueByCurrency,
     ctaLocations,
-    detail: `Read ${days.length} Shanghai-day acquisition cohort${days.length === 1 ? "" : "s"} from Upstash Redis.`,
+    detail: `Read ${days.length} Playworlds Shanghai-day acquisition cohort${days.length === 1 ? "" : "s"} from Upstash Redis.`,
   };
 }
 

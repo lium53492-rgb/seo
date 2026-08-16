@@ -52,6 +52,9 @@ const trendsAttestationClientEmail = String(
   process.env.GOOGLE_TRENDS_BIGQUERY_CLIENT_EMAIL || "",
 ).trim();
 const retiredPageSlugs = new Set(Array.isArray(policy.retiredPageSlugs) ? policy.retiredPageSlugs : []);
+const productMigrationHoldSlugs = new Set(
+  Array.isArray(policy.productMigrationHoldSlugs) ? policy.productMigrationHoldSlugs : [],
+);
 const retiredRecipeIds = new Set(Array.isArray(policy.retiredRecipeIds) ? policy.retiredRecipeIds : []);
 const retiredPaletteIds = new Set(Array.isArray(policy.retiredPaletteIds) ? policy.retiredPaletteIds : []);
 
@@ -115,7 +118,11 @@ if (!Array.isArray(input.evidence) || input.evidence.length < policy.evidence.mi
 const slugify = (value) => String(value).toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 const titleCase = (value) => String(value).replace(/\b\w/g, (letter) => letter.toUpperCase());
 const safeEvidenceId = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const approvedFactIds = new Set(factCatalog.facts.map((fact) => fact.id));
+const activeProductFacts = factCatalog.facts.filter((fact) => fact.status === "active");
+const approvedFactIds = new Set(
+  activeProductFacts.map((fact) => fact.id),
+);
+const activeFactStatements = activeProductFacts.map((fact) => fact.statement);
 const forbiddenClaims = factCatalog.forbiddenClaimPatterns.map((pattern) => new RegExp(pattern, "i"));
 const unsupportedKeywords = factCatalog.unsupportedKeywordPatterns.map((pattern) => new RegExp(pattern, "i"));
 const allowedCtaLocations = new Set(["seo_page", "hero", "header", "inline", "final_cta", "companion"]);
@@ -463,7 +470,7 @@ function existingPages() {
   return readdirSync(directory)
     .filter((name) => name.endsWith(".json"))
     .map((name) => readJson(resolve(directory, name)))
-    .filter((page) => page.status === "published");
+    .filter((page) => page.status === "published" && !productMigrationHoldSlugs.has(page.slug));
 }
 
 function existingReports() {
@@ -544,12 +551,12 @@ function validateDraft(rawDraft, keyword) {
   if (audienceBlockers.length) {
     throw new Error(`Draft violates the D&D-first audience contract: ${audienceBlockers.join("; ")}`);
   }
-  const genericCtaPattern = /^(?:click here|learn more|get started|explore stories|explore story-led roleplay|try novelai|start now|read more)(?:\s+(?:on|with)\s+novelai)?[.!]?$/i;
+  const genericCtaPattern = /^(?:click here|learn more|get started|explore stories|explore story-led roleplay|try (?:novelai|playworlds)|start now|read more)(?:\s+(?:on|with)\s+(?:novelai|playworlds))?[.!]?$/i;
   const ctaTokens = new Set(
     `${keyword} ${contentStrategy?.readerOutcome || ""} ${contentStrategy?.primaryPainPoint || ""}`
       .toLowerCase()
       .match(/[a-z0-9]+/g)
-      ?.filter((token) => token.length >= 5 && !["novelai", "story", "stories", "roleplay", "using", "about"].includes(token)) || [],
+      ?.filter((token) => token.length >= 5 && !["novelai", "playworlds", "story", "stories", "roleplay", "using", "about"].includes(token)) || [],
   );
   const ctaSpecific = !genericCtaPattern.test(rawDraft.primaryCta.trim()) &&
     [...ctaTokens].some((token) => rawDraft.primaryCta.toLowerCase().includes(token));
@@ -1110,6 +1117,33 @@ function validatePortfolioSnapshot(rawPortfolio, publishedPages) {
       throw new Error(`Public growth schema v2 contains a forbidden private field: ${forbiddenKey}`);
     }
   }
+  const rawGlobalAttribution = rawPortfolio?.globalAttribution;
+  if (publicSnapshot && (
+    rawGlobalAttribution?.schemaVersion !== 1 ||
+    rawGlobalAttribution?.product !== "playworlds" ||
+    !["observed", "unavailable"].includes(rawGlobalAttribution?.state) ||
+    typeof rawGlobalAttribution?.attributionJoinReady !== "boolean" ||
+    typeof rawGlobalAttribution?.detail !== "string" ||
+    rawGlobalAttribution.detail.trim().length < 10 ||
+    (rawGlobalAttribution.state !== "observed" && rawGlobalAttribution.attributionJoinReady)
+  )) {
+    throw new Error("Public growth schema v2 needs an independent Playworlds attribution readiness probe");
+  }
+  const globalAttribution = publicSnapshot
+    ? {
+        schemaVersion: 1,
+        product: "playworlds",
+        state: rawGlobalAttribution.state,
+        attributionJoinReady: rawGlobalAttribution.attributionJoinReady,
+        detail: rawGlobalAttribution.detail.trim(),
+      }
+    : {
+        schemaVersion: 1,
+        product: "playworlds",
+        state: "unavailable",
+        attributionJoinReady: false,
+        detail: "Legacy growth snapshots do not contain an independent Playworlds readiness probe.",
+      };
   const generatedAt = Date.parse(rawPortfolio.generatedAt || "");
   const periodStart = Date.parse(rawPortfolio.periodStart || "");
   const periodEnd = Date.parse(rawPortfolio.periodEnd || "");
@@ -1175,9 +1209,7 @@ function validatePortfolioSnapshot(rawPortfolio, publishedPages) {
   const attributionJoinBlocked = collectedEntries.some(
     (entry) => entry.report.decisionState.attributionJoinBlocked,
   );
-  const attributionJoinReady =
-    collectedEntries.length === entries.length &&
-    collectedEntries.every((entry) => entry.report.decisionState.attributionJoinChecked);
+  const attributionJoinReady = globalAttribution.attributionJoinReady;
   const hasSearchValidatedLandingPage = collectedEntries.some(
     (entry) => entry.report.decisionState.samePageSearchValidated,
   );
@@ -1214,6 +1246,7 @@ function validatePortfolioSnapshot(rawPortfolio, publishedPages) {
       attributionJoinBlocked,
       hasSearchValidatedLandingPage,
     },
+    globalAttribution,
     entries,
   };
 }
@@ -1233,14 +1266,18 @@ function assertCreatePageGrowthReadiness(portfolio) {
     summary.collectedPages === summary.publishedPages &&
     summary.unavailablePages === 0 &&
     summary.attributionJoinReady === true &&
+    portfolio.globalAttribution?.product === "playworlds" &&
+    portfolio.globalAttribution?.state === "observed" &&
+    portfolio.globalAttribution?.attributionJoinReady === true &&
     entries.length === summary.publishedPages &&
     pageReadinessFailures.length === 0;
   if (!ready) {
     const failedSlugs = pageReadinessFailures.map((entry) => entry?.sourceSlug || "<unknown>");
     throw new Error(
       "Create-page growth readiness gate failed: every published page must be collected with " +
-      "Search Console, landing UV, and qualified outbound readiness, zero unavailable pages, " +
-      `and attributionJoinReady=true${failedSlugs.length ? `; failed pages: ${failedSlugs.join(", ")}` : ""}`,
+      "observed Search Console, landing UV, and qualified outbound evidence (zero values are allowed), " +
+      "zero unavailable pages, and the independent Playworlds callback/store probe must report " +
+      `attributionJoinReady=true${failedSlugs.length ? `; failed pages: ${failedSlugs.join(", ")}` : ""}`,
     );
   }
 }
@@ -1440,6 +1477,11 @@ const preparedDrafts = rawDrafts.map((rawDraft, index) => {
   if (retiredPageSlugs.has(pageSlug)) {
     throw new Error(`Page /${pageSlug} was retired by explicit user feedback and cannot be republished automatically`);
   }
+  if (productMigrationHoldSlugs.has(pageSlug)) {
+    throw new Error(
+      `Page /${pageSlug} is on product-migration hold until a new Playworlds-fact report and editorial review replace the legacy product claims`,
+    );
+  }
   if (rawDraft.slug && String(rawDraft.slug).replace(/^\//, "") !== pageSlug) {
     throw new Error(`Draft slug must match the researched keyword: ${pageSlug}`);
   }
@@ -1478,7 +1520,7 @@ const preparedDrafts = rawDrafts.map((rawDraft, index) => {
     architectureHistory,
     architecturePolicy,
     presentationCatalog,
-    allowedPhrases: factCatalog.facts.map((fact) => fact.statement),
+    allowedPhrases: activeFactStatements,
     enforceEnhancedNovelty: date >= architecturePolicy.enhancedNoveltyEnforcedFromReportDate,
   });
   if (!novelty.passed) {
@@ -1680,7 +1722,7 @@ const report = {
     title: draft?.title ?? `${phrase} | D&D Table-Ready Field Guide`,
     description: draft?.metaDescription ?? `Use an original, table-ready framework for ${selectedOpportunity.keyword} without borrowed settings, characters, or rules text.`,
     h1: draft?.h1 ?? phrase,
-    primaryCta: draft?.primaryCta ?? "Explore D&D-focused content on NovelAI",
+    primaryCta: draft?.primaryCta ?? `Continue ${selectedOpportunity.keyword} in Playworlds`,
     sections: draft?.architecture?.content?.sections?.map((section) => `${section.role}: ${section.uniqueTakeaway}`) ?? ["Define a distinct content architecture before drafting"],
     evidenceRequired: ["Public evidence for the intent", "Approved product facts", "Original non-infringing material", "Verified CTA and attribution route"],
     qualityGate: ["One intent and one H1", "Content and presentation contracts passed", "No unlicensed third-party IP", "Independent editorial review", "Render, link, and index checks"],

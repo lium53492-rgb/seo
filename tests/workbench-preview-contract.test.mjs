@@ -17,7 +17,7 @@ test("the workbench draft preview uses the production structured renderer contra
   assert.match(previewSource, /resolveRelatedSeoPages\(previewPage, await listPublishedPages\(\)\)/);
   assert.match(
     previewSource,
-    /<StructuredContentPage page=\{previewPage\} recipe=\{presentation\} relatedPages=\{relatedPages\} \/>/,
+    /<StructuredContentPage[\s\S]*page=\{previewPage\}[\s\S]*recipe=\{presentation\}[\s\S]*relatedPages=\{relatedPages\}[\s\S]*mode="preview"[\s\S]*\/>/,
   );
   assert.match(previewSource, /<StoryCompanion sourceSlug=\{previewPage\.slug\} \/>/);
   assert.doesNotMatch(previewSource, /MessageResponse|wb-preview-(?:shell|page|hero|h1|lede|cta|content|section|h2|links|faq|audit)/);

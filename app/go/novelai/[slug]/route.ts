@@ -1,4 +1,5 @@
 import { after, NextResponse } from "next/server";
+import seoPolicy from "@/data/config/seo-policy.json";
 import {
   buildNovelAiAttributionUrl,
   createSeoClickId,
@@ -6,6 +7,7 @@ import {
   normalizeOutboundLocation,
 } from "@/lib/seo/attribution";
 import { recordOutboundClick } from "@/lib/seo/attribution-store";
+import { resolveLegacyNovelAiSource } from "@/lib/seo/legacy-novelai-outbound";
 import { readPublishedPage } from "@/lib/seo/page-store";
 
 export const dynamic = "force-dynamic";
@@ -15,8 +17,10 @@ export async function GET(
   { params }: { params: Promise<{ slug: string }> },
 ) {
   const { slug } = await params;
-  const page = await readPublishedPage(slug);
-  if (!page) return new Response("Unknown SEO source", { status: 404 });
+  const page = await resolveLegacyNovelAiSource(slug, readPublishedPage, seoPolicy);
+  if (!page) {
+    return new Response("Unknown SEO source", { status: 404 });
+  }
 
   const requestUrl = new URL(request.url);
   const location = normalizeOutboundLocation(requestUrl.searchParams.get("location"));

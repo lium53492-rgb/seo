@@ -26,6 +26,8 @@ const managedEnv = [
   "KV_REST_API_TOKEN",
   "VERCEL_ANALYTICS_TOKEN",
   "VERCEL_TOKEN",
+  "VERCEL_ANALYTICS_PROJECT_ID",
+  "VERCEL_ANALYTICS_TEAM_ID",
   "FIRST_PARTY_LANDING_ANALYTICS_STARTED_AT",
   "NEXT_PUBLIC_SITE_URL",
   "GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL",
@@ -143,7 +145,7 @@ test("attribution storage is explicit, idempotent, and cohort based", async () =
     });
     assert.equal(stored.state, "stored");
     assert.equal(requests[0].body[0], "EVAL");
-    assert.match(requests[0].body.join(" "), /cohort:2026-07-22:play-an-ai-roleplay-story/);
+    assert.match(requests[0].body.join(" "), /cohort:novelai:2026-07-22:play-an-ai-roleplay-story/);
 
     const conversion = await recordConversionEvent({
       schemaVersion: 1,
@@ -173,9 +175,13 @@ test("durable cohorts and Vercel UV expose compatible live inputs", async () => 
     process.env.UPSTASH_REDIS_REST_URL = "https://example.upstash.io";
     process.env.UPSTASH_REDIS_REST_TOKEN = "test-token";
     process.env.VERCEL_ANALYTICS_TOKEN = "vercel-token";
-    globalThis.fetch = async (url) => {
+    process.env.VERCEL_ANALYTICS_PROJECT_ID = "prj_explicit_fixture";
+    process.env.VERCEL_ANALYTICS_TEAM_ID = "team_explicit_fixture";
+    let aggregatePipelineBody = [];
+    globalThis.fetch = async (url, init) => {
       const value = String(url);
       if (value.endsWith("/pipeline")) {
+        aggregatePipelineBody = JSON.parse(String(init?.body || "[]"));
         return Response.json([{
           result: [
             "outboundRequests", "7",
@@ -203,6 +209,8 @@ test("durable cohorts and Vercel UV expose compatible live inputs", async () => 
       periodStart: "2026-07-22T00:00:00+08:00",
       periodEnd: "2026-07-22T23:59:59+08:00",
     });
+    assert.match(aggregatePipelineBody.flat().join(" "), /cohort:playworlds:2026-07-22:play-an-ai-roleplay-story/);
+    assert.doesNotMatch(aggregatePipelineBody.flat().join(" "), /cohort:2026-07-22:play-an-ai-roleplay-story/);
     assert.equal(aggregate.qualifiedOutboundClicks, 6);
     assert.equal(aggregate.revenueByCurrency.USD, 2598);
     assert.equal(aggregate.ctaLocations.hero, 5);
@@ -215,7 +223,7 @@ test("durable cohorts and Vercel UV expose compatible live inputs", async () => 
     assert.equal(uv.state, "observed");
     assert.equal(uv.visitors, 12);
     assert.equal(uv.pageviews, 18);
-    assert.match(uv.detail, /lorelens\.novelai\.ai/);
+    assert.match(uv.detail, /guides\.playworlds\.ai/);
   } finally {
     globalThis.fetch = originalFetch;
     restoreEnvironment(environment);

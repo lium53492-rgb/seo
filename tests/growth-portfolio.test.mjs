@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
-  collectGrowthPortfolio,
+  collectGrowthPortfolio as collectGrowthPortfolioImpl,
   completeShanghaiWindow,
   countSearchValidatedLandingPages,
   evaluateConsolidationEvidence,
@@ -9,6 +9,32 @@ import {
   projectPrivateGrowthReport,
   shanghaiDate,
 } from "../scripts/lib/growth-portfolio.mjs";
+
+const readyGlobalAttribution = {
+  schemaVersion: 1,
+  product: "playworlds",
+  state: "observed",
+  attributionJoinReady: true,
+  detail: "The independent Playworlds callback and attribution store probe passed.",
+};
+const unavailableGlobalAttribution = {
+  schemaVersion: 1,
+  product: "playworlds",
+  state: "unavailable",
+  attributionJoinReady: false,
+  detail: "The independent Playworlds callback probe was unavailable in this fixture.",
+};
+
+function collectGrowthPortfolio(input) {
+  const hasAutomationToken = typeof input.automationToken === "string" &&
+    Buffer.byteLength(input.automationToken, "utf8") >= 32;
+  return collectGrowthPortfolioImpl({
+    globalAttributionReadiness: hasAutomationToken
+      ? readyGlobalAttribution
+      : unavailableGlobalAttribution,
+    ...input,
+  });
+}
 
 const unavailable = (source, detail) => ({
   status: "unavailable",
@@ -197,6 +223,82 @@ test("collector authenticates and keeps every page bound to the same reporting p
     assert.equal(request.url.searchParams.get("to"), period.periodEnd);
     assert.equal(request.authorization, "Bearer fixture-secret-with-at-least-32-bytes");
   }
+});
+
+test("an empty active portfolio uses independent global readiness instead of a vacuous page calculation", async () => {
+  let fetchCalls = 0;
+  const snapshot = await collectGrowthPortfolio({
+    pages: [],
+    retiredPages: [],
+    automationToken: "fixture-token-that-is-at-least-32-bytes",
+    now: new Date("2026-07-23T03:30:00.000Z"),
+    fetchImpl: async () => {
+      fetchCalls += 1;
+      throw new Error("empty portfolio must not fetch");
+    },
+  });
+
+  assert.equal(fetchCalls, 0);
+  assert.deepEqual(snapshot.summary, {
+    publishedPages: 0,
+    collectedPages: 0,
+    unavailablePages: 0,
+    attributionJoinReady: true,
+    attributionJoinBlocked: false,
+    hasSearchValidatedLandingPage: false,
+  });
+  assert.equal(snapshot.globalAttribution.attributionJoinReady, true);
+});
+
+test("zero active pages remain blocked when the independent Playworlds probe is unavailable", async () => {
+  const snapshot = await collectGrowthPortfolioImpl({
+    pages: [],
+    retiredPages: [],
+    automationToken: "fixture-token-that-is-at-least-32-bytes",
+    globalAttributionReadiness: unavailableGlobalAttribution,
+    now: new Date("2026-07-23T03:30:00.000Z"),
+    fetchImpl: async () => {
+      throw new Error("an injected global probe must not fetch");
+    },
+  });
+  assert.equal(snapshot.summary.attributionJoinReady, false);
+  assert.equal(snapshot.globalAttribution.state, "unavailable");
+});
+
+test("collector projects only the independent Playworlds readiness result", async () => {
+  let requestedUrl = "";
+  const snapshot = await collectGrowthPortfolioImpl({
+    pages: [],
+    retiredPages: [],
+    automationToken: "fixture-token-that-is-at-least-32-bytes",
+    siteUrl: "https://guides.playworlds.ai",
+    now: new Date("2026-07-23T03:30:00.000Z"),
+    fetchImpl: async (url) => {
+      requestedUrl = String(url);
+      return Response.json({
+        sources: {
+          attributionStore: { provider: "upstash_redis", configured: true },
+          conversionCallback: {
+            provider: "playworlds_callback",
+            configured: true,
+            handshake: { state: "observed", recent: true },
+          },
+        },
+        readyFor: { outboundToRevenue: true },
+        privateSecret: "must not survive projection",
+      });
+    },
+  });
+  assert.equal(requestedUrl, "https://guides.playworlds.ai/api/attribution/readiness");
+  assert.equal(snapshot.summary.attributionJoinReady, true);
+  assert.deepEqual(Object.keys(snapshot.globalAttribution).sort(), [
+    "attributionJoinReady",
+    "detail",
+    "product",
+    "schemaVersion",
+    "state",
+  ]);
+  assert.equal(JSON.stringify(snapshot).includes("privateSecret"), false);
 });
 
 test("retired URLs keep only search evidence and never affect the active portfolio summary", async () => {

@@ -212,20 +212,28 @@ export default async function WorkbenchPage() {
       seoPolicy.retiredPageSlugs.includes(item.slug) ||
       (pipeline.publicationStatus === "retired" && pipeline.retirement.slug === item.slug)
     )),
+    isProductMigrationHeld: Boolean(
+      item.slug && seoPolicy.productMigrationHoldSlugs.includes(item.slug),
+    ),
   }));
   const drafts = report.drafts?.length ? report.drafts : report.draft ? [report.draft] : [];
   const activePublishedPublications = publications.filter((item) =>
-    item.status === "published" && item.path && !item.isRetired);
+    item.status === "published" && item.path && !item.isRetired && !item.isProductMigrationHeld);
   const hasRetiredPublication = publications.some((item) => item.isRetired);
+  const hasProductMigrationHeldPublication = publications.some((item) => item.isProductMigrationHeld);
   const primaryActivePublicationPath = activePublishedPublications[0]?.path ?? null;
-  const pipelineBadgeClass = pipeline.stage === "published" || pipeline.stage === "repository_published"
+  const pipelineBadgeClass = hasProductMigrationHeldPublication
+    ? "partial"
+    : pipeline.stage === "published" || pipeline.stage === "repository_published"
     ? "live"
     : pipeline.stage === "repository_retired"
       ? "retired"
       : pipeline.blockers.length
         ? "blocked"
         : "partial";
-  const pipelineStageLabel = pipeline.stage === "repository_retired"
+  const pipelineStageLabel = hasProductMigrationHeldPublication
+    ? "PRODUCT MIGRATION HOLD"
+    : pipeline.stage === "repository_retired"
     ? "RETIRED"
     : pipeline.stage.toUpperCase();
   const canRefresh = true;
@@ -275,8 +283,8 @@ export default async function WorkbenchPage() {
     ["Google organic clicks", funnel.metrics.organicClicks, "Search Console", "count"],
     ["SEO landing UV", funnel.metrics.landingUv, landingUvSourceLabel, "count"],
     ["Qualified outbound", funnel.metrics.qualifiedOutboundClicks, "SEO redirect", "count"],
-    ["Trial starts", funnel.metrics.trialStarts, "NovelAI callback", "count"],
-    ["Signups", funnel.metrics.signups, "NovelAI callback", "count"],
+    ["Trial starts", funnel.metrics.trialStarts, "Conversion callback (Playworlds not connected)", "count"],
+    ["Signups", funnel.metrics.signups, "Conversion callback (Playworlds not connected)", "count"],
     ["Paid conversions", funnel.metrics.paidConversions, "Payment callback", "count"],
     ["Attributed revenue", funnel.metrics.revenueMinor, funnel.currency ?? "Currency unavailable", "currency"],
   ] as const;
@@ -297,7 +305,7 @@ export default async function WorkbenchPage() {
       <aside className="wb-sidebar">
         <a className="wb-brand" href="/workbench" aria-label="SEO Growth Workbench 首页">
           <span className="wb-brand-mark">N</span>
-          <span><strong>Growth OS</strong><small>NovelAI SEO</small></span>
+          <span><strong>Growth OS</strong><small>Playworlds SEO</small></span>
         </a>
         <nav className="wb-nav" aria-label="工作台导航">
           <a className="active" href="#overview"><span>◈</span>今日总览</a>
@@ -397,7 +405,7 @@ export default async function WorkbenchPage() {
             <span className="wb-data-note">没有可见证据时保持 unavailable；提交 sitemap 或 outreach 清单都不算完成。</span>
           </div>
           <div className="wb-stat-grid">
-            <article><p>内容发布记录</p><strong>{activePublishedPublications.length ? "PUBLISHED" : hasRetiredPublication ? "RETIRED" : "—"}</strong><span>{activePublishedPublications.length ? "最新日报含仍在线的 published 记录" : hasRetiredPublication ? "历史发布记录已正式下线，不再提供公开页面链接" : "最新日报没有 published 记录"}</span></article>
+            <article><p>内容发布记录</p><strong>{activePublishedPublications.length ? "PUBLISHED" : hasProductMigrationHeldPublication ? "MIGRATION HOLD" : hasRetiredPublication ? "RETIRED" : "—"}</strong><span>{activePublishedPublications.length ? "最新日报含仍在线的 published 记录" : hasProductMigrationHeldPublication ? "旧产品事实页面暂缓对外服务；完成 Playworlds 新报告与重审后才能解除" : hasRetiredPublication ? "历史发布记录已正式下线，不再提供公开页面链接" : "最新日报没有 published 记录"}</span></article>
             <article><p>生产部署</p><strong>—</strong><span>日报未保存 Vercel READY 证据，不从本地构建推断</span></article>
             <article><p>Google 搜索曝光证据</p><strong>{pagesWithSearchImpressions || "—"}</strong><span>{pagesWithSearchImpressions ? `${pagesWithSearchImpressions} 页有非零 exact-page GSC 曝光` : "没有可见页面行，不能声称已收录"}</span></article>
             <article><p>第三方外链</p><strong>—</strong><span>没有获授权且可访问的第三方链接记录</span></article>
@@ -416,8 +424,8 @@ export default async function WorkbenchPage() {
           </p>
           <div className="wb-table-wrap"><table><thead><tr><th>漏斗步骤</th><th>观测值</th><th>来源</th><th>状态说明</th></tr></thead><tbody>{funnelRows.map(([label, metric, source, format]) => <tr key={label}><td><strong>{label}</strong></td><td><strong className="wb-score-inline">{format === "currency" ? currencyValue(metric, funnel.currency) : metricValue(metric)}</strong></td><td>{source}</td><td>{metric.detail}</td></tr>)}</tbody></table></div>
           <div className="wb-stat-grid wb-funnel-rates">
-            <article><p>落地页 → NovelAI</p><strong>{funnelRate(funnel.metrics.qualifiedOutboundClicks, funnel.metrics.landingUv)}</strong><span>高质量出站率</span></article>
-            <article><p>NovelAI → 试玩</p><strong>{funnelRate(funnel.metrics.trialStarts, funnel.metrics.qualifiedOutboundClicks)}</strong><span>试玩转化率</span></article>
+            <article><p>落地页 → Playworlds</p><strong>{funnelRate(funnel.metrics.qualifiedOutboundClicks, funnel.metrics.landingUv)}</strong><span>高质量出站率</span></article>
+            <article><p>Playworlds 出站 → 可验证转化</p><strong>{funnelRate(funnel.metrics.trialStarts, funnel.metrics.qualifiedOutboundClicks)}</strong><span>回调未接入时为 unavailable</span></article>
             <article><p>试玩 → 付费</p><strong>{funnelRate(funnel.metrics.paidConversions, funnel.metrics.trialStarts)}</strong><span>付费转化率</span></article>
             <article><p>每个 SEO UV 营收</p><strong>{funnel.metrics.revenueMinor.status === "observed" && funnel.metrics.landingUv.status === "observed" && funnel.metrics.revenueMinor.value !== null && funnel.metrics.landingUv.value ? currencyValue({ ...funnel.metrics.revenueMinor, value: funnel.metrics.revenueMinor.value / funnel.metrics.landingUv.value }, funnel.currency) : "—"}</strong><span>收入 / 落地页 UV</span></article>
           </div>
@@ -497,9 +505,9 @@ export default async function WorkbenchPage() {
 
         <section className="wb-section" id="cluster">
           <div className="wb-section-heading"><div><p className="wb-kicker">INTENT ARCHITECTURE</p><h2>一个日报，一篇页面，一条可归因链路。</h2></div><span className="wb-data-note">每日新增上限 1；改旧页与新建页分开决策。</span></div>
-          <div className="wb-cluster-flow"><div><b>独立搜索意图</b><span>{top?.keyword ?? "待研究"}</span></div><i>→</i><div><b>SEO 落地页</b><span>{primaryActivePublicationPath ?? (hasRetiredPublication ? "已下线（保留历史记录）" : "待审稿")}</span></div><i>→</i><div><b>试玩与付费</b><span>seo_click_id</span></div></div>
-          <p className="wb-cluster-note">新增页必须回答新的搜索者任务，并至少链接一个真正相关的已发布页面。裸首页作为本站指南入口，不自动跳转；NovelAI 跳转只由 SEO 页面上的用户点击触发。</p>
-          <div className="wb-publication-list">{publications.length ? publications.map((item, index) => <article key={`${item.slug ?? item.slot}-${index}`}><strong>每日页面</strong><span>{item.isRetired ? "已下线 · RETIRED" : item.status === "published" ? "已发布" : item.status === "ready_for_review" ? "待独立审稿" : "未发布"}</span><p>{item.isRetired ? `${item.path ?? `/${item.slug}`}（历史记录；无公开链接）` : item.path ?? item.reason}</p></article>) : <div className="wb-empty-state">本日报尚未记录可发布页面。</div>}</div>
+          <div className="wb-cluster-flow"><div><b>独立搜索意图</b><span>{top?.keyword ?? "待研究"}</span></div><i>→</i><div><b>SEO 落地页</b><span>{primaryActivePublicationPath ?? (hasProductMigrationHeldPublication ? "产品迁移暂缓（不对外服务）" : hasRetiredPublication ? "已下线（保留历史记录）" : "待审稿")}</span></div><i>→</i><div><b>试玩与付费</b><span>seo_click_id</span></div></div>
+          <p className="wb-cluster-note">新增页必须回答新的搜索者任务，并至少链接一个真正相关的已发布页面。裸首页作为本站指南入口，不自动跳转；Playworlds 跳转只由 SEO 页面上的用户点击触发。</p>
+          <div className="wb-publication-list">{publications.length ? publications.map((item, index) => <article key={`${item.slug ?? item.slot}-${index}`}><strong>每日页面</strong><span>{item.isProductMigrationHeld ? "产品迁移暂缓 · MIGRATION HOLD" : item.isRetired ? "已下线 · RETIRED" : item.status === "published" ? "已发布" : item.status === "ready_for_review" ? "待独立审稿" : "未发布"}</span><p>{item.isProductMigrationHeld ? `${item.path ?? `/${item.slug}`}（保留历史文件；无公开链接；需 Playworlds 新报告与重审）` : item.isRetired ? `${item.path ?? `/${item.slug}`}（历史记录；无公开链接）` : item.path ?? item.reason}</p></article>) : <div className="wb-empty-state">本日报尚未记录可发布页面。</div>}</div>
         </section>
 
         {evidence.length ? <section className="wb-section" id="evidence"><div className="wb-section-heading"><div><p className="wb-kicker">RESEARCH EVIDENCE</p><h2>每个信号都能回到公开来源。</h2></div><span className="wb-data-note">链接只作为研究证据，不代表合作或背书。</span></div><div className="wb-evidence-grid">{evidence.slice(0, 8).map((item) => <a href={item.url} key={`${item.url}-${item.title}`} target="_blank" rel="noreferrer"><span>{item.source}</span><strong>{item.title}</strong><small>采集：{formatCollectedAt(item.collectedAt)} · 支持：{item.supports.join("、")}</small></a>)}</div></section> : null}
@@ -528,11 +536,11 @@ export default async function WorkbenchPage() {
         <section className="wb-section wb-generated" id="generated"><div className="wb-section-heading"><div><p className="wb-kicker">FACT-CONSTRAINED CONTENT</p><h2>当日草稿与两段式发布闸门</h2></div><span className="wb-data-note">每天最多一篇；自动检查通过后仍需独立批准记录。</span></div>{drafts.length ? <div className="wb-draft-list">{drafts.map((item) => {
           const draftSlug = item.slug || `/${item.keyword.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`;
           const draftPublication = publications.find((publication) => publication.slug === draftSlug.replace(/^\//, ""));
-          const draftIsLive = draftPublication?.status === "published" && !draftPublication.isRetired && Boolean(draftPublication.path);
+          const draftIsLive = draftPublication?.status === "published" && !draftPublication.isRetired && !draftPublication.isProductMigrationHeld && Boolean(draftPublication.path);
           const draftHref = draftIsLive
             ? draftPublication.path
             : `/workbench/preview/${encodeURIComponent(draftSlug.replace(/^\//, ""))}`;
-          return <article className="wb-generated-grid" key={draftSlug}><div className="wb-generated-copy"><p className="wb-kicker">REVIEW-REQUIRED DRAFT</p><h3 className="wb-ai-title">{item.title}</h3><p>{item.heroMarkdown}</p><a className="wb-primary-link" href={draftHref}>{draftPublication?.isRetired ? "查看历史草稿（页面已下线）" : "打开完整内容"}</a></div><aside className="wb-quality-panel"><p>WORDS</p><strong>{item.quality.wordCount}</strong><p>QUALITY GATE</p>{item.quality.checks.map((check) => <span className={check.passed ? "passed" : "failed"} key={check.id}>{check.passed ? "✓" : "×"} {check.label}</span>)}</aside></article>;
+          return <article className="wb-generated-grid" key={draftSlug}><div className="wb-generated-copy"><p className="wb-kicker">REVIEW-REQUIRED DRAFT</p><h3 className="wb-ai-title">{item.title}</h3><p>{item.heroMarkdown}</p><a className="wb-primary-link" href={draftHref}>{draftPublication?.isProductMigrationHeld ? "查看受保护历史草稿（产品迁移暂缓）" : draftPublication?.isRetired ? "查看历史草稿（页面已下线）" : "打开完整内容"}</a></div><aside className="wb-quality-panel"><p>WORDS</p><strong>{item.quality.wordCount}</strong><p>QUALITY GATE</p>{item.quality.checks.map((check) => <span className={check.passed ? "passed" : "failed"} key={check.id}>{check.passed ? "✓" : "×"} {check.label}</span>)}</aside></article>;
         })}</div> : <div className="wb-empty-state">等待经过事实约束的英文草稿。</div>}</section>
 
         <section className="wb-section" id="performance"><div className="wb-section-heading"><div><p className="wb-kicker">SEARCH → ACTION</p><h2>真实表现与研究代理分开呈现。</h2></div></div>{report.performance.length ? <div className="wb-performance-grid">{report.performance.slice(0, 6).map((row) => <article key={`${row.url}-${row.query}`}><div><span>{row.query}</span><strong>{row.position.toFixed(1)}</strong><small>平均排名</small></div><dl><div><dt>曝光</dt><dd>{row.impressions}</dd></div><div><dt>点击</dt><dd>{row.clicks}</dd></div><div><dt>CTR</dt><dd>{(row.ctr * 100).toFixed(1)}%</dd></div></dl><p>{row.recommendedAction}</p></article>)}</div> : <div className="wb-empty-state">Search Console 当前不可读或没有可见行；没有推测数据。</div>}</section>
