@@ -2,26 +2,25 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { publicAssetPath } from "@/lib/seo/site";
 import styles from "./story-motion-gallery.module.css";
 
 const storyScenes = [
   {
-    src: publicAssetPath("/story-scenes/moonlit-archive.webp"),
+    src: "/story-scenes/moonlit-archive.webp",
     alt: "Original concept art of a moonlit archive with a glowing story door",
     number: "01",
     mood: "Mystery",
     cue: "Follow the clue",
   },
   {
-    src: publicAssetPath("/story-scenes/choice-deck.webp"),
+    src: "/story-scenes/choice-deck.webp",
     alt: "Original concept art of a space observation deck with two empty role seats",
     number: "02",
     mood: "Discovery",
     cue: "Choose a route",
   },
   {
-    src: publicAssetPath("/story-scenes/rain-cafe.webp"),
+    src: "/story-scenes/rain-cafe.webp",
     alt: "Original concept art of a rainy cafe with two chairs and a sealed letter",
     number: "03",
     mood: "Reunion",

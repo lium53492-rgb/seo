@@ -68,7 +68,7 @@ function verifyLiveRelease(releaseRevision, releaseSlug) {
       lastError = error;
     }
   }
-  throw new Error("Playworlds Guides live verification failed after all configured attempts", { cause: lastError });
+  throw new Error("Playworlds LoreLens live verification failed after all configured attempts", { cause: lastError });
 }
 
 function verifyLocalRelease(releaseRevision) {

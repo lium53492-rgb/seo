@@ -53,7 +53,7 @@ const {
   recordLandingView,
 } = await import("../lib/seo/attribution-store.ts");
 const { readLandingAnalytics } = await import("../lib/seo/landing-analytics.ts");
-const landingRoute = await import("../app/guides/api/analytics/landing-view/route.ts");
+const landingRoute = await import("../app/api/analytics/landing-view/route.ts");
 const coverageRoute = await import("../app/api/cron/landing-analytics/[phase]/route.ts");
 
 const managedEnv = [
@@ -354,7 +354,7 @@ test("coverage checkpoints are authenticated and bind end checks to the closing 
 test("public landing endpoint rejects product-migration-held page traffic before Redis", async () => {
   const environment = snapshotEnvironment();
   const originalFetch = globalThis.fetch;
-  const origin = "https://www.playworlds.ai";
+  const origin = "https://lorelens.playworlds.ai";
   const slug = "ai-roleplay-prompt-vs-existing-story";
   const viewId = "ca5ddcb2-3450-4fcb-a446-2744cdba17b0";
   try {
@@ -368,12 +368,12 @@ test("public landing endpoint rejects product-migration-held page traffic before
       return Response.json({ result: writes === 1 ? 1 : 0 });
     };
     const request = (headers = {}) => new NextRequest(
-      `${origin}/guides/api/analytics/landing-view`,
+      `${origin}/api/analytics/landing-view`,
       {
         method: "POST",
         headers: {
           origin,
-          referer: `${origin}/guides/${slug}?from=search`,
+          referer: `${origin}/${slug}?from=search`,
           "sec-fetch-site": "same-origin",
           "sec-fetch-dest": "empty",
           "content-type": "application/json",
@@ -398,7 +398,7 @@ test("public landing endpoint rejects product-migration-held page traffic before
 test("public landing endpoint rejects malformed, cross-context, and retired-page traffic before Redis", async () => {
   const environment = snapshotEnvironment();
   const originalFetch = globalThis.fetch;
-  const origin = "https://www.playworlds.ai";
+  const origin = "https://lorelens.playworlds.ai";
   const slug = "ai-roleplay-prompt-vs-existing-story";
   const viewId = "ca5ddcb2-3450-4fcb-a446-2744cdba17b0";
   try {
@@ -413,11 +413,11 @@ test("public landing endpoint rejects malformed, cross-context, and retired-page
       sourceSlug = slug,
       body = { sourceSlug, viewId },
       headers = {},
-    } = {}) => new NextRequest(`${origin}/guides/api/analytics/landing-view`, {
+    } = {}) => new NextRequest(`${origin}/api/analytics/landing-view`, {
       method: "POST",
       headers: {
         origin,
-        referer: `${origin}/guides/${sourceSlug}`,
+        referer: `${origin}/${sourceSlug}`,
         "sec-fetch-site": "same-origin",
         "sec-fetch-dest": "empty",
         "content-type": "application/json",
@@ -431,7 +431,7 @@ test("public landing endpoint rejects malformed, cross-context, and retired-page
     assert.equal((await landingRoute.POST(request({ headers: { origin: "" } }))).status, 403);
     assert.equal((await landingRoute.POST(request({ headers: { "sec-fetch-site": "cross-site" } }))).status, 403);
     assert.equal((await landingRoute.POST(request({ headers: { "sec-fetch-dest": "document" } }))).status, 403);
-    assert.equal((await landingRoute.POST(request({ headers: { referer: `${origin}/guides/wrong-page` } }))).status, 403);
+    assert.equal((await landingRoute.POST(request({ headers: { referer: `${origin}/wrong-page` } }))).status, 403);
     assert.equal((await landingRoute.POST(request({ headers: { "content-type": "text/plain" } }))).status, 415);
     assert.equal((await landingRoute.POST(request({ body: { sourceSlug: slug, viewId: "not-a-uuid" } }))).status, 400);
     assert.equal((await landingRoute.POST(request({

@@ -1,15 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import siteConfig from "../data/config/site.json" with { type: "json" };
-import {
-  absoluteSiteUrl,
-  getAssetBasePath,
-  getSiteBasePath,
-  getSiteBaseUrl,
-  getSiteUrl,
-  publicAssetPath,
-  publicSitePath,
-} from "../lib/seo/site.ts";
+import { absoluteSiteUrl, getSiteUrl } from "../lib/seo/site.ts";
 
 function withSiteUrl(value, callback) {
   const previous = process.env.NEXT_PUBLIC_SITE_URL;
@@ -34,16 +26,13 @@ function withProductionEnvironment(key, callback) {
   }
 }
 
-test("site configuration separates the public guides path from the private service", () => {
+test("site configuration declares the Playworlds LoreLens canonical and legacy origins", () => {
   assert.deepEqual(siteConfig, {
-    schemaVersion: 2,
-    canonicalOrigin: "https://www.playworlds.ai",
-    canonicalBasePath: "/guides",
-    assetBasePath: "/playworlds-guides-assets",
-    privateServiceOrigin: "https://lorelens.playworlds.ai",
-    privateServiceAliases: ["https://seo-eight-snowy.vercel.app"],
+    schemaVersion: 1,
+    canonicalOrigin: "https://lorelens.playworlds.ai",
     legacyOrigins: [
       "https://guides.playworlds.ai",
+      "https://seo-eight-snowy.vercel.app",
       "https://seo-pi-fawn.vercel.app",
       "https://lorelens.novelai.ai",
     ],
@@ -53,34 +42,20 @@ test("site configuration separates the public guides path from the private servi
 test("getSiteUrl defaults to the configured canonical root origin", () => {
   withSiteUrl(undefined, () => {
     const site = getSiteUrl();
-    assert.equal(site.toString(), "https://www.playworlds.ai/");
-    assert.equal(site.origin, "https://www.playworlds.ai");
+    assert.equal(site.toString(), "https://lorelens.playworlds.ai/");
+    assert.equal(site.origin, "https://lorelens.playworlds.ai");
     assert.equal(site.pathname, "/");
     assert.equal(site.search, "");
     assert.equal(site.hash, "");
   });
 });
 
-test("public URL helpers retain the real /guides path", () => {
-  withSiteUrl("  HTTPS://WWW.PLAYWORLDS.AI  ", () => {
-    assert.equal(getSiteUrl().toString(), "https://www.playworlds.ai/");
-    assert.equal(getSiteBasePath(), "/guides");
-    assert.equal(getAssetBasePath(), "/playworlds-guides-assets");
-    assert.equal(getSiteBaseUrl().toString(), "https://www.playworlds.ai/guides/");
-    assert.equal(publicSitePath("/"), "/guides");
-    assert.equal(publicSitePath("/example"), "/guides/example");
-    assert.equal(publicSitePath("/guides/example"), "/guides/example");
-    assert.equal(
-      publicAssetPath("/images/example.webp"),
-      "/playworlds-guides-assets/images/example.webp",
-    );
-    assert.equal(
-      publicAssetPath("/playworlds-guides-assets/images/example.webp"),
-      "/playworlds-guides-assets/images/example.webp",
-    );
+test("getSiteUrl normalizes host casing and the root trailing slash", () => {
+  withSiteUrl("  HTTPS://LORELENS.PLAYWORLDS.AI  ", () => {
+    assert.equal(getSiteUrl().toString(), "https://lorelens.playworlds.ai/");
     assert.equal(
       absoluteSiteUrl("/sitemap.xml"),
-      "https://www.playworlds.ai/guides/sitemap.xml",
+      "https://lorelens.playworlds.ai/sitemap.xml",
     );
   });
 });
@@ -105,7 +80,7 @@ test("production ignores a stale public override and rejects loopback", () => {
       withSiteUrl("https://seo-pi-fawn.vercel.app/", () => {
         assert.equal(
           getSiteUrl().toString(),
-          "https://www.playworlds.ai/",
+          "https://lorelens.playworlds.ai/",
         );
       });
       withSiteUrl("http://localhost:3000/", () => {
@@ -118,12 +93,12 @@ test("production ignores a stale public override and rejects loopback", () => {
 test("getSiteUrl rejects non-root, credentialed, and non-HTTPS public URLs", () => {
   const invalidValues = [
     "not a URL",
-    "http://www.playworlds.ai/",
-    "ftp://www.playworlds.ai/",
-    "https://reader:secret@www.playworlds.ai/",
-    "https://www.playworlds.ai/guides",
-    "https://www.playworlds.ai/?preview=1",
-    "https://www.playworlds.ai/#preview",
+    "http://lorelens.playworlds.ai/",
+    "ftp://lorelens.playworlds.ai/",
+    "https://reader:secret@lorelens.playworlds.ai/",
+    "https://lorelens.playworlds.ai/guides",
+    "https://lorelens.playworlds.ai/?preview=1",
+    "https://lorelens.playworlds.ai/#preview",
   ];
   for (const value of invalidValues) {
     withSiteUrl(value, () => {
@@ -136,11 +111,7 @@ test("absoluteSiteUrl cannot escape the canonical origin", () => {
   withSiteUrl(undefined, () => {
     assert.throws(
       () => absoluteSiteUrl("//attacker.example/path"),
-      /same-origin absolute path/,
-    );
-    assert.throws(
-      () => publicAssetPath("//attacker.example/path"),
-      /same-origin absolute path/,
+      /must not resolve outside/,
     );
   });
 });

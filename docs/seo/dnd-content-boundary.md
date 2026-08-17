@@ -73,7 +73,7 @@ the product and IP boundary, and a page-specific approved Playworlds next step.
 
 Future page copy and CTA labels must use Playworlds and must not present
 NovelAI as the current product. The Playworlds CTA route now uses
-`/guides/go/playworlds/{slug}`, the exact official Steam app listing, product-scoped
+`/go/playworlds/{slug}`, the exact official Steam app listing, product-scoped
 outbound events, and the versioned UTM contract. This code migration does not
 prove that the site-wide production migration is complete. The signed
 conversion callback, replacement production domain, and matching Search Console

@@ -31,7 +31,7 @@ function configureSearchConsole() {
   process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL = "https://seo.example.com";
 }
 
-test("Search Console defaults to the public Playworlds Guides canonical property", () => {
+test("Search Console defaults to the public Playworlds LoreLens canonical property", () => {
   const environment = environmentSnapshot();
   try {
     delete process.env.NEXT_PUBLIC_SITE_URL;
@@ -42,7 +42,7 @@ test("Search Console defaults to the public Playworlds Guides canonical property
 
     assert.equal(
       searchConsoleStatus().siteUrl,
-      "https://www.playworlds.ai/",
+      "https://lorelens.playworlds.ai/",
     );
   } finally {
     restoreEnvironment(environment);
@@ -61,7 +61,7 @@ test("Search Console rejects a URL-prefix property from the legacy origin", asyn
 
     assert.throws(
       () => searchConsoleStatus(),
-      /URL-prefix property must cover the public canonical guides path/,
+      /URL-prefix property must match the public canonical origin/,
     );
 
     let requested = false;
@@ -73,7 +73,7 @@ test("Search Console rejects a URL-prefix property from the legacy origin", asyn
           return Response.json({});
         },
       }),
-      /URL-prefix property must cover the public canonical guides path/,
+      /URL-prefix property must match the public canonical origin/,
     );
     assert.equal(requested, false);
   } finally {
@@ -93,10 +93,10 @@ test("Search Console domain properties must cover the canonical hostname", () =>
     assert.equal(searchConsoleStatus().siteUrl, "sc-domain:playworlds.ai");
 
     process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL =
-      "sc-domain:www.playworlds.ai.";
+      "sc-domain:lorelens.playworlds.ai.";
     assert.equal(
       searchConsoleStatus().siteUrl,
-      "sc-domain:www.playworlds.ai",
+      "sc-domain:lorelens.playworlds.ai",
     );
 
     process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL = "sc-domain:example.com";
@@ -138,12 +138,12 @@ test("URL Inspection reads only decision evidence for the canonical source slug"
               indexingState: "INDEXING_ALLOWED",
               pageFetchState: "SUCCESSFUL",
               lastCrawlTime: "2026-07-28T03:04:05Z",
-              googleCanonical: "https://seo.example.com/guides/story-based-ai-roleplay",
-              userCanonical: "https://seo.example.com/guides/story-based-ai-roleplay",
+              googleCanonical: "https://seo.example.com/story-based-ai-roleplay",
+              userCanonical: "https://seo.example.com/story-based-ai-roleplay",
               crawledAs: "MOBILE",
               sitemap: [
-                "https://seo.example.com/guides/sitemap.xml",
-                "https://seo.example.com/guides/news-sitemap.xml",
+                "https://seo.example.com/sitemap.xml",
+                "https://seo.example.com/news-sitemap.xml",
               ],
               referringUrls: [
                 "https://private-referrer.example/internal-path",
@@ -158,7 +158,7 @@ test("URL Inspection reads only decision evidence for the canonical source slug"
       url: "https://searchconsole.googleapis.com/v1/urlInspection/index:inspect",
       authorization: "Bearer google-token",
       body: {
-        inspectionUrl: "https://seo.example.com/guides/story-based-ai-roleplay",
+        inspectionUrl: "https://seo.example.com/story-based-ai-roleplay",
         siteUrl: "https://seo.example.com/",
         languageCode: "en-US",
       },
@@ -166,7 +166,7 @@ test("URL Inspection reads only decision evidence for the canonical source slug"
     assert.deepEqual(observed, {
       state: "observed",
       sourceSlug: "story-based-ai-roleplay",
-      pageUrl: "https://seo.example.com/guides/story-based-ai-roleplay",
+      pageUrl: "https://seo.example.com/story-based-ai-roleplay",
       inspectedAt: "2026-07-30T07:00:00.000Z",
       verdict: "PASS",
       coverageState: "Submitted and indexed",
@@ -174,8 +174,8 @@ test("URL Inspection reads only decision evidence for the canonical source slug"
       indexingState: "INDEXING_ALLOWED",
       pageFetchState: "SUCCESSFUL",
       lastCrawlTime: "2026-07-28T03:04:05Z",
-      googleCanonical: "https://seo.example.com/guides/story-based-ai-roleplay",
-      userCanonical: "https://seo.example.com/guides/story-based-ai-roleplay",
+      googleCanonical: "https://seo.example.com/story-based-ai-roleplay",
+      userCanonical: "https://seo.example.com/story-based-ai-roleplay",
       crawledAs: "MOBILE",
       sitemap: [],
       detail:
@@ -183,17 +183,6 @@ test("URL Inspection reads only decision evidence for the canonical source slug"
     });
     assert.equal(Object.hasOwn(observed, "referringUrls"), false);
     assert.equal(Object.hasOwn(observed, "inspectionLink"), false);
-  } finally {
-    restoreEnvironment(environment);
-  }
-});
-
-test("Search Console accepts a URL-prefix property scoped to /guides", () => {
-  const environment = environmentSnapshot();
-  try {
-    configureSearchConsole();
-    process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL = "https://seo.example.com/guides/";
-    assert.equal(searchConsoleStatus().siteUrl, "https://seo.example.com/guides/");
   } finally {
     restoreEnvironment(environment);
   }
@@ -213,9 +202,9 @@ test("URL Inspection strips canonical credentials, queries, and fragments", asyn
           indexStatusResult: {
             verdict: "PASS",
             googleCanonical:
-              "https://reader:private@seo.example.com/drafts/../guides/story-based-ai-roleplay?token=secret#private",
+              "https://reader:private@seo.example.com/drafts/../story-based-ai-roleplay?token=secret#private",
             userCanonical:
-              "https://seo.example.com/guides/story-based-ai-roleplay?preview=1#draft",
+              "https://seo.example.com/story-based-ai-roleplay?preview=1#draft",
           },
         },
       }),
@@ -224,11 +213,11 @@ test("URL Inspection strips canonical credentials, queries, and fragments", asyn
     assert.equal(result.state, "observed");
     assert.equal(
       result.googleCanonical,
-      "https://seo.example.com/guides/story-based-ai-roleplay",
+      "https://seo.example.com/story-based-ai-roleplay",
     );
     assert.equal(
       result.userCanonical,
-      "https://seo.example.com/guides/story-based-ai-roleplay",
+      "https://seo.example.com/story-based-ai-roleplay",
     );
     assert.match(result.detail, /normalized without credentials, query, or fragment/);
     assert.doesNotMatch(JSON.stringify(result), /reader|private|token|secret|preview|draft/);
@@ -291,7 +280,7 @@ test("URL Inspection does not mark sitemap or crawl metadata alone as observed",
           indexStatusResult: {
             lastCrawlTime: "2026-07-28T03:04:05Z",
             crawledAs: "MOBILE",
-            sitemap: ["https://seo.example.com/guides/private-sitemap.xml"],
+            sitemap: ["https://seo.example.com/private-sitemap.xml"],
             googleCanonical: "https://cross-site.example/private",
           },
         },
@@ -336,7 +325,7 @@ test("URL Inspection preserves domain properties and reports HTTP failures as un
 
     assert.equal(result.state, "unavailable");
     assert.equal(result.detail, "URL Inspection API returned 403.");
-    assert.equal(result.pageUrl, "https://seo.example.com/guides/interactive-voice-story");
+    assert.equal(result.pageUrl, "https://seo.example.com/interactive-voice-story");
     assert.equal(result.verdict, null);
     assert.equal(result.coverageState, null);
     assert.deepEqual(result.sitemap, []);

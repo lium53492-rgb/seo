@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { FAQJsonLd } from "next-seo";
 import { listPublishedPages } from "@/lib/seo/page-store";
-import { absoluteSiteUrl, publicSitePath } from "@/lib/seo/site";
 
 const pageTitle = "D&D Field Guides for Players and Game Masters";
 const pageDescription =
@@ -11,12 +10,12 @@ export const metadata: Metadata = {
   title: { absolute: `${pageTitle} | Tabletop Field Notes` },
   description: pageDescription,
   alternates: {
-    canonical: absoluteSiteUrl("/"),
+    canonical: "/",
   },
   openGraph: {
     title: pageTitle,
     description: pageDescription,
-    url: absoluteSiteUrl("/"),
+    url: "/",
     type: "website",
   },
 };
@@ -50,7 +49,7 @@ export default async function Home() {
 
       <section className="hero">
         <nav className="homeNav" aria-label="Primary navigation">
-          <a className="wordmark" href={publicSitePath("/")} aria-label="Tabletop Field Notes home">
+          <a className="wordmark" href="/" aria-label="Tabletop Field Notes home">
             <span className="wordmarkMark" aria-hidden="true">20</span>
             <span>TABLETOP / FIELD NOTES</span>
           </a>
@@ -149,7 +148,7 @@ export default async function Home() {
           <h2>One strong page stays. New work must clear a higher bar.</h2>
           <div className="publishedLinks">
             {publishedPages.map((page) => (
-              <a href={publicSitePath(page.path)} key={page.slug}>
+              <a href={page.path} key={page.slug}>
                 <small>{page.keyword}</small>
                 <strong>{page.h1}</strong>
                 <span>Read the guide -&gt;</span>

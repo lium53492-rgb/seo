@@ -1,13 +1,14 @@
 # Pending SEO feedback
 
-Last updated: 2026-08-16 (Asia/Shanghai)
+Last updated: 2026-08-17 (Asia/Shanghai)
 
 ## Operating constraints
 
 - Publish at most one new English SEO page per day.
 - Treat 20 organic visits per page as a 28-day performance target, not a guaranteed outcome. Use only observed Search Console data for evaluation.
 - Do not create pages around unlicensed events, teams, players, celebrities, or other third-party intellectual property. Seasonal and topical demand may be researched only through original, generic intents.
-- Future SEO-page copy and CTA labels use the approved Playworlds product identity. Current-schema pages use the versioned `/guides/go/playworlds/{slug}` contract and exact official Steam listing; the retired NovelAI route must not be used for new pages. The signed Playworlds callback, main-site `/guides` routing/root robots, and production GSC verification remain separate blockers.
+- Future SEO-page copy and CTA labels use the approved Playworlds product identity. Current-schema pages use the versioned `/go/playworlds/{slug}` contract and exact official Steam listing; the retired NovelAI route must not be used for new pages. The signed Playworlds callback and production domain/GSC verification remain separate blockers.
+- The independent public SEO origin is `https://lorelens.playworlds.ai` and its crawlable routes live at `/` and `/{slug}`. The superseded `www.playworlds.ai/guides` Microfrontends plan is decision history only and must not be restored.
 
 ## Production methodology adopted 2026-07-21
 
@@ -21,7 +22,7 @@ Last updated: 2026-08-16 (Asia/Shanghai)
 ## User feedback adopted 2026-08-04
 
 - Verbatim: “seo的这个网址  前面是点开之后会直接跳转到novel.ai，  现在说不让这样了  这个你重新修改一下”
-- Decision: adopted and migrated. The public `/guides` homepage renders a first-party guide hub and keeps its navigation on the canonical Playworlds host. Current-schema CTA clicks use the attributed Playworlds route; retired NovelAI routes remain historical compatibility only.
+- Decision: adopted. The bare homepage now renders a first-party guide hub and keeps its navigation on this site. NovelAI redirects remain available only after an intentional CTA click from a published SEO page.
 
 ## User feedback adopted 2026-08-10
 
@@ -41,6 +42,14 @@ Last updated: 2026-08-16 (Asia/Shanghai)
 
 - Verbatim: “这个是我们的新产品 playworld，前面的novel.ai就不做了 页面中就不要再有novel.ai了 我们现在全部都是dnd了，也就是playworld。你把页面重新修改一下 我看还有novel.ai”
 - Decision: adopted. Use the official Steam spelling **Playworlds** for the current product. Remove NovelAI from future page copy, CTA labels, and product positioning. Keep D&D as an adult tabletop audience/search reference only; do not imply official affiliation, endorsement, licensing, or 5e compatibility. Preserve dated NovelAI research and feedback as history. The Playworlds outbound route and event/UTM contract are now implemented in code; do not claim the whole site or revenue loop is migrated until the signed callback and replacement production domain/GSC property are implemented and independently verified.
+
+## User feedback adopted 2026-08-17
+
+- Verbatim: “就你说的这种吧”
+- Decision: adopted at the time as approval for a `www.playworlds.ai/guides` Microfrontends composition, then superseded later the same day by the more explicit domain decision below. Retain this entry as decision history; do not implement it as the current routing contract.
+
+- Verbatim: “我现在换了个域名  是lorelens.playworlds.ai，其他的都不用了  现在专心做playworlds了”
+- Decision: adopted and controlling. Use `https://lorelens.playworlds.ai` as the independent Playworlds SEO origin with root homepage, root page slugs, root robots and sitemap, and `/go/playworlds/{slug}` attribution. Do not require `www.playworlds.ai/guides`, the main product repository, or Vercel Microfrontends. Historical NovelAI and superseded routing artifacts remain auditable but cannot support future public product copy.
 
 ## User feedback awaiting intake
 

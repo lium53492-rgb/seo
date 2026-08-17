@@ -1,5 +1,5 @@
 {
-  "name": "novelai-story-seo",
+  "name": "playworlds-lorelens-seo",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -33,7 +33,6 @@
     "@streamdown/mermaid": "^1.0.2",
     "@tailwindcss/postcss": "^4.3.3",
     "@vercel/analytics": "^2.0.1",
-    "@vercel/microfrontends": "2.4.0",
     "ai": "^6.0.83",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

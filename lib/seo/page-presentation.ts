@@ -3,7 +3,6 @@ import presentationCatalog from "@/data/config/presentation-recipes.json";
 import architecturePolicy from "@/data/config/content-architecture.json";
 import seoPolicy from "@/data/config/seo-policy.json";
 import { validateSeoArchitectureBridge } from "./content-contract.mjs";
-import { publicSitePath } from "./site";
 
 validateSeoArchitectureBridge(seoPolicy, architecturePolicy);
 
@@ -54,7 +53,7 @@ export function resolveRelatedSeoPages(
   for (const link of page.internalLinks) {
     const target = targetsByPath.get(link.href);
     if (!target || linkedPaths.has(link.href)) continue;
-    relatedPages.push({ ...link, href: publicSitePath(link.href), target });
+    relatedPages.push({ ...link, target });
     linkedPaths.add(link.href);
   }
 

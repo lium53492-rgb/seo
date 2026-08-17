@@ -85,7 +85,7 @@ test("Search Console reads finalized exact-page performance with explicit proven
         });
         return Response.json({
           rows: [{
-            keys: ["https://seo.example.com/guides/play-an-ai-roleplay-story"],
+            keys: ["https://seo.example.com/play-an-ai-roleplay-story"],
             clicks: 7,
             impressions: 70,
             ctr: 0.1,
@@ -105,7 +105,7 @@ test("Search Console reads finalized exact-page performance with explicit proven
     assert.equal(requests[0].body.endDate, "2026-07-20");
     assert.equal(
       requests[0].body.dimensionFilterGroups[0].filters[0].expression,
-      "https://seo.example.com/guides/play-an-ai-roleplay-story",
+      "https://seo.example.com/play-an-ai-roleplay-story",
     );
   } finally {
     restoreEnvironment(environment);
@@ -199,7 +199,7 @@ test("durable cohorts and Vercel UV expose compatible live inputs", async () => 
       assert.match(value, /web-analytics\/visits\/count/);
       assert.equal(
         new URL(value).searchParams.get("filter"),
-        "requestPath eq '/guides/play-an-ai-roleplay-story'",
+        "requestPath eq '/play-an-ai-roleplay-story'",
       );
       return Response.json({ data: { visitors: 12, pageviews: 18 } });
     };
@@ -223,7 +223,7 @@ test("durable cohorts and Vercel UV expose compatible live inputs", async () => 
     assert.equal(uv.state, "observed");
     assert.equal(uv.visitors, 12);
     assert.equal(uv.pageviews, 18);
-    assert.match(uv.detail, /www\.playworlds\.ai\/guides/);
+    assert.match(uv.detail, /lorelens\.playworlds\.ai/);
   } finally {
     globalThis.fetch = originalFetch;
     restoreEnvironment(environment);

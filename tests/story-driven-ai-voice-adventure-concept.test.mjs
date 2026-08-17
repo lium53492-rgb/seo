@@ -106,15 +106,11 @@ test("the specialized renderer emits real HTML for every build-verifier contract
     )
     .replace(
       'import { TrackedPlayworldsLink } from "@/app/components/TrackedPlayworldsLink";',
-      'const TrackedPlayworldsLink = ({ children, sourceSlug, location, ...props }) => <a {...props} href={`/guides/go/playworlds/${sourceSlug}?location=${location}`}>{children}</a>;',
+      'const TrackedPlayworldsLink = ({ children, sourceSlug, location, ...props }) => <a {...props} href={`/go/playworlds/${sourceSlug}?location=${location}`}>{children}</a>;',
     )
     .replace(
       'import { parseMarkdownBlocks } from "@/lib/seo/markdown-semantics.mjs";',
       'import { parseMarkdownBlocks } from "../lib/seo/markdown-semantics.mjs";',
-    )
-    .replace(
-      'import { publicAssetPath } from "@/lib/seo/site";',
-      'const publicAssetPath = (path) => `/playworlds-guides-assets${path}`;',
     )
     .replace(/^import type .*;\r?\n/gm, "")
     .replace(
@@ -174,7 +170,7 @@ test("the specialized renderer emits real HTML for every build-verifier contract
     ].toSorted(), "the specialized renderer must emit each required publisher role exactly once");
     const renderedIds = [...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);
     assert.equal(new Set(renderedIds).size, renderedIds.length, "rendered HTML must not contain duplicate IDs");
-    assert.match(html, /href="\/guides\/go\/playworlds\/story-driven-ai-voice-roleplay-adventure\?location=final_cta"/);
+    assert.match(html, /href="\/go\/playworlds\/story-driven-ai-voice-roleplay-adventure\?location=final_cta"/);
     assert.doesNotMatch(html, retiredBrandPattern);
     assert.doesNotMatch(html, retiredRoutePattern);
   } finally {

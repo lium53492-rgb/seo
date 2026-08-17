@@ -221,7 +221,7 @@ test("readiness reports a source configuration failure without bypassing auth or
       state: "unavailable",
       reason: "status_check_failed",
       detail:
-        "Search Console status check failed: GOOGLE_SEARCH_CONSOLE_SITE_URL URL-prefix property must cover the public canonical guides path",
+        "Search Console status check failed: GOOGLE_SEARCH_CONSOLE_SITE_URL URL-prefix property must match the public canonical origin",
     });
     assert.equal(body.sources.landingUv.provider, "landing_analytics");
     assert.equal(body.sources.attributionStore.provider, "upstash_redis");
@@ -248,7 +248,7 @@ test("search-to-UV readiness requires observed probe results, not configured cre
     delete process.env.WORKBENCH_PASSWORD;
     process.env.GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL = "seo@example.invalid";
     process.env.GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY = "not-a-real-private-key";
-    process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL = "sc-domain:playworlds.ai";
+    process.env.GOOGLE_SEARCH_CONSOLE_SITE_URL = "https://lorelens.playworlds.ai/";
     process.env.VERCEL_ANALYTICS_TOKEN = "vercel-token";
     process.env.VERCEL_ANALYTICS_PROJECT_ID = "prj_explicit_fixture";
     process.env.VERCEL_ANALYTICS_TEAM_ID = "team_explicit_fixture";
@@ -315,6 +315,6 @@ test("growth command entry points use only the machine automation credential", a
   );
   assert.match(workflowSource, /secrets\.SEO_AUTOMATION_TOKEN/);
   assert.doesNotMatch(workflowSource, /secrets\.WORKBENCH_PASSWORD/);
-  assert.match(workflowSource, /SEO_REPORT_SITE_URL: https:\/\/lorelens\.playworlds\.ai/);
+  assert.match(workflowSource, /https:\/\/lorelens\.playworlds\.ai/);
   assert.doesNotMatch(workflowSource, /seo-pi-fawn\.vercel\.app/);
 });

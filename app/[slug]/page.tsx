@@ -32,11 +32,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: page.title,
     description: page.metaDescription,
-    alternates: { canonical: absoluteSiteUrl(page.path) },
+    alternates: { canonical: page.path },
     openGraph: {
       title: page.title,
       description: page.metaDescription,
-      url: absoluteSiteUrl(page.path),
+      url: page.path,
       type: "article",
       publishedTime: page.publishedAt,
       modifiedTime: page.updatedAt,

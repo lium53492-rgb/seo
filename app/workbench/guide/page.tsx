@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import seoPolicy from "@/data/config/seo-policy.json";
 import { createDisconnectedReport } from "@/lib/seo/default-report";
 import { readLatestReport } from "@/lib/seo/report-store";
-import { absoluteSiteUrl } from "@/lib/seo/site";
 import type { IntegrationStatus } from "@/lib/seo/types";
 
 export const dynamic = "force-dynamic";
@@ -99,7 +98,7 @@ export default async function WorkbenchGuidePage() {
           <div className="wb-hero-actions">
             <a className="wb-primary-link" href="/workbench">打开今日任务</a>
             {latestPublicationIsLive ? (
-              <a className="wb-secondary-link" href={absoluteSiteUrl(latestPublication?.path || "/")}>打开最新线上页面</a>
+              <a className="wb-secondary-link" href={latestPublication?.path}>打开最新线上页面</a>
             ) : latestPublicationIsProductMigrationHeld ? (
               <a className="wb-secondary-link" href="#publish">MIGRATION HOLD · 等待 Playworlds 重审</a>
             ) : retiredPreviewSlug ? (
@@ -173,7 +172,7 @@ export default async function WorkbenchGuidePage() {
               <p className="wb-kicker">GOOGLE SEARCH CONSOLE</p>
               <h3>免费读取真实搜索曝光与点击</h3>
               <ol>
-                <li>请添加域名属性 <code>sc-domain:playworlds.ai</code>（推荐），或能覆盖 <code>https://www.playworlds.ai/guides/</code> 的网址前缀属性，并完成验证。</li>
+                <li>请添加网址前缀属性 <code>https://lorelens.playworlds.ai/</code> 并完成验证。</li>
                 <li>为该属性配置 Search Console API 服务账号，并把账号邮箱加入属性用户。</li>
                 <li>生产环境配置 client email、private key 和准确的 site URL；变更后运行 <code>growth:check</code>。</li>
                 <li>每日组合快照只读取最终数据，并按同一个完整上海日窗口覆盖所有已发布页面。</li>

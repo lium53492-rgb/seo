@@ -38,14 +38,14 @@
 
 ### Google Search Console
 
-1. 添加 `sc-domain:playworlds.ai` 域名属性（推荐），或能覆盖 `https://www.playworlds.ai/guides/` 的网址前缀属性。
+1. 添加网址前缀属性 `https://lorelens.playworlds.ai/`，或使用能覆盖它的 `sc-domain:playworlds.ai` 域名属性。
 2. 使用仓库中的 HTML 文件完成站点验证。
 3. 在 Google Cloud 启用 Search Console API，创建服务账号和 JSON 密钥。
 4. 把服务账号邮箱添加到 Search Console 属性用户。
 5. 在 Vercel 的 Production 环境配置：
    - `GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL`
    - `GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY`
-   - `GOOGLE_SEARCH_CONSOLE_SITE_URL=sc-domain:playworlds.ai`
+   - `GOOGLE_SEARCH_CONSOLE_SITE_URL=https://lorelens.playworlds.ai/`
 6. 重新部署，随后在本地配置 `WORKBENCH_PASSWORD` 并运行 `npm run growth:check`。
 
 采集只读取 `dataState=final` 的最终数据。每日 28 天组合窗口默认延迟 3 个完整日，避免把 Google 尚未稳定的近几日数据误判为流量下降。
@@ -64,7 +64,7 @@
 ### 出站到营收
 
 1. 在 Vercel Marketplace 连接 Upstash Redis，确认 `UPSTASH_REDIS_REST_URL` 和 `UPSTASH_REDIS_REST_TOKEN` 已进入 Production 环境。
-2. 当前 Playworlds 出站使用 `/guides/go/playworlds/{slug}`，只跳转官方 Steam app 4911480，并携带版本化 UTM 与 `seo_click_id`。
+2. 当前 Playworlds 出站使用 `/go/playworlds/{slug}`，只跳转官方 Steam app 4911480，并携带版本化 UTM 与 `seo_click_id`。
 3. Playworlds 试玩、注册、付费的签名回调合同尚未实现；不要复用 NovelAI 密钥或旧回调充当 Playworlds 数据。
 4. `npm run growth:probe` 目前应返回 `unavailable` 并非零退出；`npm run growth:check` 的 `readyFor.fullLoop` 也应为 `false`。只有后续独立实现、部署并验证签名回调后，才能更改这个状态。
 

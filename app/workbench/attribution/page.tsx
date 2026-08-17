@@ -6,7 +6,6 @@ import { isBasicAuthHeaderAuthorized } from "@/lib/seo/auth";
 import { readLiveGrowthFunnel, unavailableLiveGrowthFunnel, type LiveGrowthFunnel } from "@/lib/seo/growth-funnel";
 import { listPublishedPages } from "@/lib/seo/page-store";
 import { shanghaiReportingWindow } from "@/lib/seo/reporting-period";
-import { absoluteSiteUrl } from "@/lib/seo/site";
 import type { ObservedMetric } from "@/lib/seo/types";
 
 export const dynamic = "force-dynamic";
@@ -112,7 +111,7 @@ export default async function WorkbenchAttributionPage() {
             <p>{growth.funnel.metrics.landingUv.detail}</p>
             <p>{growth.funnel.metrics.qualifiedOutboundClicks.detail}</p>
             {growth.orphanCallbacks ? <p><strong>{growth.orphanCallbacks}</strong> 个回调没有匹配到原始出站事件，已保留但标记为孤立归因。</p> : null}
-            <div className="wb-report-links"><a href={absoluteSiteUrl(`/${page.slug}`)}>打开页面</a><a href={`/api/attribution/report?sourceSlug=${encodeURIComponent(page.slug)}&from=${encodeURIComponent(period.periodStart)}&to=${encodeURIComponent(period.periodEnd)}`}>查看 JSON</a></div>
+            <div className="wb-report-links"><a href={`/${page.slug}`}>打开页面</a><a href={`/api/attribution/report?sourceSlug=${encodeURIComponent(page.slug)}&from=${encodeURIComponent(period.periodStart)}&to=${encodeURIComponent(period.periodEnd)}`}>查看 JSON</a></div>
           </article>)}</div>
         </section>
       </div>

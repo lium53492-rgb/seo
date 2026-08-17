@@ -78,10 +78,10 @@ const companionCss = await readFile(path.join(root, "app/[slug]/story-companion.
 if (!/\.meteorField\s*\{[^}]*z-index:\s*2;[^}]*pointer-events:\s*none;/s.test(companionCss)) {
   fail("Meteor field must stay non-interactive and below the content/companion layers.");
 }
-if (!companionCss.includes('cursor: url("/playworlds-guides-assets/cursors/story-hand.svg")')) {
+if (!companionCss.includes('cursor: url("/cursors/story-hand.svg")')) {
   fail("Native story-hand cursor contract is missing.");
 }
-if (!companionCss.includes('cursor: url("/playworlds-guides-assets/cursors/story-hand-action.svg")')) {
+if (!companionCss.includes('cursor: url("/cursors/story-hand-action.svg")')) {
   fail("Native action cursor contract is missing.");
 }
 

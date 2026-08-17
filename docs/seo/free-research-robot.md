@@ -240,7 +240,7 @@ not claim deployment until the remote push succeeds, the release revision is
 the exact `origin/main` tip, and
 two complete LoreLens checks independently show the exact SHA, expected H1,
 canonical, approved attributed Playworlds CTA, `Article`/`FAQPage` JSON-LD,
-main-root robots, `/guides/sitemap.xml` entry, `/guides/go/playworlds/{slug}` link, and non-writing HEAD
+robots, sitemap entry, `/go/playworlds/{slug}` link, and non-writing HEAD
 redirect to the approved Playworlds Steam listing with the complete attribution
 contract. It must reject the retired `/go/novelai/` path for current-schema
 pages. Until the signed Playworlds callback and the replacement production

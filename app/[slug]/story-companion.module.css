@@ -106,13 +106,13 @@
   :global(body.story-cursor-active a),
   :global(body.story-cursor-active button),
   :global(body.story-cursor-active summary) {
-    cursor: url("/playworlds-guides-assets/cursors/story-hand.svg") 5 3, pointer !important;
+    cursor: url("/cursors/story-hand.svg") 5 3, pointer !important;
   }
 
   :global(body.story-cursor-active a),
   :global(body.story-cursor-active button),
   :global(body.story-cursor-active summary) {
-    cursor: url("/playworlds-guides-assets/cursors/story-hand-action.svg") 5 3, pointer !important;
+    cursor: url("/cursors/story-hand-action.svg") 5 3, pointer !important;
   }
 }
 

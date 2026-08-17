@@ -10,7 +10,7 @@ chain and contains no personal information.
 The current outbound route is:
 
 ```text
-/guides/go/playworlds/<source-slug>?location=<cta-location>
+/go/playworlds/<source-slug>?location=<cta-location>
 ```
 
 It accepts only a currently published source slug. The server creates a UUID,
@@ -86,16 +86,14 @@ not be rewritten to hide their original contract.
 
 ## Production configuration
 
-- `NEXT_PUBLIC_SITE_URL=https://www.playworlds.ai`
-- `GOOGLE_SEARCH_CONSOLE_SITE_URL=sc-domain:playworlds.ai` (recommended), or a
-  verified URL-prefix property that covers `https://www.playworlds.ai/guides/`
-- `SEO_REPORT_SITE_URL=https://lorelens.playworlds.ai` for protected root-level
-  child-service APIs; it is not the public canonical URL
+- `NEXT_PUBLIC_SITE_URL=https://lorelens.playworlds.ai`
+- `GOOGLE_SEARCH_CONSOLE_SITE_URL=https://lorelens.playworlds.ai/` or a verified
+  domain property that covers `lorelens.playworlds.ai`
 - `PLAYWORLDS_DESTINATION_URL` is optional and may only repeat the approved
   Steam listing above
 - `SEO_AUTOMATION_TOKEN` protects growth-readiness automation
 - Upstash and landing-analytics variables retain their existing roles
 
-The main Playworlds Microfrontends route, root robots declaration, and matching
-Search Console property still require independent production verification.
-Code configuration alone is not deployment evidence.
+The canonical domain, DNS/Vercel attachment, and matching Search Console
+property still require independent production verification. Code configuration
+alone is not deployment evidence.

@@ -86,7 +86,7 @@ function releaseProof(date, revision, slug) {
 }
 
 function liveVerification(revision, slug, verifiedAt, productionDate) {
-  const origin = "https://www.playworlds.ai/guides";
+  const origin = "https://lorelens.playworlds.ai";
   return {
     origin,
     revision,

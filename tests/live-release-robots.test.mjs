@@ -5,51 +5,45 @@ import {
   robotsDisallowsEntirePathTree,
 } from "../scripts/lib/robots-policy.mjs";
 
-const guidesPath = "/guides";
+const rootPath = "/";
 
-test("main robots may protect private guide endpoints without blocking the public tree", () => {
+test("root robots may protect private endpoints without blocking the public site", () => {
   const fixture = `User-agent: *
-Allow: /guides/
-Disallow: /guides/api/
-Disallow: /guides/go/
-Disallow: /guides/workbench/
-Sitemap: https://www.playworlds.ai/guides/sitemap.xml
+Allow: /
+Disallow: /api/
+Disallow: /go/
+Disallow: /workbench/
+Sitemap: https://lorelens.playworlds.ai/sitemap.xml
 `;
-  assert.equal(robotsDisallowsEntirePathTree(fixture, guidesPath), false);
+  assert.equal(robotsDisallowsEntirePathTree(fixture, rootPath), false);
+  assert.equal(robotsDisallowsEntirePathTree(fixture, "/new-page"), false);
 });
 
-test("main robots rejects global and prefix rules that block the complete guides tree", () => {
-  for (const blockedPath of ["/", "/*", "/guides", "/guides/", "/guides/*", "/guides*"]) {
+test("root robots rejects global rules that block the complete site", () => {
+  for (const blockedPath of ["/", "/*", "/$"]) {
     assert.equal(
-      robotsDisallowsEntirePathTree(`User-agent: *\nDisallow: ${blockedPath}\n`, guidesPath),
+      robotsDisallowsEntirePathTree(`User-agent: *\nDisallow: ${blockedPath}\n`, rootPath),
       true,
       blockedPath,
     );
   }
   assert.equal(
-    robotsDisallowsEntirePathTree("User-agent: *\nDisallow: /guides/api/ # private API\n", guidesPath),
+    robotsDisallowsEntirePathTree("User-agent: *\nDisallow: /api/ # private API\n", rootPath),
     false,
   );
-  for (const fixture of [
-    "User-agent: *\nDisallow: /guides$\n",
-    "User-agent: *\nDisallow: /guides\nAllow: /guides/\n",
-  ]) {
-    assert.equal(robotsDisallowsEntirePathTree(fixture, guidesPath), true);
-  }
 });
 
 test("longest wildcard-agent match wins and an equally specific Allow wins ties", () => {
   for (const fixture of [
-    "User-agent: *\nDisallow: /\nAllow: /guides\n",
-    "User-agent: *\nDisallow: /guides*\nAllow: /guides\n",
-    "User-agent: *\nDisallow: /guides/*\nAllow: /guides/\n",
+    "User-agent: *\nDisallow: /\nAllow: /\n",
+    "User-agent: *\nDisallow: /*\nAllow: /\n",
   ]) {
-    assert.equal(robotsDisallowsEntirePathTree(fixture, guidesPath), false);
+    assert.equal(robotsDisallowsEntirePathTree(fixture, rootPath), false);
   }
   assert.equal(
     robotsDisallowsEntirePathTree(
-      "User-agent: *\nAllow: /guides/\nDisallow: /guides/private/\n",
-      guidesPath,
+      "User-agent: *\nAllow: /\nDisallow: /private/\n",
+      rootPath,
     ),
     false,
   );
@@ -57,56 +51,56 @@ test("longest wildcard-agent match wins and an equally specific Allow wins ties"
 
 test("rules for other crawlers neither override nor hide wildcard-agent rules", () => {
   const allowedFixture = `User-agent: ExampleBot
-Disallow: /guides/
+Disallow: /
 
 User-agent: *
-Allow: /guides/
+Allow: /
 `;
-  assert.equal(robotsDisallowsEntirePathTree(allowedFixture, guidesPath), false);
+  assert.equal(robotsDisallowsEntirePathTree(allowedFixture, rootPath), false);
 
   const blockedFixture = `User-agent: ExampleBot
-Allow: /guides/
+Allow: /
 
 User-agent: *
 Disallow: /
 `;
-  assert.equal(robotsDisallowsEntirePathTree(blockedFixture, guidesPath), true);
+  assert.equal(robotsDisallowsEntirePathTree(blockedFixture, rootPath), true);
 });
 
 test("Googlebot-specific rules take precedence over wildcard-agent rules", () => {
   const blockedFixture = `User-agent: Googlebot
-Disallow: /guides/
+Disallow: /
 
 User-agent: *
-Allow: /guides
+Allow: /
 `;
-  assert.equal(robotsDisallowsEntirePathTree(blockedFixture, guidesPath), true);
+  assert.equal(robotsDisallowsEntirePathTree(blockedFixture, rootPath), true);
 
   const allowedFixture = `User-agent: Googlebot
-Allow: /guides
+Allow: /
 
 User-agent: *
 Disallow: /
 `;
-  assert.equal(robotsDisallowsEntirePathTree(allowedFixture, guidesPath), false);
+  assert.equal(robotsDisallowsEntirePathTree(allowedFixture, rootPath), false);
 });
 
-test("a leaf page cannot be hidden behind an otherwise crawlable guides tree", () => {
+test("a leaf page cannot be hidden behind an otherwise crawlable root site", () => {
   const fixture = `User-agent: *
-Allow: /guides
-Disallow: /guides/new-page
+Allow: /
+Disallow: /new-page
 `;
-  assert.equal(robotsDisallowsEntirePathTree(fixture, guidesPath), false);
-  assert.equal(robotsDisallowsEntirePathTree(fixture, "/guides/new-page"), true);
+  assert.equal(robotsDisallowsEntirePathTree(fixture, rootPath), false);
+  assert.equal(robotsDisallowsEntirePathTree(fixture, "/new-page"), true);
 });
 
 test("only a real exact Sitemap directive satisfies the release contract", () => {
-  const sitemap = "https://www.playworlds.ai/guides/sitemap.xml";
+  const sitemap = "https://lorelens.playworlds.ai/sitemap.xml";
   assert.equal(robotsDeclaresSitemap(`Sitemap: ${sitemap}\n`, sitemap), true);
   for (const fixture of [
     `# Sitemap: ${sitemap}\n`,
     `NotSitemap: ${sitemap}\n`,
-    "Sitemap: https://www.playworlds.ai/sitemap.xml\n",
+    "Sitemap: https://guides.playworlds.ai/sitemap.xml\n",
   ]) {
     assert.equal(robotsDeclaresSitemap(fixture, sitemap), false);
   }

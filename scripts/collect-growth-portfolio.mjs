@@ -13,10 +13,7 @@ import {
   collectGrowthPortfolio,
   shanghaiDate,
 } from "./lib/growth-portfolio.mjs";
-import {
-  canonicalSiteOrigin,
-  configuredPrivateServiceOrigin,
-} from "./lib/site-origin.mjs";
+import { configuredProductionSiteOrigin } from "./lib/site-origin.mjs";
 
 const outputArgument = process.argv[2];
 const daysArgument = process.argv[3];
@@ -85,11 +82,10 @@ const snapshot = await collectGrowthPortfolio({
   pages,
   retiredPages,
   automationToken: process.env.SEO_AUTOMATION_TOKEN,
-  siteUrl: configuredPrivateServiceOrigin(
+  siteUrl: configuredProductionSiteOrigin(
     process.env.SEO_REPORT_SITE_URL,
     "SEO_REPORT_SITE_URL",
   ),
-  publicSiteOrigin: canonicalSiteOrigin,
   days,
   reportingLagDays,
 });

@@ -9,7 +9,17 @@
       "kind": "content_guidance",
       "consumedAt": "2026-08-17T00:00:00+08:00",
       "decision": "adopted",
-      "rationale": "Serve the SEO guide hub under https://www.playworlds.ai/guides/ while leaving the Playworlds homepage and product routes owned by the main application. Use Vercel path routing or Microfrontends to send only /guides and its child paths to the SEO project. Do not use a Next.js basePath for this composition, do not require guides.playworlds.ai DNS for the public guide experience, and keep the pending subdomain inert until it can be removed after the main-path cutover is verified. Production remains blocked until the main Playworlds Vercel project is identified, both projects are configured and preview-tested, root robots references the guide sitemap, and canonical, analytics, GSC, and release checks all verify the /guides URLs."
+      "rationale": "Serve the SEO guide hub under https://www.playworlds.ai/guides/ while leaving the Playworlds homepage and product routes owned by the main application. Use Vercel path routing or Microfrontends to send only /guides and its child paths to the SEO project. Do not use a Next.js basePath for this composition, do not require guides.playworlds.ai DNS for the public guide experience, and keep the pending subdomain inert until it can be removed after the main-path cutover is verified. Production remains blocked until the main Playworlds Vercel project is identified, both projects are configured and preview-tested, root robots references the guide sitemap, and canonical, analytics, GSC, and release checks all verify the /guides URLs. This same-day routing choice was later superseded by the user's explicit LoreLens root-domain decision below; it is retained only as decision history."
+    },
+    {
+      "id": "feedback-2026-08-17-lorelens-playworlds-domain",
+      "createdAt": "2026-08-17T17:45:32+08:00",
+      "message": "我现在换了个域名  是lorelens.playworlds.ai，其他的都不用了  现在专心做playworlds了",
+      "source": "codex_chat",
+      "kind": "content_guidance",
+      "consumedAt": "2026-08-17T17:45:32+08:00",
+      "decision": "adopted",
+      "rationale": "Supersede the earlier /guides and Microfrontends routing choice. Serve the independent Playworlds SEO site at https://lorelens.playworlds.ai with crawlable root routes, root canonical metadata, root robots.txt and sitemap.xml, and root /go/playworlds attribution routes. Do not require the main www.playworlds.ai repository or Vercel Microfrontends. Preserve dated NovelAI and superseded routing records as history, while all future product positioning, public copy, and CTAs remain Playworlds-only."
     }
   ]
 }
