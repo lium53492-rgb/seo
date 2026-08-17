@@ -7,7 +7,7 @@ Last updated: 2026-08-16 (Asia/Shanghai)
 - Publish at most one new English SEO page per day.
 - Treat 20 organic visits per page as a 28-day performance target, not a guaranteed outcome. Use only observed Search Console data for evaluation.
 - Do not create pages around unlicensed events, teams, players, celebrities, or other third-party intellectual property. Seasonal and topical demand may be researched only through original, generic intents.
-- Future SEO-page copy and CTA labels use the approved Playworlds product identity. Current-schema pages use the versioned `/go/playworlds/{slug}` contract and exact official Steam listing; the retired NovelAI route must not be used for new pages. The signed Playworlds callback and production domain/GSC verification remain separate blockers.
+- Future SEO-page copy and CTA labels use the approved Playworlds product identity. Current-schema pages use the versioned `/guides/go/playworlds/{slug}` contract and exact official Steam listing; the retired NovelAI route must not be used for new pages. The signed Playworlds callback, main-site `/guides` routing/root robots, and production GSC verification remain separate blockers.
 
 ## Production methodology adopted 2026-07-21
 
@@ -21,7 +21,7 @@ Last updated: 2026-08-16 (Asia/Shanghai)
 ## User feedback adopted 2026-08-04
 
 - Verbatim: “seo的这个网址  前面是点开之后会直接跳转到novel.ai，  现在说不让这样了  这个你重新修改一下”
-- Decision: adopted. The bare homepage now renders a first-party guide hub and keeps its navigation on this site. NovelAI redirects remain available only after an intentional CTA click from a published SEO page.
+- Decision: adopted and migrated. The public `/guides` homepage renders a first-party guide hub and keeps its navigation on the canonical Playworlds host. Current-schema CTA clicks use the attributed Playworlds route; retired NovelAI routes remain historical compatibility only.
 
 ## User feedback adopted 2026-08-10
 

@@ -6,6 +6,7 @@ import { isBasicAuthHeaderAuthorized } from "@/lib/seo/auth";
 import { createDisconnectedReport, createUnavailableFunnel, redactPrivateReportData } from "@/lib/seo/default-report";
 import { readDailyPipelineStatus } from "@/lib/seo/pipeline-status";
 import { readLatestReport, readReportHistory } from "@/lib/seo/report-store";
+import { absoluteSiteUrl } from "@/lib/seo/site";
 import type { DailySeoReport, GoogleTrendsDirection, GoogleTrendsSignal, GrowthPortfolioEntry, ObservedMetric, RecommendedAction } from "@/lib/seo/types";
 import { FeedbackForm } from "./FeedbackForm";
 import { FeedbackQueue } from "./FeedbackQueue";
@@ -349,7 +350,7 @@ export default async function WorkbenchPage() {
             <h2>{top?.keyword ?? "等待下一次已验证研究"}</h2>
             <p>{top ? top.reason : "这里不会回退为演示数据。只有可追溯的免费研究、公开证据和已读取的 Search Console 数据才会出现。"}</p>
             <div className="wb-hero-actions">
-              {activePublishedPublications.map((item) => <a className="wb-primary-link" href={item.path} key={item.path}>打开已发布页面</a>)}
+              {activePublishedPublications.map((item) => <a className="wb-primary-link" href={absoluteSiteUrl(item.path!)} key={item.path}>打开已发布页面</a>)}
               <a className="wb-secondary-link" href="#opportunities">比较候选词</a>
             </div>
           </div>
@@ -460,7 +461,7 @@ export default async function WorkbenchPage() {
                 <thead><tr><th>页面</th><th>数据状态</th><th>GSC 曝光</th><th>GSC 点击</th><th>落地 UV</th><th>合格出站</th><th>状态说明</th></tr></thead>
                 <tbody>{rankedPortfolioRows.map((row, index) => (
                   <tr key={row.entry.sourceSlug}>
-                    <td><span className="wb-rank">{String(index + 1).padStart(2, "0")}</span><strong><a href={row.entry.path}>{row.entry.keyword}</a></strong><small>{row.entry.path}</small></td>
+                    <td><span className="wb-rank">{String(index + 1).padStart(2, "0")}</span><strong><a href={absoluteSiteUrl(row.entry.path)}>{row.entry.keyword}</a></strong><small>{absoluteSiteUrl(row.entry.path)}</small></td>
                     <td><span className={`wb-mode-badge ${row.availability === "observed" ? "live" : row.availability === "partial" ? "partial" : "blocked"}`}>{row.availability.toUpperCase()}</span></td>
                     <td title={row.impressions === null ? row.detail : undefined}>{rankingValue(row.impressions)}</td>
                     <td title={row.clicks === null ? row.detail : undefined}>{rankingValue(row.clicks)}</td>

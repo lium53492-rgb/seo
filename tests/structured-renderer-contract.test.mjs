@@ -41,6 +41,9 @@ test("structured preview CTAs are visible but inert while public CTAs use Playwo
   ]);
 
   assert.match(component, /import \{ TrackedPlayworldsLink \}/);
+  assert.match(component, /import \{ publicSitePath \} from "@\/lib\/seo\/site"/);
+  assert.match(component, /href=\{publicSitePath\("\/"\)\}>Tabletop Field Notes/);
+  assert.doesNotMatch(component, /href="\/">Tabletop Field Notes/);
   assert.doesNotMatch(component, /TrackedNovelAiHomeLink/);
   assert.ok((component.match(/mode === "preview"/g) ?? []).length >= 2);
   assert.match(component, /<span className=\{styles\.disabledCta\} aria-disabled="true">\{page\.primaryCta\}<\/span>/);

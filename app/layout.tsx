@@ -5,7 +5,7 @@ import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { getSiteUrl } from "@/lib/seo/site";
+import { absoluteSiteUrl, getSiteUrl } from "@/lib/seo/site";
 import { getReleaseRevision } from "@/lib/seo/release";
 
 const releaseRevision = getReleaseRevision();
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     description:
       "Table-ready answers for campaign pressure, player agency, character decisions, and Game Master preparation.",
     type: "website",
-    url: "/",
+    url: absoluteSiteUrl("/"),
   },
   twitter: {
     card: "summary_large_image",

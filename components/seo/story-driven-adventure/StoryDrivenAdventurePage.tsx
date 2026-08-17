@@ -2,6 +2,7 @@ import Image from "next/image";
 import { TrackedPlayworldsLink } from "@/app/components/TrackedPlayworldsLink";
 import { parseMarkdownBlocks } from "@/lib/seo/markdown-semantics.mjs";
 import type { RelatedSeoPage } from "@/lib/seo/page-presentation";
+import { publicAssetPath } from "@/lib/seo/site";
 import type { PublishedSeoPage } from "@/lib/seo/types";
 import styles from "./story-driven-adventure.module.css";
 
@@ -216,7 +217,7 @@ export function StoryDrivenAdventurePage({
           <div className={styles.signalWindow} aria-label="Incoming science-fiction mission signal">
             <div className={styles.avatarShard}>
               <Image
-                src="/images/story-driven-ai-voice-adventure.webp"
+                src={publicAssetPath("/images/story-driven-ai-voice-adventure.webp")}
                 alt={primarySignal
                   ? `${primarySignal.role} inside ${primarySignal.title}.`
                   : `${brand} science-fiction mission signal.`}

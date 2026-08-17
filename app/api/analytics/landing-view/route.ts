@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { logSeoGrowthEvent } from "@/lib/seo/attribution";
 import { recordLandingView } from "@/lib/seo/attribution-store";
 import { readPublishedPage } from "@/lib/seo/page-store";
-import { getSiteUrl } from "@/lib/seo/site";
+import { getSiteUrl, publicSitePath } from "@/lib/seo/site";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -55,7 +55,7 @@ function requestContextMatchesPage(request: NextRequest, sourceSlug: string) {
   try {
     const url = new URL(referer);
     return url.origin === expectedRequestOrigin(request) &&
-      url.pathname.replace(/\/$/, "") === `/${sourceSlug}`;
+      url.pathname.replace(/\/$/, "") === publicSitePath(`/${sourceSlug}`);
   } catch {
     return false;
   }

@@ -7,14 +7,14 @@ This repository has one production path. It targets an independent English searc
 ```text
 Independent trial-ready search intent
 -> indexable SEO landing page
--> user clicks /go/playworlds/{slug}
+-> user clicks /guides/go/playworlds/{slug}
 -> official Playworlds Steam listing with UTM + seo_click_id
 -> qualified outbound aggregate
 -> downstream conversion unavailable until a signed Playworlds callback exists
 -> daily funnel report with explicit unavailable states
 ```
 
-The bare homepage is a crawlable first-party guide hub. It returns its own 200
+The public `/guides` homepage is a crawlable first-party guide hub. It returns its own 200
 page, links to the published SEO guides, and must never automatically redirect
 a visitor off-site. Each content page still answers a useful search question on
 its own. The attributed outbound path begins only when a visitor intentionally
@@ -75,10 +75,10 @@ A new page is eligible only when all policy-v4 hard gates pass. Raw model-suppli
 ## Runtime structure
 
 ```text
-app/[slug]/page.tsx                         static SEO route, JSON-LD, and landing beacon
-app/api/analytics/landing-view/route.ts     first-party landing pageview/UV ingestion
+app/guides/[slug]/page.tsx                  public SEO route, JSON-LD, and landing beacon
+app/guides/api/analytics/landing-view/route.ts public landing pageview/UV ingestion
 app/api/cron/landing-analytics/[phase]/route.ts protected daily coverage rollover
-app/go/playworlds/[slug]/route.ts           current attributed Steam redirect + product-scoped outbound write
+app/guides/go/playworlds/[slug]/route.ts    public attributed Steam redirect + product-scoped outbound write
 app/go/novelai/[slug]/route.ts              historical compatibility redirect only
 app/api/attribution/conversion/route.ts     retained legacy callback; cannot join Playworlds clicks
 app/api/attribution/probe/route.ts          retained legacy NovelAI handshake only
@@ -129,7 +129,7 @@ Use native Next.js metadata for title, description, canonical, Open Graph, and T
 - The landing endpoint's Redis fixed-window limiter protects metric writes
   from local bursts. It is not a platform-level cost or attack-control
   guarantee; that boundary remains Vercel WAF/DDoS and project configuration.
-- `/go/playworlds/{slug}` creates a `seo_click_id`, persists a bot-resistant,
+- `/guides/go/playworlds/{slug}` creates a `seo_click_id`, persists a bot-resistant,
   product-scoped outbound signal by acquisition page/day, and forwards the
   versioned Playworlds UTM contract to the exact approved Steam app listing.
 - HEAD validates the same redirect without writing an outbound event; release

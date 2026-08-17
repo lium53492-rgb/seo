@@ -7,7 +7,7 @@ import type {
 // Node's native TypeScript test runner requires the explicit extension, while
 // this no-emit project intentionally leaves allowImportingTsExtensions off.
 // @ts-expect-error TS5097: the Next.js bundler and Node 24 both resolve this file.
-import { getSiteUrl } from "./site.ts";
+import { absoluteSiteUrl, getSiteBasePath, getSiteUrl } from "./site.ts";
 
 const searchConsoleScope = "https://www.googleapis.com/auth/webmasters.readonly";
 const requestTimeoutMs = 5_000;
@@ -68,17 +68,21 @@ function configuredSiteUrl() {
         "GOOGLE_SEARCH_CONSOLE_SITE_URL must not contain credentials",
       );
     }
+    const publicBasePath = getSiteBasePath();
+    const normalizedPropertyPath = property.pathname.replace(/\/$/, "") || "/";
     if (
       property.origin !== publicSite.origin ||
-      property.pathname !== "/" ||
+      (normalizedPropertyPath !== "/" && normalizedPropertyPath !== publicBasePath) ||
       property.search ||
       property.hash
     ) {
       throw new Error(
-        "GOOGLE_SEARCH_CONSOLE_SITE_URL URL-prefix property must match the public canonical origin",
+        "GOOGLE_SEARCH_CONSOLE_SITE_URL URL-prefix property must cover the public canonical guides path",
       );
     }
-    return `${publicSite.origin}/`;
+    return normalizedPropertyPath === "/"
+      ? `${publicSite.origin}/`
+      : `${publicSite.origin}${publicBasePath}/`;
   }
   return `${publicSite.origin}/`;
 }
@@ -443,7 +447,7 @@ export async function readSearchConsoleUrlInspection(input: {
     throw new Error("Search Console source slug is invalid");
   }
   const inspectedAt = (options.now?.() || new Date()).toISOString();
-  const pageUrl = new URL(`/${input.sourceSlug}`, getSiteUrl()).toString();
+  const pageUrl = absoluteSiteUrl(`/${input.sourceSlug}`);
   const config = searchConsoleConfig();
   if (!config) {
     return inspectionUnavailable({
@@ -578,7 +582,7 @@ export async function readSearchConsolePagePerformance(input: {
     throw new Error("Search Console source slug is invalid");
   }
   const { startDate, endDate } = reportingDates(input.periodStart, input.periodEnd);
-  const pageUrl = new URL(`/${input.sourceSlug}`, getSiteUrl()).toString();
+  const pageUrl = absoluteSiteUrl(`/${input.sourceSlug}`);
   const config = searchConsoleConfig();
   if (!config) {
     return unavailable({

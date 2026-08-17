@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TrackedNovelAiHomeLink } from "@/app/components/TrackedNovelAiHomeLink";
+import { publicAssetPath } from "@/lib/seo/site";
 import styles from "./story-companion.module.css";
 
 type StoryCompanionProps = {
@@ -195,7 +196,7 @@ export function StoryCompanion({ sourceSlug }: StoryCompanionProps) {
             <span className={styles.groundShadow} aria-hidden="true" />
             <span className={styles.foxWindow} aria-hidden="true">
               <Image
-                src="/characters/story-fox-expression-strip-v3.webp"
+                src={publicAssetPath("/characters/story-fox-expression-strip-v3.webp")}
                 alt=""
                 width={1536}
                 height={512}
@@ -216,7 +217,7 @@ export function StoryCompanion({ sourceSlug }: StoryCompanionProps) {
           }}
           aria-label="Bring back the animated story fox"
         >
-          <span aria-hidden="true"><Image src="/characters/story-fox-expression-strip-v3.webp" alt="" width={1536} height={512} sizes="174px" /></span>
+          <span aria-hidden="true"><Image src={publicAssetPath("/characters/story-fox-expression-strip-v3.webp")} alt="" width={1536} height={512} sizes="174px" /></span>
           <strong>Play?</strong>
         </button>
       )}

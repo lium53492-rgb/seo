@@ -36,7 +36,7 @@ test("Playworlds redirect carries the official Steam and versioned attribution c
   assert.equal(url.searchParams.get("seo_cta_location"), "hero");
   assert.equal(url.searchParams.get("seo_product"), "playworlds");
   assert.equal(url.searchParams.get("seo_attribution_version"), "1");
-  assert.equal(playworldsAttributionContract.routePrefix, "/go/playworlds");
+  assert.equal(playworldsAttributionContract.routePrefix, "/guides/go/playworlds");
   assert.equal(playworldsAttribution.events.qualifiedOutbound, "playworlds_qualified_outbound_click");
 });
 
@@ -104,6 +104,7 @@ test("current CTA and release verifiers use Playworlds while legacy runtime rema
   const augustOneSelector = readFileSync(join(root, "app/[slug]/StageStarterSelector.tsx"), "utf8");
   const decisionRenderer = readFileSync(join(root, "app/[slug]/DecisionMapPage.tsx"), "utf8");
   const route = readFileSync(join(root, "app/go/playworlds/[slug]/route.ts"), "utf8");
+  const publicRoute = readFileSync(join(root, "app/guides/go/playworlds/[slug]/route.ts"), "utf8");
   const legacyRoute = readFileSync(join(root, "app/go/novelai/[slug]/route.ts"), "utf8");
   const builtVerifier = readFileSync(join(root, "scripts/verify-built-pages.mjs"), "utf8");
   const liveVerifier = readFileSync(join(root, "scripts/verify-live-release.mjs"), "utf8");
@@ -118,6 +119,8 @@ test("current CTA and release verifiers use Playworlds while legacy runtime rema
   assert.match(decisionRenderer, /TrackedPlayworldsLink/);
   assert.doesNotMatch(decisionRenderer, /TrackedNovelAiHomeLink|NOVELAI/i);
   assert.match(route, /recordPlayworldsOutboundClick/);
+  assert.match(publicRoute, /handleGet/);
+  assert.match(publicRoute, /handleHead/);
   assert.match(route, /export async function HEAD/);
   assert.match(route, /export async function GET/);
   assert.match(legacyRoute, /buildNovelAiAttributionUrl/);

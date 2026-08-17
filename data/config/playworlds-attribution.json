@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "product": "playworlds",
-  "routePrefix": "/go/playworlds",
+  "routePrefix": "/guides/go/playworlds",
   "destination": "https://store.steampowered.com/app/4911480/Playworlds/",
   "allowedCtaLocations": [
     "seo_page",

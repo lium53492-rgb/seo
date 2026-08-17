@@ -1,5 +1,13 @@
 import { readFileSync } from "node:fs";
-import { canonicalSiteOrigin } from "./lib/site-origin.mjs";
+import {
+  canonicalPublicPath,
+  canonicalSiteOrigin,
+  canonicalSiteUrl,
+} from "./lib/site-origin.mjs";
+import {
+  robotsDeclaresSitemap,
+  robotsDisallowsEntirePathTree,
+} from "./lib/robots-policy.mjs";
 
 const playworldsAttribution = JSON.parse(
   readFileSync(new URL("../data/config/playworlds-attribution.json", import.meta.url), "utf8"),
@@ -12,11 +20,15 @@ const productMigrationHoldSlugs = new Set(seoPolicy.productMigrationHoldSlugs ||
 const FULL_GIT_SHA = /^[a-f0-9]{40}$/i;
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-const [requestedOrigin = canonicalSiteOrigin, revision, slug] = process.argv.slice(2);
-const origin = new URL(requestedOrigin).origin;
-if (origin !== canonicalSiteOrigin) {
-  throw new Error(`Release verification must target ${canonicalSiteOrigin}`);
+const [requestedSiteUrl = canonicalSiteUrl, revision, slug] = process.argv.slice(2);
+const requested = new URL(requestedSiteUrl);
+requested.hash = "";
+requested.search = "";
+const normalizedSiteUrl = requested.toString().replace(/\/$/, "");
+if (normalizedSiteUrl !== canonicalSiteUrl) {
+  throw new Error(`Release verification must target ${canonicalSiteUrl}`);
 }
+const origin = canonicalSiteOrigin;
 if (!FULL_GIT_SHA.test(String(revision || ""))) {
   throw new Error("Release verification requires the full 40-character Git SHA");
 }
@@ -116,28 +128,33 @@ function assertRevision(html, path) {
 }
 
 async function verifyProductionSnapshot() {
-  const path = slug ? `/${slug}` : null;
-  const [home, page, sitemap, robots, heldRoutes] = await Promise.all([
-    fetchText("/"),
+  const homePath = canonicalPublicPath("/");
+  const path = slug ? canonicalPublicPath(`/${slug}`) : null;
+  const sitemapPath = canonicalPublicPath("/sitemap.xml");
+  const guidesRobotsPath = canonicalPublicPath("/robots.txt");
+  const [home, page, sitemap, guidesRobots, rootRobots, heldRoutes] = await Promise.all([
+    fetchText(homePath),
     path ? fetchText(path) : Promise.resolve(null),
-    fetchText("/sitemap.xml"),
+    fetchText(sitemapPath),
+    fetchText(guidesRobotsPath),
     fetchText("/robots.txt"),
     Promise.all([...productMigrationHoldSlugs].map(async (heldSlug) => ({
       slug: heldSlug,
-      ...await fetchStatus(`/${heldSlug}`),
+      ...await fetchStatus(canonicalPublicPath(`/${heldSlug}`)),
     }))),
   ]);
-  assertRevision(home.body, "/");
-  if (!home.body.includes(`<link rel="canonical" href="${origin}"`)) {
-    throw new Error("Homepage canonical does not match the production origin");
+  assertRevision(home.body, homePath);
+  if (!home.body.includes(`<link rel="canonical" href="${canonicalSiteUrl}"`)) {
+    throw new Error("Guides homepage canonical does not match the public guides URL");
   }
   if (/\bnovelai\b/i.test(home.body)) {
     throw new Error("Homepage still exposes the retired NovelAI brand");
   }
   if (path) {
     assertRevision(page.body, path);
-    if (!page.body.includes(`<link rel="canonical" href="${origin}${path}"`)) {
-      throw new Error(`${path} canonical does not match the production origin`);
+    const canonical = `${canonicalSiteUrl}/${slug}`;
+    if (!page.body.includes(`<link rel="canonical" href="${canonical}"`)) {
+      throw new Error(`${path} canonical does not match the public guides URL`);
     }
     for (const fragment of ["<h1", '"@type":"Article"', '"@type":"FAQPage"', `href="${playworldsAttribution.routePrefix}/${slug}?`]) {
       if (!page.body.includes(fragment)) throw new Error(`${path} is missing required live fragment ${fragment}`);
@@ -148,7 +165,7 @@ async function verifyProductionSnapshot() {
     if (/\bnovelai\b/i.test(page.body)) {
       throw new Error(`${path} still exposes the retired NovelAI brand`);
     }
-    if (!sitemap.body.includes(`<loc>${origin}${path}</loc>`)) {
+    if (!sitemap.body.includes(`<loc>${canonical}</loc>`)) {
       throw new Error(`${path} is missing from the production sitemap`);
     }
   }
@@ -156,17 +173,26 @@ async function verifyProductionSnapshot() {
     if (heldRoute.status !== 404) {
       throw new Error(`Product-migration hold /${heldRoute.slug} returned HTTP ${heldRoute.status}; expected 404`);
     }
-    if (sitemap.body.includes(`<loc>${origin}/${heldRoute.slug}</loc>`)) {
+    if (sitemap.body.includes(`<loc>${canonicalSiteUrl}/${heldRoute.slug}</loc>`)) {
       throw new Error(`Product-migration hold /${heldRoute.slug} is still present in the production sitemap`);
     }
   }
-  if (!robots.body.includes(`Sitemap: ${origin}/sitemap.xml`)) {
-    throw new Error("Production robots.txt does not reference the canonical sitemap");
+  if (!robotsDeclaresSitemap(guidesRobots.body, `${canonicalSiteUrl}/sitemap.xml`)) {
+    throw new Error("Guides robots.txt does not reference the canonical guides sitemap");
+  }
+  if (!robotsDeclaresSitemap(rootRobots.body, `${canonicalSiteUrl}/sitemap.xml`)) {
+    throw new Error("Main-site robots.txt does not reference the canonical guides sitemap");
+  }
+  if (robotsDisallowsEntirePathTree(rootRobots.body, canonicalPublicPath("/"))) {
+    throw new Error("Main-site robots.txt blocks the public guides path");
+  }
+  if (path && robotsDisallowsEntirePathTree(rootRobots.body, path)) {
+    throw new Error(`Main-site robots.txt blocks the released page ${path}`);
   }
   const redirectRequestId = path
     ? await verifyPlayworldsRedirect(`${playworldsAttribution.routePrefix}/${slug}?location=seo_page`)
     : null;
-  return [home, page, sitemap, robots, ...heldRoutes].filter(Boolean).map((response) => response.requestId)
+  return [home, page, sitemap, guidesRobots, rootRobots, ...heldRoutes].filter(Boolean).map((response) => response.requestId)
     .concat(redirectRequestId).filter(Boolean);
 }
 
@@ -174,7 +200,9 @@ const firstRequestIds = await verifyProductionSnapshot();
 const secondRequestIds = await verifyProductionSnapshot();
 process.stdout.write(`${JSON.stringify({
   status: "verified",
-  origin,
+  origin: canonicalSiteUrl,
+  canonicalOrigin: canonicalSiteOrigin,
+  siteUrl: canonicalSiteUrl,
   slug: slug || null,
   revision: revision.toLowerCase(),
   verificationPasses: 2,

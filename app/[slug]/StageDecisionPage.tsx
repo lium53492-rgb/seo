@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { TrackedPlayworldsLink } from "@/app/components/TrackedPlayworldsLink";
+import { publicAssetPath } from "@/lib/seo/site";
 import type { SeoPageViewProps } from "./page-family-types";
 import { StageStarterSelector } from "./StageStarterSelector";
 import styles from "./stage-decision.module.css";
@@ -15,7 +16,7 @@ export function StageDecisionPage({ page, relatedPages }: SeoPageViewProps) {
       <header className={styles.hero}>
         <Image
           className={styles.heroImage}
-          src="/story-scenes/stage-choice.webp"
+          src={publicAssetPath("/story-scenes/stage-choice.webp")}
           alt="An original theatrical scene with a performer, split curtains, and two ways into a story."
           fill
           priority

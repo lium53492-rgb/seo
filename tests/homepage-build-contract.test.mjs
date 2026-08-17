@@ -3,7 +3,7 @@ import test from "node:test";
 
 import { requiredHomepageBuildFragments } from "../scripts/lib/homepage-build-contract.mjs";
 
-const siteUrl = "https://guides.playworlds.ai";
+const siteUrl = "https://www.playworlds.ai/guides";
 
 function labelsFor(activePageCount) {
   return requiredHomepageBuildFragments({ activePageCount, siteUrl }).map(([, label]) => label);

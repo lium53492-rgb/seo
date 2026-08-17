@@ -236,16 +236,16 @@ exact commit to reach Vercel READY when the LoreLens project is visible to the
 current Vercel account, then run:
 
 ```text
-npm.cmd run release:verify -- https://guides.playworlds.ai FULL_GIT_SHA SLUG
+npm.cmd run release:verify -- https://www.playworlds.ai/guides FULL_GIT_SHA SLUG
 ```
 
-The release is complete only when LoreLens serves that exact revision and the
+The release is complete only when the main Playworlds path serves that exact SEO
+child revision and the
 live page contains its H1, self-canonical, attributed CTA, Article and FAQ JSON-
 LD, robots declaration, and sitemap entry. A local `published` status, Git push,
-or a different Vercel project's READY state is not sufficient. If the LoreLens
-project is hidden from the current Vercel account, the exact full SHA served by
-LoreLens is the authoritative deployment proof; never substitute READY from a
-different project. After the live contract passes, run
+or a different Vercel project's READY state is not sufficient. The main-site
+Microfrontends route and root `robots.txt` are part of this live proof; the SEO
+child cannot synthesize either one. After the live contract passes, run
 `npm.cmd run daily:coord -- complete YYYY-MM-DD FULL_GIT_SHA SLUG`. Completion
 renews the lease, fetches `origin/main` into an explicit tracking destination,
 cross-checks the advertised remote ref, confirms both fetch and push URLs name

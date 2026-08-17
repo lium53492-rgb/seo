@@ -1,7 +1,7 @@
 // Node's native TypeScript test runner requires the explicit extension, while
 // this no-emit project intentionally leaves allowImportingTsExtensions off.
 // @ts-expect-error TS5097: the Next.js bundler and Node 24 both resolve this file.
-import { getSiteUrl } from "./site.ts";
+import { getSiteUrl, publicSitePath } from "./site.ts";
 
 const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -65,7 +65,8 @@ export async function readLandingUv(input: {
   // The Web Analytics count endpoint is already scoped to one Vercel project.
   // `requestHostname` is not a supported OData subject and makes the live API
   // reject an otherwise valid query with HTTP 400.
-  endpoint.searchParams.set("filter", `requestPath eq '/${input.sourceSlug}'`);
+  const publicPath = publicSitePath(`/${input.sourceSlug}`);
+  endpoint.searchParams.set("filter", `requestPath eq '${publicPath}'`);
 
   let response: Response;
   try {
@@ -111,6 +112,6 @@ export async function readLandingUv(input: {
     source: "vercel_analytics",
     visitors,
     pageviews,
-    detail: `Observed ${publicHostname}/${input.sourceSlug} through Vercel Web Analytics for the requested period.`,
+    detail: `Observed ${publicHostname}${publicPath} through Vercel Web Analytics for the requested period.`,
   };
 }

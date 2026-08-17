@@ -1,0 +1,15 @@
+{
+  "date": "2026-08-17",
+  "entries": [
+    {
+      "id": "feedback-2026-08-17-playworlds-guides-path",
+      "createdAt": "2026-08-17T00:00:00+08:00",
+      "message": "就你说的这种吧",
+      "source": "codex_chat",
+      "kind": "content_guidance",
+      "consumedAt": "2026-08-17T00:00:00+08:00",
+      "decision": "adopted",
+      "rationale": "Serve the SEO guide hub under https://www.playworlds.ai/guides/ while leaving the Playworlds homepage and product routes owned by the main application. Use Vercel path routing or Microfrontends to send only /guides and its child paths to the SEO project. Do not use a Next.js basePath for this composition, do not require guides.playworlds.ai DNS for the public guide experience, and keep the pending subdomain inert until it can be removed after the main-path cutover is verified. Production remains blocked until the main Playworlds Vercel project is identified, both projects are configured and preview-tested, root robots references the guide sitemap, and canonical, analytics, GSC, and release checks all verify the /guides URLs."
+    }
+  ]
+}

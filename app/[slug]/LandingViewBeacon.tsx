@@ -7,7 +7,7 @@ export function LandingViewBeacon({ sourceSlug }: { sourceSlug: string }) {
 
   useEffect(() => {
     if (viewId.current === null) viewId.current = globalThis.crypto.randomUUID();
-    void fetch("/api/analytics/landing-view", {
+    void fetch("/guides/api/analytics/landing-view", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ sourceSlug, viewId: viewId.current }),

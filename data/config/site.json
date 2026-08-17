@@ -1,7 +1,14 @@
 {
-  "schemaVersion": 1,
-  "canonicalOrigin": "https://guides.playworlds.ai",
+  "schemaVersion": 2,
+  "canonicalOrigin": "https://www.playworlds.ai",
+  "canonicalBasePath": "/guides",
+  "assetBasePath": "/playworlds-guides-assets",
+  "privateServiceOrigin": "https://lorelens.playworlds.ai",
+  "privateServiceAliases": [
+    "https://seo-eight-snowy.vercel.app"
+  ],
   "legacyOrigins": [
+    "https://guides.playworlds.ai",
     "https://seo-pi-fawn.vercel.app",
     "https://lorelens.novelai.ai"
   ]

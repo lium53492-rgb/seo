@@ -72,7 +72,7 @@ function collectedReport(page, period) {
     searchPerformance: {
       state: "unavailable",
       sourceSlug: page.slug,
-      pageUrl: `https://seo.example/${page.slug}`,
+      pageUrl: `https://seo.example/guides/${page.slug}`,
       startDate: period.periodStart.slice(0, 10),
       endDate: period.periodEnd.slice(0, 10),
       clicks: null,
@@ -84,7 +84,7 @@ function collectedReport(page, period) {
     urlInspection: {
       state: "observed",
       sourceSlug: page.slug,
-      pageUrl: `https://seo.example/${page.slug}`,
+      pageUrl: `https://seo.example/guides/${page.slug}`,
       inspectedAt: "2026-07-23T03:30:00.000Z",
       verdict: "PASS",
       coverageState: "Submitted and indexed",
@@ -93,9 +93,9 @@ function collectedReport(page, period) {
       pageFetchState: "SUCCESSFUL",
       lastCrawlTime: "2026-07-22T03:30:00.000Z",
       googleCanonical: `https://other.example/${page.slug}?private=1`,
-      userCanonical: `https://user:password@seo.example/${page.slug}?draft=1#section`,
+      userCanonical: `https://user:password@seo.example/guides/${page.slug}?draft=1#section`,
       crawledAs: "MOBILE",
-      sitemap: ["https://seo.example/sitemap.xml"],
+      sitemap: ["https://seo.example/guides/sitemap.xml"],
       detail: "Observed the indexed-version URL Inspection result in this fixture.",
     },
   };
@@ -195,7 +195,7 @@ test("collector authenticates and keeps every page bound to the same reporting p
   assert.equal(snapshot.entries[0].report.urlInspection.googleCanonical, null);
   assert.equal(
     snapshot.entries[0].report.urlInspection.userCanonical,
-    "https://seo.example/interactive-voice-story",
+    "https://seo.example/guides/interactive-voice-story",
   );
   const forbiddenKeys = new Set([
     "conversionJoinKey",
@@ -271,7 +271,7 @@ test("collector projects only the independent Playworlds readiness result", asyn
     pages: [],
     retiredPages: [],
     automationToken: "fixture-token-that-is-at-least-32-bytes",
-    siteUrl: "https://guides.playworlds.ai",
+    siteUrl: "https://lorelens.playworlds.ai",
     now: new Date("2026-07-23T03:30:00.000Z"),
     fetchImpl: async (url) => {
       requestedUrl = String(url);
@@ -289,7 +289,7 @@ test("collector projects only the independent Playworlds readiness result", asyn
       });
     },
   });
-  assert.equal(requestedUrl, "https://guides.playworlds.ai/api/attribution/readiness");
+  assert.equal(requestedUrl, "https://lorelens.playworlds.ai/api/attribution/readiness");
   assert.equal(snapshot.summary.attributionJoinReady, true);
   assert.deepEqual(Object.keys(snapshot.globalAttribution).sort(), [
     "attributionJoinReady",
@@ -403,7 +403,7 @@ test("collector accepts only Search Console evidence from the requested site ori
     report.searchPerformance = {
       ...report.searchPerformance,
       state: "observed",
-      pageUrl: `${searchOrigin}/${page.slug}`,
+      pageUrl: `${searchOrigin}/guides/${page.slug}`,
       clicks: 0,
       impressions: 0,
       ctr: 0,
@@ -412,10 +412,10 @@ test("collector accepts only Search Console evidence from the requested site ori
     };
     report.urlInspection = {
       ...report.urlInspection,
-      pageUrl: `${inspectionOrigin}/${page.slug}`,
-      googleCanonical: `${inspectionOrigin}/${page.slug}`,
-      userCanonical: `${inspectionOrigin}/${page.slug}`,
-      sitemap: [`${inspectionOrigin}/sitemap.xml`],
+      pageUrl: `${inspectionOrigin}/guides/${page.slug}`,
+      googleCanonical: `${inspectionOrigin}/guides/${page.slug}`,
+      userCanonical: `${inspectionOrigin}/guides/${page.slug}`,
+      sitemap: [`${inspectionOrigin}/guides/sitemap.xml`],
     };
     return report;
   }
@@ -444,11 +444,11 @@ test("collector accepts only Search Console evidence from the requested site ori
   assert.equal(current.entries[0].report.searchPerformance.impressions, 0);
   assert.equal(
     current.entries[0].report.searchPerformance.pageUrl,
-    `${primaryOrigin}/${page.slug}`,
+    `${primaryOrigin}/guides/${page.slug}`,
   );
   assert.equal(
     current.entries[0].report.urlInspection.pageUrl,
-    `${primaryOrigin}/${page.slug}`,
+    `${primaryOrigin}/guides/${page.slug}`,
   );
 });
 
@@ -598,7 +598,7 @@ test("consolidation requires two-page query overlap and a usable self-canonical 
   const searchPerformance = (sourceSlug, impressions) => ({
     state: "observed",
     sourceSlug,
-    pageUrl: `https://seo.example/${sourceSlug}`,
+    pageUrl: `https://seo.example/guides/${sourceSlug}`,
     startDate: "2026-06-22",
     endDate: "2026-07-19",
     clicks: 2,
@@ -610,7 +610,7 @@ test("consolidation requires two-page query overlap and a usable self-canonical 
   const urlInspection = (sourceSlug) => ({
     state: "observed",
     sourceSlug,
-    pageUrl: `https://seo.example/${sourceSlug}`,
+    pageUrl: `https://seo.example/guides/${sourceSlug}`,
     inspectedAt: "2026-07-23T03:30:00.000Z",
     verdict: "PASS",
     coverageState: "Submitted and indexed",
@@ -618,10 +618,10 @@ test("consolidation requires two-page query overlap and a usable self-canonical 
     indexingState: "INDEXING_ALLOWED",
     pageFetchState: "SUCCESSFUL",
     lastCrawlTime: "2026-07-22T03:30:00.000Z",
-    googleCanonical: `https://seo.example/${sourceSlug}`,
-    userCanonical: `https://seo.example/${sourceSlug}`,
+    googleCanonical: `https://seo.example/guides/${sourceSlug}`,
+    userCanonical: `https://seo.example/guides/${sourceSlug}`,
     crawledAs: "MOBILE",
-    sitemap: ["https://seo.example/sitemap.xml"],
+    sitemap: ["https://seo.example/guides/sitemap.xml"],
     detail: "Observed indexed-version URL Inspection evidence.",
   });
   const entries = ["source-page", "target-page"].map((sourceSlug, index) => ({
@@ -636,7 +636,7 @@ test("consolidation requires two-page query overlap and a usable self-canonical 
     },
   }));
   const performance = ["source-page", "target-page"].map((sourceSlug) => ({
-    url: `https://seo.example/${sourceSlug}`,
+    url: `https://seo.example/guides/${sourceSlug}`,
     query: "shared roleplay query",
     clicks: 1,
     impressions: 20,

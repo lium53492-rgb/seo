@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "applicationKey": "seo",
+  "packageName": "novelai-story-seo",
+  "assetPrefix": "playworlds-guides-assets",
+  "routing": [
+    {
+      "group": "playworlds-guides",
+      "paths": [
+        "/guides/:path*",
+        "/playworlds-guides-assets/:path*"
+      ]
+    }
+  ]
+}

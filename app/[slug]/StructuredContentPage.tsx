@@ -2,6 +2,7 @@ import { TrackedPlayworldsLink } from "@/app/components/TrackedPlayworldsLink";
 import { StoryDrivenAdventurePage } from "@/components/seo/story-driven-adventure/StoryDrivenAdventurePage";
 import { listMarkdownRenderBlocks, parseMarkdownBlocks } from "@/lib/seo/markdown-semantics.mjs";
 import type { PresentationRecipe } from "@/lib/seo/page-presentation";
+import { publicSitePath } from "@/lib/seo/site";
 import type { SeoPageViewProps } from "./page-family-types";
 import styles from "./structured-content.module.css";
 
@@ -258,7 +259,7 @@ export function StructuredContentPage({
       data-section-flow={recipe.sectionFlow}
     >
       <nav className={styles.nav} aria-label="Primary navigation">
-        <a href="/">Tabletop Field Notes</a>
+        <a href={publicSitePath("/")}>Tabletop Field Notes</a>
         <span>{copy.eyebrow}</span>
       </nav>
       {renderer}

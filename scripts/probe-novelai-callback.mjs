@@ -1,9 +1,9 @@
 import "./load-env.mjs";
 
 import { randomUUID } from "node:crypto";
-import { configuredProductionSiteOrigin } from "./lib/site-origin.mjs";
+import { configuredPrivateServiceOrigin } from "./lib/site-origin.mjs";
 
-const siteUrl = configuredProductionSiteOrigin(
+const siteUrl = configuredPrivateServiceOrigin(
   process.env.SEO_REPORT_SITE_URL,
   "SEO_REPORT_SITE_URL",
 );

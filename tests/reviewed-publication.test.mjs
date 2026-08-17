@@ -447,7 +447,7 @@ test("report generation cannot publish before a separate approval artifact", asy
             searchPerformance: {
               state: "observed",
               sourceSlug: existingPage.slug,
-              pageUrl: `https://guides.playworlds.ai/${existingPage.slug}`,
+              pageUrl: `https://www.playworlds.ai/guides/${existingPage.slug}`,
               startDate: "2098-12-05",
               endDate: "2098-12-31",
               clicks: 0,
@@ -459,7 +459,7 @@ test("report generation cannot publish before a separate approval artifact", asy
             urlInspection: {
               state: "observed",
               sourceSlug: existingPage.slug,
-              pageUrl: `https://guides.playworlds.ai/${existingPage.slug}`,
+              pageUrl: `https://www.playworlds.ai/guides/${existingPage.slug}`,
               inspectedAt: "2099-01-01T08:55:00+08:00",
               verdict: "PASS",
               coverageState: "Submitted and indexed",
@@ -467,10 +467,10 @@ test("report generation cannot publish before a separate approval artifact", asy
               indexingState: "INDEXING_ALLOWED",
               pageFetchState: "SUCCESSFUL",
               lastCrawlTime: "2098-12-31T08:00:00+08:00",
-              googleCanonical: `https://guides.playworlds.ai/${existingPage.slug}`,
-              userCanonical: `https://guides.playworlds.ai/${existingPage.slug}`,
+              googleCanonical: `https://www.playworlds.ai/guides/${existingPage.slug}`,
+              userCanonical: `https://www.playworlds.ai/guides/${existingPage.slug}`,
               crawledAs: "MOBILE",
-              sitemap: ["https://guides.playworlds.ai/sitemap.xml"],
+              sitemap: ["https://www.playworlds.ai/guides/sitemap.xml"],
               detail: "Observed the exact-page URL Inspection result for the active fixture page.",
             },
             decisionState: {
@@ -1302,7 +1302,7 @@ test("report generation cannot publish before a separate approval artifact", asy
       supports: updateKeywords,
     }));
     updateInput.performance = [{
-      url: "https://seo.example/play-an-ai-roleplay-story",
+      url: "https://seo.example/guides/play-an-ai-roleplay-story",
       query: updateKeywords[0],
       clicks: 2,
       impressions: 20,

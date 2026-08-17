@@ -5,8 +5,12 @@ import { resolve } from "node:path";
 import { renderedBodyCopyFragments, servedContentDigest } from "../lib/seo/served-content.mjs";
 import { assertPreservedProductMigrationHolds } from "../lib/seo/product-migration-hold.mjs";
 import { normalizeContentText } from "../lib/seo/content-similarity.mjs";
+import { buildGuidesRobotsText } from "../lib/seo/guides-robots.mjs";
 import {
+  canonicalPublicPath,
+  canonicalPublicUrl,
   canonicalSiteOrigin,
+  canonicalSiteUrl,
   configuredProductionSiteOrigin,
   legacySiteOrigins,
 } from "./lib/site-origin.mjs";
@@ -14,7 +18,7 @@ import { requiredHomepageBuildFragments } from "./lib/homepage-build-contract.mj
 
 const pageDirectory = resolve("data/pages");
 const buildDirectory = resolve(".next/server/app");
-const siteUrl = canonicalSiteOrigin;
+const siteUrl = canonicalSiteUrl;
 if (process.env.NEXT_PUBLIC_SITE_URL?.trim()) {
   configuredProductionSiteOrigin(
     process.env.NEXT_PUBLIC_SITE_URL,
@@ -102,31 +106,23 @@ const pageArtifacts = readdirSync(pageDirectory)
 const pages = pageArtifacts.filter((page) => !productMigrationHoldSlugs.has(page.slug));
 assertPreservedProductMigrationHolds(seoPolicy, pageArtifacts);
 
-const sitemapPath = resolve(buildDirectory, "sitemap.xml.body");
-if (!existsSync(sitemapPath)) throw new Error("The production build did not emit sitemap.xml.");
+const sitemapPath = resolve(buildDirectory, "guides/sitemap.xml.body");
+if (!existsSync(sitemapPath)) throw new Error("The production build did not emit /guides/sitemap.xml.");
 const sitemap = readFileSync(sitemapPath, "utf8");
-const robotsPath = resolve(buildDirectory, "robots.txt.body");
-if (!existsSync(robotsPath)) throw new Error("The production build did not emit robots.txt.");
+const robotsPath = resolve(buildDirectory, "guides/robots.txt.body");
+if (!existsSync(robotsPath)) throw new Error("The production build did not emit /guides/robots.txt.");
 const robots = readFileSync(robotsPath, "utf8");
-for (const fragment of [
-  "User-Agent: *",
-  "Allow: /",
-  "Disallow: /api/",
-  "Disallow: /go/",
-  "Disallow: /workbench/",
-  `Sitemap: ${siteUrl}/sitemap.xml`,
-]) {
-  if (!robots.includes(fragment)) {
-    throw new Error(`The production robots.txt is missing ${fragment}.`);
-  }
-}
-if (robots.split(`Sitemap: ${siteUrl}/sitemap.xml`).length !== 2) {
-  throw new Error("The production robots.txt must declare the canonical sitemap exactly once.");
+const expectedRobots = buildGuidesRobotsText(
+  new URL(siteUrl).pathname,
+  `${siteUrl}/sitemap.xml`,
+);
+if (robots !== expectedRobots) {
+  throw new Error("The production /guides/robots.txt does not exactly match the reviewed child policy.");
 }
 rejectLegacyOrigins(robots, "The production robots.txt");
 
-const homepagePath = resolve(buildDirectory, "index.html");
-if (!existsSync(homepagePath)) throw new Error("The production build did not emit the homepage HTML.");
+const homepagePath = resolve(buildDirectory, "guides.html");
+if (!existsSync(homepagePath)) throw new Error("The production build did not emit /guides homepage HTML.");
 const homepage = readFileSync(homepagePath, "utf8");
 for (const [fragment, label] of requiredHomepageBuildFragments({
   activePageCount: pages.length,
@@ -146,20 +142,22 @@ if (/\bnovelai\b/i.test(homepage)) {
   throw new Error("The current homepage must not expose the retired NovelAI brand.");
 }
 for (const page of pages) {
-  if (!homepage.includes(`href="/${page.slug}"`)) {
-    throw new Error(`The homepage is missing a crawlable link to /${page.slug}.`);
+  const publicPath = canonicalPublicPath(page.path);
+  if (!homepage.includes(`href="${publicPath}"`)) {
+    throw new Error(`The homepage is missing a crawlable link to ${publicPath}.`);
   }
 }
 for (const heldPath of productMigrationHoldPaths) {
-  if (homepage.includes(`href="${heldPath}"`)) {
-    throw new Error(`The homepage still exposes product-migration hold ${heldPath}.`);
+  const publicHeldPath = canonicalPublicPath(heldPath);
+  if (homepage.includes(`href="${publicHeldPath}"`)) {
+    throw new Error(`The homepage still exposes product-migration hold ${publicHeldPath}.`);
   }
 }
 const sitemapLocations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)]
   .map((match) => match[1]);
 const expectedSitemapLocations = [
   siteUrl,
-  ...pages.map((page) => `${siteUrl}/${page.slug}`),
+  ...pages.map((page) => canonicalPublicUrl(page.path)),
 ].sort();
 if (
   new Set(sitemapLocations).size !== sitemapLocations.length ||
@@ -177,18 +175,19 @@ for (const heldPath of productMigrationHoldPaths) {
   if (sitemapLocations.includes(`${siteUrl}${heldPath}`)) {
     throw new Error(`The built sitemap still exposes product-migration hold ${heldPath}.`);
   }
-  if (existsSync(resolve(buildDirectory, `${heldPath.slice(1)}.html`))) {
+  if (existsSync(resolve(buildDirectory, `guides/${heldPath.slice(1)}.html`))) {
     throw new Error(`The production build still emits HTML for product-migration hold ${heldPath}.`);
   }
 }
 
 for (const page of pages) {
-  const htmlPath = resolve(buildDirectory, `${page.slug}.html`);
-  if (!existsSync(htmlPath)) throw new Error(`Production HTML is missing for /${page.slug}.`);
+  const publicPath = canonicalPublicPath(page.path);
+  const htmlPath = resolve(buildDirectory, `guides/${page.slug}.html`);
+  if (!existsSync(htmlPath)) throw new Error(`Production HTML is missing for ${publicPath}.`);
   const html = readFileSync(htmlPath, "utf8");
-  const canonical = `${siteUrl}/${page.slug}`;
-  assertCanonicalMetadata(html, canonical, `/${page.slug}`, true);
-  rejectLegacyOrigins(html, `/${page.slug} HTML`);
+  const canonical = canonicalPublicUrl(page.path);
+  assertCanonicalMetadata(html, canonical, publicPath, true);
+  rejectLegacyOrigins(html, `${publicPath} HTML`);
   const titlePattern = new RegExp(`<title>${escapeRegex(escapeHtml(page.title))}[^<]*<\\/title>`);
   if (!titlePattern.test(html)) {
     throw new Error(`/${page.slug} is missing its reviewed title in initial HTML.`);
@@ -257,14 +256,15 @@ for (const page of pages) {
   if (invalidCtaLocation) throw new Error(`/${page.slug} contains an invalid CTA location: ${invalidCtaLocation}.`);
   for (const link of page.internalLinks || []) {
     if (link.href === "/" && page.schemaVersion !== currentPageSchema) continue;
+    const publicHref = canonicalPublicPath(link.href);
     if (retiredPagePaths.has(link.href) || productMigrationHoldPaths.has(link.href)) {
-      if (html.includes(`href="${escapeHtml(link.href)}"`)) {
-        throw new Error(`/${page.slug} still renders a crawlable link to unavailable page ${link.href}.`);
+      if (html.includes(`href="${escapeHtml(publicHref)}"`)) {
+        throw new Error(`${publicPath} still renders a crawlable link to unavailable page ${publicHref}.`);
       }
       continue;
     }
-    if (!html.includes(`href="${escapeHtml(link.href)}"`)) {
-      throw new Error(`/${page.slug} is missing its declared crawlable link to ${link.href} in initial HTML.`);
+    if (!html.includes(`href="${escapeHtml(publicHref)}"`)) {
+      throw new Error(`${publicPath} is missing its declared crawlable link to ${publicHref} in initial HTML.`);
     }
   }
   if (page.schemaVersion === currentPageSchema && page.architecture.presentation.companion === "none" &&

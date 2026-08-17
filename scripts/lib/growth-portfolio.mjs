@@ -1,4 +1,8 @@
-import { canonicalSiteOrigin } from "./site-origin.mjs";
+import {
+  canonicalPublicPath,
+  canonicalSiteOrigin,
+  privateServiceOrigin,
+} from "./site-origin.mjs";
 
 const dayMs = 86_400_000;
 const shanghaiOffsetMs = 8 * 60 * 60 * 1_000;
@@ -146,8 +150,8 @@ export function evaluateConsolidationEvidence({
     };
   }
   const rows = Array.isArray(performance) ? performance : [];
-  const sourcePath = `/${sourceSlug}`;
-  const targetPath = `/${targetSlug}`;
+  const sourcePath = canonicalPublicPath(`/${sourceSlug}`);
+  const targetPath = canonicalPublicPath(`/${targetSlug}`);
   for (const query of overlapQueries) {
     const matchingRows = rows.filter(
       (row) => String(row?.query || "").trim().toLowerCase() === query,
@@ -433,7 +437,7 @@ function publicSearchPerformance(value, page, expectedOrigin) {
   if (
     pageUrl.protocol !== "https:" ||
     pageUrl.origin !== expectedOrigin ||
-    pageUrl.pathname.replace(/\/$/, "") !== page.path ||
+    pageUrl.pathname.replace(/\/$/, "") !== canonicalPublicPath(page.path) ||
     !/^\d{4}-\d{2}-\d{2}$/.test(value.startDate) ||
     !/^\d{4}-\d{2}-\d{2}$/.test(value.endDate)
   ) {
@@ -510,7 +514,7 @@ function publicUrlInspection(value, page, expectedOrigin) {
   if (
     pageUrl.protocol !== "https:" ||
     pageUrl.origin !== expectedOrigin ||
-    pageUrl.pathname.replace(/\/$/, "") !== page.path
+    pageUrl.pathname.replace(/\/$/, "") !== canonicalPublicPath(page.path)
   ) {
     throw new Error("The attribution endpoint returned mismatched URL Inspection evidence");
   }
@@ -682,7 +686,8 @@ export async function collectGrowthPortfolio({
   pages,
   retiredPages = [],
   automationToken,
-  siteUrl = canonicalSiteOrigin,
+  siteUrl = privateServiceOrigin,
+  publicSiteOrigin,
   days = 28,
   reportingLagDays = 3,
   now = new Date(),
@@ -699,6 +704,11 @@ export async function collectGrowthPortfolio({
   }
   const period = completeShanghaiWindow(days, now, reportingLagDays);
   const normalizedSiteUrl = normalizeSiteUrl(siteUrl);
+  const normalizedPublicSiteUrl = normalizeSiteUrl(
+    publicSiteOrigin || (normalizedSiteUrl.origin === privateServiceOrigin
+      ? canonicalSiteOrigin
+      : normalizedSiteUrl.origin),
+  );
   const authorization = typeof automationToken === "string" &&
     Buffer.byteLength(automationToken, "utf8") >= 32
     ? `Bearer ${automationToken}`
@@ -743,7 +753,7 @@ export async function collectGrowthPortfolio({
         JSON.parse(responseBody),
         page,
         period,
-        normalizedSiteUrl.origin,
+        normalizedPublicSiteUrl.origin,
       );
       return {
         sourceSlug: page.slug,
@@ -792,7 +802,7 @@ export async function collectGrowthPortfolio({
         JSON.parse(responseBody),
         page,
         period,
-        normalizedSiteUrl.origin,
+        normalizedPublicSiteUrl.origin,
       );
       return {
         sourceSlug: page.slug,

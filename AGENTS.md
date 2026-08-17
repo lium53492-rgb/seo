@@ -188,14 +188,15 @@ Before a new page or update:
 - Keep the H1, main answer, sections, FAQ, CTA, and canonical metadata in the
   initial rendered HTML. Verify the current template rather than assuming an
   old workflow still matches it.
-- The bare homepage is a crawlable first-party guide hub and must return its
+- The public `/guides` homepage is a crawlable first-party guide hub and must return its
   own content without automatically redirecting visitors off-site. The
   conversion path is `SEO landing page -> user-initiated attributed redirect
-  -> Playworlds`. Current-schema SEO CTAs use `/go/playworlds/{slug}` in a new
+  -> Playworlds`. Current-schema SEO CTAs use `/guides/go/playworlds/{slug}` in a new
   tab; its official Steam destination, UTM fields, product-scoped event names,
   and non-writing HEAD verification contract are defined in
   `data/config/playworlds-attribution.json`. Until the signed Playworlds
-  callback and replacement production domain/GSC property are independently verified, do not claim
+  callback, main-site Microfrontends routing, root robots declaration, and matching
+  production GSC property are independently verified, do not claim
   that the site-wide product migration or revenue loop is complete. Do not use
   the retired `/go/novelai/{slug}` route for new pages, and do not restore the
   bare-homepage or legacy story-share redirect paths without approval.

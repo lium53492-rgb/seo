@@ -1,14 +1,17 @@
 import "./load-env.mjs";
 
 import { projectPrivateGrowthReport } from "./lib/growth-portfolio.mjs";
-import { configuredProductionSiteOrigin } from "./lib/site-origin.mjs";
+import {
+  canonicalSiteOrigin,
+  configuredPrivateServiceOrigin,
+} from "./lib/site-origin.mjs";
 
 const [sourceSlug, periodStart, periodEnd] = process.argv.slice(2);
 if (!sourceSlug || !periodStart || !periodEnd) {
   throw new Error("Usage: node scripts/collect-growth-funnel.mjs <source-slug> <period-start> <period-end>");
 }
 
-const siteUrl = configuredProductionSiteOrigin(
+const siteUrl = configuredPrivateServiceOrigin(
   process.env.SEO_REPORT_SITE_URL,
   "SEO_REPORT_SITE_URL",
 );
@@ -34,7 +37,7 @@ const publicReport = projectPrivateGrowthReport(
   privateReport,
   { slug: sourceSlug, path: `/${sourceSlug}` },
   { periodStart, periodEnd },
-  siteUrl,
+  canonicalSiteOrigin,
 );
 process.stdout.write(`${JSON.stringify({
   schemaVersion: 2,

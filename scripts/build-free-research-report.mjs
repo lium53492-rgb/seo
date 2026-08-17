@@ -30,6 +30,7 @@ import {
   isQualifyingGoogleTrendsSignal,
   validateGoogleTrendsEvidence,
 } from "../lib/seo/google-trends-contract.mjs";
+import { canonicalPublicPath } from "./lib/site-origin.mjs";
 
 const inputPath = process.argv[2];
 if (!inputPath) throw new Error("Usage: npm run research:build -- data/research/YYYY-MM-DD.json");
@@ -727,7 +728,7 @@ function validateSearchPerformance(value, sourceSlug) {
   } catch {
     throw new Error(`Growth entry has invalid Search Console page URL: ${sourceSlug}`);
   }
-  if (pageUrl.pathname.replace(/\/$/, "") !== `/${sourceSlug}`) {
+  if (pageUrl.pathname.replace(/\/$/, "") !== canonicalPublicPath(`/${sourceSlug}`)) {
     throw new Error(`Growth entry Search Console evidence is not for the exact page: ${sourceSlug}`);
   }
   const common = {
@@ -809,7 +810,7 @@ function validateUrlInspection(
       pageUrl.password ||
       pageUrl.search ||
       pageUrl.hash ||
-      pageUrl.pathname.replace(/\/$/, "") !== `/${sourceSlug}`
+      pageUrl.pathname.replace(/\/$/, "") !== canonicalPublicPath(`/${sourceSlug}`)
     ) {
       throw new Error(`Legacy growth entry is not for the exact HTTPS page: ${sourceSlug}`);
     }
@@ -875,7 +876,7 @@ function validateUrlInspection(
     throw new Error(`Unavailable URL Inspection fields must stay empty: ${sourceSlug}`);
   }
   const pageUrl = new URL(value.pageUrl);
-  if (pageUrl.pathname.replace(/\/$/, "") !== `/${sourceSlug}`) {
+  if (pageUrl.pathname.replace(/\/$/, "") !== canonicalPublicPath(`/${sourceSlug}`)) {
     throw new Error(`Growth entry URL Inspection is not for the exact page: ${sourceSlug}`);
   }
   const googleCanonical = normalizedPublicCanonical(value.googleCanonical, pageUrl);
@@ -1628,8 +1629,13 @@ if (input.publicationMode === "update" && preparedDrafts.length) {
   }
   const matchingPerformance = performance.some((row) => {
     try {
-      const rowPath = row.url.startsWith("/") ? row.url : new URL(row.url).pathname;
-      const expectedPath = targetPath?.startsWith("/") ? targetPath : new URL(targetPath).pathname;
+      const rowPath = row.url.startsWith("/")
+        ? canonicalPublicPath(row.url)
+        : new URL(row.url).pathname;
+      const logicalTargetPath = targetPath?.startsWith("/")
+        ? targetPath
+        : new URL(targetPath).pathname;
+      const expectedPath = canonicalPublicPath(logicalTargetPath);
       return rowPath === expectedPath;
     } catch {
       return false;

@@ -115,7 +115,7 @@ published schema-3 payload must retain a recomputable served-content digest.
 The primary CTA must name the page-specific outcome, pass its own similarity
 gate, and avoid generic `Learn more`, `Get started`, `Explore`, or `Try` copy.
 Current-schema renderers must send that CTA through
-`/go/playworlds/{source-slug}`; `/go/novelai/{slug}` is historical compatibility
+`/guides/go/playworlds/{source-slug}`; `/go/novelai/{slug}` is historical compatibility
 only and is a publication error on a current-schema page.
 Pain points rotate across seven recent pages; presentation systems and reusable
 recipes rotate across six. Policy-retired recipes and palettes are forbidden

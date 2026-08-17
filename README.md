@@ -183,14 +183,65 @@ or callback credential.
 
 Deploy this repository as a Next.js project on Vercel.
 
-Current production domain:
+Canonical public guide URL:
 
 ```text
-https://guides.playworlds.ai
+https://www.playworlds.ai/guides
 ```
 
-`data/config/site.json` is the source of truth for the canonical production
-origin. Keep the Vercel `NEXT_PUBLIC_SITE_URL`, Search Console property,
-automation endpoint, canonical metadata, robots file, and sitemap on this same
-origin. Generated `vercel.app` hosts are deployment aliases, not public SEO
-origins.
+`data/config/site.json` separates the canonical origin, `/guides` public base
+path, and the child project's root-level private service origin. Public
+canonical, sitemap, CTA, landing-beacon, Search Console, and Analytics URLs use
+`https://www.playworlds.ai/guides`; protected `/api`, `/workbench`, and cron
+routes remain on the SEO child service. Next static chunks and public guide
+assets use the separate, collision-resistant `/playworlds-guides-assets`
+namespace. Do not merge that namespace with `/guides`.
+
+The Playworlds default project still must join the same Vercel Microfrontends
+group as the `seo` child. Its repository owns `microfrontends.json`; after the
+actual main Vercel project name is confirmed, the minimum production routing is:
+
+```json
+{
+  "$schema": "https://openapi.vercel.sh/microfrontends.json",
+  "applications": {
+    "<PLAYWORLDS_MAIN_VERCEL_PROJECT_NAME>": {},
+    "seo": {
+      "packageName": "novelai-story-seo",
+      "assetPrefix": "playworlds-guides-assets",
+      "routing": [
+        {
+          "group": "playworlds-guides",
+          "paths": [
+            "/guides/:path*",
+            "/playworlds-guides-assets/:path*"
+          ]
+        }
+      ]
+    }
+  }
+}
+```
+
+The checked-in child contract is
+`data/config/vercel-microfrontends-child.json`. Keep its `applicationKey`
+(`seo`), `packageName` (`novelai-story-seo`), asset prefix, and route list
+identical to the corresponding child entry in the main repository. It is a
+child fragment and deliberately is not named `microfrontends.json`: only the
+default/main application owns that deployable routing file.
+
+The default application is the one without `routing`. Both repositories must
+install `@vercel/microfrontends` and wrap their Next configuration with
+`withMicrofrontends`; this child is already wired, while the still-unknown main
+repository remains an external prerequisite. The Playworlds main repository
+also owns its root `robots.txt`, which must allow `/guides/`,
+disallow `/guides/api/`, `/guides/go/`, and `/guides/workbench/`, and declare
+`Sitemap: https://www.playworlds.ai/guides/sitemap.xml`. This repository cannot
+prove or replace those main-project changes.
+
+Vercel Web Analytics normally appears under the default/main application unless
+the Microfrontends group explicitly routes observability to the child. Set
+`VERCEL_ANALYTICS_PROJECT_ID` and `VERCEL_ANALYTICS_TEAM_ID` to the project that
+actually owns that observability stream (main by default, SEO child only after
+an explicit routing change), then verify a real `/guides/{slug}` visit is
+queryable before treating landing UV as available.

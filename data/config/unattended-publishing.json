@@ -36,7 +36,7 @@
     ]
   },
   "releaseVerification": {
-    "origin": "https://guides.playworlds.ai",
+    "origin": "https://www.playworlds.ai/guides",
     "expectedOriginRepository": "lium53492-rgb/seo",
     "authoritativeDeploymentEvidence": "live_exact_git_revision",
     "requireOriginMainTip": true,
