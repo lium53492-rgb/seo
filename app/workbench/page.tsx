@@ -442,7 +442,7 @@ export default async function WorkbenchPage() {
                 <article><p>已发布页面</p><strong>{portfolio.summary.publishedPages}</strong><span>快照必须覆盖全部页面</span></article>
                 <article><p>已采集页面</p><strong>{portfolio.summary.collectedPages}</strong><span>返回真实页面级漏斗</span></article>
                 <article><p>不可用页面</p><strong>{portfolio.summary.unavailablePages}</strong><span>缺失数据保留原因，不换算为 0</span></article>
-                <article><p>发布反馈门</p><strong>{portfolio.summary.attributionJoinBlocked ? "阻断" : portfolio.summary.attributionJoinReady ? "正常" : "待验证"}</strong><span>公开日报只保留归因连接的布尔状态</span></article>
+                <article><p>可选下游归因</p><strong>{portfolio.summary.attributionJoinBlocked ? "发现孤立回调" : portfolio.summary.attributionJoinReady ? "已就绪" : "暂不可用"}</strong><span>当前阶段只提示，不阻断发布</span></article>
               </div>
               {portfolioDecision ? <div className="wb-empty-state"><strong>{portfolioDecision.action}</strong>：{portfolioDecision.rationale}</div> : null}
             </>

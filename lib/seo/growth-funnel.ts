@@ -55,6 +55,7 @@ export type LiveGrowthFunnel = {
   orphanCallbacks: number | null;
   revenueByCurrency: Record<string, number>;
   ctaLocations: Record<string, number>;
+  destinationPlatforms: AttributionAggregate["destinationPlatforms"];
   searchPerformance: SearchConsolePagePerformance;
   urlInspection: SearchConsoleUrlInspection;
 };
@@ -171,6 +172,7 @@ export async function readLiveGrowthFunnel(input: {
     orphanCallbacks: callbackReady ? aggregate.orphanCallbacks : null,
     revenueByCurrency: callbackReady ? aggregate.revenueByCurrency : {},
     ctaLocations: aggregate.ctaLocations,
+    destinationPlatforms: aggregate.destinationPlatforms,
     searchPerformance,
     urlInspection,
   };
@@ -216,6 +218,7 @@ export function unavailableLiveGrowthFunnel(input: {
     orphanCallbacks: null,
     revenueByCurrency: {},
     ctaLocations: {},
+    destinationPlatforms: {},
     searchPerformance: {
       state: "unavailable",
       sourceSlug: input.sourceSlug,

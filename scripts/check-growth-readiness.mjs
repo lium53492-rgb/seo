@@ -1,5 +1,7 @@
 import "./load-env.mjs";
 import { configuredProductionSiteOrigin } from "./lib/site-origin.mjs";
+import { evaluateTrafficValidationProbe } from "./lib/measurement-policy.mjs";
+import seoPolicy from "../data/config/seo-policy.json" with { type: "json" };
 
 const siteUrl = configuredProductionSiteOrigin(
   process.env.SEO_REPORT_SITE_URL,
@@ -24,5 +26,6 @@ if (!response.ok) {
 }
 
 const readiness = JSON.parse(body);
-process.stdout.write(`${JSON.stringify(readiness, null, 2)}\n`);
-if (!readiness.readyFor?.fullLoop) process.exitCode = 2;
+const trafficValidation = evaluateTrafficValidationProbe(readiness, seoPolicy);
+process.stdout.write(`${JSON.stringify({ ...readiness, trafficValidation }, null, 2)}\n`);
+if (!trafficValidation.ready) process.exitCode = 2;

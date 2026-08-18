@@ -1,4 +1,6 @@
 import { TrackedPlayworldsLink } from "@/app/components/TrackedPlayworldsLink";
+import { DndOriginalOnlyNotice } from "@/components/seo/DndOriginalOnlyNotice";
+import { CampaignStateComparisonPage } from "@/components/seo/ai-game-master-vs-chatbot/CampaignStateComparisonPage";
 import { StoryDrivenAdventurePage } from "@/components/seo/story-driven-adventure/StoryDrivenAdventurePage";
 import { listMarkdownRenderBlocks, parseMarkdownBlocks } from "@/lib/seo/markdown-semantics.mjs";
 import type { PresentationRecipe } from "@/lib/seo/page-presentation";
@@ -240,28 +242,35 @@ export function StructuredContentPage({
         return <>{hero(styles.workshopHero)}<section className={styles.workshopTable}>{layers(styles.workshopLayers)}{contents}</section>{faq}{related}{finalCta}</>;
       case "story_driven_adventure":
         return <StoryDrivenAdventurePage page={page} relatedPages={relatedPages} mode={mode} />;
+      case "campaign_state_comparison":
+        return <CampaignStateComparisonPage page={page} relatedPages={relatedPages} mode={mode} />;
     }
   })();
 
-  if (architecture.presentation.rendererId === "story_driven_adventure") return renderer;
+  if (architecture.presentation.rendererId === "story_driven_adventure") {
+    return <>{renderer}<DndOriginalOnlyNotice ipBoundary={page.ipBoundary} /></>;
+  }
 
   return (
-    <main
-      className={styles.shell}
-      id="top"
-      data-presentation-recipe={recipe.id}
-      data-renderer={recipe.rendererId}
-      data-companion-policy={architecture.presentation.companion}
-      data-gallery-policy={architecture.presentation.gallery}
-      data-motif={recipe.motifId}
-      data-section-marker-style={recipe.sectionMarkerStyle}
-      data-section-flow={recipe.sectionFlow}
-    >
-      <nav className={styles.nav} aria-label="Primary navigation">
-        <a href="/">Tabletop Field Notes</a>
-        <span>{copy.eyebrow}</span>
-      </nav>
-      {renderer}
-    </main>
+    <>
+      <main
+        className={styles.shell}
+        id="top"
+        data-presentation-recipe={recipe.id}
+        data-renderer={recipe.rendererId}
+        data-companion-policy={architecture.presentation.companion}
+        data-gallery-policy={architecture.presentation.gallery}
+        data-motif={recipe.motifId}
+        data-section-marker-style={recipe.sectionMarkerStyle}
+        data-section-flow={recipe.sectionFlow}
+      >
+        <nav className={styles.nav} aria-label="Primary navigation">
+          <a href="/">Tabletop Field Notes</a>
+          <span>{copy.eyebrow}</span>
+        </nav>
+        {renderer}
+      </main>
+      <DndOriginalOnlyNotice ipBoundary={page.ipBoundary} />
+    </>
   );
 }

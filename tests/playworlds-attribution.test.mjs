@@ -6,7 +6,9 @@ import { fileURLToPath } from "node:url";
 import playworldsAttribution from "../data/config/playworlds-attribution.json" with { type: "json" };
 import {
   buildPlayworldsAttributionUrl,
+  normalizePlayworldsDestinationPlatform,
   playworldsAttributionContract,
+  resolvePlayworldsDestination,
 } from "../lib/seo/playworlds-attribution.ts";
 import {
   recordConversionEvent,
@@ -29,14 +31,20 @@ test("Playworlds redirect carries the official Steam and versioned attribution c
   assert.equal(url.searchParams.get("utm_source"), "playworlds_guides");
   assert.equal(url.searchParams.get("utm_medium"), "organic_landing");
   assert.equal(url.searchParams.get("utm_campaign"), "playworlds_seo");
-  assert.equal(url.searchParams.get("utm_content"), "story-driven-ai-voice-roleplay-adventure");
+  assert.equal(url.searchParams.get("utm_content"), "story-driven-ai-voice-roleplay-adventure:hero");
   assert.equal(url.searchParams.get("utm_term"), "story driven ai voice roleplay adventure");
   assert.equal(url.searchParams.get("seo_click_id"), clickId);
   assert.equal(url.searchParams.get("seo_source_slug"), "story-driven-ai-voice-roleplay-adventure");
   assert.equal(url.searchParams.get("seo_cta_location"), "hero");
+  assert.equal(url.searchParams.get("seo_destination_platform"), "steam");
+  assert.equal(url.searchParams.get("seo_destination_host"), "store.steampowered.com");
   assert.equal(url.searchParams.get("seo_product"), "playworlds");
   assert.equal(url.searchParams.get("seo_attribution_version"), "1");
   assert.equal(playworldsAttributionContract.routePrefix, "/go/playworlds");
+  assert.equal(playworldsAttributionContract.defaultDestinationPlatform, "steam");
+  assert.deepEqual(Object.keys(playworldsAttributionContract.destinations), [
+    "steam", "web", "ios", "android", "epic", "gog", "other",
+  ]);
   assert.equal(playworldsAttribution.events.qualifiedOutbound, "playworlds_qualified_outbound_click");
 });
 
@@ -63,6 +71,8 @@ test("Playworlds redirect rejects alternate hosts, apps, credentials, and preloa
     location: "hero",
     sourceSlug: "ai-roleplay-adventure",
   }), /click ID must be a UUID/);
+  assert.throws(() => normalizePlayworldsDestinationPlatform("attacker"), /not allowlisted/);
+  assert.throws(() => resolvePlayworldsDestination("web"), /not enabled/);
 });
 
 test("Playworlds outbound storage and page cohorts are product-namespaced", async () => {
@@ -79,6 +89,9 @@ test("Playworlds outbound storage and page cohorts are product-namespaced", asyn
     };
     const result = await recordPlayworldsOutboundClick({
       clickId,
+      destinationHost: "store.steampowered.com",
+      destinationPlatform: "steam",
+      destinationUrl: "https://store.steampowered.com/app/4911480/Playworlds/",
       keyword: "story driven ai voice roleplay adventure",
       location: "hero",
       sourceSlug: "story-driven-ai-voice-roleplay-adventure",
@@ -89,6 +102,8 @@ test("Playworlds outbound storage and page cohorts are product-namespaced", asyn
     assert.match(command.join(" "), /event:outbound:playworlds:/);
     assert.match(command.join(" "), /cohort:playworlds:2026-08-16:story-driven-ai-voice-roleplay-adventure/);
     assert.match(command.join(" "), /playworlds_qualified_outbound_click/);
+    assert.match(command.join(" "), /store\.steampowered\.com/);
+    assert.match(command.join(" "), /destinationPlatform/);
   } finally {
     globalThis.fetch = originalFetch;
     if (previousUrl === undefined) delete process.env.UPSTASH_REDIS_REST_URL;
@@ -110,6 +125,9 @@ test("current CTA and release verifiers use Playworlds while legacy runtime rema
 
   assert.match(component, /playworldsAttribution\.routePrefix/);
   assert.match(component, /playworldsAttribution\.events\.clientClick/);
+  assert.match(component, /destinationPlatform\?: PlayworldsDestinationPlatform/);
+  assert.match(component, /destinationHost/);
+  assert.match(component, /destinationUrl/);
   assert.match(augustOneRenderer, /TrackedPlayworldsLink/);
   assert.match(augustOneRenderer, /View Playworlds on Steam/);
   assert.doesNotMatch(augustOneRenderer, /TrackedNovelAiHomeLink|NOVELAI/i);
@@ -118,10 +136,13 @@ test("current CTA and release verifiers use Playworlds while legacy runtime rema
   assert.match(decisionRenderer, /TrackedPlayworldsLink/);
   assert.doesNotMatch(decisionRenderer, /TrackedNovelAiHomeLink|NOVELAI/i);
   assert.match(route, /recordPlayworldsOutboundClick/);
+  assert.match(route, /destinationPlatform/);
   assert.match(route, /export async function HEAD/);
   assert.match(route, /export async function GET/);
   assert.match(legacyRoute, /buildNovelAiAttributionUrl/);
   assert.match(builtVerifier, /playworldsAttribution\.routePrefix/);
+  assert.match(builtVerifier, /readBuiltAttributedCtaContracts/);
+  assert.doesNotMatch(builtVerifier, /\\\?location=\(\[a-z_\]\+\)/);
   assert.match(builtVerifier, /still contains the retired NovelAI CTA route/);
   assert.match(builtVerifier, /still exposes the retired NovelAI brand/);
   assert.match(liveVerifier, /verifyPlayworldsRedirect/);

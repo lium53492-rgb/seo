@@ -67,7 +67,7 @@ job.
   explicit and cannot authorize a page.
 - The committable decision view contains exact-page Search Console, indexed
   URL Inspection, page-level landing UV, qualified outbound aggregates, and
-  boolean attribution readiness/blocking state. The complete commercial
+  boolean downstream-attribution readiness/warning state. The complete commercial
   funnel remains available only through the authenticated private API and
   process memory.
 - First-party landing UV is eligible for `observed` only after its immutable
@@ -94,11 +94,16 @@ job.
 - Drafts are 600–1,000 English words with one intent, one H1, at least four
   sections, at least three FAQs, approved product facts, internal links, and an
   attributed CTA.
-- Page count, landing UV, and exact-page Search Console impressions remain
-  prioritization signals; they do not independently block a distinct new page.
+- Page count, landing UV, and qualified outbound clicks remain prioritization
+  or supporting signals. The current measurement gate requires complete
+  active-page portfolio coverage and observed exact-page Search Console
+  impressions, clicks, CTR, and average-position evidence; observed zero rows
+  and values are valid.
 - An update requires an observed Search Console row for the exact target page.
-- A broken attribution join blocks publication. The public snapshot exposes
-  only that boolean blocker, never callback counts or event detail.
+- A missing callback handshake, unavailable revenue join, or orphan callback
+  does not block research or publication during early traffic validation. The
+  public snapshot exposes only the downstream attribution status booleans,
+  never callback counts or event detail.
 - The landing endpoint's Redis fixed-window limiter protects metric writes
   from local bursts only. It is not a platform cost or attack-protection
   guarantee; that boundary remains Vercel WAF/DDoS and project configuration.

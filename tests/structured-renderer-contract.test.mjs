@@ -49,3 +49,17 @@ test("structured preview CTAs are visible but inert while public CTAs use Playwo
   assert.match(component, /<TrackedPlayworldsLink sourceSlug=\{page\.slug\} location="final_cta">/);
   assert.match(css, /\.disabledCta\s*\{[^}]*cursor:\s*not-allowed;[^}]*opacity:/s);
 });
+
+test("every structured schema-3 render includes the centralized original-only D&D notice", async () => {
+  const [component, notice] = await Promise.all([
+    read("../app/[slug]/StructuredContentPage.tsx"),
+    read("../components/seo/DndOriginalOnlyNotice.tsx"),
+  ]);
+
+  assert.match(component, /import \{ DndOriginalOnlyNotice \}/);
+  assert.ok((component.match(/<DndOriginalOnlyNotice ipBoundary=\{page\.ipBoundary\} \/>/g) ?? []).length >= 2);
+  assert.match(notice, /seoPolicy\.ipBoundary\.independenceNotice/);
+  assert.match(notice, /data-ip-boundary="original-tabletop-fantasy"/);
+  assert.match(notice, /data-srd-material-used="false"/);
+  assert.doesNotMatch(notice, /Creative Commons|CC BY|SRD attribution/i);
+});

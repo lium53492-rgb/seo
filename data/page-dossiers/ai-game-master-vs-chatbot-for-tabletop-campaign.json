@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "status": "concept_preview",
+  "publicationEligible": false,
+  "createdOn": "2026-08-18",
+  "slug": "ai-game-master-vs-chatbot-for-tabletop-campaign",
+  "previewRoute": "/workbench/concepts/ai-game-master-vs-chatbot-for-tabletop-campaign",
+  "positioning": {
+    "primaryKeyword": "ai game master vs chatbot for tabletop campaign",
+    "supportingKeywords": [
+      "ai game master for d&d",
+      "ai dungeon master vs chatbot",
+      "ai game master for tabletop campaign",
+      "d&d ai game master",
+      "ai gm campaign tool"
+    ],
+    "title": "AI Game Master vs Chatbot for D&D Campaigns | Playworlds",
+    "h1": "AI Game Master vs Chatbot: Which One Fits a D&D Campaign?",
+    "intent": "Help an adult D&D player compare loose AI conversation with a dedicated campaign loop before choosing a solo AI game-master tool.",
+    "distinctAnswer": "The decision turns on whether the tool connects action, outcome, persistent state, and the next choice, not on which system produces more decorative prose."
+  },
+  "audience": {
+    "primary": "Adult English-speaking D&D players and Game Masters evaluating AI-assisted campaign experiences.",
+    "job": "Choose between a general chatbot and a dedicated AI game master without assuming that fantasy prose alone creates playable campaign continuity.",
+    "painPointId": "campaign_prep_overload"
+  },
+  "passageArchitecture": {
+    "editorialRule": "Every H2 opens with a self-contained answer that remains accurate and understandable when retrieved without the previous section.",
+    "sourceOfRule": "User-supplied social-media passage about passage retrieval, adopted as an editorial principle rather than copied as page text.",
+    "sectionOrder": [
+      "direct_answer",
+      "failure_analysis",
+      "framework",
+      "worked_example",
+      "next_step",
+      "faq"
+    ],
+    "signatureModule": "Campaign Loop Test — Action / Outcome / State / Next Choice",
+    "antiPatterns": [
+      "sections that depend on 'as explained above'",
+      "generic feature cards",
+      "an unqualified claim that any fantasy chatbot is an AI game master",
+      "copied D&D rules, settings, characters, monsters, artwork, maps, or adventure text"
+    ]
+  },
+  "research": {
+    "date": "2026-08-18",
+    "dailyResearchArtifact": "data/research/2026-08-18.json",
+    "dailyReportArtifact": "data/reports/2026-08-18.json",
+    "observedCandidate": "ai game master vs chatbot for tabletop campaign",
+    "decision": "The current daily research identifies this as the strongest Playworlds-aligned comparison intent, but the protected concept must be regenerated from a future create_page report before publication.",
+    "evidenceBoundary": "Public sources support the search intent, product facts, and competitor structures. They do not prove search volume, ranking, clicks, or conversions for this exact page."
+  },
+  "productTruth": {
+    "factIdsUsed": [
+      "playworlds-current-product",
+      "dnd-content-direction",
+      "dnd-primary-audience",
+      "playworlds-voice-text-single-player-rpg",
+      "playworlds-ai-game-master",
+      "playworlds-persistent-campaigns",
+      "playworlds-rpg-state"
+    ],
+    "source": {
+      "name": "Playworlds on Steam",
+      "url": "https://store.steampowered.com/app/4911480/Playworlds/",
+      "observedOn": "2026-08-18"
+    },
+    "allowedClaims": [
+      "Playworlds is described as an online, single-player, voice-first AI adventure RPG.",
+      "Players can speak or type actions and a microphone is optional.",
+      "The AI game master interprets actions, describes outcomes, and presents new choices, risks, and opportunities.",
+      "Campaigns can be created, saved, and resumed.",
+      "Player and party status, action resolution, dice results, inventory, and journey history are tracked."
+    ],
+    "blockedClaims": [
+      "Official, licensed, endorsed, sponsored, affiliated, approved, or fifth-edition-compatible D&D product",
+      "Multiplayer, human-party, unlimited, private, latency, safety, price, release, or platform claims not supported by a current approved fact",
+      "Any claim that the original locked-chapel example is an available Playworlds campaign"
+    ]
+  },
+  "ipBoundary": {
+    "contentBasis": "original_tabletop_fantasy",
+    "dndReferenceScope": "audience_reference_only",
+    "srdMaterialUsed": false,
+    "thirdPartyNames": [],
+    "requiredVisibleNotice": "Each public and protected preview page must display the shared independent, non-affiliation, original-material D&D audience notice.",
+    "legalBoundary": "Code can prevent common wording and content mistakes, but it does not grant trademark, copyright, compatibility, or product-license rights."
+  },
+  "designDirection": {
+    "human": "An adult tabletop player comparing tools, not a child browsing a fantasy story generator.",
+    "action": "Run the Campaign Loop Test, read one original example, and decide whether persistent campaign play is the desired format.",
+    "feel": "Dark campaign control room: iron-black surfaces, muted amber route lights, parchment-white text, restrained red warnings, and no playful mascot styling.",
+    "visualSignature": "A continuous route switch connects Action, Outcome, State, and Next Choice as one loop rather than four unrelated feature cards.",
+    "recipe": "campaign-state-comparison-v1"
+  },
+  "measurement": {
+    "stage": "early_search_visibility",
+    "primary": [
+      "Google Search impressions",
+      "Google Search clicks",
+      "CTR",
+      "average position"
+    ],
+    "supporting": [
+      "landing UV",
+      "outbound clicks by source slug, CTA location, and destination platform"
+    ],
+    "notRequiredNow": [
+      "trial attribution",
+      "signup attribution",
+      "purchase attribution",
+      "revenue attribution"
+    ],
+    "gscBoundary": "The LoreLens Search Console property covers LoreLens URLs only. It cannot report Steam impressions, Steam clicks, wishlists, purchases, or activity on another product platform.",
+    "multiPlatformBoundary": "LoreLens records the first-party outbound click before redirecting to an allowlisted Steam, web, iOS, Android, Epic, GOG, or later approved destination. Platform reports remain separate supporting sources."
+  },
+  "releaseBoundary": {
+    "publicationEligible": false,
+    "reason": "This is a protected noindex concept outside data/pages. It has no current create_page report, digest-bound editorial approval, visual receipt, schema-3 publication artifact, or live release verification.",
+    "revenueAttributionBlocksPublication": false,
+    "requiredBeforePublication": [
+      "Generate a current create_page research report and draft for this exact intent under the current policy.",
+      "Bind an approved dossier and independent editorial review to the exact report and draft digest.",
+      "Verify the visible D&D audience notice, original-only text, and visual asset boundary.",
+      "Verify GSC collection, first-party outbound recording, the selected allowlisted destination, canonical, robots, sitemap, and the exact live revision."
+    ]
+  },
+  "reviewBinding": null
+}

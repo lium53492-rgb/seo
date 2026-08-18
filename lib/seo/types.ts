@@ -458,7 +458,8 @@ export type PageArchitecture = {
       | "specimen_catalog"
       | "orbital_mission_log"
       | "playful_story_workshop"
-      | "story_driven_adventure";
+      | "story_driven_adventure"
+      | "campaign_state_comparison";
     visualSystemId: string;
     layoutId: string;
     paletteId: string;

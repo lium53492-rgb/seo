@@ -83,7 +83,7 @@ The weights live in `data/config/seo-policy.json`, and `scripts/lib/seo-policy.m
   trademarks, rules text, official affiliation, licensing, or 5e
   compatibility.
 - Trial intent: solution-aware 25, immediate-use 30, experience-seeking 30, action language 15.
-- Revenue intent: commercial comparison 30, alternative seeking 25, purchase language 40, recurring use 15; totals are capped at 100.
+- Revenue intent: commercial comparison 30, alternative seeking 25, purchase language 40, recurring use 15; totals are capped at 100. The score remains an advisory research signal during `early_traffic_validation`; it is not a publication hard gate.
 - Intent specificity: defined task 30, defined format 25, defined audience 25, narrow modifier 20.
 - IP risk: original generic 0, ambiguous reference 50, third-party IP 100.
 - Cannibalization and originality: new intent 10/90, adjacent intent 45/70, same intent 90/30.
@@ -94,7 +94,7 @@ Raw input values for product fit, trial intent, revenue intent, specificity, ori
 
 ## Proxy and observed data
 
-`demandScore` and `difficulty` remain 0-100 public-web research proxies. They need evidence and rationale, but they never masquerade as Search Console or provider observations. Search Console impressions, clicks, CTR, and position stay in `performance`; landing UV and conversion outcomes stay in the growth portfolio.
+`demandScore` and `difficulty` remain 0-100 public-web research proxies. They need evidence and rationale, but they never masquerade as Search Console or provider observations. Search Console impressions, clicks, CTR, and average position are the primary early-stage measurements and stay in `performance`; landing UV and qualified outbound clicks are supporting portfolio observations, while downstream conversion and revenue outcomes remain optional.
 
 ## Google Trends provider contract
 
@@ -179,8 +179,7 @@ Alpha is a future provider option; it is not the current automation dependency.
 
 Trends is independent of the complete portfolio and quality contract. A
 verified collection, whether the exact term is observed or not observed, does
-not replace exact-page Search Console,
-landing UV, attribution readiness, independent `breakout_page` evidence,
+not replace exact-page Search Console, independent `breakout_page` evidence,
 approved product facts, IP safety, content and presentation distinctness, or
 review and visual-audit approval.
 
@@ -192,13 +191,13 @@ receipt. A valid receipt remains terminal to unattended jobs. Only an explicit
 same-day user-guided resume may continue the chain once, under an owner-locked
 lease, and it does not waive any publication gate.
 
-The Playworlds callback receiver contract exists, but production currently
-lacks its configured secret and a recent signed product-side handshake. The
-direct Steam CTA cannot return a purchase joined to an individual
-`seo_click_id`; exact click-level revenue attribution requires a first-party
-Playworlds handoff/backend. Until then, the revenue join remains unavailable.
+The Playworlds callback receiver contract remains available for a later product
+stage. Its secret, handshake, and exact revenue join may remain unavailable
+during early traffic validation without blocking research or publication.
+Unavailable downstream state is never converted to zero and a complete revenue
+loop must not be claimed until it is independently observed.
 
 The publication decision therefore uses two layers:
 
-1. Evidence-derived intent and safety gates decide whether a candidate is eligible.
-2. Observed search, UV, outbound, trial, payment, and revenue data decide whether the portfolio should create, improve, consolidate, or observe.
+1. Evidence-derived intent and safety gates decide whether a candidate is eligible; revenue intent is advisory rather than a hard gate in the early phase.
+2. Observed exact-page Search Console evidence is the measurement release gate. UV and outbound data inform decisions when present; trial, payment, and revenue data are optional later-stage signals.

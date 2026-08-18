@@ -1,0 +1,32 @@
+.notice {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(180px, 0.4fr) minmax(0, 1.6fr);
+  gap: 24px;
+  align-items: start;
+  padding: clamp(24px, 4vw, 46px) clamp(20px, 6vw, 88px);
+  border-top: 1px solid rgba(210, 180, 122, 0.26);
+  background: #0b0b0d;
+  color: rgba(247, 242, 231, 0.72);
+  font: 500 0.78rem/1.7 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.notice strong {
+  color: #d2b47a;
+  font-size: 0.72rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.notice p {
+  max-width: 920px;
+  margin: 0;
+}
+
+@media (max-width: 700px) {
+  .notice {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}

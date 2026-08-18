@@ -2,7 +2,10 @@
 
 import { track } from "@vercel/analytics";
 import playworldsAttribution from "@/data/config/playworlds-attribution.json";
-import type { OutboundLocation } from "@/lib/seo/playworlds-attribution";
+import type {
+  OutboundLocation,
+  PlayworldsDestinationPlatform,
+} from "@/lib/seo/playworlds-attribution";
 
 type TrackedPlayworldsLinkProps = Omit<
   React.AnchorHTMLAttributes<HTMLAnchorElement>,
@@ -11,6 +14,7 @@ type TrackedPlayworldsLinkProps = Omit<
   children: React.ReactNode;
   sourceSlug: string;
   location?: OutboundLocation;
+  destinationPlatform?: PlayworldsDestinationPlatform;
 };
 
 export function TrackedPlayworldsLink({
@@ -18,10 +22,20 @@ export function TrackedPlayworldsLink({
   className,
   sourceSlug,
   location = "seo_page",
+  destinationPlatform = playworldsAttribution.defaultDestinationPlatform as PlayworldsDestinationPlatform,
   onClick,
   ...anchorProps
 }: TrackedPlayworldsLinkProps) {
-  const href = `${playworldsAttribution.routePrefix}/${encodeURIComponent(sourceSlug)}?location=${encodeURIComponent(location)}`;
+  const destination = playworldsAttribution.destinations[destinationPlatform];
+  if (!destination?.enabled || !destination.url) {
+    throw new Error(`Playworlds destination platform ${destinationPlatform} is not enabled`);
+  }
+  const destinationUrl = new URL(destination.url);
+  const query = new URLSearchParams({
+    destinationPlatform,
+    location,
+  });
+  const href = `${playworldsAttribution.routePrefix}/${encodeURIComponent(sourceSlug)}?${query}`;
   return (
     <a
       {...anchorProps}
@@ -31,7 +45,9 @@ export function TrackedPlayworldsLink({
       rel="noopener noreferrer"
       onClick={(event) => {
         track(playworldsAttribution.events.clientClick, {
-          destination: "playworlds_steam",
+          destinationHost: destinationUrl.hostname,
+          destinationPlatform,
+          destinationUrl: destinationUrl.toString(),
           location,
           sourceSlug,
         });

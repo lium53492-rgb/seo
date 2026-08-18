@@ -12,14 +12,14 @@ Before choosing a keyword, record:
 - the parent topic and adjacent intents already covered by the site;
 - the page's original contribution: a specific explanation, decision aid, scenario, or product-grounded answer that existing pages do not provide;
 - the approved product facts and a real next step the reader can take.
-- the funnel stage, trial intent, revenue intent, conversion hypothesis, and exact metric that would confirm the hypothesis.
+- the funnel stage, trial intent, advisory revenue intent, conversion hypothesis, and exact early-stage traffic metric that would confirm the hypothesis.
 
 Do not create near-duplicate keyword variants. A keyword is only a discovery handle; the publishable unit is a distinct, useful answer inside a coherent topic cluster.
 
 ## 2. Research with source provenance
 
 - Capture public evidence URLs, publisher/domain, date when visible, and the exact demand signal each source supports.
-- Give every evidence record a stable ID. For policy version 4, each candidate must reference at least two directly supporting records from two independent domains and explain every selected product, trial, revenue, specificity, IP, and cannibalization signal.
+- Give every evidence record a stable ID. For policy version 4, each candidate must reference at least two directly supporting records from two independent domains and explain every selected product, trial, advisory revenue, specificity, IP, and cannibalization signal.
 - Never copy model-supplied hard-gate scores into a report. The builder derives them from the versioned signal policy; demand and difficulty remain explicitly labelled research proxies with rationales.
 - Prefer official pages, credible editorial sources, public communities, and observable first-party Search Console data. Keep Search Console metrics separate from proxy demand and difficulty scores.
 - Treat trend or hot-topic signals as leads, not product facts. Run the official
@@ -148,20 +148,26 @@ When a draft includes a contextual internal link, the published template must re
 
 - Publish no more than one new page per Shanghai day.
 - Complete and preserve a daily 8–12-candidate research batch and its report
-  before closing a scheduled day as `no_publish`, even when measurement,
-  provider, callback, or other release evidence blocks publication. A valid
+  before closing a scheduled day as `no_publish`, even when required traffic
+  measurement, provider, or other release evidence blocks publication. A valid
   terminal receipt remains terminal for unattended recovery jobs. Only an
   explicit same-day user-guided resume may continue that chain once; the
   coordinator locks it to its owner and it does not bypass any other gate.
 - Track publication date, evidence count, intent/cluster, approved fact IDs, rendering checks, page-level Search Console metrics, and 28-day outcome.
 - Treat organic clicks as search-result clicks, not unique visitors. Do not promise a fixed traffic outcome.
-- Aggregate Search Console clicks and landing UV by source page and reporting period. Join qualified outbounds, trials, signups, payments, and revenue with `seo_click_id`; do not use the shared keyword-research account as an analytics source.
-- The Playworlds callback receiver contract exists, but production is not
-  full-loop ready until its secret is configured and a recent signed
-  product-side handshake is observed. The current CTA terminates on Steam;
-  Steam reporting does not return an exact purchase joined to an individual
-  `seo_click_id`, so exact click-level revenue attribution requires a
-  first-party Playworlds handoff/backend rather than configuration alone.
+- During `early_traffic_validation`, use exact-page Search Console impressions,
+  clicks, CTR, and average position as the primary measurement set. Aggregate
+  them by source page and reporting period. Landing UV and qualified outbound
+  clicks remain useful supporting observations but may be unavailable without
+  blocking a create-page or publish decision. Do not use the shared keyword-
+  research account as an analytics source.
+- Keep the Playworlds callback receiver, trial, signup, payment, and revenue
+  fields as optional later-stage instrumentation. Their absence, a missing
+  signed handshake, or an orphan callback does not block research, drafting,
+  publication, or a no-publication receipt during early traffic validation.
+  Never convert an unavailable downstream value to zero or claim that the
+  revenue loop is complete. Exact click-level revenue attribution can be
+  activated later through a first-party Playworlds handoff/backend.
 - For landing UV, prefer the first-party Upstash source: exact daily pageview
   counters plus a page-scoped Redis HyperLogLog UV estimate with approximately
   0.81% standard error. Keep
@@ -187,16 +193,17 @@ When a draft includes a contextual internal link, the published template must re
   atomic 28-complete-Shanghai-day portfolio ending after the configured
   three-day finalized-data lag. Include it through `portfolioSnapshot` or
   `portfolioFunnels`; do not hand-pick only the best-performing page. A failed
-  credential or endpoint remains an unavailable page entry. Commercial
-  outcomes remain in the private API/in-memory response; the committable
-  snapshot keeps only exact-page GSC, sanitized URL Inspection, aggregate UV,
-  aggregate qualified outbound, and boolean readiness/blocking state.
+  credential or endpoint remains an unavailable page entry. Downstream
+  commercial outcomes remain in the private API/in-memory response; the
+  committable snapshot keeps only exact-page GSC, sanitized URL Inspection,
+  aggregate UV, aggregate qualified outbound, and boolean readiness/blocking
+  state. The downstream booleans are diagnostic in the early phase.
 - Keep formally retired URLs in the snapshot's separate `retiredUrls` monitor.
   Persist only exact-page Search Console and sanitized URL Inspection evidence
   for them; never count them in active-page totals, attribution readiness, or
   the next-page decision.
 - Convert that portfolio into a durable `portfolioDecision`: `create_page`, `improve_page`, `consolidate`, or `observe`. Record an evidence-led rationale, cited published slugs, and a target slug when applicable. A draft is legal only for the matching create or improve action.
-- Page count and non-zero performance remain prioritization signals rather than traffic quotas. Observed zero is valid. For unattended `create_page` production, however, the complete current portfolio must have observed exact-page Search Console and landing UV states for every published page and a ready attribution join; unavailable measurement blocks publication. An update additionally needs an observed Search Console row for its exact target URL.
+- Page count and non-zero performance remain prioritization signals rather than traffic quotas. Observed zero is valid. For unattended `create_page` production in the early phase, the complete current portfolio must have observed exact-page Search Console evidence for every published page. Unavailable Search Console evidence blocks publication; unavailable landing UV, outbound, callback, payment, or revenue evidence does not. An update additionally needs an observed Search Console row for its exact target URL.
 - Consolidation is not permission to redirect. The builder requires distinct
   source and target slugs, at least one query observed for both exact pages,
   at least 20 exact-page impressions per page over the same finalized period,
@@ -205,7 +212,7 @@ When a draft includes a contextual internal link, the published template must re
   the correct action is `observe`.
 - Every funnel field must be observed with a named source or unavailable with a reason. Never infer zero from a missing export, empty UI, or disconnected callback.
 - A Google Trends row does not repair or replace unavailable Search Console,
-  landing UV, attribution, IP/product facts, independent breakout evidence,
+  IP/product facts, independent breakout evidence,
   originality, content quality, or visual-review evidence. All gates remain
   independent.
 - Use report history to identify pages that need improved titles, clearer intent, stronger internal connections, or a product-fact correction. Only set `publicationMode: "update"` when actual Search Console evidence supports an update.

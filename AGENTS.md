@@ -62,10 +62,19 @@ Before a new page or update:
   affiliation or trademark permission. New production is original
   tabletop-fantasy only until the artifact schemas implement and test an exact
   SRD version, license URL, and required Creative Commons attribution contract.
-- Record the complete search-to-revenue funnel as observed or unavailable.
-  The shared SEO-tool account is a research source, not a UV or revenue source.
+- The current product stage is early search-visibility validation. Treat Google
+  Search Console impressions, clicks, CTR, and average position for LoreLens
+  URLs as the core SEO evidence. The shared SEO-tool account is a research
+  source, not a traffic source.
 - Aggregate Search Console and landing UV by source slug and reporting period.
-  Use `seo_click_id` only for the qualified-outbound-to-revenue event chain.
+  Record every user-initiated product redirect by source slug, CTA location,
+  and allowlisted destination platform before leaving LoreLens. Keep Steam,
+  web, iOS, Android, Epic, GOG, and later platform reports separate from GSC;
+  do not present external-platform activity as Search Console data.
+- Trial, signup, purchase, callback-handshake, and revenue attribution remain
+  optional future measurements during this early stage. Keep their unavailable
+  state truthful, but do not block a page solely because those signals are not
+  configured or observed.
 - Prefer first-party landing analytics stored in Upstash: pageviews are exact
   daily counters and UV is a privacy-minimized, page-scoped Redis HyperLogLog
   estimate with approximately 0.81% standard error. Treat
@@ -91,10 +100,12 @@ Before a new page or update:
   retirement receipt stay in the separate `retiredUrls` Search Console/URL
   Inspection monitor; they never count as active pages or readiness evidence.
 - Complete the daily 8-12-candidate research and write both the same-day
-  research artifact and its report even when growth, attribution, or another
-  publication gate is unavailable. Those failures may prevent drafting or
-  publication, but they must not truncate the day's research. A new
-  unattended no-publish receipt is valid only after those artifacts exist.
+  research artifact and its report even when growth or another active
+  publication gate is unavailable. Active-gate failures may prevent drafting
+  or publication, but they must not truncate the day's research. Optional
+  downstream attribution failures stay visible without blocking the current
+  early-stage release. A new unattended no-publish receipt is valid only after
+  those artifacts exist.
 - After growth collection, run `npm.cmd run trends:check` and then
   `npm.cmd run trends:collect -- --research data/research/YYYY-MM-DD.json`
   before the report builder; use the default `--stdout` mode with repeated
@@ -114,21 +125,17 @@ Before a new page or update:
   server-only environment and verify the configured client email, derived
   public-key fingerprint, and RSA-SHA256 signature. A self-hash alone is not
   provider provenance.
-- Run `npm.cmd run growth:check` after changing analytics credentials or
-  callbacks. After the runtime probe and callback contract are migrated to
-  Playworlds, run `npm.cmd run growth:probe` from the Playworlds server
-  environment after callback deployment or secret rotation. Until then,
-  record callback readiness as unavailable. Do not describe the revenue loop
-  as ready unless the protected probe observes Search Console, landing UV, the
-  attribution store, and a recent signed Playworlds callback handshake. The old
-  NovelAI route, event names, or callback state cannot serve as evidence of
-  Playworlds readiness.
-- For unattended `create_page` production, require the current all-page
-  portfolio to have zero unavailable pages, observed exact-page Search Console
-  and landing UV states for every published page, and a ready attribution join.
-  Observed zero remains valid evidence; unavailable does not. Stop rather than
-  publishing while the measurement loop is disconnected, and always stop on
-  orphan conversion callbacks.
+- Run `npm.cmd run growth:check` after changing Search Console, landing, or
+  outbound analytics credentials. A callback probe is required only when a
+  future product stage deliberately enables exact downstream attribution; an
+  absent Playworlds callback secret or handshake must stay visible but is not
+  an early-stage publication blocker.
+- For early-stage unattended `create_page` production, require the LoreLens
+  Search Console collection path to be readable for the current active-page
+  portfolio; observed zero rows and zero values are valid. Landing UV and
+  platform-aware outbound events should be collected when available, but they
+  are supporting diagnostics rather than page-creation gates. Never fabricate
+  a visit, click, callback, conversion, or revenue event.
 
 ## Content and page requirements
 
@@ -183,6 +190,12 @@ Before a new page or update:
   publisher, and page store independently scan visible copy for configured
   third-party references and child-directed framing. Editorial approval must
   separately pass `original-ip-boundary` and `adult-tabletop-audience` checks.
+- Every current-schema page that uses D&D as an audience reference must render
+  the shared independent non-affiliation and original-material notice in the
+  initial HTML. Automated checks reject common affiliation, sponsorship,
+  endorsement, licensing, compatibility, and named-IP mistakes; that code does
+  not grant a trademark or copyright license and cannot replace visual or
+  legal review.
 - A new-page CTA must name the page-specific outcome and pass an independent
   similarity gate. Generic labels such as `Learn more`, `Get started`, or
   generic `Explore`/`Try Playworlds` copy cannot authorize publication.
@@ -200,11 +213,11 @@ Before a new page or update:
   own content without automatically redirecting visitors off-site. The
   conversion path is `SEO landing page -> user-initiated attributed redirect
   -> Playworlds`. Current-schema SEO CTAs use `/go/playworlds/{slug}` in a new
-  tab; its official Steam destination, UTM fields, product-scoped event names,
-  and non-writing HEAD verification contract are defined in
-  `data/config/playworlds-attribution.json`. Until the signed Playworlds
-  callback and replacement production domain/GSC property are independently verified, do not claim
-  that the site-wide product migration or revenue loop is complete. Do not use
+  tab; its allowlisted destinations, platform key, UTM fields, product-scoped
+  event names, and non-writing HEAD verification contract are defined in
+  `data/config/playworlds-attribution.json`. Steam is the current enabled
+  default, not a permanent single-platform data model. Do not claim an exact
+  downstream revenue loop unless it is independently implemented and verified. Do not use
   the retired `/go/novelai/{slug}` route for new pages, and do not restore the
   bare-homepage or legacy story-share redirect paths without approval.
 
@@ -251,7 +264,7 @@ Before a new page or update:
 - The production order is growth collection, complete daily research, Trends
   discovery/enrichment, report build, independent review, then guarded
   publication. A Trends hit
-  never replaces Search Console/landing-UV/attribution readiness, independent
+  never replaces Search Console collection readiness, independent
   breakout evidence, IP and product-fact checks, content distinctness, or
   rendered visual review.
 - The candidate batch must contain 8-12 semantically distinct searcher jobs and,

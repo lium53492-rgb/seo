@@ -193,6 +193,12 @@ test("durable cohorts and Vercel UV expose compatible live inputs", async () => 
             "orphanCallbacks", "0",
             "revenueMinor:USD", "2598",
             "cta:hero", "5",
+            "destination:steam:platform", "steam",
+            "destination:steam:url", "https://store.steampowered.com/app/4911480/Playworlds/",
+            "destination:steam:host", "store.steampowered.com",
+            "platform:steam:outboundRequests", "7",
+            "platform:steam:qualifiedOutboundClicks", "6",
+            "platform:steam:cta:hero", "5",
           ],
         }]);
       }
@@ -214,6 +220,14 @@ test("durable cohorts and Vercel UV expose compatible live inputs", async () => 
     assert.equal(aggregate.qualifiedOutboundClicks, 6);
     assert.equal(aggregate.revenueByCurrency.USD, 2598);
     assert.equal(aggregate.ctaLocations.hero, 5);
+    assert.deepEqual(aggregate.destinationPlatforms.steam, {
+      destinationPlatform: "steam",
+      destinationUrl: "https://store.steampowered.com/app/4911480/Playworlds/",
+      destinationHost: "store.steampowered.com",
+      qualifiedOutboundClicks: 6,
+      outboundRequests: 7,
+      ctaLocations: { hero: 5 },
+    });
 
     const uv = await readLandingUv({
       sourceSlug: "play-an-ai-roleplay-story",

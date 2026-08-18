@@ -101,6 +101,11 @@ export function isDailyNoPublishReceipt(receipt, date) {
     Number.isSafeInteger(evidence.growth.publishedPages) && evidence.growth.publishedPages >= 0 &&
     Number.isSafeInteger(evidence.growth.collectedPages) && evidence.growth.collectedPages >= 0 &&
     Number.isSafeInteger(evidence.growth.unavailablePages) && evidence.growth.unavailablePages >= 0 &&
+    (evidence.growth.searchConsoleUnavailablePages === undefined || (
+      Number.isSafeInteger(evidence.growth.searchConsoleUnavailablePages) &&
+      evidence.growth.searchConsoleUnavailablePages >= 0 &&
+      evidence.growth.searchConsoleUnavailablePages <= evidence.growth.publishedPages
+    )) &&
     typeof evidence.growth.attributionJoinReady === "boolean" &&
     evidence.trends && typeof evidence.trends === "object" &&
     Number.isSafeInteger(evidence.trends.recorded) && evidence.trends.recorded >= 0 &&

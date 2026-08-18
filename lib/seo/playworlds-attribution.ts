@@ -6,39 +6,92 @@ const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-
 const maximumKeywordLength = 200;
 
 export type { OutboundLocation };
+export type PlayworldsDestinationPlatform = keyof typeof playworldsAttribution.destinations;
+
+export type ResolvedPlayworldsDestination = {
+  destinationHost: string;
+  destinationPlatform: PlayworldsDestinationPlatform;
+  destinationUrl: string;
+  url: URL;
+};
 
 export const playworldsAttributionContract = Object.freeze({
   ...playworldsAttribution,
   allowedCtaLocations: Object.freeze([...playworldsAttribution.allowedCtaLocations]),
+  destinations: Object.freeze(Object.fromEntries(
+    Object.entries(playworldsAttribution.destinations).map(([key, definition]) => [
+      key,
+      Object.freeze({
+        ...definition,
+        allowedHosts: Object.freeze([...definition.allowedHosts]),
+      }),
+    ]),
+  )),
   events: Object.freeze({ ...playworldsAttribution.events }),
   utm: Object.freeze({ ...playworldsAttribution.utm }),
 });
 
-function approvedPlayworldsDestination(
-  value = process.env.PLAYWORLDS_DESTINATION_URL || playworldsAttribution.destination,
-) {
-  const expected = new URL(playworldsAttribution.destination);
-  const destination = new URL(value);
-  const normalizedPath = destination.pathname.endsWith("/")
-    ? destination.pathname
-    : `${destination.pathname}/`;
+export const defaultPlayworldsDestinationPlatform =
+  playworldsAttribution.defaultDestinationPlatform as PlayworldsDestinationPlatform;
+
+export function normalizePlayworldsDestinationPlatform(
+  value?: string | null,
+): PlayworldsDestinationPlatform {
+  const candidate = (value || defaultPlayworldsDestinationPlatform).trim().toLowerCase();
+  if (!Object.hasOwn(playworldsAttribution.destinations, candidate)) {
+    throw new Error("Playworlds destination platform is not allowlisted");
+  }
+  return candidate as PlayworldsDestinationPlatform;
+}
+
+function normalizedPath(value: string) {
+  return value.endsWith("/") ? value : `${value}/`;
+}
+
+export function resolvePlayworldsDestination(
+  destinationPlatform?: string | null,
+  destinationOverride?: string,
+): ResolvedPlayworldsDestination {
+  const platform = normalizePlayworldsDestinationPlatform(destinationPlatform);
+  const definition = playworldsAttribution.destinations[platform];
+  if (!definition.enabled || !definition.url) {
+    throw new Error(`Playworlds destination platform ${platform} is not enabled`);
+  }
+  if (destinationOverride && platform !== "steam") {
+    throw new Error("Only the legacy Steam destination override is supported");
+  }
+
+  const configuredValue = platform === "steam"
+    ? process.env.PLAYWORLDS_DESTINATION_URL || definition.url
+    : definition.url;
+  const destination = new URL(destinationOverride || configuredValue);
+  const exactPath = definition.exactPath ? normalizedPath(definition.exactPath) : null;
+  const path = normalizedPath(destination.pathname);
 
   if (
     destination.protocol !== "https:" ||
     destination.username ||
     destination.password ||
     destination.port ||
-    destination.hostname !== expected.hostname ||
-    normalizedPath !== expected.pathname ||
+    !definition.allowedHosts.includes(destination.hostname) ||
+    (exactPath !== null && path !== exactPath) ||
     destination.search ||
     destination.hash
   ) {
     throw new Error(
-      "PLAYWORLDS_DESTINATION_URL must be the official HTTPS Steam listing for Playworlds app 4911480",
+      platform === "steam"
+        ? "PLAYWORLDS_DESTINATION_URL must be the official HTTPS Steam listing for Playworlds app 4911480"
+        : `Configured Playworlds ${platform} destination is outside its HTTPS host allowlist`,
     );
   }
-  destination.pathname = expected.pathname;
-  return destination;
+
+  destination.pathname = exactPath || path;
+  return {
+    destinationHost: destination.hostname,
+    destinationPlatform: platform,
+    destinationUrl: destination.toString(),
+    url: destination,
+  };
 }
 
 export function buildPlayworldsAttributionUrl({
@@ -46,12 +99,15 @@ export function buildPlayworldsAttributionUrl({
   keyword,
   location,
   sourceSlug,
+  destinationPlatform = defaultPlayworldsDestinationPlatform,
   destination,
 }: {
   clickId: string;
   keyword: string;
   location: OutboundLocation;
   sourceSlug: string;
+  destinationPlatform?: PlayworldsDestinationPlatform;
+  /** Test and legacy deployment compatibility; the public route never accepts a URL. */
   destination?: string;
 }) {
   if (!safeSlug.test(sourceSlug)) throw new Error("Attribution source slug is invalid");
@@ -64,15 +120,18 @@ export function buildPlayworldsAttributionUrl({
     throw new Error("Attribution CTA location is invalid");
   }
 
-  const url = approvedPlayworldsDestination(destination);
+  const resolved = resolvePlayworldsDestination(destinationPlatform, destination);
+  const url = new URL(resolved.url);
   url.searchParams.set("utm_source", playworldsAttribution.utm.source);
   url.searchParams.set("utm_medium", playworldsAttribution.utm.medium);
   url.searchParams.set("utm_campaign", playworldsAttribution.utm.campaign);
-  url.searchParams.set("utm_content", sourceSlug);
+  url.searchParams.set("utm_content", `${sourceSlug}:${location}`);
   url.searchParams.set("utm_term", normalizedKeyword);
   url.searchParams.set("seo_click_id", clickId);
   url.searchParams.set("seo_source_slug", sourceSlug);
   url.searchParams.set("seo_cta_location", location);
+  url.searchParams.set("seo_destination_platform", resolved.destinationPlatform);
+  url.searchParams.set("seo_destination_host", resolved.destinationHost);
   url.searchParams.set("seo_product", playworldsAttribution.product);
   url.searchParams.set("seo_attribution_version", String(playworldsAttribution.schemaVersion));
   return url;

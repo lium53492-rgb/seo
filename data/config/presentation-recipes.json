@@ -152,6 +152,25 @@
       "companion": "none",
       "gallery": "none",
       "reusePolicy": { "kind": "single_use" }
+    },
+    {
+      "id": "campaign-state-comparison-v1",
+      "rendererId": "campaign_state_comparison",
+      "compatiblePagePatterns": ["decision_page"],
+      "compatibleArchetypes": ["comparison"],
+      "visualSystemId": "campaign-state-console",
+      "layoutId": "split-turn-trace",
+      "paletteId": "lampblack-ember",
+      "typographyId": "campaign-serif-ledger",
+      "motifId": "action-outcome-state-choice",
+      "sectionMarkerStyle": "state",
+      "sectionFlow": "branching_turn_trace",
+      "domainConcepts": ["action", "outcome", "state", "consequence", "next choice", "campaign ledger"],
+      "signature": "A split turn trace shows where a conversation can stop and how a campaign loop carries consequence into the next choice.",
+      "rejectedDefaults": ["generic comparison table", "feature-card grid", "decorative fantasy dice"],
+      "companion": "none",
+      "gallery": "none",
+      "reusePolicy": { "kind": "single_use" }
     }
   ]
 }

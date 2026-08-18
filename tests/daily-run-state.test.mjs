@@ -118,7 +118,7 @@ test("daily state advances a complete local delivery to release verification", (
 test("current no-publish receipts require research/report evidence and an active reason", () => {
   const currentReceipt = {
     ...noPublishReceipt,
-    schemaVersion: 2,
+    schemaVersion: 3,
     artifactDigests: [
       ...noPublishReceipt.artifactDigests,
       { path: `data/research/${date}.json`, sha256: "d".repeat(64), bytes: 256 },
@@ -133,6 +133,26 @@ test("current no-publish receipts require research/report evidence and an active
   assert.equal(isDailyNoPublishReceipt({
     ...currentReceipt,
     artifactDigests: noPublishReceipt.artifactDigests,
+  }, date), false);
+});
+
+test("historical attribution-blocked receipts remain readable but new receipts cannot use that reason", () => {
+  const artifactDigests = [
+    ...noPublishReceipt.artifactDigests,
+    { path: `data/research/${date}.json`, sha256: "d".repeat(64), bytes: 256 },
+    { path: `data/reports/${date}.json`, sha256: "e".repeat(64), bytes: 256 },
+  ];
+  assert.equal(isDailyNoPublishReceipt({
+    ...noPublishReceipt,
+    schemaVersion: 2,
+    reasonCode: "attribution_blocked",
+    artifactDigests,
+  }, date), true);
+  assert.equal(isDailyNoPublishReceipt({
+    ...noPublishReceipt,
+    schemaVersion: 3,
+    reasonCode: "attribution_blocked",
+    artifactDigests,
   }, date), false);
 });
 

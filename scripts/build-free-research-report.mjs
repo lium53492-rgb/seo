@@ -30,6 +30,10 @@ import {
   normalizeGoogleTrendsTerm,
   validateGoogleTrendsEvidence,
 } from "../lib/seo/google-trends-contract.mjs";
+import {
+  assertCreatePageMeasurementReadiness,
+  evaluateCreatePageMeasurementReadiness,
+} from "./lib/measurement-policy.mjs";
 
 const inputPath = process.argv[2];
 if (!inputPath) throw new Error("Usage: npm run research:build -- data/research/YYYY-MM-DD.json");
@@ -926,6 +930,7 @@ const persistedGrowthForbiddenKeys = new Set([
   "pageviews",
   "outboundRequests",
   "ctaLocations",
+  "destinationPlatforms",
 ]);
 
 function isRecord(value) {
@@ -1244,37 +1249,6 @@ function validatePortfolioSnapshot(rawPortfolio, publishedPages) {
   };
 }
 
-function assertCreatePageGrowthReadiness(portfolio) {
-  if (unattendedPolicy.allowCreatePageWhenMetricsUnavailable !== false) {
-    throw new Error("Create-page growth readiness gate requires allowCreatePageWhenMetricsUnavailable=false");
-  }
-  const summary = portfolio?.summary;
-  const entries = Array.isArray(portfolio?.entries) ? portfolio.entries : [];
-  const pageReadinessFailures = entries.filter((entry) =>
-    entry?.state !== "collected" ||
-    entry.report?.decisionState?.searchPerformanceReady !== true ||
-    entry.report?.decisionState?.landingUvReady !== true ||
-    entry.report?.decisionState?.qualifiedOutboundReady !== true);
-  const ready = Boolean(summary) &&
-    summary.collectedPages === summary.publishedPages &&
-    summary.unavailablePages === 0 &&
-    summary.attributionJoinReady === true &&
-    portfolio.globalAttribution?.product === "playworlds" &&
-    portfolio.globalAttribution?.state === "observed" &&
-    portfolio.globalAttribution?.attributionJoinReady === true &&
-    entries.length === summary.publishedPages &&
-    pageReadinessFailures.length === 0;
-  if (!ready) {
-    const failedSlugs = pageReadinessFailures.map((entry) => entry?.sourceSlug || "<unknown>");
-    throw new Error(
-      "Create-page growth readiness gate failed: every published page must be collected with " +
-      "observed Search Console, landing UV, and qualified outbound evidence (zero values are allowed), " +
-      "zero unavailable pages, and the independent Playworlds callback/store probe must report " +
-      `attributionJoinReady=true${failedSlugs.length ? `; failed pages: ${failedSlugs.join(", ")}` : ""}`,
-    );
-  }
-}
-
 function validatePortfolioDecision(rawDecision, publishedPages) {
   const allowedActions = new Set(["create_page", "improve_page", "consolidate", "observe"]);
   if (!rawDecision || !allowedActions.has(rawDecision.action)) {
@@ -1430,7 +1404,17 @@ const preparedCandidateInputs = input.candidates.map((candidate) => {
 const portfolioFunnels = validatePortfolioSnapshot(readPortfolioInput(), pages);
 const portfolioDecision = validatePortfolioDecision(input.portfolioDecision, pages);
 const isCreatePageDecision = input.publicationMode !== "update" && portfolioDecision.action === "create_page";
-if (isCreatePageDecision) assertCreatePageGrowthReadiness(portfolioFunnels);
+const measurementReadiness = isCreatePageDecision
+  ? assertCreatePageMeasurementReadiness({
+      portfolio: portfolioFunnels,
+      policy,
+      unattendedPolicy,
+    })
+  : evaluateCreatePageMeasurementReadiness({
+      portfolio: portfolioFunnels,
+      policy,
+      unattendedPolicy,
+    });
 const opportunities = preparedCandidateInputs
   .map((candidate) => scoreResearchCandidate(candidate, policy, { reportDate: date }))
   .sort((left, right) => right.score - left.score)
@@ -1653,7 +1637,6 @@ const publication = !draft
     : { status: "blocked", reason: "Draft did not pass all automated quality gates." };
 const phrase = titleCase(selectedOpportunity.keyword);
 const pageType = /how|what|ideas|guide/.test(selectedOpportunity.keyword) ? "guide" : /romance|fantasy|mystery|school|life/.test(selectedOpportunity.keyword) ? "scenario" : "product";
-const allFunnelObserved = Object.values(funnel.metrics).every((metric) => metric.status === "observed");
 const portfolioActionLabels = {
   create_page: "create a new page",
   improve_page: `improve /${portfolioDecision.targetSlug}`,
@@ -1672,8 +1655,8 @@ const report = {
       ? { publicationMode: "create" }
       : {}),
   generatedAt: input.generatedAt || checkedAt,
-  mode: performance.length && allFunnelObserved ? "live" : "partial",
-  headline: `Today's revenue-first priority: ${portfolioAction}`,
+  mode: measurementReadiness.ready ? "live" : "partial",
+  headline: `Today's early traffic-validation priority: ${portfolioAction}`,
   summary: {
     candidatesAnalyzed: input.candidates.length,
     publishableOpportunities: eligibleCreateOpportunities.length,
@@ -1697,12 +1680,13 @@ const report = {
   ...(trendCollection ? { trendCollection } : {}),
   feedbackDecisions,
   portfolioFunnels,
+  measurementPhase: measurementReadiness,
   portfolioDecision,
   publication,
   publications: [publication],
   actions: [
-    { priority: "P0", action: portfolioAction, why: portfolioDecision.rationale, expectedImpact: portfolioDecision.action === "create_page" ? "Target a specific searcher who is close to trial or purchase." : "Use observed portfolio evidence before increasing page count." },
-    { priority: "P1", action: "Verify evidence, intent, and conversion hypothesis", why: "Research proxies rank options; they do not replace observed search or revenue data.", expectedImpact: "Prevent broad traffic from displacing qualified product demand." },
+    { priority: "P0", action: portfolioAction, why: portfolioDecision.rationale, expectedImpact: portfolioDecision.action === "create_page" ? "Test a specific searcher job with measurable Google impressions and clicks." : "Use observed portfolio evidence before increasing page count." },
+    { priority: "P1", action: "Verify evidence, intent, and the early traffic hypothesis", why: "Research proxies rank options; they do not replace observed Search Console impressions, clicks, CTR, or average position.", expectedImpact: "Keep early SEO decisions tied to measurable search visibility while the product is still validating demand." },
     { priority: "P2", action: publication.status === "ready_for_review" ? `Independently review ${publication.path} before publishing` : "Resolve the failed publication gate", why: publication.reason, expectedImpact: "Keep editorial approval separate from generation." },
   ],
   brief: {
@@ -1742,7 +1726,7 @@ const report = {
     { id: "search_console", name: "Google Search Console", state: performance.length ? "connected" : "missing", detail: performance.length ? `${performance.length} visible query/page rows recorded.` : "No visible Search Console rows were available; no metrics were inferred.", href: "https://search.google.com/search-console", actionLabel: "Open Search Console" },
     { id: "ai_gateway", name: "Codex Content", state: draft ? "connected" : "configured", detail: draft ? "A fact-constrained draft is ready for a separate editorial review." : "Research is ready for drafting." },
     { id: "github", name: "GitHub Reports", state: "configured", detail: "Daily reports and approved pages are committed only after verification.", href: "https://github.com/lium53492-rgb/seo/tree/main/data/reports", actionLabel: "Open report history" },
-    { id: "product_analytics", name: "Revenue Attribution", state: funnel.attributionStatus === "connected" ? "connected" : funnel.attributionStatus === "partial" ? "configured" : "missing", detail: portfolioFunnels.summary.attributionJoinReady ? "Private downstream attribution was checked; only boolean readiness and blocking state are retained in this public report." : "Private downstream attribution readiness is incomplete; no commercial outcome detail is retained in this public report.", href: "https://vercel.com/elser1/seo/analytics", actionLabel: "Open analytics" },
+    { id: "product_analytics", name: "Optional Downstream Attribution", state: funnel.attributionStatus === "connected" ? "connected" : funnel.attributionStatus === "partial" ? "configured" : "missing", detail: portfolioFunnels.summary.attributionJoinReady ? "Private downstream attribution is available as an optional supporting signal." : "Downstream callbacks and revenue attribution are optional during early traffic validation and do not block research or publication.", href: "https://vercel.com/elser1/seo/analytics", actionLabel: "Open analytics" },
   ],
   evidence: input.evidence.map((item) => {
     const url = new URL(item.url);
@@ -1765,7 +1749,7 @@ const report = {
     "Demand and difficulty remain transparent 0-100 research proxies and require candidate-level rationales and evidence references unless an evidence record explicitly names an observed provider metric.",
     "Google Trends Explore relative interest is a normalized 0-100 signal, not search volume. BigQuery Top/Rising observations preserve DMA provenance and never infer a nationwide relative-interest score; an exact miss is not zero demand.",
     "Every locally unconsumed editorial instruction is preserved verbatim with an adopted or rejected decision before it may be marked consumed.",
-    "Missing Search Console, UV, trial, payment, or revenue data stays unavailable rather than being converted to zero.",
+    "Missing Search Console, UV, outbound, trial, payment, or revenue data stays unavailable rather than being converted to zero. Only exact-page Search Console evidence is a measurement publication gate during early traffic validation.",
     "The report builder never publishes a page; scripts/publish-reviewed-page.mjs requires a separate approval record.",
   ],
 };

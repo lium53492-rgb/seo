@@ -27,12 +27,15 @@ test("unattended policy targets one page with persistent release recovery", () =
   assert.ok(unattendedPolicy.candidateBatchSize.min >= 8);
   assert.ok(unattendedPolicy.minimumFallbackIntents >= 7);
   assert.equal(unattendedPolicy.requireDailyResearchBeforeNoPublish, true);
-  assert.equal(unattendedPolicy.noPublish.schemaVersion, 2);
+  assert.equal(unattendedPolicy.noPublish.schemaVersion, 3);
   assert.ok(unattendedPolicy.noPublish.acceptedHistoricalSchemaVersions.includes(1));
+  assert.ok(unattendedPolicy.noPublish.acceptedHistoricalSchemaVersions.includes(2));
   assert.ok(unattendedPolicy.noPublish.reasonCodes.includes("visual_quality_failed"));
   assert.ok(unattendedPolicy.noPublish.reasonCodes.includes("trends_not_observed"));
   assert.ok(unattendedPolicy.noPublish.activeReasonCodes.includes("trends_unavailable"));
+  assert.equal(unattendedPolicy.noPublish.activeReasonCodes.includes("attribution_blocked"), false);
   assert.equal(unattendedPolicy.noPublish.activeReasonCodes.includes("trends_not_observed"), false);
+  assert.equal(unattendedPolicy.hardStops.includes("orphan_attribution_callback_detected"), false);
   assert.deepEqual(unattendedPolicy.terminalNoPublishSuccess, [
     "zero_pages_published_for_shanghai_day",
     "no_publish_receipt_recorded_for_shanghai_day",

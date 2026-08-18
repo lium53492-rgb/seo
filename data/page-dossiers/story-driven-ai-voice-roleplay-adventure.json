@@ -1,7 +1,8 @@
 {
   "schemaVersion": 1,
-  "status": "draft_for_release",
+  "status": "superseded_concept",
   "publicationEligible": false,
+  "supersededBy": "ai-game-master-vs-chatbot-for-tabletop-campaign",
   "createdOn": "2026-08-15",
   "slug": "story-driven-ai-voice-roleplay-adventure",
   "previewRoute": "/workbench/concepts/story-driven-ai-voice-roleplay-adventure",

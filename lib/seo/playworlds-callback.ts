@@ -52,12 +52,12 @@ export function evaluatePlayworldsAttributionJoin(input: {
   orphanCallbacks: number | null;
 }) {
   const checked = Number.isInteger(input.orphanCallbacks) && Number(input.orphanCallbacks) >= 0;
-  const blocked = input.blockOnOrphanCallbacks && checked && Number(input.orphanCallbacks) > 0;
-  const ready = !input.blockOnOrphanCallbacks || (checked && !blocked);
+  const healthy = checked && Number(input.orphanCallbacks) === 0;
+  const blocked = input.blockOnOrphanCallbacks && checked && !healthy;
   return {
     checked,
     blocked,
-    ready,
+    ready: healthy,
     orphanCallbacks: checked ? Number(input.orphanCallbacks) : null,
   };
 }

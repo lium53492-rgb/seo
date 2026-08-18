@@ -1312,6 +1312,11 @@ function noPublishEvidence(worktreeRoot, date, dailyState) {
   }
   const collectedPages = growth.entries.filter((entry) => entry?.state === "collected").length;
   const unavailablePages = growth.entries.filter((entry) => entry?.state === "unavailable").length;
+  const searchConsoleUnavailablePages = growth.entries.filter((entry) =>
+    entry?.state !== "collected" ||
+    entry?.report?.decisionState?.searchPerformanceReady !== true ||
+    entry?.report?.searchPerformance?.state !== "observed"
+  ).length;
   if (collectedPages !== growthSummary.collectedPages || unavailablePages !== growthSummary.unavailablePages ||
     collectedPages + unavailablePages !== growth.entries.length) {
     throw new Error("No-publish growth evidence summary is inconsistent with its page entries");
@@ -1375,6 +1380,7 @@ function noPublishEvidence(worktreeRoot, date, dailyState) {
         publishedPages: growthSummary.publishedPages,
         collectedPages: growthSummary.collectedPages,
         unavailablePages: growthSummary.unavailablePages,
+        searchConsoleUnavailablePages,
         attributionJoinReady: growthSummary.attributionJoinReady,
       },
       trends: trendSummary,
@@ -1387,8 +1393,12 @@ function noPublishEvidence(worktreeRoot, date, dailyState) {
 }
 
 function assertNoPublishReasonEvidence(reasonCode, summary) {
-  if (reasonCode === "growth_unavailable" && summary.growth.unavailablePages < 1) {
-    throw new Error("growth_unavailable requires at least one unavailable portfolio page");
+  if (reasonCode === "growth_unavailable" &&
+    summary.growth.unavailablePages < 1 &&
+    summary.growth.searchConsoleUnavailablePages < 1) {
+    throw new Error(
+      "growth_unavailable requires an unavailable portfolio page or unavailable exact-page Search Console evidence",
+    );
   }
   if (reasonCode === "attribution_blocked" && summary.growth.attributionJoinReady !== false) {
     throw new Error("attribution_blocked requires attributionJoinReady=false");

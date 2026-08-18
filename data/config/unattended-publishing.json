@@ -20,9 +20,10 @@
   "minimumFallbackIntents": 7,
   "requireDailyResearchBeforeNoPublish": true,
   "noPublish": {
-    "schemaVersion": 2,
+    "schemaVersion": 3,
     "acceptedHistoricalSchemaVersions": [
-      1
+      1,
+      2
     ],
     "minimumReasonChars": 20,
     "maximumReasonChars": 600,
@@ -40,7 +41,6 @@
     ],
     "activeReasonCodes": [
       "growth_unavailable",
-      "attribution_blocked",
       "trends_unavailable",
       "research_insufficient",
       "content_quality_failed",
@@ -78,7 +78,6 @@
   "hardStops": [
     "unrelated_user_work_would_be_overwritten",
     "more_than_one_page_for_shanghai_day",
-    "orphan_attribution_callback_detected",
     "unsupported_product_claim",
     "third_party_ip",
     "duplicate_or_cannibalizing_intent",

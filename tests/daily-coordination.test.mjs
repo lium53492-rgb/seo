@@ -130,6 +130,29 @@ function writeNoPublishGrowth(worktreeRoot, date, generatedAt) {
   }, null, 2)}\n`);
 }
 
+function writeCollectedGrowthWithSearchConsoleState(worktreeRoot, date, generatedAt, searchState) {
+  const path = join(worktreeRoot, "data", "growth", `${date}.json`);
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, `${JSON.stringify({
+    schemaVersion: 2,
+    generatedAt,
+    summary: {
+      publishedPages: 1,
+      collectedPages: 1,
+      unavailablePages: 0,
+      attributionJoinReady: false,
+    },
+    entries: [{
+      sourceSlug: "page-1",
+      state: "collected",
+      report: {
+        searchPerformance: { state: searchState },
+        decisionState: { searchPerformanceReady: searchState === "observed" },
+      },
+    }],
+  }, null, 2)}\n`);
+}
+
 function writeNoPublishResearchAndReport(worktreeRoot, date) {
   const researchPath = join(worktreeRoot, "data", "research", `${date}.json`);
   const reportPath = join(worktreeRoot, "data", "reports", `${date}.json`);
@@ -384,6 +407,7 @@ test("a durable no-publish receipt ends same-day recovery without claiming a pub
   assert.equal(completed.status, "completed_no_publish");
   assert.equal(completed.noPublishReceipt.outcome, "no_publish");
   assert.equal(completed.noPublishReceipt.evidenceSummary.growth.unavailablePages, 9);
+  assert.equal(completed.noPublishReceipt.evidenceSummary.growth.searchConsoleUnavailablePages, 9);
   assert.deepEqual(
     completed.noPublishReceipt.artifactDigests.map((item) => item.path),
     [`data/growth/${date}.json`, `data/research/${date}.json`, `data/reports/${date}.json`],
@@ -406,6 +430,59 @@ test("a durable no-publish receipt ends same-day recovery without claiming a pub
     now: new Date("2099-01-11T01:00:00.000Z"),
   }).state, "none");
   assert.throws(() => assertDailyLease({ coordinationRoot, date, owner: ownerA }), /does not own/);
+});
+
+test("growth_unavailable records page-level GSC failure even when the private report returned HTTP 200", () => {
+  const date = "2099-01-12";
+  const now = new Date("2099-01-12T01:00:00.000Z");
+  const { coordinationRoot, worktreeA } = roots("gsc-unavailable-inside-collected-report");
+  const owner = coordinationOwner(worktreeA, "run-gsc-unavailable");
+  acquireDailyLease({ coordinationRoot, date, owner, now, staleAfterMinutes: 60 });
+  writeCollectedGrowthWithSearchConsoleState(
+    worktreeA,
+    date,
+    "2099-01-12T00:55:00.000Z",
+    "unavailable",
+  );
+  writeNoPublishResearchAndReport(worktreeA, date);
+
+  const completed = completeDailyNoPublish({
+    coordinationRoot,
+    worktreeRoot: worktreeA,
+    date,
+    owner,
+    reasonCode: "growth_unavailable",
+    reason: "The page report returned successfully, but exact-page Search Console evidence remained unavailable.",
+    now,
+  });
+
+  assert.equal(completed.noPublishReceipt.evidenceSummary.growth.unavailablePages, 0);
+  assert.equal(completed.noPublishReceipt.evidenceSummary.growth.searchConsoleUnavailablePages, 1);
+});
+
+test("growth_unavailable rejects a fully collected portfolio with observed GSC", () => {
+  const date = "2099-01-13";
+  const now = new Date("2099-01-13T01:00:00.000Z");
+  const { coordinationRoot, worktreeA } = roots("gsc-observed-no-growth-failure");
+  const owner = coordinationOwner(worktreeA, "run-gsc-observed");
+  acquireDailyLease({ coordinationRoot, date, owner, now, staleAfterMinutes: 60 });
+  writeCollectedGrowthWithSearchConsoleState(
+    worktreeA,
+    date,
+    "2099-01-13T00:55:00.000Z",
+    "observed",
+  );
+  writeNoPublishResearchAndReport(worktreeA, date);
+
+  assert.throws(() => completeDailyNoPublish({
+    coordinationRoot,
+    worktreeRoot: worktreeA,
+    date,
+    owner,
+    reasonCode: "growth_unavailable",
+    reason: "The growth evidence is claimed unavailable even though every Search Console row is observed.",
+    now,
+  }), /unavailable exact-page Search Console evidence/);
 });
 
 test("a terminal no-publish receipt restores its exact evidence checkpoint without reopening the day", () => {

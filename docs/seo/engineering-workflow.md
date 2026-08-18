@@ -1,6 +1,6 @@
-# Revenue-first SEO engineering workflow
+# Early traffic-validation SEO engineering workflow
 
-This repository has one production path. It targets an independent English searcher job, publishes at most one reviewed answer per Shanghai day, and measures the path from search to revenue without turning missing data into zero.
+This repository has one production path. It targets an independent English searcher job, publishes at most one reviewed answer per Shanghai day, and validates Search Console visibility while keeping optional downstream attribution explicit and never turning missing data into zero.
 
 ## Acquisition path
 
@@ -159,8 +159,8 @@ Use native Next.js metadata for title, description, canonical, Open Graph, and T
   landing visitor IDs are not persisted in those aggregates.
 - `/workbench/attribution` combines those sources. A page can only show a numeric zero after the corresponding source was queried successfully for an explicit period; missing credentials, callbacks, or API access remain unavailable.
 - The daily report records each funnel metric as either `observed` with a source or `unavailable` with a reason.
-- Before generating a new daily draft, run `npm run growth:check` and `npm run growth:collect`. The report builder requires a snapshot covering every published page for one identical complete-Shanghai-day period and the configured three-day lag. Page count, landing UV, and exact-page Search Console impressions inform prioritization but do not independently block a distinct new page.
-- Any orphan conversion callback blocks publication until the join defect is repaired. Public unauthenticated workbench views replace every page-level portfolio metric with an explicit protected/unavailable entry.
+- Before generating a new daily draft, run `npm run growth:check` and `npm run growth:collect`. The report builder requires a snapshot covering every published page for one identical complete-Shanghai-day period and the configured three-day lag. The current measurement gate requires observed exact-page Search Console impressions, clicks, CTR, and average-position evidence for every active page; observed zero is valid. Page count, landing UV, and qualified outbound clicks remain prioritization or supporting signals.
+- An orphan conversion callback remains a visible downstream-integrity warning, but callbacks and revenue joins do not block publication during early traffic validation. Public unauthenticated workbench views replace every page-level portfolio metric with an explicit protected/unavailable entry.
 
 See `docs/seo/revenue-attribution.md` for the cross-repository callback contract.
 

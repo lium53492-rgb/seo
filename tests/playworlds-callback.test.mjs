@@ -295,15 +295,20 @@ test("signed handshake becomes recent readiness without fabricating a conversion
     assert.ok(commands.every((command) => !command.join(" ").includes("cohort:")));
 
     orphanCallbacks = 1;
-    const blockedReadiness = await readinessRoute.GET(new Request(
+    const orphanReadiness = await readinessRoute.GET(new Request(
       "http://localhost/api/attribution/readiness",
       { headers: { authorization: `Bearer ${process.env.SEO_AUTOMATION_TOKEN}` } },
     ));
-    const blockedBody = await blockedReadiness.json();
-    assert.equal(blockedBody.attributionJoin.blocked, true);
-    assert.equal(blockedBody.attributionJoin.orphanCallbacks, 1);
-    assert.equal(blockedBody.readyFor.outboundToRevenue, false);
-    assert.equal(blockedBody.readyFor.fullLoop, false);
+    const orphanBody = await orphanReadiness.json();
+    assert.equal(orphanBody.attributionJoin.policy, "observe_orphan_callbacks");
+    assert.equal(orphanBody.attributionJoin.checked, true);
+    assert.equal(orphanBody.attributionJoin.blocked, false);
+    assert.equal(orphanBody.attributionJoin.ready, false);
+    assert.equal(orphanBody.attributionJoin.orphanCallbacks, 1);
+    assert.equal(orphanBody.readyFor.outboundToRevenue, false,
+      "the early-stage policy does not block publication, but it must still report an unhealthy revenue join honestly");
+    assert.equal(orphanBody.readyFor.fullLoop, false,
+      "the handshake test still lacks an observed search-to-landing source probe");
 
     const blockedJoin = evaluatePlayworldsAttributionJoin({
       blockOnOrphanCallbacks: true,

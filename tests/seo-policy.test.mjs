@@ -134,7 +134,7 @@ test("the product catalog separates active Playworlds facts from legacy compatib
   ));
 });
 
-test("revenue-first policy creates a page only for a strong trial job", () => {
+test("early traffic-validation policy creates a page for a strong trial job", () => {
   const result = scoreResearchCandidate(strongCandidate, policy);
   assert.equal(result.gate.passed, true);
   assert.equal(result.action, "create_page");
@@ -168,6 +168,23 @@ test("broad informational demand cannot pass on traffic proxy alone", () => {
   assert.equal(result.gate.passed, false);
   assert.equal(result.action, "observe");
   assert.match(result.reason, /trial intent|search intent|funnel stage/);
+});
+
+test("revenue intent remains scored but is not a publication hard gate", () => {
+  const result = scoreResearchCandidate({
+    ...strongCandidate,
+    conversionGoal: "qualified_outbound_click",
+    decisionEvidence: {
+      ...strongDecisionEvidence,
+      revenueSignals: [],
+    },
+  }, policy);
+  assert.equal(result.revenueIntent, 0);
+  assert.equal(result.gate.passed, true);
+  assert.equal(result.action, "create_page");
+  assert.match(result.reason, /revenue intent is advisory during early traffic validation/);
+  assert.equal("minRevenueIntent" in policy.hardGates, false);
+  assert.equal(policy.advisoryThresholds.minRevenueIntent, 55);
 });
 
 test("a future page cannot bypass the D&D-first audience direction", () => {

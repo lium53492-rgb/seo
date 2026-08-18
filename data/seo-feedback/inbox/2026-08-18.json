@@ -20,6 +20,16 @@
         "expiresAt": "2026-08-18T15:45:00.000Z"
       },
       "rationale": "Allow one explicit, same-Shanghai-day user-guided resume after an autonomous completed_no_publish, bind it to the named owner, and prohibit unattended jobs from reopening or publishing that terminal day. Require every daily automation to finish an 8–12-candidate research set and durable report before no-publication closure. Keep same-day signed Google Trends collection mandatory while accepting an exact candidate not_observed result for publication; never interpret that state as zero, and preserve provider missing, unavailable, or unverifiable states as explicit failures. Record the third issue as the revenue-attribution boundary: the SEO receiver is implemented and deployed, but the production shared secret and recent signed Playworlds handshake are absent, and a direct Steam CTA cannot return an exact purchase joined to seo_click_id. Do not fabricate callback evidence; a future product decision must choose a first-party Playworlds handoff for exact attribution or explicitly authorize aggregate Steam reporting."
+    },
+    {
+      "id": "feedback-2026-08-18-early-search-multiplatform-ai-dnd",
+      "createdAt": "2026-08-18T16:48:26+08:00",
+      "message": "我修改一下关于数据这方面的预期：我们做的seo  目前这个处于初期阶段  只需要知道点击  曝光  等数据就可以了  这个需要你确认一下  gsc是否会收录steam的数据  其次 产品不会只在steam上线  所以我们做的数据汇总  要多平台适用  然后页面方向 我的想法是需要重新修改  针对我们 ai&dnd的受众 重新写页面方向 像文案这些  你也看之前我给你发的那段英文 （那个是我在推特上看的）  收入归因就可以先不做  产品初级阶段就要有收入比较困难  D&D的版权表述这块  我的理解是加一些代码就可以了  你试着解决一下",
+      "source": "codex_chat",
+      "kind": "content_guidance",
+      "consumedAt": "2026-08-18T16:48:26+08:00",
+      "decision": "adopted",
+      "rationale": "Adopt an early-search-visibility measurement stage centered on LoreLens Search Console impressions, clicks, CTR, and average position, with first-party landing and platform-destination outbound clicks as supporting signals. Search Console cannot report Steam or other external-platform activity, so keep platform data separate and aggregate first-party outbound events by source slug, CTA location, and allowlisted destination platform. Preserve the signed revenue callback implementation as optional future infrastructure, but do not require trial, signup, purchase, revenue, or a recent callback handshake for early-stage page publication. Replace the superseded science-fiction role showcase with a protected AI game master versus chatbot decision-page concept for adult D&D players. Apply the user's earlier passage-retrieval text as an editorial structure rule without copying it. Enforce D&D as an audience reference with original tabletop-fantasy examples, centralized prohibited-claim checks, and a visible independent non-affiliation notice; code reduces mistakes but does not grant a license or prove product compatibility."
     }
   ]
 }

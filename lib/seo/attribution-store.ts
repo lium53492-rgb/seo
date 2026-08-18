@@ -1,6 +1,10 @@
 import { createHash, createHmac } from "node:crypto";
 import type { OutboundLocation } from "./attribution";
 import playworldsAttribution from "../../data/config/playworlds-attribution.json" with { type: "json" };
+// Node's native TypeScript test runner requires the explicit extension, while
+// this no-emit project intentionally leaves allowImportingTsExtensions off.
+// @ts-expect-error TS5097: the Next.js bundler and Node 24 both resolve this file.
+import { resolvePlayworldsDestination, type PlayworldsDestinationPlatform } from "./playworlds-attribution.ts";
 
 const keyPrefix = "seo:v1:";
 const retentionSeconds = 400 * 24 * 60 * 60;
@@ -40,8 +44,10 @@ return 1
 const outboundScript = `
 local existingSource = redis.call("HGET", KEYS[2], "sourceSlug")
 local existingProduct = redis.call("HGET", KEYS[2], "product")
+local existingDestinationPlatform = redis.call("HGET", KEYS[2], "destinationPlatform")
 if existingSource and existingSource ~= ARGV[3] then return -2 end
 if existingProduct and existingProduct ~= ARGV[9] then return -3 end
+if existingDestinationPlatform and existingDestinationPlatform ~= ARGV[10] then return -5 end
 if redis.call("EXISTS", KEYS[1]) == 1 then return 0 end
 redis.call("SET", KEYS[1], ARGV[1], "EX", ARGV[2])
 redis.call("HSET", KEYS[2],
@@ -51,12 +57,22 @@ redis.call("HSET", KEYS[2],
   "occurredAt", ARGV[6],
   "cohortDay", ARGV[7],
   "qualified", ARGV[8],
-  "product", ARGV[9])
+  "product", ARGV[9],
+  "destinationPlatform", ARGV[10],
+  "destinationUrl", ARGV[11],
+  "destinationHost", ARGV[12])
 redis.call("EXPIRE", KEYS[2], ARGV[2])
+redis.call("HSET", KEYS[3],
+  "destination:" .. ARGV[10] .. ":platform", ARGV[10],
+  "destination:" .. ARGV[10] .. ":url", ARGV[11],
+  "destination:" .. ARGV[10] .. ":host", ARGV[12])
 redis.call("HINCRBY", KEYS[3], "outboundRequests", 1)
 redis.call("HINCRBY", KEYS[3], "cta:" .. ARGV[5], 1)
+redis.call("HINCRBY", KEYS[3], "platform:" .. ARGV[10] .. ":outboundRequests", 1)
+redis.call("HINCRBY", KEYS[3], "platform:" .. ARGV[10] .. ":cta:" .. ARGV[5], 1)
 if ARGV[8] == "1" then
   redis.call("HINCRBY", KEYS[3], "qualifiedOutboundClicks", 1)
+  redis.call("HINCRBY", KEYS[3], "platform:" .. ARGV[10] .. ":qualifiedOutboundClicks", 1)
 end
 redis.call("EXPIRE", KEYS[3], ARGV[2])
 return 1
@@ -182,6 +198,14 @@ export type AttributionAggregate = {
   orphanCallbacks: number | null;
   revenueByCurrency: Record<string, number>;
   ctaLocations: Record<string, number>;
+  destinationPlatforms: Record<string, {
+    destinationPlatform: string;
+    destinationUrl: string | null;
+    destinationHost: string | null;
+    qualifiedOutboundClicks: number;
+    outboundRequests: number;
+    ctaLocations: Record<string, number>;
+  }>;
   detail: string;
 };
 
@@ -346,10 +370,23 @@ type OutboundClickInput = {
   qualified: boolean;
 };
 
+type OutboundDestination = {
+  destinationPlatform: string;
+  destinationUrl: string;
+  destinationHost: string;
+};
+
+type PlayworldsOutboundClickInput = OutboundClickInput & {
+  destinationPlatform: PlayworldsDestinationPlatform;
+  destinationUrl: string;
+  destinationHost: string;
+};
+
 async function recordProductOutboundClick(
   input: OutboundClickInput,
   product: "novelai" | "playworlds",
   eventName: string,
+  destination: OutboundDestination,
 ): Promise<AttributionWriteResult> {
   assertSlug(input.sourceSlug);
   const cohortDay = shanghaiDay(input.occurredAt);
@@ -358,6 +395,7 @@ async function recordProductOutboundClick(
     eventId: input.clickId,
     event: input.qualified ? eventName : `${product}_outbound_request`,
     product,
+    ...destination,
     ...input,
   };
   const response = await redisCommand([
@@ -376,12 +414,16 @@ async function recordProductOutboundClick(
     cohortDay,
     input.qualified ? "1" : "0",
     product,
+    destination.destinationPlatform,
+    destination.destinationUrl,
+    destination.destinationHost,
   ]);
   if (!response.configured) {
     return { state: "unavailable", detail: attributionStoreStatus().detail ?? "Attribution store is not configured." };
   }
   if (response.result === -2) throw new Error("Click ID is already bound to another source slug");
   if (response.result === -3) throw new Error("Click ID is already bound to another product");
+  if (response.result === -5) throw new Error("Click ID is already bound to another destination platform");
   return response.result === 0
     ? { state: "duplicate", detail: "The outbound click was already stored." }
     : { state: "stored", detail: input.qualified ? "Verified user navigation stored." : "Unverified navigation stored for audit only." };
@@ -389,16 +431,32 @@ async function recordProductOutboundClick(
 
 /** Historical compatibility for the retired /go/novelai route. */
 export async function recordOutboundClick(input: OutboundClickInput): Promise<AttributionWriteResult> {
-  return recordProductOutboundClick(input, "novelai", "qualified_outbound_click");
+  return recordProductOutboundClick(input, "novelai", "qualified_outbound_click", {
+    destinationPlatform: "other",
+    destinationUrl: "https://www.novelai.ai/zh-CN/",
+    destinationHost: "www.novelai.ai",
+  });
 }
 
 export async function recordPlayworldsOutboundClick(
-  input: OutboundClickInput,
+  input: PlayworldsOutboundClickInput,
 ): Promise<AttributionWriteResult> {
+  const resolved = resolvePlayworldsDestination(input.destinationPlatform);
+  if (
+    input.destinationUrl !== resolved.destinationUrl ||
+    input.destinationHost !== resolved.destinationHost
+  ) {
+    throw new Error("Playworlds outbound destination metadata does not match the allowlisted platform");
+  }
   return recordProductOutboundClick(
     input,
     "playworlds",
     playworldsAttribution.events.qualifiedOutbound,
+    {
+      destinationPlatform: resolved.destinationPlatform,
+      destinationUrl: resolved.destinationUrl,
+      destinationHost: resolved.destinationHost,
+    },
   );
 }
 
@@ -837,6 +895,7 @@ export async function readAttributionAggregate(input: {
       orphanCallbacks: null,
       revenueByCurrency: {},
       ctaLocations: {},
+      destinationPlatforms: {},
       detail: attributionStoreStatus().detail ?? "Attribution store is not configured.",
     };
   }
@@ -852,6 +911,18 @@ export async function readAttributionAggregate(input: {
   };
   const revenueByCurrency: Record<string, number> = {};
   const ctaLocations: Record<string, number> = {};
+  const destinationPlatforms: AttributionAggregate["destinationPlatforms"] = {};
+  const destinationPlatformAggregate = (platform: string) => {
+    destinationPlatforms[platform] ||= {
+      destinationPlatform: platform,
+      destinationUrl: null,
+      destinationHost: null,
+      qualifiedOutboundClicks: 0,
+      outboundRequests: 0,
+      ctaLocations: {},
+    };
+    return destinationPlatforms[platform];
+  };
   for (const raw of response.results) {
     const hash = hashResult(raw);
     for (const key of Object.keys(totals) as Array<keyof typeof totals>) {
@@ -866,6 +937,26 @@ export async function readAttributionAggregate(input: {
         const location = field.slice("cta:".length);
         ctaLocations[location] = (ctaLocations[location] || 0) + Number(value || 0);
       }
+      const destinationField = field.match(/^destination:([a-z0-9_-]+):(platform|url|host)$/);
+      if (destinationField) {
+        const aggregate = destinationPlatformAggregate(destinationField[1]);
+        if (destinationField[2] === "url") aggregate.destinationUrl = value;
+        else if (destinationField[2] === "host") aggregate.destinationHost = value;
+        else aggregate.destinationPlatform = value;
+      }
+      const platformMetric = field.match(
+        /^platform:([a-z0-9_-]+):(outboundRequests|qualifiedOutboundClicks)$/,
+      );
+      if (platformMetric) {
+        const aggregate = destinationPlatformAggregate(platformMetric[1]);
+        aggregate[platformMetric[2] as "outboundRequests" | "qualifiedOutboundClicks"] += Number(value || 0);
+      }
+      const platformCta = field.match(/^platform:([a-z0-9_-]+):cta:(.+)$/);
+      if (platformCta) {
+        const aggregate = destinationPlatformAggregate(platformCta[1]);
+        aggregate.ctaLocations[platformCta[2]] =
+          (aggregate.ctaLocations[platformCta[2]] || 0) + Number(value || 0);
+      }
     }
   }
 
@@ -877,6 +968,7 @@ export async function readAttributionAggregate(input: {
     ...totals,
     revenueByCurrency,
     ctaLocations,
+    destinationPlatforms,
     detail: `Read ${days.length} Playworlds Shanghai-day acquisition cohort${days.length === 1 ? "" : "s"} from Upstash Redis.`,
   };
 }

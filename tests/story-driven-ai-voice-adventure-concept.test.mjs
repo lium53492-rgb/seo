@@ -211,7 +211,8 @@ test("dossier records the Playworlds Steam facts and keeps release blockers expl
   const dossierSource = readFileSync(dossierPath, "utf8");
   const dossier = JSON.parse(dossierSource);
 
-  assert.equal(dossier.status, "draft_for_release");
+  assert.equal(dossier.status, "superseded_concept");
+  assert.equal(dossier.supersededBy, "ai-game-master-vs-chatbot-for-tabletop-campaign");
   assert.equal(dossier.publicationEligible, false);
   assert.equal(dossier.positioning.primaryKeyword, "ai roleplay adventure");
   assert.equal(dossier.research.collectedOn, "2026-08-16");

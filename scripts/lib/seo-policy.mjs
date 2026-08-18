@@ -177,11 +177,10 @@ export function evaluatePublicationGates(candidate, policy, context = {}) {
     blockers.push(`funnel stage ${candidate.funnelStage} is below trial intent`);
   }
   if (!policy.eligibleConversionGoals.includes(candidate.conversionGoal)) {
-    blockers.push(`conversion goal ${candidate.conversionGoal} is not a trial or purchase goal`);
+    blockers.push(`conversion goal ${candidate.conversionGoal} is not an approved early-stage goal`);
   }
   if (candidate.productFit < gates.minProductFit) blockers.push("product fit is below the gate");
   if (candidate.trialIntent < gates.minTrialIntent) blockers.push("trial intent is below the gate");
-  if (candidate.revenueIntent < gates.minRevenueIntent) blockers.push("revenue intent is below the gate");
   if (candidate.intentSpecificity < gates.minIntentSpecificity) blockers.push("search intent is too broad");
   if (candidate.ipRisk > gates.maxIpRisk) blockers.push("IP risk exceeds the gate");
   if (candidate.cannibalizationRisk > gates.maxCannibalizationRisk) blockers.push("an existing page already owns this intent");
@@ -216,7 +215,7 @@ export function scoreResearchCandidate(raw, policy, context = {}) {
   if (candidate.productFit >= 90) strengths.push("strong approved-product fit");
   if (candidate.difficulty <= 35) strengths.push("lower competition proxy");
   const reason = gate.passed
-    ? `${strengths.slice(0, 3).join("; ") || "all publication gates passed"}; evidence-derived revenue-first opportunity score ${score}.`
-    : `Blocked: ${gate.blockers.join("; ")}; evidence-derived revenue-first opportunity score ${score}.`;
+    ? `${strengths.slice(0, 3).join("; ") || "all publication gates passed"}; evidence-derived opportunity score ${score}; revenue intent is advisory during early traffic validation.`
+    : `Blocked: ${gate.blockers.join("; ")}; evidence-derived opportunity score ${score}; revenue intent is advisory during early traffic validation.`;
   return { ...candidate, score, action, gate, reason };
 }

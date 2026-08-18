@@ -17,10 +17,11 @@ in `top_rising_terms` is `not_observed`; that state is valid evidence, does not
 mean zero searches, and does not itself block publication. A failed, missing,
 or tampered provider result is `unavailable` or invalid and still blocks the
 page. The release also requires a complete
-all-page measurement portfolio with observed Search Console and landing UV
-states plus a ready attribution join. Missing evidence blocks publication
-without being converted to zero. A confirmed orphan
-callback, unsupported claim, third-party IP, duplicate intent, failed review,
+  all-page measurement portfolio with observed exact-page Search Console
+  impressions, clicks, CTR, and average-position evidence. Missing Search
+  Console evidence blocks publication without being converted to zero. Landing
+  UV, outbound clicks, callback health, and revenue are supporting signals in
+  this early phase. A confirmed unsupported claim, third-party IP, duplicate intent, failed review,
 failed verification, unrelated user work, or irreconcilable Git conflict also
 stops publication rather than shipping unsafe content.
 
@@ -34,12 +35,10 @@ load the same environment and verify the configured client email plus derived
 public-key fingerprint. An unavailable `--research` attempt exits 2 without
 writing Trends fields, so a transient outage can be retried that day.
 
-The Playworlds callback receiver contract exists, but production currently
-lacks its configured secret and a recent signed product-side handshake. The
-direct Steam CTA also cannot yield a purchase joined to an individual
-`seo_click_id`; exact click-level revenue attribution requires a first-party
-Playworlds handoff/backend. Until those conditions are met, attribution remains
-explicitly unavailable and cannot be inferred from Steam aggregate reporting.
+The Playworlds callback receiver contract remains available for a later product
+stage. A missing secret, signed handshake, or exact revenue join stays explicit
+but does not block early traffic validation, publication, or a no-publication
+receipt. Never infer downstream outcomes from unavailable data.
 
 ## Idempotent state machine
 
@@ -135,6 +134,11 @@ history while creating a new owner-locked active state. Otherwise it closes
 only that calendar day's content decision; unlike a deployed page, it never
 occupies a later production day.
 
+`growth_unavailable` covers both a failed page-level collection request and a
+successful private report whose exact-page Search Console state remains
+`unavailable`. The receipt records both counts separately so an HTTP 200 never
+turns missing core GSC evidence into an observed result.
+
 ## Candidate continuity
 
 Research 8-12 semantically distinct searcher jobs. Keyword spelling and a
@@ -150,14 +154,15 @@ reused seeds against current pages, approved facts, feedback, and fresh directly
 supporting evidence before publication.
 
 The 8–12-candidate batch and its report are a daily scheduled deliverable, not
-a side effect of successful publication. Measurement, Trends-provider,
-callback, or other release blockers change the publication outcome but do not
+a side effect of successful publication. Required traffic measurement,
+Trends-provider, or other release blockers change the publication outcome but do not
 authorize an early stop before those two artifacts are complete.
 
 Do not use unavailable Search Console, URL Inspection, UV, or attribution data
-as zero. For unattended `create_page` production, any unavailable exact-page
-Search Console or landing UV state, incomplete portfolio coverage, or unready
-attribution join is a publication block. Retry within the configured network
+as zero. For unattended `create_page` production, unavailable exact-page
+Search Console evidence or incomplete portfolio coverage is a publication
+block. Landing UV, outbound, callback, and revenue states stay visible but are
+not early-phase blockers. Retry within the configured network
 budget, then record no publication instead of switching candidates to fill the
 daily slot.
 

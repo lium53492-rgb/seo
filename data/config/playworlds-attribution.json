@@ -2,7 +2,65 @@
   "schemaVersion": 1,
   "product": "playworlds",
   "routePrefix": "/go/playworlds",
-  "destination": "https://store.steampowered.com/app/4911480/Playworlds/",
+  "defaultDestinationPlatform": "steam",
+  "destinations": {
+    "steam": {
+      "enabled": true,
+      "url": "https://store.steampowered.com/app/4911480/Playworlds/",
+      "allowedHosts": [
+        "store.steampowered.com"
+      ],
+      "exactPath": "/app/4911480/Playworlds/"
+    },
+    "web": {
+      "enabled": false,
+      "url": null,
+      "allowedHosts": [
+        "playworlds.ai",
+        "www.playworlds.ai"
+      ],
+      "exactPath": null
+    },
+    "ios": {
+      "enabled": false,
+      "url": null,
+      "allowedHosts": [
+        "apps.apple.com"
+      ],
+      "exactPath": null
+    },
+    "android": {
+      "enabled": false,
+      "url": null,
+      "allowedHosts": [
+        "play.google.com"
+      ],
+      "exactPath": null
+    },
+    "epic": {
+      "enabled": false,
+      "url": null,
+      "allowedHosts": [
+        "store.epicgames.com"
+      ],
+      "exactPath": null
+    },
+    "gog": {
+      "enabled": false,
+      "url": null,
+      "allowedHosts": [
+        "gog.com",
+        "www.gog.com"
+      ],
+      "exactPath": null
+    },
+    "other": {
+      "enabled": false,
+      "url": null,
+      "allowedHosts": [],
+      "exactPath": null
+    }
+  },
   "allowedCtaLocations": [
     "seo_page",
     "hero",

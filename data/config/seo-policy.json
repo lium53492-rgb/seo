@@ -103,8 +103,37 @@
       "\\bvecna\\b",
       "\\bcritical role\\b",
       "\\bexandria\\b",
-      "\\bsword coast\\b"
-    ]
+      "\\bsword coast\\b",
+      "\\bforgotten realms\\b",
+      "\\bravenloft\\b",
+      "\\bdragonlance\\b",
+      "\\beberron\\b",
+      "\\bgreyhawk\\b",
+      "\\bwaterdeep\\b",
+      "\\bbaldur(?:'|’)?s gate\\b",
+      "\\bneverwinter\\b",
+      "\\bstrahd\\b",
+      "\\bdrizzt\\b",
+      "\\belminster\\b",
+      "\\bmind flayer\\b",
+      "\\bbeholder\\b"
+    ],
+    "prohibitedClaimPatterns": [
+      "\\bofficial\\s+(?:d&d|dungeons\\s+(?:&|and)\\s+dragons)\\b",
+      "\\b(?:d&d|dungeons\\s+(?:&|and)\\s+dragons)\\s+official\\b",
+      "\\b(?:licensed|endorsed|sponsored)\\s+(?:d&d|dungeons\\s+(?:&|and)\\s+dragons)\\b",
+      "\\b(?:d&d|dungeons\\s+(?:&|and)\\s+dragons)\\s+(?:licensed|endorsed|sponsored)\\b",
+      "\\b(?:licensed|endorsed|sponsored)\\s+by\\s+wizards\\s+of\\s+the\\s+coast\\b",
+      "\\baffiliated\\s+with\\s+(?:wizards\\s+of\\s+the\\s+coast|d&d|dungeons\\s+(?:&|and)\\s+dragons)\\b",
+      "\\b5e[- ]compatib(?:le|ility)\\b",
+      "\\b(?:compatible\\s+with|supports?|implements?)\\s+(?:d&d\\s*)?5e\\b"
+    ],
+    "independenceNotice": {
+      "schemaVersion": 1,
+      "heading": "Independent, original-only guide",
+      "body": "Dungeons & Dragons and D&D are trademarks of Wizards of the Coast. Playworlds and LoreLens are independent and are not affiliated with, endorsed by, sponsored by, or licensed by Wizards of the Coast. This guide uses original tabletop-fantasy examples and does not claim 5e compatibility.",
+      "srdMaterialUsed": false
+    }
   },
   "breakoutEvidence": {
     "schemaVersion": 1,
@@ -144,10 +173,39 @@
     "maxUniformNumberedRun": 3
   },
   "feedbackLoop": {
-    "blockOnOrphanCallbacks": true,
+    "blockOnOrphanCallbacks": false,
     "reportingWindowDays": 28,
     "reportingLagDays": 3,
     "callbackProbeMaxAgeHours": 168
+  },
+  "measurementPhase": {
+    "schemaVersion": 1,
+    "id": "early_traffic_validation",
+    "primaryMetrics": [
+      "search_console_impressions",
+      "search_console_clicks",
+      "search_console_ctr",
+      "search_console_average_position"
+    ],
+    "supportingMetrics": [
+      "landing_uv",
+      "qualified_outbound_clicks"
+    ],
+    "optionalDownstreamMetrics": [
+      "trial_starts",
+      "signups",
+      "paid_conversions",
+      "revenue"
+    ],
+    "publicationGate": {
+      "requireCompletePublishedPageCoverage": true,
+      "requireObservedSearchConsoleForEveryPublishedPage": true,
+      "requireObservedLandingUvForEveryPublishedPage": false,
+      "requireObservedQualifiedOutboundForEveryPublishedPage": false,
+      "requireAttributionJoinReady": false,
+      "blockOnOrphanCallbacks": false,
+      "requireRevenueOutcomes": false
+    }
   },
   "googleTrends": {
     "schemaVersion": 1,
@@ -322,6 +380,7 @@
     "purchase"
   ],
   "eligibleConversionGoals": [
+    "qualified_outbound_click",
     "trial_start",
     "purchase"
   ],
@@ -330,10 +389,12 @@
   "hardGates": {
     "minProductFit": 80,
     "minTrialIntent": 72,
-    "minRevenueIntent": 55,
     "minIntentSpecificity": 70,
     "maxIpRisk": 20,
     "maxCannibalizationRisk": 59
+  },
+  "advisoryThresholds": {
+    "minRevenueIntent": 55
   },
   "weights": {
     "productFit": 0.22,

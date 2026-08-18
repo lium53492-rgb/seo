@@ -66,7 +66,7 @@
 1. 在 Vercel Marketplace 连接 Upstash Redis，确认 `UPSTASH_REDIS_REST_URL` 和 `UPSTASH_REDIS_REST_TOKEN` 已进入 Production 环境。
 2. 当前 Playworlds 出站使用 `/go/playworlds/{slug}`，只跳转官方 Steam app 4911480，并携带版本化 UTM 与 `seo_click_id`。
 3. Playworlds 签名回调接收合同已经存在，但 Production 目前仍缺少 `PLAYWORLDS_CALLBACK_SECRET` 和近期的产品端签名握手；不要复用 NovelAI 密钥或旧回调充当 Playworlds 数据。
-4. `npm run growth:probe` 目前应返回 `unavailable` 并非零退出；`npm run growth:check` 的 `readyFor.fullLoop` 也应为 `false`。配置密钥并取得近期产品端签名握手后才可改变接收端状态。
+4. `npm run growth:probe` 目前应返回 `unavailable` 并非零退出；`npm run growth:check` 的 `readyFor.fullLoop` 也应为 `false`。但 `growth:check` 当前以 `trafficValidation`（GSC 可读性）决定退出状态，`fullLoop=false` 只是可选下游状态，不阻断早期页面发布。配置密钥并取得近期产品端签名握手后才可改变接收端状态。
 5. 当前 CTA 直接进入 Steam。Steam 的营销报表是汇总数据，不能把某笔购买精确连接到单个 `seo_click_id`；若要实现点击级营收闭环，还需要 Playworlds 第一方中转页或后端接力，不能只靠增加密钥解决。
 
 ### Google Trends

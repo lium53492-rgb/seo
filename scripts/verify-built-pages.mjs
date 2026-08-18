@@ -11,6 +11,7 @@ import {
   legacySiteOrigins,
 } from "./lib/site-origin.mjs";
 import { requiredHomepageBuildFragments } from "./lib/homepage-build-contract.mjs";
+import { readBuiltAttributedCtaContracts } from "./lib/built-cta-contract.mjs";
 
 const pageDirectory = resolve("data/pages");
 const buildDirectory = resolve(".next/server/app");
@@ -21,11 +22,11 @@ if (process.env.NEXT_PUBLIC_SITE_URL?.trim()) {
     "NEXT_PUBLIC_SITE_URL",
   );
 }
-const allowedCtaLocations = new Set(["seo_page", "hero", "header", "inline", "final_cta", "companion"]);
 const seoPolicy = JSON.parse(readFileSync(resolve("data/config/seo-policy.json"), "utf8"));
 const playworldsAttribution = JSON.parse(
   readFileSync(resolve("data/config/playworlds-attribution.json"), "utf8"),
 );
+const allowedCtaLocations = new Set(playworldsAttribution.allowedCtaLocations || []);
 const currentPageSchema = seoPolicy.contentArchitecture.publishedPageSchemaVersion;
 const migratedLegacyCtaSlugs = new Set(
   (seoPolicy.legacyPageGrandfathering?.allowlist || []).map((entry) => entry.slug),
@@ -121,6 +122,7 @@ const expectedRobots = [
 if (robots !== expectedRobots) {
   throw new Error("The production robots.txt does not exactly match the reviewed LoreLens policy.");
 }
+
 rejectLegacyOrigins(robots, "The production robots.txt");
 
 for (const retiredMicrofrontendArtifact of [
@@ -250,9 +252,15 @@ for (const page of pages) {
   const ctaRoute = usesPlayworldsCta
     ? playworldsAttribution.routePrefix
     : "/go/novelai";
-  const ctaPattern = new RegExp(`href="${ctaRoute.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}/${page.slug.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\?location=([a-z_]+)"`, "g");
-  const ctaLocations = [...html.matchAll(ctaPattern)].map((match) => match[1]);
-  if (!ctaLocations.length) {
+  const ctaContracts = readBuiltAttributedCtaContracts({
+    allowedCtaLocations,
+    destinations: playworldsAttribution.destinations,
+    html,
+    pageSlug: page.slug,
+    requireDestinationPlatform: usesPlayworldsCta,
+    routePrefix: ctaRoute,
+  });
+  if (!ctaContracts.length) {
     throw new Error(`/${page.slug} is missing its attributed ${usesPlayworldsCta ? "Playworlds" : "legacy NovelAI"} CTA in initial HTML.`);
   }
   if (usesPlayworldsCta && html.includes(`/go/novelai/${page.slug}?`)) {
@@ -261,8 +269,6 @@ for (const page of pages) {
   if (usesPlayworldsCta && /\bnovelai\b/i.test(html)) {
     throw new Error(`/${page.slug} uses the current runtime but still exposes the retired NovelAI brand.`);
   }
-  const invalidCtaLocation = ctaLocations.find((location) => !allowedCtaLocations.has(location));
-  if (invalidCtaLocation) throw new Error(`/${page.slug} contains an invalid CTA location: ${invalidCtaLocation}.`);
   for (const link of page.internalLinks || []) {
     if (link.href === "/" && page.schemaVersion !== currentPageSchema) continue;
     if (retiredPagePaths.has(link.href) || productMigrationHoldPaths.has(link.href)) {

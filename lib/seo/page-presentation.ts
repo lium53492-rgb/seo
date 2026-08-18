@@ -34,6 +34,7 @@ const rendererIds: ReadonlyArray<PresentationRecipe["rendererId"]> = [
   "orbital_mission_log",
   "playful_story_workshop",
   "story_driven_adventure",
+  "campaign_state_comparison",
 ];
 const retiredRecipeIds = new Set(seoPolicy.retiredRecipeIds || []);
 const retiredPaletteIds = new Set(seoPolicy.retiredPaletteIds || []);

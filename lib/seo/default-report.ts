@@ -40,7 +40,7 @@ export function createDisconnectedReport(): DailySeoReport {
     date,
     generatedAt: new Date().toISOString(),
     mode: "disconnected",
-    headline: "Waiting for a verified revenue-first research report",
+    headline: "Waiting for a verified early traffic-validation report",
     summary: {
       candidatesAnalyzed: 0,
       publishableOpportunities: 0,
@@ -55,7 +55,7 @@ export function createDisconnectedReport(): DailySeoReport {
       priority: "P0",
       action: "Run the verified local research workflow",
       why: "No persisted report is available, so the workbench will not substitute demo data.",
-      expectedImpact: "Keep research proxies and observed business outcomes auditable.",
+      expectedImpact: "Keep research proxies and observed Search Console evidence auditable.",
     }],
     brief: null,
     draft: null,
@@ -63,7 +63,7 @@ export function createDisconnectedReport(): DailySeoReport {
     integrations: [
       { id: "codex_research", name: "Codex Research", state: "missing", detail: "No verified daily report is available." },
       { id: "search_console", name: "Google Search Console", state: "missing", detail: "No observed query/page rows are available." },
-      { id: "product_analytics", name: "Revenue Attribution", state: "missing", detail: "Trial and payment callbacks are not connected." },
+      { id: "product_analytics", name: "Optional Downstream Attribution", state: "missing", detail: "Trial, payment, and revenue callbacks are optional during early traffic validation." },
       { id: "github", name: "GitHub Reports", state: "configured", detail: "Verified reports are stored in the repository." },
       { id: "semrush", name: "SEO Research Tools", state: "configured", detail: "Shared research access is available for manual evidence collection." },
       { id: "ai_gateway", name: "Codex Content", state: "configured", detail: "Content generation waits for a verified research input." },

@@ -1,6 +1,6 @@
 # Free Codex SEO research robot
 
-This is the active zero-additional-API-cost production protocol. It uses public evidence and clearly labelled research proxies, and it publishes only candidates with a specific trial or purchase job.
+This is the active zero-additional-API-cost production protocol. It uses public evidence and clearly labelled research proxies, and it publishes only candidates with a specific trial-ready job and measurable early traffic hypothesis.
 
 ## Preflight
 
@@ -15,26 +15,24 @@ This is the active zero-additional-API-cost production protocol. It uses public 
    valid terminal `no_publish` receipt remains terminal for unattended runs.
    Only an explicit same-day user-guided resume may reopen it once; the resumed
    lease is owner-locked, and every ordinary publication gate still applies.
-4. Check the complete commercial funnel only through the private API and in
-   process memory. The committable growth snapshot records exact-page Search
+4. Check the early traffic funnel first. The committable growth snapshot records exact-page Search
    Console, URL Inspection, aggregate landing UV, aggregate qualified outbound,
    and boolean readiness/blocking state only. Never copy trial, signup, payment,
    revenue, currency, purchase-event, callback-count, click-ID, or cohort detail
    into `data/growth` or `data/reports`.
-5. The Playworlds callback receiver contract exists. Run
+5. The Playworlds callback receiver contract remains optional later-stage
+   instrumentation. Run
    `npm.cmd run growth:probe` from the Playworlds server environment after its
    `PLAYWORLDS_CALLBACK_SECRET` is configured in production, after callback
    deployment, and after every
    secret rotation, then run `npm.cmd run growth:check`. Production currently
    lacks that configured secret and a recent product-side signed handshake, so
    callback readiness remains unavailable.
-   Full-loop readiness requires observed Search Console, an observed landing-UV
-   provider, and attribution-store probes plus a recent signed Playworlds
-   callback handshake. A legacy NovelAI callback, route, or event name is not
-   evidence of Playworlds readiness. Because the current CTA goes directly to
-   Steam, Steam reporting cannot return a purchase joined to an individual
-   `seo_click_id`; exact click-level revenue attribution additionally requires
-   a first-party Playworlds handoff/backend.
+   A missing secret, handshake, callback, or exact revenue join must remain
+   explicit, but it does not block early-stage research or publication. A
+   legacy NovelAI callback, route, or event name is not Playworlds evidence.
+   Exact click-level revenue attribution can be activated later through a
+   first-party Playworlds handoff/backend.
 6. Run `npm.cmd run growth:collect` before researching candidates. It uses the
    official Search Console API and the landing-analytics adapter over the
    configured 28-day finalized-data window, currently ending three complete
@@ -55,9 +53,10 @@ This is the active zero-additional-API-cost production protocol. It uses public 
    guard protects metric writes only; platform-level cost and attack protection
    remain the responsibility of Vercel WAF/DDoS configuration. Observed zero
    is valid, but an unattended `create_page` draft is illegal unless every
-   published page has observed exact-page Search Console and landing UV states
-   and the attribution join is ready. After retries, an unavailable required
-   measurement blocks publication, but the scheduled run must still complete
+   published page has observed exact-page Search Console impressions, clicks,
+   CTR, and average-position evidence. Landing UV, qualified outbound, callback,
+   and revenue states remain supporting observations rather than release gates.
+   After retries, unavailable Search Console evidence blocks publication, but the scheduled run must still complete
    and preserve its 8–12-candidate research batch and report before recording a
    terminal no-publication outcome.
    Formally retired slugs are collected separately in `retiredUrls` with only
@@ -102,7 +101,9 @@ For policy version 4, every candidate needs:
 - `demandScore` and `difficulty`: transparent 0-100 public-web proxies unless an observed provider metric is explicitly cited;
 - `intent`: commercial, transactional, mixed, informational, or navigational;
 - `funnelStage`: problem, solution, trial, or purchase;
-- `conversionGoal`: qualified_outbound_click, trial_start, or purchase;
+- `conversionGoal`: qualified_outbound_click, trial_start, or purchase; use
+  `qualified_outbound_click` as the normal early-stage conversion when a
+  downstream product outcome is not yet observable;
 - a `decisionEvidence` object with the candidate-specific searcher job, evidence references, approved product fact IDs, discrete product/trial/revenue/specificity signals, IP class, cannibalization class, nearest published slug when relevant, and a specific rationale for every score dimension.
 
 For reports dated 2026-08-11 or later, the overseas lane is D&D-first. Every
@@ -131,7 +132,7 @@ historical/manual compatibility input and cannot satisfy the current provider
 contract. The official limited-access Trends API Alpha is reserved as a later
 provider upgrade.
 
-The builder derives `productFit`, `trialIntent`, `revenueIntent`, `intentSpecificity`, `originality`, `ipRisk`, and `cannibalizationRisk` from the versioned signal weights. Raw AI-supplied values for those fields are ignored. New pages must pass every hard gate in `data/config/seo-policy.json`; demand cannot override a failed trial, revenue, specificity, product, IP, or cannibalization gate. See `research-signal-contract.md` for the exact contract and formulas.
+The builder derives `productFit`, `trialIntent`, `revenueIntent`, `intentSpecificity`, `originality`, `ipRisk`, and `cannibalizationRisk` from the versioned signal weights. Raw AI-supplied values for those fields are ignored. Revenue intent remains a scored advisory signal, not a publication hard gate during early traffic validation. New pages must pass every active hard gate in `data/config/seo-policy.json`; demand cannot override a failed trial, specificity, product, IP, or cannibalization gate. See `research-signal-contract.md` for the exact contract and formulas.
 
 ## Content strategy and funnel
 
@@ -205,14 +206,16 @@ provider proof.
 
 The production order is growth collection, Trends discovery/enrichment,
 research build, independent review, then guarded publication. The growth
-readiness command probes the live private data path and exits non-zero while
-the full loop is incomplete. The growth command writes a privacy-classified
+readiness command exits non-zero only when the early traffic probe cannot
+observe exact-page Search Console evidence; optional callback or revenue
+readiness is still printed but does not control its exit status. The growth command writes a privacy-classified
 schema-v2 `data/growth/YYYY-MM-DD.json` and refuses to overwrite it. The
 collector holds the full private response only long enough to derive the safe
 public fields and booleans. The research input embeds that snapshot or
 references it with `portfolioSnapshot`; the builder verifies that every
 published page is represented over one complete Shanghai-day period and the
-policy-defined reporting lag. A legacy schema-v1 input is accepted for
+policy-defined reporting lag, with exact-page Search Console observed for the
+early traffic gate. A legacy schema-v1 input is accepted for
 migration, but the builder never copies its private outcome fields into the
 daily report. The research command writes a review-required report and cannot
 write `data/pages`. Before publication, an independent editor creates a review
@@ -243,8 +246,7 @@ or after 23:45 Asia/Shanghai.
 
 Google Trends is independent demand-freshness evidence. A verified same-day
 collection is required, while an exact-term miss does not block publication.
-Trends never substitutes for complete GSC and landing-UV observation,
-attribution readiness, independent
+Trends never substitutes for complete GSC observation, independent
 `breakout_page` evidence, product and IP truth, content/presentation
 distinctness, or editorial and rendered-preview approval.
 

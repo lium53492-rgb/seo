@@ -24,6 +24,7 @@ import {
   withDailyPublicationGuard,
 } from "./lib/daily-coordination.mjs";
 import { readDailyRunState } from "./lib/daily-run-state.mjs";
+import { assertCreatePageMeasurementReadiness } from "./lib/measurement-policy.mjs";
 
 const reportPath = process.argv[2];
 const reviewPath = process.argv[3];
@@ -309,32 +310,10 @@ function assertCreatePagePublicationReadiness(candidateReport) {
     throw new Error("Create-page publication requires portfolioDecision.action=create_page");
   }
   if (unattendedPolicy.allowCreatePageWhenMetricsUnavailable !== false) {
-    throw new Error("Create-page growth readiness gate requires allowCreatePageWhenMetricsUnavailable=false");
+    throw new Error("Create-page measurement gate requires allowCreatePageWhenMetricsUnavailable=false");
   }
   const portfolio = candidateReport.portfolioFunnels;
-  const summary = portfolio?.summary;
-  const entries = Array.isArray(portfolio?.entries) ? portfolio.entries : [];
-  const pageReadinessFailures = entries.filter((entry) =>
-    entry?.state !== "collected" ||
-    entry.report?.decisionState?.searchPerformanceReady !== true ||
-    entry.report?.decisionState?.landingUvReady !== true ||
-    entry.report?.decisionState?.qualifiedOutboundReady !== true);
-  const growthReady = Boolean(summary) &&
-    summary.collectedPages === summary.publishedPages &&
-    summary.unavailablePages === 0 &&
-    summary.attributionJoinReady === true &&
-    portfolio?.globalAttribution?.product === "playworlds" &&
-    portfolio?.globalAttribution?.state === "observed" &&
-    portfolio?.globalAttribution?.attributionJoinReady === true &&
-    entries.length === summary.publishedPages &&
-    pageReadinessFailures.length === 0;
-  if (!growthReady) {
-    throw new Error(
-      "Create-page growth readiness gate failed: every published page must be collected with " +
-      "observed Search Console, landing UV, and qualified outbound evidence (zero values are allowed), " +
-      "zero unavailable pages, and an independent Playworlds callback/store probe with attributionJoinReady=true",
-    );
-  }
+  assertCreatePageMeasurementReadiness({ portfolio, policy, unattendedPolicy });
   const selectedKeyword = normalizeGoogleTrendsTerm(candidateReport.draft?.keyword);
   const selectedSignal = validatedTrends.trendSignals.find((signal) =>
     normalizeGoogleTrendsTerm(signal?.keyword) === selectedKeyword);

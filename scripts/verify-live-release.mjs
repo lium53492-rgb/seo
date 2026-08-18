@@ -89,7 +89,12 @@ async function verifyPlayworldsRedirect(path) {
   const location = response.headers.get("location");
   if (!location) throw new Error(`${path} is missing its Playworlds redirect destination`);
   const destination = new URL(location);
-  const expected = new URL(playworldsAttribution.destination);
+  const destinationPlatform = playworldsAttribution.defaultDestinationPlatform;
+  const destinationDefinition = playworldsAttribution.destinations?.[destinationPlatform];
+  if (!destinationDefinition?.enabled || !destinationDefinition.url) {
+    throw new Error("The default Playworlds destination is not configured");
+  }
+  const expected = new URL(destinationDefinition.url);
   if (destination.origin !== expected.origin || destination.pathname !== expected.pathname) {
     throw new Error(`${path} does not target the approved Playworlds Steam listing`);
   }
@@ -97,9 +102,11 @@ async function verifyPlayworldsRedirect(path) {
     utm_source: playworldsAttribution.utm.source,
     utm_medium: playworldsAttribution.utm.medium,
     utm_campaign: playworldsAttribution.utm.campaign,
-    utm_content: slug,
+    utm_content: `${slug}:seo_page`,
     seo_source_slug: slug,
     seo_cta_location: "seo_page",
+    seo_destination_platform: destinationPlatform,
+    seo_destination_host: expected.hostname,
     seo_product: playworldsAttribution.product,
     seo_attribution_version: String(playworldsAttribution.schemaVersion),
   };

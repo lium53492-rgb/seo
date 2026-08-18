@@ -927,7 +927,45 @@ test("report generation cannot publish before a separate approval artifact", asy
       encoding: "utf8",
     });
     assert.notEqual(unavailablePortfolioBuild.status, 0);
-    assert.match(unavailablePortfolioBuild.stderr, /Create-page growth readiness gate failed/);
+    assert.match(unavailablePortfolioBuild.stderr, /Create-page early traffic measurement gate failed/);
+
+    const earlyTrafficOnlyInput = structuredClone(input);
+    earlyTrafficOnlyInput.portfolioFunnels.summary.attributionJoinReady = false;
+    earlyTrafficOnlyInput.portfolioFunnels.summary.attributionJoinBlocked = true;
+    earlyTrafficOnlyInput.portfolioFunnels.globalAttribution = {
+      schemaVersion: 1,
+      product: "playworlds",
+      state: "unavailable",
+      attributionJoinReady: false,
+      detail: "The optional Playworlds callback fixture probe was unavailable.",
+    };
+    const earlyTrafficReport = earlyTrafficOnlyInput.portfolioFunnels.entries[0].report;
+    earlyTrafficReport.metrics.landingUv = unavailable(
+      "vercel_analytics",
+      "Landing UV is optional and unavailable in this early traffic fixture.",
+    );
+    earlyTrafficReport.metrics.qualifiedOutboundClicks = unavailable(
+      "seo_redirect",
+      "Qualified outbound clicks are optional and unavailable in this early traffic fixture.",
+    );
+    earlyTrafficReport.decisionState.landingUvReady = false;
+    earlyTrafficReport.decisionState.qualifiedOutboundReady = false;
+    earlyTrafficReport.decisionState.attributionJoinChecked = true;
+    earlyTrafficReport.decisionState.attributionJoinBlocked = true;
+    earlyTrafficReport.decisionState.samePageSearchValidated = false;
+    await writeFile(inputPath, `${JSON.stringify(earlyTrafficOnlyInput, null, 2)}\n`);
+    const earlyTrafficOnlyBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.equal(earlyTrafficOnlyBuild.status, 0, earlyTrafficOnlyBuild.stderr);
+    const earlyTrafficOnlyReport = JSON.parse(await readFile(
+      join(workspace, "data", "reports", "2099-01-01.json"),
+      "utf8",
+    ));
+    assert.equal(earlyTrafficOnlyReport.measurementPhase.ready, true);
+    assert.equal(earlyTrafficOnlyReport.measurementPhase.phase, "early_traffic_validation");
+    await rm(join(workspace, "data", "reports", "2099-01-01.json"), { force: true });
 
     await mkdir(join(workspace, "data", "seo-feedback", "inbox"), { recursive: true });
     const feedbackMessage = "  Keep the exact page intent narrow.\n\nDo not flatten this feedback.  ";
@@ -1178,15 +1216,32 @@ test("report generation cannot publish before a separate approval artifact", asy
     assert.notEqual(missingBreakoutBypassPublish.status, 0);
     assert.match(missingBreakoutBypassPublish.stderr, /Create-page breakout evidence gate failed/);
 
-    const unavailableGrowthPublisherBypass = structuredClone(reportBeforeReview);
-    unavailableGrowthPublisherBypass.portfolioFunnels.summary.attributionJoinReady = false;
-    unavailableGrowthPublisherBypass.portfolioFunnels.globalAttribution.attributionJoinReady = false;
-    unavailableGrowthPublisherBypass.portfolioFunnels.globalAttribution.detail =
-      "The independent Playworlds callback fixture probe did not pass.";
-    await writeFile(reportPath, `${JSON.stringify(unavailableGrowthPublisherBypass, null, 2)}\n`);
-    const unavailableGrowthBypassPublish = spawnSync(process.execPath, [publisherPath, reportPath, reviewPath], { cwd: workspace, encoding: "utf8" });
-    assert.notEqual(unavailableGrowthBypassPublish.status, 0);
-    assert.match(unavailableGrowthBypassPublish.stderr, /Create-page growth readiness gate failed/);
+    const optionalDownstreamPublisherReport = structuredClone(reportBeforeReview);
+    optionalDownstreamPublisherReport.portfolioFunnels.summary.attributionJoinReady = false;
+    optionalDownstreamPublisherReport.portfolioFunnels.globalAttribution.state = "unavailable";
+    optionalDownstreamPublisherReport.portfolioFunnels.globalAttribution.attributionJoinReady = false;
+    optionalDownstreamPublisherReport.portfolioFunnels.globalAttribution.detail =
+      "The optional Playworlds callback fixture probe did not pass.";
+    const optionalPublisherPage = optionalDownstreamPublisherReport.portfolioFunnels.entries[0].report;
+    optionalPublisherPage.metrics.landingUv = unavailable(
+      "vercel_analytics",
+      "Landing UV is optional and unavailable in this publisher fixture.",
+    );
+    optionalPublisherPage.metrics.qualifiedOutboundClicks = unavailable(
+      "seo_redirect",
+      "Qualified outbound clicks are optional and unavailable in this publisher fixture.",
+    );
+    optionalPublisherPage.decisionState.landingUvReady = false;
+    optionalPublisherPage.decisionState.qualifiedOutboundReady = false;
+    optionalDownstreamPublisherReport.evidence = optionalDownstreamPublisherReport.evidence.map((item) => {
+      const { kind, signal, ...ordinaryEvidence } = item;
+      return ordinaryEvidence;
+    });
+    await writeFile(reportPath, `${JSON.stringify(optionalDownstreamPublisherReport, null, 2)}\n`);
+    const optionalDownstreamPublish = spawnSync(process.execPath, [publisherPath, reportPath, reviewPath], { cwd: workspace, encoding: "utf8" });
+    assert.notEqual(optionalDownstreamPublish.status, 0);
+    assert.match(optionalDownstreamPublish.stderr, /Create-page breakout evidence gate failed/);
+    assert.doesNotMatch(optionalDownstreamPublish.stderr, /early traffic measurement gate failed/);
 
     await writeFile(reportPath, `${JSON.stringify(reportBeforeReview, null, 2)}\n`);
     const desktopPreviewPath = join(previewDirectory, "play-an-ai-roleplay-story-desktop.png");
