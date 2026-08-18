@@ -332,6 +332,52 @@ test("a durable no-publish receipt ends same-day recovery without claiming a pub
   assert.throws(() => assertDailyLease({ coordinationRoot, date, owner: ownerA }), /does not own/);
 });
 
+test("a terminal no-publish receipt restores its exact evidence checkpoint without reopening the day", () => {
+  const date = "2099-01-10";
+  const now = new Date("2099-01-10T01:00:00.000Z");
+  const { coordinationRoot, worktreeA, worktreeB } = roots("no-publish-terminal-restore");
+  const ownerA = coordinationOwner(worktreeA, "run-a");
+  const ownerB = coordinationOwner(worktreeB, "run-b");
+  acquireDailyLease({ coordinationRoot, date, owner: ownerA, now, staleAfterMinutes: 60 });
+  writeNoPublishGrowth(worktreeA, date, "2099-01-10T00:55:00.000Z");
+  saveDailyCheckpoint({
+    coordinationRoot,
+    worktreeRoot: worktreeA,
+    date,
+    owner: ownerA,
+    now,
+  });
+  const terminalLease = completeDailyNoPublish({
+    coordinationRoot,
+    worktreeRoot: worktreeA,
+    date,
+    owner: ownerA,
+    reasonCode: "growth_unavailable",
+    reason: "The protected growth endpoint remained unavailable after the configured retries.",
+    now,
+  });
+
+  const restored = restoreDailyCheckpoint({
+    coordinationRoot,
+    worktreeRoot: worktreeB,
+    date,
+    owner: ownerB,
+  });
+  assert.deepEqual(restored.restored, [`data/growth/${date}.json`]);
+  assert.equal(
+    readFileSync(join(worktreeB, "data", "growth", `${date}.json`), "utf8"),
+    readFileSync(join(worktreeA, "data", "growth", `${date}.json`), "utf8"),
+  );
+  assert.deepEqual(readDailyLease({ coordinationRoot, date }), terminalLease);
+  assert.equal(acquireDailyLease({
+    coordinationRoot,
+    date,
+    owner: ownerB,
+    now: new Date("2099-01-10T02:00:00.000Z"),
+    staleAfterMinutes: 60,
+  }).outcome, "no_publish");
+});
+
 test("an exact BigQuery Rising miss closes the day as not observed without claiming zero demand", () => {
   const date = "2099-01-10";
   const now = new Date("2099-01-10T01:00:00.000Z");

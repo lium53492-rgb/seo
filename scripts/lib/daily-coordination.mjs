@@ -1331,16 +1331,25 @@ export function saveDailyCheckpoint({ coordinationRoot, worktreeRoot, date, owne
 
 export function restoreDailyCheckpoint({ coordinationRoot, worktreeRoot, date, owner }) {
   return withCoordinationLock({ coordinationRoot, date, owner }, (assertLock) => {
-    const lease = assertDailyLease({ coordinationRoot, date, owner });
+    const currentLease = readLease(coordinationRoot, date);
+    const terminalNoPublish = currentLease?.status === "completed_no_publish";
+    const lease = terminalNoPublish
+      ? currentLease
+      : assertDailyLease({ coordinationRoot, date, owner });
+    if (terminalNoPublish && !isDailyNoPublishReceipt(lease.noPublishReceipt, date)) {
+      throw new Error("The persisted no-publish receipt is invalid");
+    }
     const checkpointRevision = lease.checkpointRevision;
     if (!checkpointRevision) {
       assertLock();
-      appendLeaseState(
-        coordinationRoot,
-        date,
-        { ...lease, heartbeatAt: new Date().toISOString() },
-        lease,
-      );
+      if (!terminalNoPublish) {
+        appendLeaseState(
+          coordinationRoot,
+          date,
+          { ...lease, heartbeatAt: new Date().toISOString() },
+          lease,
+        );
+      }
       return { outcome: "empty", restored: [] };
     }
     if (typeof checkpointRevision !== "string" || !REVISION_PATTERN.test(checkpointRevision)) {
@@ -1358,6 +1367,21 @@ export function restoreDailyCheckpoint({ coordinationRoot, worktreeRoot, date, o
       manifest.revision !== checkpointRevision ||
       !Number.isInteger(manifest.generation) || manifest.generation > lease.generation) {
       throw new Error("Daily checkpoint manifest is invalid or comes from a future lease generation");
+    }
+    if (terminalNoPublish) {
+      if (Array.isArray(manifest.feedbackConsumptions) && manifest.feedbackConsumptions.length) {
+        throw new Error("Terminal no-publish restoration cannot replay feedback consumption");
+      }
+      const receiptArtifacts = new Map(lease.noPublishReceipt.artifactDigests.map((artifact) => [
+        artifact.path,
+        artifact,
+      ]));
+      if (receiptArtifacts.size !== manifest.files.length || manifest.files.some((file) => {
+        const receiptArtifact = receiptArtifacts.get(file?.path);
+        return !receiptArtifact || receiptArtifact.sha256 !== file.sha256 || receiptArtifact.bytes !== file.bytes;
+      })) {
+        throw new Error("Terminal no-publish checkpoint does not exactly match its evidence receipt");
+      }
     }
     const dailyCoordinationRoot = coordinationDirectory(coordinationRoot, date);
     const snapshotsRoot = resolve(dailyCoordinationRoot, "snapshots");
@@ -1387,11 +1411,15 @@ export function restoreDailyCheckpoint({ coordinationRoot, worktreeRoot, date, o
       }
       pendingWrites.push({ destinationPath, content, restoredPath: file.path });
     }
-    const feedbackPlans = planFeedbackConsumptions(worktreeRoot, manifest.feedbackConsumptions);
-    const feedbackPaths = [...new Set(
-      (Array.isArray(manifest.feedbackConsumptions) ? manifest.feedbackConsumptions : [])
-        .map((consumption) => consumption.path),
-    )];
+    const feedbackPlans = terminalNoPublish
+      ? []
+      : planFeedbackConsumptions(worktreeRoot, manifest.feedbackConsumptions);
+    const feedbackPaths = terminalNoPublish
+      ? []
+      : [...new Set(
+        (Array.isArray(manifest.feedbackConsumptions) ? manifest.feedbackConsumptions : [])
+          .map((consumption) => consumption.path),
+      )];
     const restored = [];
     for (const pending of pendingWrites) {
       writeAtomic(pending.destinationPath, pending.content);
@@ -1399,12 +1427,21 @@ export function restoreDailyCheckpoint({ coordinationRoot, worktreeRoot, date, o
     }
     restored.push(...applyFeedbackConsumptions(feedbackPlans));
     assertLock();
-    appendLeaseState(
-      coordinationRoot,
-      date,
-      { ...lease, heartbeatAt: new Date().toISOString() },
-      lease,
-    );
+    if (!terminalNoPublish) {
+      appendLeaseState(
+        coordinationRoot,
+        date,
+        { ...lease, heartbeatAt: new Date().toISOString() },
+        lease,
+      );
+    } else {
+      const latestLease = readLease(coordinationRoot, date);
+      if (!latestLease || latestLease.leaseId !== lease.leaseId ||
+        latestLease.generation !== lease.generation || latestLease.stateSequence !== lease.stateSequence ||
+        latestLease.stateId !== lease.stateId) {
+        throw new Error("Terminal no-publish state changed during checkpoint restoration");
+      }
+    }
     return { outcome: "restored", restored, state: manifest.state, feedbackPaths };
   });
 }
