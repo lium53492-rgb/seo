@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 2,
+  "privacyClass": "public_growth_evidence",
+  "generatedAt": "2026-08-18T02:38:30.425Z",
+  "periodBasis": "complete_shanghai_calendar_days",
+  "reportingWindowDays": 28,
+  "reportingLagDays": 3,
+  "aggregationKey": "source_slug+reporting_period",
+  "periodStart": "2026-07-17T16:00:00.000Z",
+  "periodEnd": "2026-08-14T16:00:00.000Z",
+  "summary": {
+    "publishedPages": 1,
+    "collectedPages": 0,
+    "unavailablePages": 1,
+    "attributionJoinReady": false,
+    "attributionJoinBlocked": false,
+    "hasSearchValidatedLandingPage": false
+  },
+  "entries": [
+    {
+      "sourceSlug": "ai-roleplay-prompt-vs-existing-story",
+      "path": "/ai-roleplay-prompt-vs-existing-story",
+      "keyword": "ai roleplay prompt vs existing story",
+      "state": "unavailable",
+      "reason": "Private attribution evidence could not be converted into a safe public page snapshot (TypeError)."
+    }
+  ],
+  "retiredUrls": [
+    {
+      "sourceSlug": "ai-roleplay-dialogue-vs-action",
+      "path": "/ai-roleplay-dialogue-vs-action",
+      "retiredAt": "2026-08-10T10:28:47.040Z",
+      "state": "unavailable",
+      "reason": "Private retired-URL evidence could not be converted into a safe public Search Console snapshot (TypeError)."
+    },
+    {
+      "sourceSlug": "ai-roleplay-first-message",
+      "path": "/ai-roleplay-first-message",
+      "retiredAt": "2026-08-10T10:28:47.040Z",
+      "state": "unavailable",
+      "reason": "Private retired-URL evidence could not be converted into a safe public Search Console snapshot (TypeError)."
+    },
+    {
+      "sourceSlug": "ai-roleplay-scene-recovery",
+      "path": "/ai-roleplay-scene-recovery",
+      "retiredAt": "2026-08-10T10:28:47.040Z",
+      "state": "unavailable",
+      "reason": "Private retired-URL evidence could not be converted into a safe public Search Console snapshot (TypeError)."
+    },
+    {
+      "sourceSlug": "ai-voice-roleplay-story",
+      "path": "/ai-voice-roleplay-story",
+      "retiredAt": "2026-08-10T10:28:47.040Z",
+      "state": "unavailable",
+      "reason": "Private retired-URL evidence could not be converted into a safe public Search Console snapshot (TypeError)."
+    },
+    {
+      "sourceSlug": "choose-a-role-ai-story",
+      "path": "/choose-a-role-ai-story",
+      "retiredAt": "2026-08-10T10:28:47.040Z",
+      "state": "unavailable",
+      "reason": "Private retired-URL evidence could not be converted into a safe public Search Console snapshot (TypeError)."
+    },
+    {
+      "sourceSlug": "how-to-choose-an-ai-roleplay-app",
+      "path": "/how-to-choose-an-ai-roleplay-app",
+      "retiredAt": "2026-08-10T10:28:47.040Z",
+      "state": "unavailable",
+      "reason": "Private retired-URL evidence could not be converted into a safe public Search Console snapshot (TypeError)."
+    },
+    {
+      "sourceSlug": "how-to-start-ai-roleplay",
+      "path": "/how-to-start-ai-roleplay",
+      "retiredAt": "2026-08-10T10:28:47.040Z",
+      "state": "unavailable",
+      "reason": "Private retired-URL evidence could not be converted into a safe public Search Console snapshot (TypeError)."
+    },
+    {
+      "sourceSlug": "interactive-voice-story",
+      "path": "/interactive-voice-story",
+      "retiredAt": "2026-08-10T10:28:47.040Z",
+      "state": "unavailable",
+      "reason": "Private retired-URL evidence could not be converted into a safe public Search Console snapshot (TypeError)."
+    },
+    {
+      "sourceSlug": "story-based-ai-roleplay",
+      "path": "/story-based-ai-roleplay",
+      "retiredAt": "2026-08-10T10:28:47.040Z",
+      "state": "unavailable",
+      "reason": "Private retired-URL evidence could not be converted into a safe public Search Console snapshot (TypeError)."
+    }
+  ]
+}
