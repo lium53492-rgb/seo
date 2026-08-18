@@ -92,7 +92,8 @@
       { "keyword": "voice narrated ai adventure", "state": "not_observed" }
     ],
     "exactRisingMatch": false,
-    "interpretation": "None of the exact candidate phrases appeared in the available US Top Rising feed. This does not mean zero search demand and does not clear the current automated Trends publication gate."
+    "notObservedAllowsPublication": true,
+    "interpretation": "None of the exact candidate phrases appeared in the available US Top Rising feed. Each exact miss is a valid not_observed result, never proof of zero demand, and it does not block publication by itself. Publication still requires a current-day signed collection; missing, unavailable, or unverifiable provider evidence remains fail-closed."
   },
   "productTruth": {
     "factIdsUsed": [
@@ -204,8 +205,8 @@
     "canonicalOrigin": "https://lorelens.playworlds.ai",
     "production": {
       "state": "verified",
-      "revision": "33de544ecbfcaff8b37d0bec70e14d3bc6988359",
-      "evidence": "The LoreLens homepage, canonical metadata, robots.txt, and sitemap.xml were verified twice on the production revision after the Playworlds environment-variable redeploy. This proves the site origin, not publication of this concept page."
+      "revision": "e22af73fbd678209da49be914680d126f7d432e3",
+      "evidence": "The LoreLens homepage, canonical metadata, robots.txt, and sitemap.xml were verified on the production revision, which also contains the signed Playworlds callback receiver contract. This proves the site origin and receiver deployment, not publication of this concept page, callback configuration, or a product-side handshake."
     },
     "searchConsole": {
       "property": "https://lorelens.playworlds.ai/",
@@ -223,7 +224,7 @@
     },
     "playworldsConversionCallback": {
       "state": "unavailable",
-      "reason": "The signed LoreLens receiver contract is source-complete, but it is not yet deployed and configured with a shared product secret, and no recent signed Playworlds server handshake has been observed, so the search-to-revenue loop is not ready."
+      "reason": "The signed LoreLens receiver contract is implemented and deployed, but PLAYWORLDS_CALLBACK_SECRET is absent in production and no recent signed Playworlds server handshake has been observed. The current direct Steam CTA can expose aggregate UTM reporting but cannot return a purchase tied to an individual seo_click_id, so the exact search-to-revenue join remains unavailable without a first-party Playworlds handoff/backend."
     }
   },
   "schemaContract": {
@@ -256,14 +257,14 @@
   },
   "currentReleaseBoundary": {
     "productionPolicyAllowsThisLane": false,
-    "reason": "The LoreLens production origin and matching Search Console property are now verified. The Playworlds outbound contract and signed LoreLens callback receiver are source-complete, but the receiver is not yet deployed and configured with a shared product secret, and no recent product-side signed handshake has been observed. This unpublished source slug intentionally remains 404 and its preview CTAs stay disabled until guarded schema-3 publication. Publication also remains blocked because the candidate lacks an exact US Top Rising match from Google Trends, and no same-day report, digest-bound editorial review, or visual audit authorizes this concept.",
+    "reason": "The LoreLens production origin and matching Search Console property are verified, and the signed Playworlds callback receiver contract is implemented and deployed. Production still lacks PLAYWORLDS_CALLBACK_SECRET, and no recent product-side signed handshake has been observed, while the direct Steam CTA cannot return an exact purchase joined to an individual seo_click_id, so the required revenue-attribution join is not ready. This unpublished source slug intentionally remains 404 and its preview CTAs stay disabled until guarded schema-3 publication. The signed 2026-08-16 Trends collection validly records the candidate as not_observed; that state is not zero and is not a publication blocker, although a future release must collect same-day signed evidence. No current-day 8–12-candidate research report, digest-bound editorial review, or visual audit authorizes this concept.",
     "requiredBeforePublication": [
-      "Deploy and configure the source-complete signed receiver, then complete a recent handshake from the Playworlds server environment",
+      "Choose and implement the revenue-attribution model: use a first-party Playworlds handoff/backend with the production shared secret and a recent signed handshake for an exact seo_click_id join, or obtain explicit approval to change the release policy to aggregate Steam reporting; never fabricate callback evidence",
       "Run current-day growth collection and preserve observed exact-property Search Console and complete landing-UV evidence with a ready attribution join",
       "Keep D&D language limited to adult audience context until an exact SRD version, license, attribution, and copy boundary are documented",
       "Regenerate the candidate under the current D&D-first policy with an allowed tabletop pain point and active Playworlds product facts",
-      "Produce same-day research, report, digest-bound editorial review, visual audit, and guarded publication artifacts",
-      "Pass the exact Google Trends Rising rule or record an explicit user-authorized policy change rather than silently bypassing it",
+      "Produce a same-day 8–12-candidate research set, durable report, digest-bound editorial review, visual audit, and guarded publication artifacts",
+      "Collect and verify same-day signed Google Trends schema-2 evidence; accept an exact candidate as observed or not_observed, never convert not_observed to zero, and keep provider unavailable or unverifiable states explicit",
       "Recheck the time-sensitive Steam release status and verify the attributed 307 redirect only after the schema-3 page is published"
     ]
   },

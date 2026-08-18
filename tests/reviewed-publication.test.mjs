@@ -22,6 +22,10 @@ import {
   normalizeGoogleTrendsTerm,
 } from "../lib/seo/google-trends-contract.mjs";
 import { acquireDailyLease, coordinationOwner } from "../scripts/lib/daily-coordination.mjs";
+import {
+  collectGoogleTrendsBigQuery,
+  trendSignalsFromCollection,
+} from "../scripts/lib/google-trends-bigquery.mjs";
 
 const repoRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const trendsTestClientEmail =
@@ -607,7 +611,7 @@ test("report generation cannot publish before a separate approval artifact", asy
         quality: { checks: [{ id: "distinct-intent", label: "Answers one trial-ready job", passed: true, detail: "The page targets a D&D reader evaluating an AI game master for campaign preparation." }] },
       },
     };
-    bindBigQueryTrendEvidence(input);
+    bindBigQueryTrendEvidence(input, { selectedObserved: false });
     const inputPath = join(workspace, "data", "research", "2099-01-01.json");
 
     const architectureClaimInput = structuredClone(input);
@@ -757,17 +761,36 @@ test("report generation cannot publish before a separate approval artifact", asy
       encoding: "utf8",
     });
     assert.notEqual(missingTrendBuild.status, 0);
-    assert.match(missingTrendBuild.stderr, /Create-page Google Trends gate failed/);
+    assert.match(missingTrendBuild.stderr, /Create-page Google Trends evidence failed/);
 
     const unavailableSelectedTrendInput = structuredClone(input);
     bindBigQueryTrendEvidence(unavailableSelectedTrendInput, { selectedObserved: false });
     await writeFile(inputPath, `${JSON.stringify(unavailableSelectedTrendInput, null, 2)}\n`);
-    const unavailableSelectedTrendBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+    const notObservedSelectedTrendBuild = spawnSync(process.execPath, [builderPath, inputPath], {
       cwd: workspace,
       encoding: "utf8",
     });
-    assert.notEqual(unavailableSelectedTrendBuild.status, 0);
-    assert.match(unavailableSelectedTrendBuild.stderr, /Create-page Google Trends gate failed/);
+    assert.equal(notObservedSelectedTrendBuild.status, 0, notObservedSelectedTrendBuild.stderr);
+    await rm(join(workspace, "data", "reports", "2099-01-01.json"), { force: true });
+
+    const providerUnavailableTrendInput = structuredClone(input);
+    providerUnavailableTrendInput.trendCollection = await collectGoogleTrendsBigQuery({
+      candidates: providerUnavailableTrendInput.candidates.map((candidate) => candidate.keyword),
+      now: new Date("2099-01-01T01:05:00.000Z"),
+      asOfDate: "2099-01-01",
+      env: {},
+    });
+    providerUnavailableTrendInput.trendSignals = trendSignalsFromCollection(
+      providerUnavailableTrendInput.trendCollection,
+      providerUnavailableTrendInput.candidates.map((candidate) => candidate.keyword),
+    );
+    await writeFile(inputPath, `${JSON.stringify(providerUnavailableTrendInput, null, 2)}\n`);
+    const providerUnavailableTrendBuild = spawnSync(process.execPath, [builderPath, inputPath], {
+      cwd: workspace,
+      encoding: "utf8",
+    });
+    assert.notEqual(providerUnavailableTrendBuild.status, 0);
+    assert.match(providerUnavailableTrendBuild.stderr, /verified same-day collection/);
 
     const weakSelectedTrendInput = structuredClone(input);
     delete weakSelectedTrendInput.trendCollection;
@@ -789,7 +812,7 @@ test("report generation cannot publish before a separate approval artifact", asy
       encoding: "utf8",
     });
     assert.notEqual(weakSelectedTrendBuild.status, 0);
-    assert.match(weakSelectedTrendBuild.stderr, /exact top_rising_terms match/);
+    assert.match(weakSelectedTrendBuild.stderr, /verified same-day collection/);
 
     const missingBreakoutEvidenceInput = structuredClone(input);
     missingBreakoutEvidenceInput.evidence = missingBreakoutEvidenceInput.evidence.map((item) => {
@@ -1143,7 +1166,7 @@ test("report generation cannot publish before a separate approval artifact", asy
     await writeFile(reportPath, `${JSON.stringify(missingTrendPublisherBypass, null, 2)}\n`);
     const missingTrendBypassPublish = spawnSync(process.execPath, [publisherPath, reportPath, reviewPath], { cwd: workspace, encoding: "utf8" });
     assert.notEqual(missingTrendBypassPublish.status, 0);
-    assert.match(missingTrendBypassPublish.stderr, /Create-page Google Trends gate failed/);
+    assert.match(missingTrendBypassPublish.stderr, /Create-page Google Trends evidence failed/);
 
     const missingBreakoutPublisherBypass = structuredClone(reportBeforeReview);
     missingBreakoutPublisherBypass.evidence = missingBreakoutPublisherBypass.evidence.map((item) => {

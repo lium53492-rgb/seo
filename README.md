@@ -54,9 +54,12 @@ partial run and prevents a second page for the same Shanghai day. A shared
 `daily:coord` lease and checkpoint lets isolated automation worktrees hand off
 without racing. Lease transitions are immutable append-only states, and the
 publisher holds the same cross-worktree guard while rechecking the daily page
-count. The primary
-run collects one all-page growth snapshot, researches the public web, writes a
-review-required English draft, and builds a durable report. A separate approval
+count. Every scheduled run must complete an 8–12-candidate public-web research
+set and its durable report before it may close the day as `completed_no_publish`,
+even when an earlier growth, attribution, or publication gate is unavailable.
+The primary run collects one all-page growth snapshot, completes that research,
+writes a review-required English draft when the evidence permits, and builds the
+durable report. A separate approval
 artifact is mandatory before publication. The builder blocks unsupported
 product claims, weak trial/revenue intent, duplicate intent, unapproved facts,
 and broken attribution joins. Page count, exact-page Search Console impressions,
@@ -69,6 +72,11 @@ verification.
 
 These schedules are local Codex jobs, so unattended production requires the
 computer and Codex application to remain online during a publishing window.
+After an unattended run records `completed_no_publish`, no scheduled or other
+unattended job may reopen or publish that day. An explicit same-day user-guided
+resume may reopen it once for the named owner; the resumed lease is owner-locked,
+preserves the earlier terminal receipt in history, and still must pass every
+research, product, rights, review, analytics, and release gate.
 
 The dashboard keeps official Google Trends observations separate from keyword
 volume, ranks published pages only with observed page-level data, and exposes
@@ -83,9 +91,12 @@ Retired URLs remain in a separate Search Console and URL Inspection monitor so
 their residual impressions can be observed without treating them as active
 landing pages or allowing them to influence publication readiness.
 
-For unattended schema-v2 research, only an exact normalized
-`top_rising_terms` match can clear the Trends gate. `top_terms` is discovery
-context only, and legacy schema-v1 UI observations are retained solely for
+For current research, same-day signed schema-v2 collection is required, but an
+exact candidate miss is a valid `not_observed` result and does not block
+publication by itself. `not_observed` never means zero demand. Provider
+unavailability, missing signatures, and unverifiable evidence remain explicit
+fail-closed states. `top_terms` and `top_rising_terms` are prioritization and
+discovery context, and legacy schema-v1 UI observations are retained solely for
 historical/manual compatibility. Trends never substitutes for GSC, landing UV,
 attribution, independent breakout evidence, IP safety, content distinctness,
 or editorial and visual approval.
@@ -111,11 +122,16 @@ query/page metrics can be read.
 
 Search Console, first-party landing analytics, the optional Vercel fallback,
 and product-scoped Upstash attribution are explicit data connections. A
-Playworlds conversion callback has not been implemented, so conversion
-readiness deliberately remains fail-closed. The old NovelAI callback is a
-historical compatibility path only. Missing connections stay `unavailable`;
-they never become synthetic zeroes. Automated collection uses a dedicated
-bearer token; it does not reuse the interactive workbench password.
+signed Playworlds conversion-receiver contract is implemented and deployed, but
+the production shared secret is not configured and no recent signed product-side
+handshake has been observed, so conversion readiness remains fail-closed. The
+current direct Steam CTA can provide aggregate Steam UTM reporting, but it cannot
+return a purchase tied to an individual `seo_click_id`; exact click-to-purchase
+joining requires a first-party Playworlds handoff/backend before Steam. The old
+NovelAI callback is a historical compatibility path only. Missing connections
+stay `unavailable`; they never become synthetic zeroes. Automated collection
+uses a dedicated bearer token; it does not reuse the interactive workbench
+password.
 
 Copy `.env.example` to `.env.local` and configure only the integrations you have. Never commit `.env.local`.
 

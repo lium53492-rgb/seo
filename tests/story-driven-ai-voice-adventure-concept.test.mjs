@@ -217,8 +217,11 @@ test("dossier records the Playworlds Steam facts and keeps release blockers expl
   assert.equal(dossier.research.collectedOn, "2026-08-16");
   assert.equal(dossier.googleTrends.collectionState, "observed");
   assert.equal(dossier.googleTrends.exactRisingMatch, false);
+  assert.equal(dossier.googleTrends.notObservedAllowsPublication, true);
   assert.match(dossier.googleTrends.snapshotDigest, /^[a-f0-9]{64}$/);
   assert.ok(dossier.googleTrends.candidates.every((candidate) => candidate.state === "not_observed"));
+  assert.match(dossier.googleTrends.interpretation, /never proof of zero demand/);
+  assert.match(dossier.googleTrends.interpretation, /does not block publication by itself/);
   assert.equal(dossier.releaseInfrastructure.canonicalOrigin, "https://lorelens.playworlds.ai");
   assert.equal(dossier.releaseInfrastructure.production.state, "verified");
   assert.equal(dossier.releaseInfrastructure.searchConsole.property, "https://lorelens.playworlds.ai/");
@@ -236,12 +239,27 @@ test("dossier records the Playworlds Steam facts and keeps release blockers expl
   assert.match(dossier.schemaContract.conceptReadinessNote, /same-day research decision/);
   assert.match(dossier.schemaContract.conceptReadinessNote, /cannot be promoted directly/);
   assert.equal(dossier.currentReleaseBoundary.productionPolicyAllowsThisLane, false);
-  assert.match(dossier.currentReleaseBoundary.reason, /production origin.*Search Console property are now verified/);
-  assert.match(dossier.currentReleaseBoundary.reason, /callback receiver (?:is|are) source-complete/);
-  assert.match(dossier.currentReleaseBoundary.reason, /not yet deployed and configured/);
+  assert.match(dossier.currentReleaseBoundary.reason, /production origin.*Search Console property are verified/);
+  assert.match(dossier.currentReleaseBoundary.reason, /callback receiver contract is implemented and deployed/);
+  assert.match(dossier.currentReleaseBoundary.reason, /lacks PLAYWORLDS_CALLBACK_SECRET/);
   assert.match(dossier.currentReleaseBoundary.reason, /no recent product-side signed handshake has been observed/);
-  assert.match(dossier.currentReleaseBoundary.reason, /exact US Top Rising match from Google Trends/);
-  assert.match(dossier.currentReleaseBoundary.reason, /no same-day report/);
+  assert.match(dossier.currentReleaseBoundary.reason, /direct Steam CTA cannot return an exact purchase/);
+  assert.match(dossier.currentReleaseBoundary.reason, /not_observed.*not a publication blocker/);
+  assert.doesNotMatch(dossier.currentReleaseBoundary.reason, /lacks an exact US Top Rising match/);
+  assert.match(dossier.currentReleaseBoundary.reason, /No current-day 8–12-candidate research report/);
+  assert.match(
+    dossier.releaseInfrastructure.playworldsConversionCallback.reason,
+    /receiver contract is implemented and deployed/,
+  );
+  assert.match(
+    dossier.releaseInfrastructure.playworldsConversionCallback.reason,
+    /direct Steam CTA.*cannot return a purchase tied to an individual seo_click_id/,
+  );
+  assert.ok(
+    dossier.currentReleaseBoundary.requiredBeforePublication.some((requirement) =>
+      /accept an exact candidate as observed or not_observed/.test(requirement),
+    ),
+  );
   assert.doesNotMatch(dossier.currentReleaseBoundary.reason, /production domain.*not been verified/);
   assert.deepEqual(dossier.productTruth.factIdsUsed, [
     "playworlds-current-product",

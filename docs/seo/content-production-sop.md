@@ -25,13 +25,16 @@ Do not create near-duplicate keyword variants. A keyword is only a discovery han
 - Treat trend or hot-topic signals as leads, not product facts. Run the official
   US Google Trends BigQuery collector daily after growth collection and before
   research. The public dataset exposes Top 25 and Rising 25 rows per DMA; it is
-  not an arbitrary-keyword or national-volume endpoint. For the unattended
-  schema-v2 gate, only an exact normalized match in `top_rising_terms` is an
-  observed qualifying signal. `top_terms`, related terms, and DMA `score`
-  values can enrich discovery but cannot be relabelled as nationwide
-  `relativeInterest`. Missing credentials or query failure is `unavailable`;
-  a successful query without the exact term is `not_observed`. Both mean no
-  publication, not zero search volume. Legacy
+  not an arbitrary-keyword or national-volume endpoint. An exact normalized
+  `top_rising_terms` match is an observed prioritization signal. `top_terms`,
+  related terms, and DMA `score` values can enrich discovery but cannot be
+  relabelled as nationwide `relativeInterest`. Missing credentials or query
+  failure is `unavailable`; a successful query without the exact term is
+  `not_observed`. `not_observed` is valid evidence and does not itself block
+  publication or mean zero search volume. The selected candidate still needs a
+  same-day schema-v2 collection whose service-account attestation verifies;
+  missing, unavailable, or tampered provider evidence remains a publication
+  block. Legacy
   schema-v1 UI observations remain historical/manual compatibility only. From
   the configured enforcement date, a selected page also needs a page-specific
   independent `breakout_page` record with a numeric signal, unit, basis,
@@ -144,9 +147,21 @@ When a draft includes a contextual internal link, the published template must re
 ## 6. Measurement and iteration
 
 - Publish no more than one new page per Shanghai day.
+- Complete and preserve a daily 8–12-candidate research batch and its report
+  before closing a scheduled day as `no_publish`, even when measurement,
+  provider, callback, or other release evidence blocks publication. A valid
+  terminal receipt remains terminal for unattended recovery jobs. Only an
+  explicit same-day user-guided resume may continue that chain once; the
+  coordinator locks it to its owner and it does not bypass any other gate.
 - Track publication date, evidence count, intent/cluster, approved fact IDs, rendering checks, page-level Search Console metrics, and 28-day outcome.
 - Treat organic clicks as search-result clicks, not unique visitors. Do not promise a fixed traffic outcome.
 - Aggregate Search Console clicks and landing UV by source page and reporting period. Join qualified outbounds, trials, signups, payments, and revenue with `seo_click_id`; do not use the shared keyword-research account as an analytics source.
+- The Playworlds callback receiver contract exists, but production is not
+  full-loop ready until its secret is configured and a recent signed
+  product-side handshake is observed. The current CTA terminates on Steam;
+  Steam reporting does not return an exact purchase joined to an individual
+  `seo_click_id`, so exact click-level revenue attribution requires a
+  first-party Playworlds handoff/backend rather than configuration alone.
 - For landing UV, prefer the first-party Upstash source: exact daily pageview
   counters plus a page-scoped Redis HyperLogLog UV estimate with approximately
   0.81% standard error. Keep

@@ -31,6 +31,7 @@ const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const REVISION_PATTERN = /^[0-9TZ.-]+-[a-f0-9]{16}-[a-f0-9-]{36}$/;
 const ATOMIC_REPLACE_RETRY_CODES = new Set(["EACCES", "EBUSY", "EPERM"]);
 const OPERATION_LOCK_STALE_MS = 5 * 60_000;
+const GUIDED_RESUME_CONFIRMATION = "CONFIRM_USER_GUIDED_RESUME";
 
 function coordinationBusy(message = "Daily coordination state is currently being updated") {
   const error = new Error(message);
@@ -146,6 +147,52 @@ function sha256(value) {
 
 function readJson(path) {
   return JSON.parse(readFileSync(path, "utf8"));
+}
+
+function guidedResumeFeedbackWasUsed(coordinationRoot, date, feedbackId) {
+  const statesDirectory = leaseStatesDirectory(coordinationRoot, date);
+  if (!existsSync(statesDirectory)) return false;
+  assertSafePath(coordinationDirectory(coordinationRoot, date), statesDirectory);
+  return readdirSync(statesDirectory)
+    .filter((name) => /^\d{12}-[a-f0-9-]{36}\.json$/.test(name))
+    .some((name) => readJson(resolve(statesDirectory, name))?.guidedResume?.feedbackId === feedbackId);
+}
+
+function readGuidedResumeFeedback(worktreeRoot, date, feedbackId, { current, owner, now }) {
+  if (!/^feedback-\d{4}-\d{2}-\d{2}-[a-z0-9-]+$/.test(String(feedbackId || ""))) {
+    throw new Error("Guided resume requires a safe same-day feedback ID");
+  }
+  const inboxRoot = resolve(worktreeRoot, "data", "seo-feedback", "inbox");
+  if (!existsSync(inboxRoot)) throw new Error("Guided resume feedback inbox is missing");
+  assertSafePath(worktreeRoot, inboxRoot);
+  const matches = [];
+  for (const name of readdirSync(inboxRoot).filter((value) => value.endsWith(".json"))) {
+    const path = resolve(inboxRoot, name);
+    assertSafePath(inboxRoot, path);
+    const document = readJson(path);
+    for (const entry of Array.isArray(document?.entries) ? document.entries : []) {
+      if (entry?.id === feedbackId) matches.push({ document, entry });
+    }
+  }
+  if (matches.length !== 1) throw new Error("Guided resume feedback ID must resolve exactly once");
+  const { document, entry } = matches[0];
+  const authorization = entry?.guidedResumeAuthorization;
+  const consumedAtMs = Date.parse(entry?.consumedAt || "");
+  const expiresAtMs = Date.parse(authorization?.expiresAt || "");
+  const priorReceiptSha256 = sha256(JSON.stringify(current?.noPublishReceipt));
+  if (document?.date !== date || shanghaiDate(entry?.createdAt) !== date ||
+    entry?.source !== "codex_chat" || entry?.kind !== "content_guidance" ||
+    entry?.decision !== "adopted" || typeof entry?.message !== "string" ||
+    entry.message.trim().length < 20 || !Number.isFinite(consumedAtMs) || consumedAtMs > now.getTime() ||
+    shanghaiDate(entry.consumedAt) !== date || authorization?.schemaVersion !== 1 ||
+    authorization?.action !== "resume_after_no_publish" || authorization?.date !== date ||
+    authorization?.terminalStateId !== current?.stateId ||
+    authorization?.terminalStateSequence !== current?.stateSequence ||
+    authorization?.terminalReceiptSha256 !== priorReceiptSha256 || authorization?.owner !== owner ||
+    !Number.isFinite(expiresAtMs) || expiresAtMs < now.getTime() || shanghaiDate(authorization.expiresAt) !== date) {
+    throw new Error("Guided resume requires adopted, consumed, same-day user guidance from Codex chat");
+  }
+  return entry;
 }
 
 function writeAtomic(path, value) {
@@ -342,6 +389,7 @@ export function inspectDailyCarryover({
   const releases = [];
   const occupied = [];
   const noPublishOutcomes = [];
+  const guidedRuns = [];
   for (const candidateDate of readdirSync(dailyRoot).filter((name) => DATE_PATTERN.test(name) && name <= date).sort()) {
     const candidateRoot = coordinationDirectory(coordinationRoot, candidateDate);
     assertSafePath(dailyRoot, candidateRoot);
@@ -358,6 +406,12 @@ export function inspectDailyCarryover({
       if (candidateDate === date) {
         noPublishOutcomes.push({ releaseDate: candidateDate, lease, productionDate: null });
       }
+    }
+    if (lease.status === "active" && lease.guidedResume?.schemaVersion === 1) {
+      if (candidateDate === date) {
+        guidedRuns.push({ releaseDate: candidateDate, lease, productionDate: null });
+      }
+      continue;
     }
     const productionDate = lease.liveVerification?.productionDate || (
       Number.isFinite(Date.parse(lease.liveVerification?.verifiedAt || ""))
@@ -391,10 +445,13 @@ export function inspectDailyCarryover({
       });
     }
   }
-  if (releases.length > 1 || occupied.length > 1 || noPublishOutcomes.length > 1 ||
-    (releases.length && occupied.length) || (noPublishOutcomes.length && (releases.length || occupied.length))) {
+  if (releases.length > 1 || occupied.length > 1 || noPublishOutcomes.length > 1 || guidedRuns.length > 1 ||
+    (releases.length && occupied.length) ||
+    (guidedRuns.length && (releases.length || occupied.length || noPublishOutcomes.length)) ||
+    (noPublishOutcomes.length && (releases.length || occupied.length))) {
     throw new Error("Daily coordination found conflicting unresolved or production-day releases");
   }
+  if (guidedRuns.length === 1) return { state: "guided", ...guidedRuns[0] };
   if (noPublishOutcomes.length === 1) return { state: "no_publish", ...noPublishOutcomes[0] };
   if (occupied.length === 1) return { state: "occupied", ...occupied[0] };
   if (releases.length === 1) {
@@ -604,6 +661,9 @@ export function acquireDailyLease({
   }
   if (carryover.state === "occupied") {
     return { outcome: "completed", lease: carryover.lease, carryover };
+  }
+  if (carryover.state === "guided" && carryover.lease.owner !== owner) {
+    return { outcome: "busy", lease: carryover.lease, carryover };
   }
   if (["busy", "recoverable"].includes(carryover.state)) {
     return { outcome: "busy", lease: carryover.lease, carryover };
@@ -939,6 +999,9 @@ export function acquireDailyReleaseRecoveryLease({
   assertOwner(owner);
   return withCoordinationLock({ coordinationRoot, date, owner, now }, (assertLock) => {
     const current = readLease(coordinationRoot, date);
+    if (current?.guidedResume?.schemaVersion === 1 && current.owner !== owner) {
+      return { outcome: "busy", lease: current };
+    }
     const persistedRelease = current?.releaseInFlight || current?.releasePreparing;
     const orphanPinnedRevision = current?.status === "active" && !persistedRelease
       ? pinnedDailyReleaseRevision(coordinationRoot, date)
@@ -973,6 +1036,74 @@ export function acquireDailyReleaseRecoveryLease({
       outcome: "acquired",
       lease: appendLeaseState(coordinationRoot, date, recovered, current),
     };
+  });
+}
+
+export function resumeDailyAfterNoPublish({
+  coordinationRoot,
+  worktreeRoot,
+  date,
+  owner,
+  feedbackId,
+  confirmation,
+  now = new Date(),
+}) {
+  assertDate(date);
+  assertOwner(owner);
+  if (confirmation !== GUIDED_RESUME_CONFIRMATION) {
+    throw new Error("Guided resume requires the explicit interactive confirmation phrase");
+  }
+  assertPublishingWindow(date, now);
+  return withCoordinationLock({ coordinationRoot, date, owner, now }, (assertLock) => {
+    const current = readLease(coordinationRoot, date);
+    if (!current || current.status !== "completed_no_publish" ||
+      !isDailyNoPublishReceipt(current.noPublishReceipt, date)) {
+      throw new Error("Guided resume requires a valid terminal no-publish receipt for the same day");
+    }
+    if (guidedResumeFeedbackWasUsed(coordinationRoot, date, feedbackId)) {
+      throw new Error("Guided resume feedback authorization has already been consumed");
+    }
+    const feedback = readGuidedResumeFeedback(worktreeRoot, date, feedbackId, {
+      current,
+      owner,
+      now,
+    });
+    const state = readDailyRunState({ root: worktreeRoot, date });
+    if (state.publishedSlug || state.conflicts.length > 0 ||
+      state.mayCreatePage !== true || state.resumeAt === null) {
+      throw new Error("Guided resume cannot override a publication or conflicting daily artifacts");
+    }
+    const timestamp = now.toISOString();
+    const resumed = {
+      schemaVersion: 1,
+      date,
+      status: "active",
+      mode: "user_guided",
+      owner,
+      leaseId: randomUUID(),
+      generation: Number(current.generation || 0) + 1,
+      acquiredAt: timestamp,
+      heartbeatAt: timestamp,
+      ...(typeof current.checkpointRevision === "string"
+        ? { checkpointRevision: current.checkpointRevision }
+        : {}),
+      guidedResume: {
+        schemaVersion: 1,
+        authorization: "explicit_same_day_user_guidance",
+        feedbackId: feedback.id,
+        feedbackMessageSha256: sha256(feedback.message),
+        resumedAt: timestamp,
+        priorStateId: current.stateId,
+        priorStateSequence: current.stateSequence,
+        priorReceiptSha256: sha256(JSON.stringify(current.noPublishReceipt)),
+        priorReasonCode: current.noPublishReceipt.reasonCode,
+        maxPublications: 1,
+        ownerLocked: true,
+      },
+    };
+    assertLock();
+    const lease = appendLeaseState(coordinationRoot, date, resumed, current);
+    return { outcome: "user_guided_resumed", lease, state };
   });
 }
 
@@ -1058,6 +1189,77 @@ function checkedFile(path, trustedRoot = dirname(path)) {
   return readFileSync(path);
 }
 
+function assertCompletedDailyResearch(date, research, report) {
+  if (!research || typeof research !== "object" || Array.isArray(research) ||
+    !report || typeof report !== "object" || Array.isArray(report)) {
+    throw new Error("No-publish completion requires completed daily research evidence and its builder report");
+  }
+  const candidates = Array.isArray(research?.candidates) ? research.candidates : [];
+  const evidence = Array.isArray(research?.evidence) ? research.evidence : [];
+  const minimumCandidates = unattendedPolicy.candidateBatchSize?.min;
+  const maximumCandidates = unattendedPolicy.candidateBatchSize?.max;
+  if (research?.date !== date || research?.policyVersion !== seoPolicy.policyVersion ||
+    !Number.isSafeInteger(minimumCandidates) || !Number.isSafeInteger(maximumCandidates) ||
+    candidates.length < minimumCandidates || candidates.length > maximumCandidates) {
+    throw new Error(`No-publish research must contain ${minimumCandidates}-${maximumCandidates} current-policy candidates`);
+  }
+  if (evidence.length < seoPolicy.evidence.minLinks) {
+    throw new Error(`No-publish research needs at least ${seoPolicy.evidence.minLinks} evidence records`);
+  }
+  const evidenceById = new Map();
+  const evidenceDomains = new Set();
+  for (const item of evidence) {
+    const id = String(item?.id || "").trim();
+    if (!id || evidenceById.has(id) || !Array.isArray(item?.supports)) {
+      throw new Error("No-publish research evidence IDs and supports must be complete and unique");
+    }
+    let domain;
+    try {
+      const url = new URL(String(item?.url || ""));
+      if (!/^https?:$/.test(url.protocol)) throw new Error("unsupported protocol");
+      domain = url.hostname.toLowerCase().replace(/^www\./, "");
+    } catch {
+      throw new Error(`No-publish research evidence needs an accessible HTTP(S) URL: ${id}`);
+    }
+    evidenceById.set(id, { item, domain });
+    evidenceDomains.add(domain);
+  }
+  if (evidenceDomains.size < seoPolicy.evidence.minDomains) {
+    throw new Error(`No-publish research needs evidence from at least ${seoPolicy.evidence.minDomains} domains`);
+  }
+  const keywords = new Set();
+  for (const candidate of candidates) {
+    const keyword = String(candidate?.keyword || "").trim().toLowerCase();
+    const refs = Array.isArray(candidate?.decisionEvidence?.evidenceRefs)
+      ? [...new Set(candidate.decisionEvidence.evidenceRefs)]
+      : [];
+    if (!keyword || keywords.has(keyword) || refs.length < seoPolicy.decisionEvidence.minEvidenceRefs) {
+      throw new Error(`No-publish research candidate evidence is incomplete: ${keyword || "<empty>"}`);
+    }
+    const domains = new Set();
+    for (const ref of refs) {
+      const bound = evidenceById.get(ref);
+      if (!bound || !bound.item.supports.some((value) => String(value || "").trim().toLowerCase() === keyword)) {
+        throw new Error(`No-publish research candidate has an unbound evidence reference: ${keyword}`);
+      }
+      domains.add(bound.domain);
+    }
+    if (domains.size < seoPolicy.decisionEvidence.minIndependentDomains) {
+      throw new Error(`No-publish research candidate needs independent evidence domains: ${keyword}`);
+    }
+    keywords.add(keyword);
+  }
+  if (report?.date !== date || report?.id !== `seo-${date}` ||
+    report?.policyVersion !== seoPolicy.policyVersion ||
+    report?.summary?.candidatesAnalyzed !== candidates.length ||
+    !Array.isArray(report?.opportunities) || report.opportunities.length !== candidates.length ||
+    report?.candidateIntentGate?.state !== "passed" ||
+    !["create_page", "improve_page", "consolidate", "observe"].includes(report?.portfolioDecision?.action) ||
+    typeof report?.publication?.status !== "string") {
+    throw new Error("No-publish report must be a complete builder output bound to the daily research batch");
+  }
+}
+
 function noPublishEvidence(worktreeRoot, date, dailyState) {
   const candidatePaths = [
     `data/growth/${date}.json`,
@@ -1117,6 +1319,9 @@ function noPublishEvidence(worktreeRoot, date, dailyState) {
   const research = documents.get(`data/research/${date}.json`);
   const report = documents.get(`data/reports/${date}.json`);
   const review = documents.get(`data/reviews/${date}.json`);
+  if (unattendedPolicy.requireDailyResearchBeforeNoPublish === true) {
+    assertCompletedDailyResearch(date, research, report);
+  }
   const trendSignals = Array.isArray(report?.trendSignals)
     ? report.trendSignals
     : Array.isArray(research?.trendSignals) ? research.trendSignals : [];
@@ -1459,10 +1664,12 @@ export function completeDailyNoPublish({
   assertOwner(owner);
   const noPublishPolicy = unattendedPolicy.noPublish;
   const normalizedReason = typeof reason === "string" ? reason.trim() : "";
-  if (unattendedPolicy.allowZeroPageOutcome !== true || noPublishPolicy?.schemaVersion !== 1) {
+  if (unattendedPolicy.allowZeroPageOutcome !== true ||
+    !Number.isSafeInteger(noPublishPolicy?.schemaVersion)) {
     throw new Error("The unattended policy does not allow a zero-page outcome");
   }
-  if (!noPublishPolicy.reasonCodes.includes(reasonCode)) {
+  if (!Array.isArray(noPublishPolicy.activeReasonCodes) ||
+    !noPublishPolicy.activeReasonCodes.includes(reasonCode)) {
     throw new Error(`Unknown no-publish reason code: ${reasonCode || "<empty>"}`);
   }
   if (normalizedReason.length < noPublishPolicy.minimumReasonChars ||
@@ -1484,6 +1691,17 @@ export function completeDailyNoPublish({
       throw new Error("No-publish completion cannot coexist with a page published on the Shanghai day");
     }
     const evidence = noPublishEvidence(worktreeRoot, date, dailyState);
+    if (unattendedPolicy.requireDailyResearchBeforeNoPublish === true) {
+      const evidencePaths = new Set(evidence.artifactDigests.map((artifact) => artifact.path));
+      for (const requiredPath of [
+        `data/research/${date}.json`,
+        `data/reports/${date}.json`,
+      ]) {
+        if (!evidencePaths.has(requiredPath)) {
+          throw new Error(`No-publish completion requires completed daily research evidence: ${requiredPath}`);
+        }
+      }
+    }
     assertNoPublishReasonEvidence(reasonCode, evidence.evidenceSummary);
     const receipt = {
       schemaVersion: noPublishPolicy.schemaVersion,

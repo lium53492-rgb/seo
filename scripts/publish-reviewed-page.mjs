@@ -16,7 +16,7 @@ import { hasExplicitMarkdownList, unsupportedMarkdownReason } from "../lib/seo/m
 import { audienceDraftBlockers } from "../lib/seo/audience-policy.mjs";
 import { assertOriginalIpBoundary } from "../lib/seo/ip-boundary.mjs";
 import {
-  isQualifyingGoogleTrendsSignal,
+  normalizeGoogleTrendsTerm,
   validateGoogleTrendsEvidence,
 } from "../lib/seo/google-trends-contract.mjs";
 import {
@@ -335,24 +335,21 @@ function assertCreatePagePublicationReadiness(candidateReport) {
       "zero unavailable pages, and an independent Playworlds callback/store probe with attributionJoinReady=true",
     );
   }
-  const selectedKeyword = String(candidateReport.draft?.keyword || "").trim().toLowerCase();
-  const trendReady = validatedTrends.trendSignals.some((signal) =>
-    isQualifyingGoogleTrendsSignal(signal, {
-      selectedKeyword,
-      reportDate: candidateReport.date,
-      trendCollection: validatedTrends.trendCollection,
-      requireBigQuery,
-      attestationVerificationKey: trendsAttestationVerificationKey,
-      expectedAttestationClientEmail: trendsAttestationClientEmail,
-    }));
+  const selectedKeyword = normalizeGoogleTrendsTerm(candidateReport.draft?.keyword);
+  const selectedSignal = validatedTrends.trendSignals.find((signal) =>
+    normalizeGoogleTrendsTerm(signal?.keyword) === selectedKeyword);
+  const collectionReady = validatedTrends.trendCollection?.state === "observed" ||
+    (validatedTrends.trendCollection?.state === "unavailable" &&
+      policy.googleTrends.providerUnavailableAllowsPublication === true);
+  const signalReady = selectedSignal?.state === "observed" ||
+    (selectedSignal?.state === "not_observed" && policy.googleTrends.notObservedAllowsPublication === true) ||
+    (selectedSignal?.state === "unavailable" &&
+      policy.googleTrends.providerUnavailableAllowsPublication === true);
+  const trendReady = collectionReady && signalReady;
   if (!trendReady) {
-    const requiredEvidence = requireBigQuery
-      ? "official same-day BigQuery collection with an exact top_rising_terms match"
-      : "official same-day observation: Explore direction=rising/relativeInterest>=50 or an exact " +
-        "BigQuery top_rising_terms match";
     throw new Error(
-      `Create-page Google Trends gate failed: selected draft ${selectedKeyword || "<empty>"} needs an ` +
-      requiredEvidence,
+      `Create-page Google Trends evidence failed: selected draft ${selectedKeyword || "<empty>"} needs a ` +
+      "verified same-day collection and an explicit observed or not_observed candidate result",
     );
   }
   assertPublishedBreakoutEvidence(candidateReport, selectedKeyword);

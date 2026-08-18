@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { generateKeyPairSync } from "node:crypto";
+import { createHash, generateKeyPairSync } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { after, test } from "node:test";
 import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, utimesSync, writeFileSync } from "node:fs";
@@ -17,6 +17,7 @@ import {
   prepareDailyRelease,
   readDailyLease,
   rebaseDailyRelease,
+  resumeDailyAfterNoPublish,
   restoreDailyCheckpoint,
   saveDailyCheckpoint,
   startDailyRelease,
@@ -126,6 +127,76 @@ function writeNoPublishGrowth(worktreeRoot, date, generatedAt) {
       sourceSlug: `page-${index + 1}`,
       state: "unavailable",
     })),
+  }, null, 2)}\n`);
+}
+
+function writeNoPublishResearchAndReport(worktreeRoot, date) {
+  const researchPath = join(worktreeRoot, "data", "research", `${date}.json`);
+  const reportPath = join(worktreeRoot, "data", "reports", `${date}.json`);
+  const keywords = Array.from({ length: 8 }, (_, index) => `d&d research task ${index + 1}`);
+  const evidence = Array.from({ length: 5 }, (_, index) => ({
+    id: `evidence-${index + 1}`,
+    title: `Independent evidence ${index + 1}`,
+    url: `https://source-${index + 1}.example/evidence`,
+    source: `Source ${index + 1}`,
+    collectedAt: `${date}T09:00:00+08:00`,
+    supports: keywords,
+  }));
+  const candidates = keywords.map((keyword) => ({
+    keyword,
+    decisionEvidence: {
+      evidenceRefs: ["evidence-1", "evidence-2"],
+    },
+  }));
+  mkdirSync(dirname(researchPath), { recursive: true });
+  mkdirSync(dirname(reportPath), { recursive: true });
+  writeFileSync(researchPath, `${JSON.stringify({
+    date,
+    policyVersion: 4,
+    candidates,
+    evidence,
+    trendSignals: [],
+  }, null, 2)}\n`);
+  writeFileSync(reportPath, `${JSON.stringify({
+    id: `seo-${date}`,
+    date,
+    policyVersion: 4,
+    summary: { candidatesAnalyzed: candidates.length },
+    opportunities: candidates.map(({ keyword }) => ({ keyword })),
+    candidateIntentGate: { state: "passed" },
+    portfolioDecision: { action: "observe" },
+    publication: { status: "not_requested" },
+    trendSignals: [],
+  }, null, 2)}\n`);
+}
+
+function writeGuidedResumeFeedback(worktreeRoot, date, id, terminalLease, owner) {
+  const path = join(worktreeRoot, "data", "seo-feedback", "inbox", `${date}.json`);
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, `${JSON.stringify({
+    date,
+    entries: [{
+      id,
+      createdAt: `${date}T09:00:00+08:00`,
+      message: "The user explicitly instructed this interactive task to resume the same-day stopped run.",
+      source: "codex_chat",
+      kind: "content_guidance",
+      consumedAt: `${date}T09:01:00+08:00`,
+      decision: "adopted",
+      guidedResumeAuthorization: {
+        schemaVersion: 1,
+        action: "resume_after_no_publish",
+        date,
+        terminalStateId: terminalLease.stateId,
+        terminalStateSequence: terminalLease.stateSequence,
+        terminalReceiptSha256: createHash("sha256")
+          .update(JSON.stringify(terminalLease.noPublishReceipt))
+          .digest("hex"),
+        owner,
+        expiresAt: `${date}T23:45:00+08:00`,
+      },
+      rationale: "Permit one user-guided same-day continuation while scheduled automations remain unable to resume it.",
+    }],
   }, null, 2)}\n`);
 }
 
@@ -297,6 +368,8 @@ test("a durable no-publish receipt ends same-day recovery without claiming a pub
   });
   assert.throws(completion, /same-day growth snapshot/);
   writeNoPublishGrowth(worktreeA, date, "2099-01-10T00:55:00.000Z");
+  assert.throws(completion, /completed daily research evidence/);
+  writeNoPublishResearchAndReport(worktreeA, date);
   assert.throws(() => completeDailyNoPublish({
     coordinationRoot,
     worktreeRoot: worktreeA,
@@ -305,13 +378,16 @@ test("a durable no-publish receipt ends same-day recovery without claiming a pub
     reasonCode: "trends_below_threshold",
     reason: "The observed Google Trends signals remained below the configured release threshold.",
     now,
-  }), /requires observed but non-qualifying/);
+  }), /Unknown no-publish reason code/);
 
   const completed = completion();
   assert.equal(completed.status, "completed_no_publish");
   assert.equal(completed.noPublishReceipt.outcome, "no_publish");
   assert.equal(completed.noPublishReceipt.evidenceSummary.growth.unavailablePages, 9);
-  assert.equal(completed.noPublishReceipt.artifactDigests[0].path, `data/growth/${date}.json`);
+  assert.deepEqual(
+    completed.noPublishReceipt.artifactDigests.map((item) => item.path),
+    [`data/growth/${date}.json`, `data/research/${date}.json`, `data/reports/${date}.json`],
+  );
   assert.equal("publishedSlug" in completed.noPublishReceipt, false);
   assert.equal("releaseRevision" in completed.noPublishReceipt, false);
   assert.equal("liveVerification" in completed.noPublishReceipt, false);
@@ -340,6 +416,7 @@ test("a terminal no-publish receipt restores its exact evidence checkpoint witho
   const ownerB = coordinationOwner(worktreeB, "run-b");
   acquireDailyLease({ coordinationRoot, date, owner: ownerA, now, staleAfterMinutes: 60 });
   writeNoPublishGrowth(worktreeA, date, "2099-01-10T00:55:00.000Z");
+  writeNoPublishResearchAndReport(worktreeA, date);
   saveDailyCheckpoint({
     coordinationRoot,
     worktreeRoot: worktreeA,
@@ -363,7 +440,11 @@ test("a terminal no-publish receipt restores its exact evidence checkpoint witho
     date,
     owner: ownerB,
   });
-  assert.deepEqual(restored.restored, [`data/growth/${date}.json`]);
+  assert.deepEqual(restored.restored, [
+    `data/growth/${date}.json`,
+    `data/research/${date}.json`,
+    `data/reports/${date}.json`,
+  ]);
   assert.equal(
     readFileSync(join(worktreeB, "data", "growth", `${date}.json`), "utf8"),
     readFileSync(join(worktreeA, "data", "growth", `${date}.json`), "utf8"),
@@ -378,15 +459,121 @@ test("a terminal no-publish receipt restores its exact evidence checkpoint witho
   }).outcome, "no_publish");
 });
 
-test("an exact BigQuery Rising miss closes the day as not observed without claiming zero demand", () => {
+test("only an explicitly user-guided owner can resume a same-day no-publish terminal", () => {
+  const date = "2099-01-10";
+  const now = new Date("2099-01-10T01:00:00.000Z");
+  const { coordinationRoot, worktreeA } = roots("guided-no-publish-resume");
+  const automatedOwner = coordinationOwner(worktreeA, "scheduled-run");
+  const guidedOwner = coordinationOwner(worktreeA, "interactive-user-run");
+  acquireDailyLease({ coordinationRoot, date, owner: automatedOwner, now, staleAfterMinutes: 60 });
+  writeNoPublishGrowth(worktreeA, date, "2099-01-10T00:55:00.000Z");
+  writeNoPublishResearchAndReport(worktreeA, date);
+  const terminalLease = completeDailyNoPublish({
+    coordinationRoot,
+    worktreeRoot: worktreeA,
+    date,
+    owner: automatedOwner,
+    reasonCode: "growth_unavailable",
+    reason: "The protected growth endpoint remained unavailable after the configured retries.",
+    now,
+  });
+  const feedbackId = `feedback-${date}-guided-resume`;
+  writeGuidedResumeFeedback(worktreeA, date, feedbackId, terminalLease, guidedOwner);
+  assert.throws(() => resumeDailyAfterNoPublish({
+    coordinationRoot,
+    worktreeRoot: worktreeA,
+    date,
+    owner: guidedOwner,
+    feedbackId,
+    confirmation: "--guided",
+    now: new Date("2099-01-10T02:00:00.000Z"),
+  }), /explicit interactive confirmation/);
+  assert.throws(() => resumeDailyAfterNoPublish({
+    coordinationRoot,
+    worktreeRoot: worktreeA,
+    date,
+    owner: automatedOwner,
+    feedbackId,
+    confirmation: "CONFIRM_USER_GUIDED_RESUME",
+    now: new Date("2099-01-10T02:00:00.000Z"),
+  }), /same-day user guidance/);
+
+  const resumed = resumeDailyAfterNoPublish({
+    coordinationRoot,
+    worktreeRoot: worktreeA,
+    date,
+    owner: guidedOwner,
+    feedbackId,
+    confirmation: "CONFIRM_USER_GUIDED_RESUME",
+    now: new Date("2099-01-10T02:00:00.000Z"),
+  });
+  assert.equal(resumed.outcome, "user_guided_resumed");
+  assert.equal(resumed.lease.mode, "user_guided");
+  assert.equal(resumed.lease.guidedResume.priorStateId, terminalLease.stateId);
+  assert.equal(resumed.lease.guidedResume.priorReasonCode, "growth_unavailable");
+  assert.equal(resumed.state.resumeAt, "review");
+  assert.equal(inspectDailyCarryover({
+    coordinationRoot,
+    date,
+    owner: automatedOwner,
+    now: new Date("2099-01-10T05:00:00.000Z"),
+  }).state, "guided");
+  assert.equal(acquireDailyLease({
+    coordinationRoot,
+    date,
+    owner: automatedOwner,
+    now: new Date("2099-01-10T05:00:00.000Z"),
+    staleAfterMinutes: 60,
+  }).outcome, "busy");
+  assert.equal(acquireDailyLease({
+    coordinationRoot,
+    date,
+    owner: guidedOwner,
+    now: new Date("2099-01-10T05:00:00.000Z"),
+    staleAfterMinutes: 60,
+  }).outcome, "acquired");
+  assert.equal(inspectDailyCarryover({
+    coordinationRoot,
+    date: "2099-01-11",
+    owner: automatedOwner,
+    now: new Date("2099-01-11T01:00:00.000Z"),
+  }).state, "none");
+  completeDailyNoPublish({
+    coordinationRoot,
+    worktreeRoot: worktreeA,
+    date,
+    owner: guidedOwner,
+    reasonCode: "growth_unavailable",
+    reason: "The protected growth endpoint remained unavailable after the configured retries.",
+    now: new Date("2099-01-10T05:10:00.000Z"),
+  });
+  assert.throws(() => resumeDailyAfterNoPublish({
+    coordinationRoot,
+    worktreeRoot: worktreeA,
+    date,
+    owner: guidedOwner,
+    feedbackId,
+    confirmation: "CONFIRM_USER_GUIDED_RESUME",
+    now: new Date("2099-01-10T05:20:00.000Z"),
+  }), /already been consumed/);
+  assert.equal(inspectDailyCarryover({
+    coordinationRoot,
+    date: "2099-01-11",
+    owner: automatedOwner,
+    now: new Date("2099-01-11T01:00:00.000Z"),
+  }).state, "none");
+});
+
+test("an exact BigQuery Rising miss cannot close the day by itself", () => {
   const date = "2099-01-10";
   const now = new Date("2099-01-10T01:00:00.000Z");
   const { coordinationRoot, worktreeA } = roots("no-publish-trends-not-observed");
   const owner = coordinationOwner(worktreeA, "run-a");
   acquireDailyLease({ coordinationRoot, date, owner, now, staleAfterMinutes: 60 });
   writeNoPublishGrowth(worktreeA, date, "2099-01-10T00:55:00.000Z");
+  writeNoPublishResearchAndReport(worktreeA, date);
   writeNoPublishTrendMiss(worktreeA, date);
-  const completed = completeDailyNoPublish({
+  assert.throws(() => completeDailyNoPublish({
     coordinationRoot,
     worktreeRoot: worktreeA,
     date,
@@ -394,11 +581,8 @@ test("an exact BigQuery Rising miss closes the day as not observed without claim
     reasonCode: "trends_not_observed",
     reason: "The official collection succeeded, but no exact candidate entered the US Rising 25 feed.",
     now,
-  });
-  assert.equal(completed.status, "completed_no_publish");
-  assert.equal(completed.noPublishReceipt.evidenceSummary.trends.providerState, "observed");
-  assert.equal(completed.noPublishReceipt.evidenceSummary.trends.notObserved, 1);
-  assert.equal(completed.noPublishReceipt.evidenceSummary.trends.qualifying, 0);
+  }), /Unknown no-publish reason code/);
+  assert.equal(readDailyLease({ coordinationRoot, date }).status, "active");
 });
 
 test("no-publish completion refuses to hide a page already published that day", () => {
@@ -408,6 +592,7 @@ test("no-publish completion refuses to hide a page already published that day", 
   const owner = coordinationOwner(worktreeA, "run-a");
   acquireDailyLease({ coordinationRoot, date, owner, now, staleAfterMinutes: 60 });
   writeNoPublishGrowth(worktreeA, date, "2099-01-12T00:55:00.000Z");
+  writeNoPublishResearchAndReport(worktreeA, date);
   const pagesDirectory = join(worktreeA, "data", "pages");
   mkdirSync(pagesDirectory, { recursive: true });
   writeFileSync(join(pagesDirectory, "already-published.json"), `${JSON.stringify({

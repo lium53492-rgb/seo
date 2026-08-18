@@ -18,8 +18,12 @@
     "max": 12
   },
   "minimumFallbackIntents": 7,
+  "requireDailyResearchBeforeNoPublish": true,
   "noPublish": {
-    "schemaVersion": 1,
+    "schemaVersion": 2,
+    "acceptedHistoricalSchemaVersions": [
+      1
+    ],
     "minimumReasonChars": 20,
     "maximumReasonChars": 600,
     "reasonCodes": [
@@ -28,6 +32,16 @@
       "trends_unavailable",
       "trends_not_observed",
       "trends_below_threshold",
+      "research_insufficient",
+      "content_quality_failed",
+      "visual_quality_failed",
+      "editorial_rejected",
+      "external_dependency_failed"
+    ],
+    "activeReasonCodes": [
+      "growth_unavailable",
+      "attribution_blocked",
+      "trends_unavailable",
       "research_insufficient",
       "content_quality_failed",
       "visual_quality_failed",

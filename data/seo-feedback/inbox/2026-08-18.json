@@ -1,0 +1,25 @@
+{
+  "date": "2026-08-18",
+  "entries": [
+    {
+      "id": "feedback-2026-08-18-guided-resume-trends-daily-research",
+      "createdAt": "2026-08-18T15:20:51+08:00",
+      "message": "如果后续你自己做的任务终止  导致页面没有上线的话  那当天如果我再指导你做的话  还是可以上线的  但是你自己就不要上线了  第二个是就算一个关键词没有进入google trends 页面也是要上线的  第三个是什么情况  要如何解决  第四个是  你每天都要完成研究  可以多花点token",
+      "source": "codex_chat",
+      "kind": "content_guidance",
+      "consumedAt": "2026-08-18T15:20:51+08:00",
+      "decision": "adopted",
+      "guidedResumeAuthorization": {
+        "schemaVersion": 1,
+        "action": "resume_after_no_publish",
+        "date": "2026-08-18",
+        "terminalStateId": "02588584-4fba-4b77-8ad0-7fb53db33415",
+        "terminalStateSequence": 5,
+        "terminalReceiptSha256": "c0ead3b4002a9397869a477098b8aacdeff6651c139a9b2582f33f35645d2866",
+        "owner": "5cadf5de4af43a2c",
+        "expiresAt": "2026-08-18T15:45:00.000Z"
+      },
+      "rationale": "Allow one explicit, same-Shanghai-day user-guided resume after an autonomous completed_no_publish, bind it to the named owner, and prohibit unattended jobs from reopening or publishing that terminal day. Require every daily automation to finish an 8–12-candidate research set and durable report before no-publication closure. Keep same-day signed Google Trends collection mandatory while accepting an exact candidate not_observed result for publication; never interpret that state as zero, and preserve provider missing, unavailable, or unverifiable states as explicit failures. Record the third issue as the revenue-attribution boundary: the SEO receiver is implemented and deployed, but the production shared secret and recent signed Playworlds handshake are absent, and a direct Steam CTA cannot return an exact purchase joined to seo_click_id. Do not fabricate callback evidence; a future product decision must choose a first-party Playworlds handoff for exact attribution or explicitly authorize aggregate Steam reporting."
+    }
+  ]
+}

@@ -90,6 +90,11 @@ Before a new page or update:
   lag, even when an entry is explicitly unavailable. URLs with a validated
   retirement receipt stay in the separate `retiredUrls` Search Console/URL
   Inspection monitor; they never count as active pages or readiness evidence.
+- Complete the daily 8-12-candidate research and write both the same-day
+  research artifact and its report even when growth, attribution, or another
+  publication gate is unavailable. Those failures may prevent drafting or
+  publication, but they must not truncate the day's research. A new
+  unattended no-publish receipt is valid only after those artifacts exist.
 - After growth collection, run `npm.cmd run trends:check` and then
   `npm.cmd run trends:collect -- --research data/research/YYYY-MM-DD.json`
   before the report builder; use the default `--stdout` mode with repeated
@@ -97,7 +102,8 @@ Before a new page or update:
   Google's official US BigQuery `top_terms` and `top_rising_terms` public
   tables for discovery and enrichment. Missing credentials, query failure, or
   no exact normalized rising-term match must stay explicit and must not be
-  replaced with public-web proxy scores. Research enrichment is atomic and
+  replaced with public-web proxy scores. An exact miss is `not_observed`, not
+  zero, and does not by itself prevent publication. Research enrichment is atomic and
   must refuse to overwrite existing `trendCollection` or `trendSignals`.
   An unavailable attempt must print diagnostics and leave the research file
   unchanged so a later same-day retry remains possible. Persist only the
@@ -152,16 +158,18 @@ Before a new page or update:
   provide the required decision-evidence signals and rationales. The builder,
   not the generating model, derives product-fit, trial-intent, revenue-intent,
   intent-specificity, originality, IP, and cannibalization scores.
-- A selected `create_page` draft must have a same-day schema-v2 Google Trends
-  observation derived from Google's official BigQuery public dataset. Only an
-  exact normalized match in US `top_rising_terms` can clear the Trends gate.
-  `top_terms` rows and non-exact matches are discovery leads only. Per-DMA
+- A selected `create_page` draft must have a same-day, verified schema-v2
+  Google Trends result derived from Google's official BigQuery public dataset.
+  An exact US `top_rising_terms` match is a prioritization signal, not a
+  publication gate. A selected keyword with an explicit `not_observed` result
+  may publish when every other gate passes. Per-DMA
   `score` values must never be relabelled as nationwide `relativeInterest`.
   Missing credentials or a failed/stale collection means `unavailable`; a
-  successful collection without the exact term means `not_observed`. Both
-  mean no publication and neither proves zero search volume. Legacy
+  successful collection without the exact term means `not_observed`; only an
+  unavailable or unverifiable collection remains a Trends evidence failure.
+  Neither state proves zero search volume. Legacy
   schema-v1 Trends UI signals remain historical/manual compatibility input and
-  cannot clear this unattended v2 gate.
+  cannot replace the verified same-day v2 evidence requirement.
 - From the date configured in `seo-policy.json`, a selected `create_page`
   candidate also needs a same-day, page-specific, independent
   `breakout_page` evidence record. Its numeric signal, unit, basis, detail,
@@ -204,13 +212,19 @@ Before a new page or update:
 
 - Publish at most one new page per Shanghai day. A different keyword spelling
   is not a different intent, and an update is a separate evidence-led decision.
-- A scheduled run may legitimately publish zero pages. Research and record the
-  decision, but do not create a page merely to satisfy a daily count when
-  Trends, measurement readiness, reader value, or rendered visual quality fails.
-  After the same-day growth snapshot exists, close that decision with
+- A scheduled run may legitimately publish zero pages. It must first complete
+  and persist the daily research and report, but must not create a page merely
+  to satisfy a daily count when measurement readiness, reader value, or
+  rendered visual quality fails. After the same-day growth, research, and
+  report artifacts exist, close that decision with
   `daily:coord -- no-publish YYYY-MM-DD REASON_CODE "Specific observed reason"`.
-  A valid receipt is terminal for that day; recovery must not restart the
-  content chain or treat it as a published-page/deployment receipt.
+  A scheduled run treats a valid receipt as terminal for that day and must not
+  restart the content chain. If the user later gives explicit same-day guidance,
+  the current interactive task may use the dedicated `guided-resume` action
+  once before cutoff. That resumed lease is owner-locked; unattended 09:15,
+  18:30, and 21:30 tasks may neither invoke it nor take it over. Guided resume
+  removes only the terminal-state lock and never bypasses the one-page, product,
+  IP, evidence, review, visual, build, or live-release gates.
 - For scheduled production, follow `docs/seo/unattended-daily-publishing.md`.
   Settle any previous-day release in flight, acquire the shared daily lease,
   restore its latest checkpoint, save after
@@ -234,8 +248,9 @@ Before a new page or update:
   draft and content strategy, including architecture and presentation.
 - Run the research builder, publisher, and `npm.cmd run verify` before release.
   Generate, render, and visually inspect the daily PDF when required.
-- The production order is growth collection, Trends discovery/enrichment,
-  research build, independent review, then guarded publication. A Trends hit
+- The production order is growth collection, complete daily research, Trends
+  discovery/enrichment, report build, independent review, then guarded
+  publication. A Trends hit
   never replaces Search Console/landing-UV/attribution readiness, independent
   breakout evidence, IP and product-fact checks, content distinctness, or
   rendered visual review.

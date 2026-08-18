@@ -4,7 +4,7 @@
 
 ## 每天怎么用
 
-1. 每天 09:15 主任务自动启动；若未完成，18:30 和 21:30 恢复任务会从共享断点续跑。工作台显示增长、研究、日报、审稿、PDF 和部署验收的当前阶段。
+1. 每天 09:15 主任务自动启动；若未完成，18:30 和 21:30 恢复任务会从共享断点续跑。每天都要完成并保存 8–12 个候选词/意图的研究和日报，即使其他门槛导致当天不能发页。有效的 `no_publish` 结果对自动任务保持终止；只有用户当天明确指导恢复时，才可由同一负责人锁定并继续一次，且不能绕过任何其他门槛。工作台显示增长、研究、日报、审稿、PDF 和部署验收的当前阶段。
 2. 再看 Google Trends、研究热点和机会分；Trends 来自美国各 DMA 的官方 Top 25/Rising 25 公共表，需求/竞争仍是代理分，二者都不是月搜索量。
 3. 看 SEO 页面榜单。只有 exact-page GSC、UV、出站和付费返回观测值时才参与对应指标排序；`—` 不等于 0。
 4. 打开完整内容预览，确认搜索任务、产品事实、原创素材、内链和归因 CTA 均真实可用。
@@ -23,7 +23,7 @@
 | Codex Content | 事实约束草稿 | 已有 | Brief、英文页面、FAQ、素材需求 |
 | GitHub Reports | 自动提交到 `data/reports` | 0 | 每日版本记录和 Vercel 部署来源 |
 | Product Analytics | 第一方 Upstash HLL（首选）+ Vercel API（完整周期回退） | Upstash 按量；Vercel 依套餐 | 按页面和周期统计落地 UV 与浏览量，不混加供应商数据 |
-| Google Trends | 官方 BigQuery 美国 Top 25/Rising 25 公共数据集 | 免费额度内 0/需 Google Cloud 项目 | 每日发现与增强；只允许精确 rising 命中通过 v2 门槛 |
+| Google Trends | 官方 BigQuery 美国 Top 25/Rising 25 公共数据集 | 免费额度内 0/需 Google Cloud 项目 | 每日发现与增强；精确 rising 命中用于排序，已验证的 `not_observed` 不阻止发布 |
 
 ## 数据怎样改变页面
 
@@ -65,8 +65,9 @@
 
 1. 在 Vercel Marketplace 连接 Upstash Redis，确认 `UPSTASH_REDIS_REST_URL` 和 `UPSTASH_REDIS_REST_TOKEN` 已进入 Production 环境。
 2. 当前 Playworlds 出站使用 `/go/playworlds/{slug}`，只跳转官方 Steam app 4911480，并携带版本化 UTM 与 `seo_click_id`。
-3. Playworlds 试玩、注册、付费的签名回调合同尚未实现；不要复用 NovelAI 密钥或旧回调充当 Playworlds 数据。
-4. `npm run growth:probe` 目前应返回 `unavailable` 并非零退出；`npm run growth:check` 的 `readyFor.fullLoop` 也应为 `false`。只有后续独立实现、部署并验证签名回调后，才能更改这个状态。
+3. Playworlds 签名回调接收合同已经存在，但 Production 目前仍缺少 `PLAYWORLDS_CALLBACK_SECRET` 和近期的产品端签名握手；不要复用 NovelAI 密钥或旧回调充当 Playworlds 数据。
+4. `npm run growth:probe` 目前应返回 `unavailable` 并非零退出；`npm run growth:check` 的 `readyFor.fullLoop` 也应为 `false`。配置密钥并取得近期产品端签名握手后才可改变接收端状态。
+5. 当前 CTA 直接进入 Steam。Steam 的营销报表是汇总数据，不能把某笔购买精确连接到单个 `seo_click_id`；若要实现点击级营收闭环，还需要 Playworlds 第一方中转页或后端接力，不能只靠增加密钥解决。
 
 ### Google Trends
 
@@ -76,8 +77,8 @@
 4. 热点发现可先运行 `npm run trends:collect -- --stdout`，读取最多 50 条确定性 D&D 线索；也可重复传入 `--candidate "keyword"` 做精确候选核对。写好当日原始研究文件后，运行 `npm run trends:collect -- --research data/research/YYYY-MM-DD.json` 原子补入 `trendCollection` 和 `trendSignals`，已有同名字段时拒绝覆盖。显式 `--as-of` 必须与研究文件日期一致。
 5. 采集器每天读取官方 `bigquery-public-data.google_trends.top_terms` 和 `top_rising_terms`。它们是美国各 DMA 的 Top 25/Rising 25，不支持任意关键词查询。DMA `score` 不能汇总或改名为全美 `relativeInterest`。
 6. 持久化的 collection schema 2 不保存上万条完整 DMA 行，只保存两表行数与结果摘要、精确候选命中和最多 50 条 D&D 线索，且硬限制在 256 KiB 内。采集器用服务账号私钥做 RSA-SHA256 签名；构建、每日协调和发布都会按配置的账号与公钥指纹验签，私钥不会写入产物。
-7. 自动发布的 schema-v2 Trends 门槛只接受规范化后与 `top_rising_terms.term` 完全一致的候选词。只命中 `top_terms`、近似词或没有命中都记为 `not_observed`/不发布；这只表示没有进入可用的 Rising 25，不表示搜索量为 0。
-8. 凭据缺失、授权失败或查询超时时，research 模式只打印诊断并以状态码 2 退出，不写文件；服务恢复后当天可以重试。已经成功写入的 observed/not_observed 证据仍禁止覆盖。
+7. 规范化后与 `top_rising_terms.term` 完全一致的候选词记为 `observed`，用于提高优先级；成功采集但没有精确命中记为 `not_observed`。`not_observed` 是有效证据，不会单独阻止页面发布，也不表示搜索量为 0。页面仍必须有当天的 schema-v2 采集和可验证签名。
+8. 凭据缺失、授权失败、查询超时、证据缺失或验签失败时，结果必须保持 `unavailable`/无效，不能发布页面；research 模式只打印诊断并以状态码 2 退出，不写文件，服务恢复后当天可以重试。即使这个门槛未恢复，自动任务仍要完成 8–12 个候选的研究和日报后，才能记录当天不发布。已经成功写入的 observed/not_observed 证据仍禁止覆盖。
 9. 顺序固定为增长采集 → Trends 发现/增强 → 研究构建 → 独立审稿 → 发布。Trends 不替代 GSC、落地 UV、归因、独立 breakout、IP、内容差异化或视觉审查门槛。
 10. 旧 schema-v1 网页信号只保留历史/人工兼容。Google Trends 官方 API Alpha 仍是限量资格，后续获批后再升级，不是当前采集器的依赖。
 

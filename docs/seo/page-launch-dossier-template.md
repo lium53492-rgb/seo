@@ -36,10 +36,15 @@ measurement, editorial review, visual review, or the guarded publisher.
 ## Google Trends and breakout evidence
 
 - What same-day, attested Google Trends collection covers this exact keyword?
-- Is there an exact normalized US `top_rising_terms` match? A top-terms row,
-  related term, partial match, or DMA score does not clear the current gate.
+- Is the selected signal `observed` through an exact normalized US
+  `top_rising_terms` match, or valid `not_observed` evidence after a successful
+  exact miss? The exact match affects prioritization; it is not required for
+  publication. A top-terms row, related term, partial match, or DMA score must
+  not be relabelled as an exact rising match.
 - If the exact phrase was not observed, does the dossier say `not_observed`
-  rather than treating it as zero search volume?
+  rather than treating it as zero search volume or a publication blocker?
+- Is the collection missing, unavailable, stale, or tampered? Any of those
+  conditions remains an independent release block.
 - Which independent same-day `breakout_page` record supports the selected
   candidate, including numeric value, unit, basis, detail, timestamp, and URL?
 
@@ -132,6 +137,12 @@ measurement, editorial review, visual review, or the guarded publisher.
 - Is the attribution join ready, with no orphan conversion callbacks?
 - Has a recent signed Playworlds callback handshake been observed in the
   Playworlds server environment? A legacy callback is not evidence.
+- The receiver contract exists. Is `PLAYWORLDS_CALLBACK_SECRET` configured in
+  production? The loop is unavailable without the secret and a recent signed
+  product-side handshake.
+- Does the conversion design acknowledge that a direct Steam CTA cannot return
+  an exact purchase joined to one `seo_click_id`, and identify a first-party
+  Playworlds handoff/backend if click-level revenue attribution is required?
 - Are qualified outbounds, conversion outcomes, and revenue joined only by
   `seo_click_id`, while private outcomes remain outside committable artifacts?
 
@@ -157,7 +168,8 @@ evidence and a dated reason:
 - canonical LoreLens production origin and matching GSC property;
 - same-day growth portfolio and attribution readiness;
 - signed Playworlds callback handshake;
-- exact Google Trends Rising match and independent breakout evidence;
+- same-day attested Google Trends result (`observed` or `not_observed`) and
+  independent breakout evidence;
 - distinct intent, policy-derived scores, adult tabletop audience, and current
   Playworlds product fit;
 - product-fact and original-IP boundaries;
@@ -166,6 +178,12 @@ evidence and a dated reason:
 - daily coordinator, one-page limit, publishing window, clean artifact set,
   guarded publisher, exact Git revision, Vercel readiness, live page checks,
   sitemap inclusion, and attributed redirect verification.
+
+Before a new terminal `no_publish` decision, confirm that the scheduled run
+completed and preserved 8–12 candidates plus its report. A terminal receipt
+stays terminal for unattended jobs. If this is an explicit same-day
+user-guided resume, record the owner-locked resume evidence and confirm that it
+has been used no more than once and waives no other gate.
 
 Set `publicationEligible: true` only when all required gates pass at the actual
 publication stage. Keep it false when any gate is blocked or unavailable, even

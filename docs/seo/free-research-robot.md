@@ -11,22 +11,30 @@ This is the active zero-additional-API-cost production protocol. It uses public 
    checkpoint, then run `npm.cmd run daily:state -- YYYY-MM-DD`. Resume a valid partial daily
    chain at its reported next stage. Stop rather than overwrite an inconsistent
    chain, another task's artifact, or unrelated local work. Settlement scans all
-   historical unresolved release markers; none expires or is forgotten.
+   historical unresolved release markers; none expires or is forgotten. A
+   valid terminal `no_publish` receipt remains terminal for unattended runs.
+   Only an explicit same-day user-guided resume may reopen it once; the resumed
+   lease is owner-locked, and every ordinary publication gate still applies.
 4. Check the complete commercial funnel only through the private API and in
    process memory. The committable growth snapshot records exact-page Search
    Console, URL Inspection, aggregate landing UV, aggregate qualified outbound,
    and boolean readiness/blocking state only. Never copy trial, signup, payment,
    revenue, currency, purchase-event, callback-count, click-ID, or cohort detail
    into `data/growth` or `data/reports`.
-5. After the runtime probe and callback contract are migrated to Playworlds,
-   run `npm.cmd run growth:probe` from the Playworlds server environment after
-   callback deployment or secret rotation, then run
-   `npm.cmd run growth:check`. Until that migration is complete, record callback
-   readiness as unavailable.
+5. The Playworlds callback receiver contract exists. Run
+   `npm.cmd run growth:probe` from the Playworlds server environment after its
+   `PLAYWORLDS_CALLBACK_SECRET` is configured in production, after callback
+   deployment, and after every
+   secret rotation, then run `npm.cmd run growth:check`. Production currently
+   lacks that configured secret and a recent product-side signed handshake, so
+   callback readiness remains unavailable.
    Full-loop readiness requires observed Search Console, an observed landing-UV
    provider, and attribution-store probes plus a recent signed Playworlds
    callback handshake. A legacy NovelAI callback, route, or event name is not
-   evidence of Playworlds readiness.
+   evidence of Playworlds readiness. Because the current CTA goes directly to
+   Steam, Steam reporting cannot return a purchase joined to an individual
+   `seo_click_id`; exact click-level revenue attribution additionally requires
+   a first-party Playworlds handoff/backend.
 6. Run `npm.cmd run growth:collect` before researching candidates. It uses the
    official Search Console API and the landing-analytics adapter over the
    configured 28-day finalized-data window, currently ending three complete
@@ -48,8 +56,10 @@ This is the active zero-additional-API-cost production protocol. It uses public 
    remain the responsibility of Vercel WAF/DDoS configuration. Observed zero
    is valid, but an unattended `create_page` draft is illegal unless every
    published page has observed exact-page Search Console and landing UV states
-   and the attribution join is ready. After retries, record no publication when
-   any required measurement remains unavailable.
+   and the attribution join is ready. After retries, an unavailable required
+   measurement blocks publication, but the scheduled run must still complete
+   and preserve its 8–12-candidate research batch and report before recording a
+   terminal no-publication outcome.
    Formally retired slugs are collected separately in `retiredUrls` with only
    Search Console and URL Inspection fields; they do not count as published
    pages and cannot improve or block active-portfolio readiness.
@@ -108,15 +118,18 @@ Playworlds capability facts and earn the required score from the corresponding
 Playworlds capability signals.
 
 The selected `create_page` candidate also needs a same-day schema-v2 Google
-Trends observation produced from the official BigQuery collection. Only an
-exact normalized candidate-term match in US `top_rising_terms` can authorize
-the Trends gate. A `top_terms` row, a partial/semantic match, or a per-DMA
-`score` is useful for discovery only. Never aggregate or rename DMA scores as a
-nationwide `relativeInterest` value. No exact rising match is
-`not_observed`/no publication; it does not mean that the keyword has zero
-searches. Legacy schema-v1 Trends UI records are historical/manual
-compatibility input and cannot clear the unattended v2 gate. The official
-limited-access Trends API Alpha is reserved as a later provider upgrade.
+Trends result produced from the official BigQuery collection. An exact
+normalized candidate-term match in US `top_rising_terms` is an observed
+prioritization signal. A `top_terms` row, a partial/semantic match, or a per-DMA
+`score` remains discovery context. Never aggregate or rename DMA scores as a
+nationwide `relativeInterest` value. No exact rising match is `not_observed`:
+that state is valid evidence, does not itself block publication, and does not
+mean that the keyword has zero searches. The collection must still be
+same-day, schema-v2, provider-observed, and attested; missing, unavailable, or
+tampered evidence blocks publication. Legacy schema-v1 Trends UI records are
+historical/manual compatibility input and cannot satisfy the current provider
+contract. The official limited-access Trends API Alpha is reserved as a later
+provider upgrade.
 
 The builder derives `productFit`, `trialIntent`, `revenueIntent`, `intentSpecificity`, `originality`, `ipRisk`, and `cannibalizationRisk` from the versioned signal weights. Raw AI-supplied values for those fields are ignored. New pages must pass every hard gate in `data/config/seo-policy.json`; demand cannot override a failed trial, revenue, specificity, product, IP, or cannibalization gate. See `research-signal-contract.md` for the exact contract and formulas.
 
@@ -180,11 +193,11 @@ observed/rising signal.
 Collection schema 2 persists no full DMA row set. It stores per-table row
 counts and canonical result digests, exact candidate-match rows, and at most 50
 deterministically selected D&D discovery leads. Each lead keeps list type,
-rank, DMA coverage, applicable score/gain, and source table. A rising lead
-clears only the Google Trends gate when selected exactly; every intent,
-product, IP, growth, quality, and editorial gate remains independent. The
-collector signs the canonical snapshot digest with RSA-SHA256 using the same
-server-only BigQuery service-account private key. Artifacts contain only the
+rank, DMA coverage, applicable score/gain, and source table. An exact rising
+lead improves candidate prioritization but is not required for publication;
+every intent, product, IP, growth, quality, and editorial gate remains
+independent. The collector signs the canonical snapshot digest with RSA-SHA256
+using the same server-only BigQuery service-account private key. Artifacts contain only the
 client email, derived public-key fingerprint, algorithm, and signature. The
 builder, daily coordinator, and both publisher reads load the same environment
 and verify that attestation; recomputing the SHA-256 digest locally is not
@@ -216,8 +229,9 @@ recipe metadata is not visual inspection.
 A Codex review must identify itself as `codex_editor`; it must never be labelled
 human.
 
-The publisher enforces one page per report/day, revalidates the exact
-schema-v2 `top_rising_terms` match and same-day breakout-page evidence, reruns
+The publisher enforces one page per report/day, revalidates the same-day,
+attested schema-v2 Trends collection and the selected candidate's observed or
+`not_observed` result, revalidates same-day breakout-page evidence, reruns
 CTA/content novelty and recipe gates against the latest page corpus, then
 obtains the shared publication guard and re-reads the report, review,
 screenshot files, and corpus before writing.
@@ -227,8 +241,10 @@ report to `published`. Existing schema-version 1/2 pages remain readable through
 the isolated legacy path; all new pages use version 3. Publishing is rejected at
 or after 23:45 Asia/Shanghai.
 
-Google Trends is one independent demand-freshness gate. It never substitutes
-for complete GSC and landing-UV observation, attribution readiness, independent
+Google Trends is independent demand-freshness evidence. A verified same-day
+collection is required, while an exact-term miss does not block publication.
+Trends never substitutes for complete GSC and landing-UV observation,
+attribution readiness, independent
 `breakout_page` evidence, product and IP truth, content/presentation
 distinctness, or editorial and rendered-preview approval.
 
@@ -243,8 +259,8 @@ canonical, approved attributed Playworlds CTA, `Article`/`FAQPage` JSON-LD,
 robots, sitemap entry, `/go/playworlds/{slug}` link, and non-writing HEAD
 redirect to the approved Playworlds Steam listing with the complete attribution
 contract. It must reject the retired `/go/novelai/` path for current-schema
-pages. Until the signed Playworlds callback and the replacement production
-domain/GSC property are implemented and verified, no site-wide migration or
+pages. Until the Playworlds callback secret, recent product-side signed
+handshake, and production domain/GSC property are configured and verified, no
 full-loop completion may be claimed. A READY deployment from a different
 Vercel project is not evidence for LoreLens.
 

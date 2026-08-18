@@ -11,10 +11,12 @@ the next step after a timeout, network interruption, or partial run.
 This contract does not relax product truth, originality, IP, review, build, or
 one-page-per-day safeguards. From the configured enforcement date, a
 `create_page` release requires a same-day schema-v2 collection from the official
-US Google Trends BigQuery public dataset and an exact normalized candidate
-match in `top_rising_terms`. A successful collection without that exact row is
-`not_observed`; a failed provider is `unavailable`. Neither state means zero
-searches, and neither permits publication. The release also requires a complete
+US Google Trends BigQuery public dataset with a verified service-account
+attestation. A successful collection without an exact normalized candidate row
+in `top_rising_terms` is `not_observed`; that state is valid evidence, does not
+mean zero searches, and does not itself block publication. A failed, missing,
+or tampered provider result is `unavailable` or invalid and still blocks the
+page. The release also requires a complete
 all-page measurement portfolio with observed Search Console and landing UV
 states plus a ready attribution join. Missing evidence blocks publication
 without being converted to zero. A confirmed orphan
@@ -31,6 +33,13 @@ coordination entrypoint, and the publisher before and inside its guarded reread
 load the same environment and verify the configured client email plus derived
 public-key fingerprint. An unavailable `--research` attempt exits 2 without
 writing Trends fields, so a transient outage can be retried that day.
+
+The Playworlds callback receiver contract exists, but production currently
+lacks its configured secret and a recent signed product-side handshake. The
+direct Steam CTA also cannot yield a purchase joined to an individual
+`seo_click_id`; exact click-level revenue attribution requires a first-party
+Playworlds handoff/backend. Until those conditions are met, attribution remains
+explicitly unavailable and cannot be inferred from Steam aggregate reporting.
 
 ## Idempotent state machine
 
@@ -67,6 +76,19 @@ A valid same-day `no_publish` receipt is also terminal. `settle` returns
 `outcome=no_publish`, and `daily:state` returns `no_publish_complete` with
 `resumeAt=null` and `mayCreatePage=false`. Evening recovery exits on that
 outcome instead of restarting research or substituting a weaker candidate.
+Unattended jobs must never reopen that receipt. An explicit same-day
+user-guided resume may reopen it once through the coordinator; the new lease is
+locked to the requesting owner, preserves the prior terminal state in history,
+and does not bypass the one-page limit, cutoff, review, measurement, quality,
+or release gates.
+
+```text
+npm.cmd run daily:coord -- guided-resume YYYY-MM-DD FEEDBACK_ID CONFIRM_USER_GUIDED_RESUME
+```
+
+This action is reserved for an explicit same-day user instruction bound to an
+adopted feedback record. Scheduled prompts and recovery tasks must not invoke
+it.
 
 Consistent artifacts from the same daily chain are resumable. An inconsistent
 chain or more than one page for the Shanghai day is a conflict and must not be
@@ -99,15 +121,19 @@ owned lease before the cutoff with:
 npm.cmd run daily:coord -- no-publish YYYY-MM-DD REASON_CODE "Specific observed reason"
 ```
 
-`REASON_CODE` must be one of the configured no-publish codes. The coordinator,
-not the caller, derives the evidence summary and SHA-256 bindings from the
-same-day growth snapshot and any research, report, or review artifacts. The
-growth snapshot is mandatory. The immutable receipt contains no slug, release
-revision, or live-verification claim, cannot coexist with a page published that
-Shanghai day, and cannot replace a reservation, complete release checkpoint,
-pin, preparation, or in-flight release. It closes only that calendar day's
-content decision; unlike a deployed page, it never occupies a later production
-day.
+`REASON_CODE` must be one of the configured active no-publish codes. The
+coordinator, not the caller, derives the evidence summary and SHA-256 bindings
+from the same-day growth snapshot, completed 8–12-candidate research artifact,
+and report, plus a review artifact when one exists. Growth, research, and
+report are all mandatory before a new terminal no-publication receipt can be
+written. The immutable receipt contains no slug, release
+revision, or live-verification claim. While it is the active terminal state it
+cannot coexist with a page published that Shanghai day, and it cannot replace a
+reservation, complete release checkpoint, pin, preparation, or in-flight
+release. A valid user-guided resume retains the receipt only in immutable
+history while creating a new owner-locked active state. Otherwise it closes
+only that calendar day's content decision; unlike a deployed page, it never
+occupies a later production day.
 
 ## Candidate continuity
 
@@ -122,6 +148,11 @@ eligible candidate. If the batch cannot provide that continuity, research a
 new independent batch instead of waiting for user direction. Re-evaluate all
 reused seeds against current pages, approved facts, feedback, and fresh directly
 supporting evidence before publication.
+
+The 8–12-candidate batch and its report are a daily scheduled deliverable, not
+a side effect of successful publication. Measurement, Trends-provider,
+callback, or other release blockers change the publication outcome but do not
+authorize an early stop before those two artifacts are complete.
 
 Do not use unavailable Search Console, URL Inspection, UV, or attribution data
 as zero. For unattended `create_page` production, any unavailable exact-page

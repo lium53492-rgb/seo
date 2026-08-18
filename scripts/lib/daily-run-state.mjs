@@ -49,6 +49,12 @@ function pagePublishedOn(page, date) {
 
 export function isDailyNoPublishReceipt(receipt, date) {
   const noPublishPolicy = unattendedPolicy.noPublish;
+  const acceptedSchemaVersions = new Set([
+    noPublishPolicy?.schemaVersion,
+    ...(Array.isArray(noPublishPolicy?.acceptedHistoricalSchemaVersions)
+      ? noPublishPolicy.acceptedHistoricalSchemaVersions
+      : []),
+  ]);
   const artifactDigests = Array.isArray(receipt?.artifactDigests) ? receipt.artifactDigests : [];
   const allowedPaths = new Set([
     `data/growth/${date}.json`,
@@ -58,13 +64,18 @@ export function isDailyNoPublishReceipt(receipt, date) {
   ]);
   const artifactPaths = artifactDigests.map((artifact) => artifact?.path);
   const evidence = receipt?.evidenceSummary;
+  const currentSchemaRequiresResearch = receipt?.schemaVersion === noPublishPolicy?.schemaVersion &&
+    unattendedPolicy.requireDailyResearchBeforeNoPublish === true;
+  const acceptedReasonCodes = receipt?.schemaVersion === noPublishPolicy?.schemaVersion
+    ? noPublishPolicy?.activeReasonCodes
+    : noPublishPolicy?.reasonCodes;
   return unattendedPolicy.allowZeroPageOutcome === true &&
-    noPublishPolicy?.schemaVersion === 1 &&
-    receipt?.schemaVersion === noPublishPolicy.schemaVersion &&
+    Number.isSafeInteger(noPublishPolicy?.schemaVersion) &&
+    acceptedSchemaVersions.has(receipt?.schemaVersion) &&
     receipt?.outcome === "no_publish" &&
     receipt?.date === date &&
     typeof receipt?.reasonCode === "string" &&
-    noPublishPolicy.reasonCodes.includes(receipt.reasonCode) &&
+    Array.isArray(acceptedReasonCodes) && acceptedReasonCodes.includes(receipt.reasonCode) &&
     typeof receipt?.reason === "string" &&
     receipt.reason.trim().length >= noPublishPolicy.minimumReasonChars &&
     receipt.reason.trim().length <= noPublishPolicy.maximumReasonChars &&
@@ -80,6 +91,10 @@ export function isDailyNoPublishReceipt(receipt, date) {
       DIGEST_PATTERN.test(String(artifact.sha256 || "")) &&
       Number.isSafeInteger(artifact.bytes) && artifact.bytes > 0) &&
     artifactPaths.includes(`data/growth/${date}.json`) &&
+    (!currentSchemaRequiresResearch || (
+      artifactPaths.includes(`data/research/${date}.json`) &&
+      artifactPaths.includes(`data/reports/${date}.json`)
+    )) &&
     evidence && typeof evidence === "object" && !Array.isArray(evidence) &&
     typeof evidence.dailyState === "string" &&
     evidence.growth && typeof evidence.growth === "object" &&
@@ -192,7 +207,8 @@ export function deriveDailyRunState({
   }
   if (research?.date && research.date !== date) conflicts.push("The research date does not match the daily chain.");
   if (report?.date && report.date !== date) conflicts.push("The report date does not match the daily chain.");
-  if (report && !noPublishReceiptValid && date >= seoPolicy.contentArchitecture.enforcedFromReportDate &&
+  if (report && !noPublishReceiptValid && report?.publication?.status !== "not_requested" &&
+    date >= seoPolicy.contentArchitecture.enforcedFromReportDate &&
     draftSchemaVersion !== architecturePolicy.requiredDraftSchemaVersion) {
     conflicts.push("The daily report does not contain the required architecture draft schema.");
   }

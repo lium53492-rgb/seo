@@ -104,8 +104,8 @@ United States:
 - `bigquery-public-data.google_trends.top_terms` contains up to the Top 25
   terms for each US DMA and is discovery context only;
 - `bigquery-public-data.google_trends.top_rising_terms` contains up to the
-  Rising 25 terms for each US DMA and is the only table that can satisfy the
-  unattended schema-v2 Trends gate;
+  Rising 25 terms for each US DMA and supplies exact-match prioritization
+  signals;
 - collection runs daily with `npm run trends:check` followed by stdout
   discovery or
   `npm run trends:collect -- --research data/research/YYYY-MM-DD.json`, using
@@ -113,22 +113,25 @@ United States:
   `GOOGLE_TRENDS_BIGQUERY_CLIENT_EMAIL`, and
   `GOOGLE_TRENDS_BIGQUERY_PRIVATE_KEY`.
 
-A schema-v2 observation qualifies only when NFKC normalization, lowercasing,
-trimming, and whitespace folding make the selected candidate keyword exactly
-equal to an observed `top_rising_terms.term` value. Collection must run on the
-same Shanghai production day; by default it queries the preceding day's
-`refresh_date`. A substring, related phrase, semantic match,
-`top_terms` row, public-web proxy, or model assertion cannot qualify. The
-collector and publisher both enforce this boundary.
+A schema-v2 selected-candidate result is valid when the same-day provider
+collection is observed and attested and its candidate state is either
+`observed` or `not_observed`. NFKC normalization, lowercasing, trimming, and
+whitespace folding classify an exact `top_rising_terms.term` match as
+`observed`; a substring, related phrase, semantic match, `top_terms` row,
+public-web proxy, or model assertion cannot be relabelled as that exact match.
+Collection must run on the same Shanghai production day; by default it queries
+the preceding day's `refresh_date`. The collector and publisher enforce the
+provider, date, attestation, and state boundaries, but an exact miss is not a
+publication blocker.
 
 The embedded `trendCollection` uses compact, attested collection schema 2.
 Instead of committing the full DMA result (which can exceed normal repository
 file limits), it stores each table's row count and canonical result digest,
-the exact candidate-match rows needed by the gate, and at most 50
+the exact candidate-match rows needed for auditable evidence, and at most 50
 deterministically selected D&D discovery leads. Each lead identifies its list,
-rank, DMA count, source table, and applicable score/gain. A rising lead says
-only that an exact future candidate could clear the Trends gate; intent,
-product, IP, originality, growth, and review gates still apply.
+rank, DMA count, source table, and applicable score/gain. A rising lead can
+raise an exact future candidate's priority; it does not authorize publication,
+and intent, product, IP, originality, growth, and review gates still apply.
 
 The canonical snapshot digest binds those compact results, the two exact SQL
 digests, and the signer identity. The collector signs that digest with
@@ -145,9 +148,10 @@ replaced after approval without invalidating the review.
 The public tables are DMA-granular. A row's `score` is retained only with its
 DMA/week provenance; it must not be aggregated, averaged, or renamed as
 nationwide `relativeInterest`. The dataset is not proof of arbitrary-keyword
-volume. If the exact term is absent, record `not_observed` and do not publish.
-That state means only that the term did not appear in the available Rising 25
-rows; it does not mean zero searches.
+volume. If the exact term is absent, record `not_observed`. That state remains
+valid evidence and does not itself block publication; it means only that the
+term did not appear in the available Rising 25 rows, not that searches were
+zero.
 
 `trends:check` validates the three independent environment variables without a
 network request, prints JSON, and exits 2 when configuration is incomplete.
@@ -169,15 +173,30 @@ non-observed candidates retain `relativeInterest: null` and
 `direction: unknown`, while an exact rising match is `observed`/`rising`.
 
 Legacy schema-v1 observations from the Google Trends UI remain readable only
-for historical or explicitly manual compatibility. They cannot clear the
-unattended schema-v2 publication gate. Google's limited-access Trends API Alpha
-is a future provider option; it is not the current automation dependency.
+for historical or explicitly manual compatibility. They cannot satisfy the
+current same-day attested provider contract. Google's limited-access Trends API
+Alpha is a future provider option; it is not the current automation dependency.
 
 Trends is independent of the complete portfolio and quality contract. A
-qualifying rising-term observation does not replace exact-page Search Console,
+verified collection, whether the exact term is observed or not observed, does
+not replace exact-page Search Console,
 landing UV, attribution readiness, independent `breakout_page` evidence,
 approved product facts, IP safety, content and presentation distinctness, or
 review and visual-audit approval.
+
+## Daily completion and attribution boundary
+
+Every scheduled production day completes and preserves one 8–12-candidate
+research batch and its report before creating a new terminal `no_publish`
+receipt. A valid receipt remains terminal to unattended jobs. Only an explicit
+same-day user-guided resume may continue the chain once, under an owner-locked
+lease, and it does not waive any publication gate.
+
+The Playworlds callback receiver contract exists, but production currently
+lacks its configured secret and a recent signed product-side handshake. The
+direct Steam CTA cannot return a purchase joined to an individual
+`seo_click_id`; exact click-level revenue attribution requires a first-party
+Playworlds handoff/backend. Until then, the revenue join remains unavailable.
 
 The publication decision therefore uses two layers:
 

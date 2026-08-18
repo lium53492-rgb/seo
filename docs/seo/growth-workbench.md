@@ -5,8 +5,9 @@
 The workbench turns research and observed performance into one auditable daily
 page release. The unattended contract targets exactly one distinct new page per
 Asia/Shanghai day, automatically evaluates fallback candidates, and resumes a
-consistent partial run. Missing metrics remain unavailable and do not by
-themselves block a new intent; truth, IP, originality, review, repository,
+consistent partial run. Missing metrics remain unavailable and do not stop the
+daily 8–12-candidate research and report, although required unavailable release
+evidence can still block the page; truth, IP, originality, review, repository,
 deployment, and live-page gates remain mandatory.
 
 ## Actual architecture
@@ -14,7 +15,10 @@ deployment, and live-page gates remain mandatory.
 The production scheduler uses a 09:15 primary Codex desktop automation and
 18:30 / 21:30 recovery passes. All runs use the same daily state contract, so the
 recovery run resumes an incomplete page and never creates a second page after
-the day is complete. Vercel serves the site and the read-only workbench; it does
+the day is complete. A terminal `no_publish` receipt remains terminal to every
+unattended recovery. Only an explicit same-day user-guided resume may continue
+it once under an owner-locked lease, without waiving any gate. Vercel serves the
+site and the read-only workbench; it does
 not run the research pipeline. `vercel.json` contains one measurement-only
 rollover cron at `0 16 * * *` UTC (Shanghai 00:00):
 `/api/cron/landing-analytics/rollover`. The `CRON_SECRET`-protected invocation
@@ -28,10 +32,10 @@ Codex desktop automation
 -> daily:state (start or resume)
 -> growth:check
 -> growth:collect (all published pages, one finalized Shanghai-day window)
--> policy-v4 public-web and authorized-tool research
+-> policy-v4 public-web and authorized-tool research (8–12 candidates daily)
 -> required official Google Trends BigQuery collection for unattended new pages
 -> deterministic candidate scoring
--> research:build (READY FOR REVIEW only)
+-> research:build (daily report; READY FOR REVIEW only)
 -> independent approval record
 -> research:publish
 -> npm run verify
@@ -56,9 +60,11 @@ job.
   impressions and clicks, landing UV, and qualified outbound clicks.
   Unavailable values render as `—`, not zero.
 - Official Google Trends BigQuery Top/Rising observations when collected. A
-  DMA score stays DMA-scoped, only an exact normalized `top_rising_terms`
-  candidate match can clear the unattended new-page gate, and a successful
-  exact miss stays `not_observed` instead of becoming zero.
+  DMA score stays DMA-scoped. An exact normalized `top_rising_terms` candidate
+  match is a prioritization signal; a successful exact miss stays valid
+  `not_observed` evidence instead of becoming zero and does not itself block
+  publication. Missing, unavailable, or tampered collection evidence remains
+  explicit and cannot authorize a page.
 - The committable decision view contains exact-page Search Console, indexed
   URL Inspection, page-level landing UV, qualified outbound aggregates, and
   boolean attribution readiness/blocking state. The complete commercial
@@ -77,6 +83,8 @@ job.
 ## Data and publication gates
 
 - Policy v4 requires 5–12 distinct candidates.
+- Scheduled production completes 8–12 candidates and a daily report before a
+  new terminal `no_publish` receipt, even when another release gate is blocked.
 - Every candidate cites at least two directly supporting records from two
   independent domains and includes decision-evidence signals and rationales.
 - The builder derives product fit, trial intent, revenue intent, intent
@@ -142,21 +150,25 @@ npm run verify
 ```
 
 The Trends step enriches the same research file with the official US BigQuery
-public-dataset snapshot. Only an exact match in `top_rising_terms` is eligible
-for unattended page creation; a top-only match, an exact miss, or an
-unavailable provider remains a non-publishing result and must not be converted
-to zero demand. The repository keeps compact per-table counts/digests, exact
-candidate matches, and bounded deterministic D&D leads rather than the full
-DMA result. Builder and publisher verify the RSA-SHA256 service-account
-attestation before the collection can authorize the Trends gate.
+public-dataset snapshot. The selected candidate may be `observed` through an
+exact `top_rising_terms` match or `not_observed` after a successful exact miss;
+both are valid when the collection is same-day and its RSA-SHA256
+service-account attestation verifies. `not_observed` does not mean zero demand
+and does not itself prevent publication. A missing, unavailable, stale, or
+tampered provider result still blocks the page. The repository keeps compact
+per-table counts/digests, exact candidate matches, and bounded deterministic
+D&D leads rather than the full DMA result.
 
-The signed Playworlds callback has not been implemented. `growth:probe` now
-returns an explicit unavailable state and exits non-zero; the retained
-`growth:probe:legacy-novelai` command is audit-only. After a separately approved
-Playworlds callback is deployed, replace the fail-closed probe with its verified
-server handshake. Do not describe the revenue loop as ready until the protected
-probe sees Search Console, landing UV, attribution storage, and a
-recent signed callback handshake.
+The Playworlds callback receiver contract exists, but production currently
+lacks its configured secret and a recent signed product-side handshake, so the
+protected probe and full-loop state remain unavailable. The retained
+`growth:probe:legacy-novelai` command is audit-only. The current CTA goes
+directly to Steam, whose aggregate marketing reporting cannot return a purchase
+joined to an individual `seo_click_id`; exact click-level revenue attribution
+requires a first-party Playworlds handoff/backend. Do not describe the revenue
+loop as ready until the protected probe sees Search Console, landing UV,
+attribution storage, and a recent signed callback handshake and the intended
+revenue-join boundary is implemented.
 
 `research:build` runs `feedback:sync` first. Production submissions are stored
 through GitHub, while the builder deliberately reads the local inbox; the sync

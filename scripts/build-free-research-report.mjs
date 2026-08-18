@@ -27,7 +27,7 @@ import {
   projectPrivateGrowthReport,
 } from "./lib/growth-portfolio.mjs";
 import {
-  isQualifyingGoogleTrendsSignal,
+  normalizeGoogleTrendsTerm,
   validateGoogleTrendsEvidence,
 } from "../lib/seo/google-trends-contract.mjs";
 
@@ -298,25 +298,18 @@ for (const item of input.evidence) {
 }
 
 function assertSelectedCreateTrendReadiness(selectedDraftKeyword, signals, collection) {
-  const keyword = String(selectedDraftKeyword || "").trim().toLowerCase();
-  const requireBigQuery = requireBigQueryTrends;
-  const qualifyingSignal = signals.find((signal) =>
-    isQualifyingGoogleTrendsSignal(signal, {
-      selectedKeyword: keyword,
-      reportDate: date,
-      trendCollection: collection,
-      requireBigQuery,
-      attestationVerificationKey: trendsAttestationVerificationKey,
-      expectedAttestationClientEmail: trendsAttestationClientEmail,
-    }));
-  if (!qualifyingSignal) {
-    const requiredEvidence = requireBigQuery
-      ? "official same-day BigQuery collection with an exact top_rising_terms match"
-      : "official same-day observation: Explore direction=rising/relativeInterest>=50 or an exact " +
-        "BigQuery top_rising_terms match";
+  const keyword = normalizeGoogleTrendsTerm(selectedDraftKeyword);
+  const selectedSignal = signals.find((signal) =>
+    normalizeGoogleTrendsTerm(signal?.keyword) === keyword);
+  const collectionReady = collection?.state === "observed" ||
+    (collection?.state === "unavailable" && policy.googleTrends.providerUnavailableAllowsPublication === true);
+  const acceptedState = selectedSignal?.state === "observed" ||
+    (selectedSignal?.state === "not_observed" && policy.googleTrends.notObservedAllowsPublication === true) ||
+    (selectedSignal?.state === "unavailable" && policy.googleTrends.providerUnavailableAllowsPublication === true);
+  if (!collectionReady || !acceptedState) {
     throw new Error(
-      `Create-page Google Trends gate failed: selected draft ${keyword || "<empty>"} needs an ` +
-      requiredEvidence,
+      `Create-page Google Trends evidence failed: selected draft ${keyword || "<empty>"} needs a ` +
+      "verified same-day collection and an explicit observed or not_observed candidate result",
     );
   }
 }

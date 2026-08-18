@@ -2,7 +2,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import seoPolicy from "../data/config/seo-policy.json" with { type: "json" };
 import architecturePolicy from "../data/config/content-architecture.json" with { type: "json" };
-import { deriveDailyRunState, shanghaiDate } from "../scripts/lib/daily-run-state.mjs";
+import {
+  deriveDailyRunState,
+  isDailyNoPublishReceipt,
+  shanghaiDate,
+} from "../scripts/lib/daily-run-state.mjs";
 
 const date = "2026-08-07";
 const growth = { generatedAt: "2026-08-07T01:00:00.000Z" };
@@ -109,6 +113,27 @@ test("daily state advances a complete local delivery to release verification", (
   const state = deriveDailyRunState({ date, growth, research, report: publishedReport, review, pages: [page], pdfExists: true });
   assert.equal(state.state, "local_publication_complete");
   assert.equal(state.resumeAt, "release_verification");
+});
+
+test("current no-publish receipts require research/report evidence and an active reason", () => {
+  const currentReceipt = {
+    ...noPublishReceipt,
+    schemaVersion: 2,
+    artifactDigests: [
+      ...noPublishReceipt.artifactDigests,
+      { path: `data/research/${date}.json`, sha256: "d".repeat(64), bytes: 256 },
+      { path: `data/reports/${date}.json`, sha256: "e".repeat(64), bytes: 256 },
+    ],
+  };
+  assert.equal(isDailyNoPublishReceipt(currentReceipt, date), true);
+  assert.equal(isDailyNoPublishReceipt({
+    ...currentReceipt,
+    reasonCode: "trends_not_observed",
+  }, date), false);
+  assert.equal(isDailyNoPublishReceipt({
+    ...currentReceipt,
+    artifactDigests: noPublishReceipt.artifactDigests,
+  }, date), false);
 });
 
 test("an explicit same-day retirement receipt is terminal without authorizing a second page", () => {

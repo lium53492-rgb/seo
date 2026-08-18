@@ -140,8 +140,12 @@ test("collector constants remain bound to the versioned SEO policy", () => {
     googleTrendsQueryContract.maximumBytesBilled,
   );
   assert.equal(seoPolicy.googleTrends.timeoutMs, googleTrendsQueryContract.queryTimeoutMs);
+  assert.equal(seoPolicy.googleTrends.sameDayCollectionRequired, true);
+  assert.equal(seoPolicy.googleTrends.notObservedAllowsPublication, true);
+  assert.equal(seoPolicy.googleTrends.providerUnavailableAllowsPublication, false);
+  assert.equal(seoPolicy.googleTrends.exactCandidateMatchRequired, false);
   assert.equal(seoPolicy.googleTrends.topTermsQualifyForPublication, false);
-  assert.equal(seoPolicy.googleTrends.topRisingTermsQualifyForPublication, true);
+  assert.equal(seoPolicy.googleTrends.topRisingTermsQualifyForPublication, false);
 });
 
 test("normalization is conservative and collection digests use stable recursive key order", () => {

@@ -10,7 +10,8 @@ Independent trial-ready search intent
 -> user clicks /go/playworlds/{slug}
 -> official Playworlds Steam listing with UTM + seo_click_id
 -> qualified outbound aggregate
--> downstream conversion unavailable until a signed Playworlds callback exists
+-> receiver contract exists; production secret and recent product-side handshake unavailable
+-> direct Steam reporting cannot join a purchase to an individual seo_click_id
 -> daily funnel report with explicit unavailable states
 ```
 
@@ -57,10 +58,12 @@ A new page is eligible only when all policy-v4 hard gates pass. Raw model-suppli
 2. `npm run trends:check`, then
    `npm run trends:collect -- --research data/research/YYYY-MM-DD.json`
    enriches that day's research input with the official US BigQuery public
-   Trends snapshot. Only an exact `top_rising_terms` match qualifies; top-only,
-   not-observed, and unavailable results do not authorize publication. The
-   persisted snapshot is a compact projection signed by the configured
-   service account; unavailable attempts leave research unchanged for retry.
+   Trends snapshot. A verified same-day exact miss is valid `not_observed`
+   evidence and does not itself block publication; an exact
+   `top_rising_terms` match improves prioritization. The persisted snapshot is
+   a compact projection signed by the configured service account. Missing,
+   unavailable, or tampered evidence blocks the page, and unavailable attempts
+   leave research unchanged for retry.
 3. `npm run research:build -- data/research/YYYY-MM-DD.json`
    validates the all-page portfolio, its create/improve/consolidate/observe
    decision, evidence, candidates, product claims, and content quality, then
@@ -72,6 +75,12 @@ A new page is eligible only when all policy-v4 hard gates pass. Raw model-suppli
    runs deterministic tests, TypeScript, and the production Next.js build.
 7. Push only the intended artifacts and code. Verify Vercel READY, rendered H1, canonical, attributed CTA, JSON-LD, and sitemap inclusion before reporting production success.
 
+Every scheduled production day completes and preserves an 8–12-candidate
+research batch and its report before creating a new terminal `no_publish`
+receipt, even when another gate prevents publication. That receipt remains
+terminal for unattended jobs. Only an explicit same-day user-guided resume may
+continue once under an owner-locked lease; all other gates still apply.
+
 ## Runtime structure
 
 ```text
@@ -81,6 +90,8 @@ app/api/cron/landing-analytics/[phase]/route.ts protected daily coverage rollove
 app/go/playworlds/[slug]/route.ts           current attributed Steam redirect + product-scoped outbound write
 app/go/novelai/[slug]/route.ts              historical compatibility redirect only
 app/api/attribution/conversion/route.ts     retained legacy callback; cannot join Playworlds clicks
+app/api/attribution/playworlds/conversion/route.ts signed Playworlds receiver
+app/api/attribution/playworlds/handshake/route.ts signed product-side handshake receiver
 app/api/attribution/probe/route.ts          retained legacy NovelAI handshake only
 app/api/attribution/report/route.ts         protected page-period funnel JSON
 app/api/attribution/readiness/route.ts      protected live configuration and source probe
@@ -97,7 +108,8 @@ scripts/publish-reviewed-page.mjs           approved report -> published page
 scripts/collect-growth-funnel.mjs           private live funnel collector for automation
 scripts/collect-growth-portfolio.mjs        immutable all-page 28-day feedback snapshot
 scripts/check-growth-readiness.mjs          private end-to-end source readiness check
-scripts/probe-novelai-callback.mjs          non-business callback boundary acceptance probe
+scripts/probe-playworlds-callback.mjs       signed Playworlds receiver/handshake probe
+scripts/probe-novelai-callback.mjs          legacy non-business boundary probe
 scripts/lib/seo-policy.mjs                  deterministic scoring and hard gates
 docs/seo/research-signal-contract.md        evidence schema, score formulas, and examples
 tests/                                      policy, attribution, and release-boundary tests
@@ -134,9 +146,14 @@ Use native Next.js metadata for title, description, canonical, Open Graph, and T
   versioned Playworlds UTM contract to the exact approved Steam app listing.
 - HEAD validates the same redirect without writing an outbound event; release
   verification uses that method so it does not inflate traffic.
-- No signed Playworlds downstream callback exists yet. `growth:probe`,
-  `outboundToRevenue`, and `fullLoop` therefore fail closed. The legacy NovelAI
-  callback/probe remains audit-only and cannot join a Playworlds click record.
+- The signed Playworlds receiver contract exists, but production currently
+  lacks `PLAYWORLDS_CALLBACK_SECRET` and a recent signed product-side handshake.
+  `growth:probe`, `outboundToRevenue`, and `fullLoop` therefore fail closed. The
+  legacy NovelAI callback/probe remains audit-only and cannot join a Playworlds
+  click record. Because the CTA goes directly to Steam, its aggregate marketing
+  report cannot return a purchase joined to an individual `seo_click_id`;
+  exact click-level revenue attribution requires a first-party Playworlds
+  handoff/backend rather than receiver configuration alone.
 - Upstash stores idempotent attribution events, landing pageview counters,
   page-scoped landing HLL aggregates, and page/day cohorts for 400 days. Raw
   landing visitor IDs are not persisted in those aggregates.

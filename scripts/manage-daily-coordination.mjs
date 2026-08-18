@@ -15,6 +15,7 @@ import {
   prepareDailyRelease,
   readDailyLease,
   rebaseDailyRelease,
+  resumeDailyAfterNoPublish,
   restoreDailyCheckpoint,
   saveDailyCheckpoint,
   startDailyRelease,
@@ -331,6 +332,11 @@ function run() {
         result = { outcome: "no_publish", carryover };
         break;
       }
+      if (carryover.state === "guided") {
+        process.exitCode = 3;
+        result = { outcome: "user_guided_active", carryover };
+        break;
+      }
       if (carryover.state === "occupied") {
         result = { outcome: "completed", carryover };
         break;
@@ -403,6 +409,16 @@ function run() {
           reason: slug,
         }),
       };
+      break;
+    case "guided-resume":
+      result = resumeDailyAfterNoPublish({
+        coordinationRoot,
+        worktreeRoot,
+        date,
+        owner,
+        feedbackId: revision,
+        confirmation: slug,
+      });
       break;
     case "release-start": {
       if (gitText(["rev-parse", "HEAD"]) !== revision) {
@@ -484,7 +500,7 @@ function run() {
       result = { owner, lease: readDailyLease({ coordinationRoot, date }) };
       break;
     default:
-      throw new Error("Usage: npm run daily:coord -- settle|acquire|restore|save|heartbeat|assert|no-publish|release-start|complete|status [YYYY-MM-DD] [SHA_OR_REASON_CODE] [SLUG_OR_REASON]");
+      throw new Error("Usage: npm run daily:coord -- settle|acquire|guided-resume|restore|save|heartbeat|assert|no-publish|release-start|complete|status [YYYY-MM-DD] [SHA_OR_REASON_CODE_OR_FEEDBACK_ID] [SLUG_OR_REASON_OR_CONFIRMATION]");
   }
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
 }
