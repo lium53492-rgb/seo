@@ -1,4 +1,10 @@
-import { readAttributionAggregate, type AttributionAggregate } from "./attribution-store";
+import seoPolicy from "../../data/config/seo-policy.json" with { type: "json" };
+import {
+  readAttributionAggregate,
+  readPlayworldsIntegrationProbe,
+  type AttributionAggregate,
+  type PlayworldsIntegrationProbeStatus,
+} from "./attribution-store";
 import { normalizeShanghaiReportingPeriod } from "./reporting-period";
 import {
   readSearchConsolePagePerformance,
@@ -9,6 +15,10 @@ import {
 import { absoluteSiteUrl } from "./site";
 import type { ObservedMetric, SeoGrowthFunnel } from "./types";
 import { landingAnalyticsStatus, readLandingAnalytics } from "./landing-analytics";
+import {
+  playworldsCallbackContract,
+  playworldsCallbackReceiverStatus,
+} from "./playworlds-callback";
 
 function observedMetric(
   source: ObservedMetric["source"],
@@ -57,15 +67,49 @@ export async function readLiveGrowthFunnel(input: {
 }): Promise<LiveGrowthFunnel> {
   const period = normalizeShanghaiReportingPeriod(input);
   const reportingInput = { ...input, ...period };
-  const [aggregate, landing, searchPerformance, urlInspection] = await Promise.all([
+  const callbackReceiver = playworldsCallbackReceiverStatus();
+  const callbackPromise: Promise<PlayworldsIntegrationProbeStatus> = callbackReceiver.configured
+    ? readPlayworldsIntegrationProbe().catch((error) => ({
+        state: "unavailable" as const,
+        lastObservedAt: null,
+        probeId: null,
+        detail: `Playworlds callback handshake could not be read: ${
+          error instanceof Error && error.message ? error.message : "unknown error"
+        }`,
+      }))
+    : Promise.resolve({
+        state: "unavailable" as const,
+        lastObservedAt: null,
+        probeId: null,
+        detail: callbackReceiver.detail,
+      });
+  const [aggregate, landing, searchPerformance, urlInspection, callbackProbe] = await Promise.all([
     readAttributionAggregate(reportingInput),
     readLandingAnalytics(reportingInput),
     readSearchConsolePagePerformance(reportingInput),
     readSearchConsoleUrlInspection({ sourceSlug: input.sourceSlug }),
+    callbackPromise,
   ]);
+  const callbackAgeHours = callbackProbe.lastObservedAt
+    ? (Date.now() - Date.parse(callbackProbe.lastObservedAt)) / 3_600_000
+    : Number.NaN;
+  const callbackReady = callbackReceiver.configured &&
+    callbackProbe.state === "observed" &&
+    Number.isFinite(callbackAgeHours) &&
+    callbackAgeHours >= -(
+      playworldsCallbackContract.signature.maximumClockSkewSeconds / 3_600
+    ) &&
+    callbackAgeHours <= Number(seoPolicy.feedbackLoop.callbackProbeMaxAgeHours);
+  const callbackUnavailableDetail = callbackReady
+    ? callbackProbe.detail
+    : callbackProbe.state === "observed"
+      ? "The signed Playworlds callback handshake is stale, so downstream conversion metrics remain unavailable."
+      : callbackProbe.detail;
   const currencies = Object.keys(aggregate.revenueByCurrency).sort();
   const currency = currencies.length === 1 ? currencies[0] : undefined;
-  const revenueMinor = aggregate.state !== "observed"
+  const revenueMinor = !callbackReady
+    ? unavailableMetric("payments", callbackUnavailableDetail)
+    : aggregate.state !== "observed"
     ? unavailableMetric("payments", aggregate.detail)
     : currencies.length > 1
       ? unavailableMetric("payments", `Attributed revenue spans multiple currencies: ${currencies.join(", ")}.`)
@@ -78,12 +122,23 @@ export async function readLiveGrowthFunnel(input: {
       ? observedMetric("search_console", searchPerformance.clicks, searchPerformance.detail)
       : unavailableMetric("search_console", searchPerformance.detail)
   );
+  const qualifiedOutboundClicks = storeMetric(
+    aggregate,
+    "qualifiedOutboundClicks",
+    "seo_redirect",
+  );
   const conversionMetrics = [
     landingUv,
-    storeMetric(aggregate, "qualifiedOutboundClicks", "seo_redirect"),
-    storeMetric(aggregate, "trialStarts", "product_analytics"),
-    storeMetric(aggregate, "signups", "product_analytics"),
-    storeMetric(aggregate, "paidConversions", "payments"),
+    qualifiedOutboundClicks,
+    callbackReady
+      ? storeMetric(aggregate, "trialStarts", "product_analytics")
+      : unavailableMetric("product_analytics", callbackUnavailableDetail),
+    callbackReady
+      ? storeMetric(aggregate, "signups", "product_analytics")
+      : unavailableMetric("product_analytics", callbackUnavailableDetail),
+    callbackReady
+      ? storeMetric(aggregate, "paidConversions", "payments")
+      : unavailableMetric("payments", callbackUnavailableDetail),
     revenueMinor,
   ];
   const attributionStatus = conversionMetrics.every((metric) => metric.status === "observed")
@@ -112,9 +167,9 @@ export async function readLiveGrowthFunnel(input: {
     },
     pageviews: landing.state === "observed" ? landing.pageviews : null,
     outboundRequests: aggregate.outboundRequests,
-    purchaseEvents: aggregate.purchaseEvents,
-    orphanCallbacks: aggregate.orphanCallbacks,
-    revenueByCurrency: aggregate.revenueByCurrency,
+    purchaseEvents: callbackReady ? aggregate.purchaseEvents : null,
+    orphanCallbacks: callbackReady ? aggregate.orphanCallbacks : null,
+    revenueByCurrency: callbackReady ? aggregate.revenueByCurrency : {},
     ctaLocations: aggregate.ctaLocations,
     searchPerformance,
     urlInspection,

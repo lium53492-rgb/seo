@@ -61,20 +61,102 @@ Playworlds click records carry `product=playworlds`; the retained legacy
 NovelAI callback cannot join those clicks. This prevents an old integration
 secret or callback from being mistaken for Playworlds revenue evidence.
 
-## Conversion callback status
+## Signed Playworlds callback receiver
 
-No signed Playworlds trial, signup, purchase, or revenue callback contract has
-been implemented or verified. `/api/attribution/readiness` therefore reports
-`playworlds_callback` as unavailable and keeps `outboundToRevenue` and
-`fullLoop` false. `npm run growth:probe` returns the same unavailable state and
-exits non-zero. Do not infer downstream conversions from Steam visits, old
-NovelAI callbacks, an existing `ATTRIBUTION_SECRET`, or an external sink.
+LoreLens implements a product-specific, fail-closed receiver at:
 
-Implementing the future callback requires separate product-server evidence:
-an approved event schema, secret ownership, retry/idempotency rules, privacy
-review, a signed handshake, and a deployed probe. Until then, reports may use
-observed Search Console, landing, and Playworlds outbound aggregates only, with
-downstream fields explicitly unavailable.
+```text
+POST /api/attribution/playworlds/conversion
+POST /api/attribution/playworlds/handshake
+```
+
+The receiver does not reuse the legacy `ATTRIBUTION_SECRET`. Both endpoints
+require a server-only `PLAYWORLDS_CALLBACK_SECRET` containing at least 32 UTF-8
+bytes, `Content-Type: application/json`, and these headers:
+
+```text
+x-playworlds-timestamp: <current Unix seconds>
+x-playworlds-delivery-id: <eventId or probeId UUID>
+x-playworlds-signature: v1=<lowercase HMAC-SHA256 hex>
+```
+
+The exact HMAC input is the UTF-8 sequence below, including the three newline
+characters and the raw request body exactly as transmitted:
+
+```text
+v1\n<timestamp>\n<delivery-id>\n<raw-json-body>
+```
+
+The receiver allows at most five minutes of clock skew, rejects modified or
+unsigned bodies with a constant-time digest comparison, rejects bodies larger
+than 16 KiB, and requires the delivery ID to equal the body `eventId` or
+`probeId`. Signing happens after JSON serialization; reserializing the body
+after signing invalidates the request.
+
+The strict conversion body is:
+
+```json
+{
+  "schemaVersion": 1,
+  "producer": "playworlds",
+  "product": "playworlds",
+  "eventId": "<uuid>",
+  "clickId": "<seo_click_id uuid>",
+  "sourceSlug": "<LoreLens source slug>",
+  "event": "trial_started",
+  "occurredAt": "<ISO-8601 timestamp>",
+  "revenueMinor": 1299,
+  "currency": "USD"
+}
+```
+
+The accepted event names are `trial_started`, `signup_completed`, and
+`purchase_completed`. `revenueMinor` and `currency` are required only for `purchase_completed` and
+are rejected on the other event types. The body contains no email, account ID,
+name, transcript, IP address, or other user profile data. `eventId` is the
+idempotency key, while `clickId` joins only to the outbound record created by
+LoreLens. A mismatched product or source is rejected when a retained click is
+present; an event with no retained outbound click—including a delayed event for
+a retired source or an unknown source—is stored as an explicit global orphan so the publication gate can
+stop rather than hide a broken join. The product sender should retry timeouts
+and `5xx` responses with the same body and `eventId`; it must not mint a new ID
+for a retry. A `202` response is the durable acknowledgement.
+
+The handshake uses the same signature contract and this strict body:
+
+```json
+{
+  "schemaVersion": 1,
+  "probeId": "<uuid>",
+  "producer": "playworlds",
+  "product": "playworlds",
+  "occurredAt": "<ISO-8601 timestamp>"
+}
+```
+
+Run `npm run growth:probe` from the Playworlds server environment after the
+receiver is deployed or the shared secret is rotated. The probe writes only a
+short-lived handshake receipt and never creates a click, trial, signup,
+purchase, or revenue event.
+
+## Operational readiness boundary
+
+Receiver code is not evidence that the product sender is connected.
+`/api/attribution/readiness` reports `playworlds_callback` as configured only
+when both the product-specific secret and durable attribution store exist. It
+reports `outboundToRevenue=true` only after a recent signed Playworlds
+handshake. Downstream metrics remain unavailable when that handshake is absent
+or stale, even if Redis itself can return zero-valued hashes. When the configured
+policy blocks orphan callbacks, the receiver's global orphan total must also be
+observed as zero; any positive or unavailable total keeps both
+`outboundToRevenue` and `fullLoop` false.
+
+The SEO repository cannot generate real product outcomes. The Playworlds
+service must preserve the inbound `seo_click_id` and `seo_source_slug`, map an
+actual approved product event to the versioned body, sign it, and send it. Do
+not infer conversions from Steam visits, run a fabricated conversion as a
+production probe, reuse an old NovelAI event, or interpret receiver deployment
+as a completed revenue loop.
 
 ## Legacy compatibility
 
@@ -92,6 +174,8 @@ not be rewritten to hide their original contract.
 - `PLAYWORLDS_DESTINATION_URL` is optional and may only repeat the approved
   Steam listing above
 - `SEO_AUTOMATION_TOKEN` protects growth-readiness automation
+- `PLAYWORLDS_CALLBACK_SECRET` protects only the signed Playworlds receiver and
+  must contain at least 32 random bytes
 - Upstash and landing-analytics variables retain their existing roles
 
 The canonical domain, DNS/Vercel attachment, and matching Search Console

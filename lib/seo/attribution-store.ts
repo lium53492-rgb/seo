@@ -63,14 +63,19 @@ return 1
 `;
 
 const conversionScript = `
-if redis.call("EXISTS", KEYS[1]) == 1 then return 0 end
+local existingEvent = redis.call("GET", KEYS[1])
+if existingEvent then
+  if existingEvent == ARGV[1] then return 0 end
+  return -4
+end
 local sourceSlug = redis.call("HGET", KEYS[2], "sourceSlug")
 local cohortDay = redis.call("HGET", KEYS[2], "cohortDay")
 local product = redis.call("HGET", KEYS[2], "product")
 local orphan = 0
 if sourceSlug then
   if sourceSlug ~= ARGV[3] then return -2 end
-  if product and product ~= ARGV[10] then return -3 end
+  if ARGV[10] == "playworlds" and product ~= "playworlds" then return -3 end
+  if ARGV[10] ~= "playworlds" and product and product ~= ARGV[10] then return -3 end
 else
   sourceSlug = ARGV[3]
   cohortDay = ARGV[6]
@@ -100,9 +105,16 @@ if ARGV[4] == "purchase_completed" then
   redis.call("HINCRBY", cohortKey, "purchaseEvents", 1)
   redis.call("HINCRBY", cohortKey, "revenueMinor:" .. ARGV[8], ARGV[7])
 end
-if orphan == 1 then redis.call("HINCRBY", cohortKey, "orphanCallbacks", 1) end
+redis.call("HINCRBY", KEYS[3], "acceptedCallbacks", 1)
+redis.call("HSET", KEYS[3], "lastAcceptedAt", ARGV[5])
+redis.call("HSETNX", KEYS[3], "orphanCallbacks", 0)
+if orphan == 1 then
+  redis.call("HINCRBY", cohortKey, "orphanCallbacks", 1)
+  redis.call("HINCRBY", KEYS[3], "orphanCallbacks", 1)
+end
 redis.call("EXPIRE", KEYS[2], ARGV[2])
 redis.call("EXPIRE", cohortKey, ARGV[2])
+redis.call("EXPIRE", KEYS[3], ARGV[2])
 if orphan == 1 then return 2 end
 return 1
 `;
@@ -116,6 +128,11 @@ export type AttributionConversionEvent = {
   occurredAt: string;
   revenueMinor?: number;
   currency?: string;
+};
+
+export type PlayworldsAttributionConversionEvent = AttributionConversionEvent & {
+  producer: "playworlds";
+  product: "playworlds";
 };
 
 export type AttributionWriteResult = {
@@ -179,6 +196,29 @@ export type NovelAiIntegrationProbeStatus = {
   state: "observed" | "unavailable";
   lastObservedAt: string | null;
   probeId: string | null;
+  detail: string;
+};
+
+export type PlayworldsIntegrationProbe = {
+  schemaVersion: 1;
+  probeId: string;
+  producer: "playworlds";
+  product: "playworlds";
+  occurredAt: string;
+};
+
+export type PlayworldsIntegrationProbeStatus = {
+  state: "observed" | "unavailable";
+  lastObservedAt: string | null;
+  probeId: string | null;
+  detail: string;
+};
+
+export type PlayworldsCallbackHealth = {
+  state: "observed" | "unavailable";
+  acceptedCallbacks: number | null;
+  orphanCallbacks: number | null;
+  lastAcceptedAt: string | null;
   detail: string;
 };
 
@@ -484,16 +524,42 @@ export async function recordLandingCoverageCheckpoint(input: {
   };
 }
 
-export async function recordConversionEvent(event: AttributionConversionEvent): Promise<AttributionWriteResult> {
+async function recordProductConversionEvent(
+  event: AttributionConversionEvent | PlayworldsAttributionConversionEvent,
+  product: "novelai" | "playworlds",
+): Promise<AttributionWriteResult> {
   assertSlug(event.sourceSlug);
   const fallbackDay = shanghaiDay(event.occurredAt);
+  const normalizedEventId = product === "playworlds"
+    ? event.eventId.toLowerCase()
+    : event.eventId;
+  const normalizedClickId = product === "playworlds"
+    ? event.clickId.toLowerCase()
+    : event.clickId;
+  const storedEvent = product === "playworlds"
+    ? JSON.stringify({
+        schemaVersion: event.schemaVersion,
+        producer: "playworlds",
+        product: "playworlds",
+        eventId: normalizedEventId,
+        clickId: normalizedClickId,
+        sourceSlug: event.sourceSlug,
+        event: event.event,
+        occurredAt: new Date(event.occurredAt).toISOString(),
+        ...(event.revenueMinor === undefined ? {} : { revenueMinor: event.revenueMinor }),
+        ...(event.currency === undefined ? {} : { currency: event.currency }),
+      })
+    : JSON.stringify(event);
   const response = await redisCommand([
     "EVAL",
     conversionScript,
-    2,
-    `${keyPrefix}event:conversion:${event.eventId}`,
-    `${keyPrefix}click:${event.clickId}`,
-    JSON.stringify(event),
+    3,
+    product === "playworlds"
+      ? `${keyPrefix}event:conversion:playworlds:${normalizedEventId}`
+      : `${keyPrefix}event:conversion:${normalizedEventId}`,
+    `${keyPrefix}click:${normalizedClickId}`,
+    `${keyPrefix}callback:${product}:health`,
+    storedEvent,
     retentionSeconds,
     event.sourceSlug,
     event.event,
@@ -502,14 +568,19 @@ export async function recordConversionEvent(event: AttributionConversionEvent): 
     event.revenueMinor ?? 0,
     event.currency ?? "",
     `${keyPrefix}cohort:`,
-    "novelai",
+    product,
   ]);
   if (!response.configured) {
     return { state: "unavailable", detail: attributionStoreStatus().detail ?? "Attribution store is not configured." };
   }
   if (response.result === -2) throw new Error("Conversion source slug does not match its click ID");
   if (response.result === -3) {
-    throw new Error("Legacy NovelAI conversion callbacks cannot join a Playworlds outbound click");
+    throw new Error(product === "playworlds"
+      ? "Playworlds conversion callback cannot join a non-Playworlds outbound click"
+      : "Legacy NovelAI conversion callbacks cannot join a Playworlds outbound click");
+  }
+  if (response.result === -4) {
+    throw new Error("Conversion event ID is already bound to a different payload");
   }
   if (response.result === 0) return { state: "duplicate", detail: "The conversion event was already stored." };
   const orphan = response.result === 2;
@@ -520,6 +591,19 @@ export async function recordConversionEvent(event: AttributionConversionEvent): 
       ? "The callback was stored, but no matching outbound event was available."
       : "The conversion was joined to its outbound click.",
   };
+}
+
+/** Historical compatibility for the retired NovelAI callback route. */
+export async function recordConversionEvent(
+  event: AttributionConversionEvent,
+): Promise<AttributionWriteResult> {
+  return recordProductConversionEvent(event, "novelai");
+}
+
+export async function recordPlayworldsConversionEvent(
+  event: PlayworldsAttributionConversionEvent,
+): Promise<AttributionWriteResult> {
+  return recordProductConversionEvent(event, "playworlds");
 }
 
 export async function recordNovelAiIntegrationProbe(
@@ -586,6 +670,115 @@ export async function readNovelAiIntegrationProbe(): Promise<NovelAiIntegrationP
       detail: "The stored NovelAI callback handshake is malformed.",
     };
   }
+}
+
+export async function recordPlayworldsIntegrationProbe(
+  probe: PlayworldsIntegrationProbe,
+): Promise<AttributionWriteResult> {
+  const normalizedProbe = {
+    ...probe,
+    probeId: probe.probeId.toLowerCase(),
+  };
+  const response = await redisCommand([
+    "SET",
+    `${keyPrefix}integration:playworlds`,
+    JSON.stringify(normalizedProbe),
+    "EX",
+    integrationProbeRetentionSeconds,
+  ]);
+  if (!response.configured) {
+    return {
+      state: "unavailable",
+      detail: attributionStoreStatus().detail ?? "Attribution store is not configured.",
+    };
+  }
+  return response.result === "OK"
+    ? { state: "stored", detail: "Playworlds callback handshake stored without changing funnel metrics." }
+    : { state: "unavailable", detail: "Attribution store did not confirm the Playworlds handshake." };
+}
+
+export async function readPlayworldsIntegrationProbe(): Promise<PlayworldsIntegrationProbeStatus> {
+  const response = await redisCommand(["GET", `${keyPrefix}integration:playworlds`]);
+  if (!response.configured) {
+    return {
+      state: "unavailable",
+      lastObservedAt: null,
+      probeId: null,
+      detail: attributionStoreStatus().detail ?? "Attribution store is not configured.",
+    };
+  }
+  if (typeof response.result !== "string") {
+    return {
+      state: "unavailable",
+      lastObservedAt: null,
+      probeId: null,
+      detail: "Playworlds has not completed a recent signed callback handshake.",
+    };
+  }
+  try {
+    const probe = JSON.parse(response.result) as Partial<PlayworldsIntegrationProbe>;
+    if (
+      probe.schemaVersion !== 1 ||
+      probe.producer !== "playworlds" ||
+      probe.product !== "playworlds" ||
+      typeof probe.probeId !== "string" ||
+      typeof probe.occurredAt !== "string" ||
+      !Number.isFinite(Date.parse(probe.occurredAt))
+    ) {
+      throw new Error("invalid_probe");
+    }
+    return {
+      state: "observed",
+      lastObservedAt: probe.occurredAt,
+      probeId: probe.probeId,
+      detail: "Read the latest signed Playworlds callback handshake from the attribution store.",
+    };
+  } catch {
+    return {
+      state: "unavailable",
+      lastObservedAt: null,
+      probeId: null,
+      detail: "The stored Playworlds callback handshake is malformed.",
+    };
+  }
+}
+
+export async function readPlayworldsCallbackHealth(): Promise<PlayworldsCallbackHealth> {
+  const response = await redisCommand(["HGETALL", `${keyPrefix}callback:playworlds:health`]);
+  if (!response.configured) {
+    return {
+      state: "unavailable",
+      acceptedCallbacks: null,
+      orphanCallbacks: null,
+      lastAcceptedAt: null,
+      detail: attributionStoreStatus().detail ?? "Attribution store is not configured.",
+    };
+  }
+  const health = hashResult(response.result);
+  const acceptedCallbacks = Number(health.acceptedCallbacks || 0);
+  const orphanCallbacks = Number(health.orphanCallbacks || 0);
+  const lastAcceptedAt = health.lastAcceptedAt || null;
+  if (
+    !Number.isInteger(acceptedCallbacks) || acceptedCallbacks < 0 ||
+    !Number.isInteger(orphanCallbacks) || orphanCallbacks < 0 ||
+    orphanCallbacks > acceptedCallbacks ||
+    (lastAcceptedAt !== null && !Number.isFinite(Date.parse(lastAcceptedAt)))
+  ) {
+    return {
+      state: "unavailable",
+      acceptedCallbacks: null,
+      orphanCallbacks: null,
+      lastAcceptedAt: null,
+      detail: "The stored Playworlds callback health record is malformed.",
+    };
+  }
+  return {
+    state: "observed",
+    acceptedCallbacks,
+    orphanCallbacks,
+    lastAcceptedAt,
+    detail: "Read the global Playworlds callback join health from the attribution store.",
+  };
 }
 
 function periodDays(periodStart: string, periodEnd: string) {

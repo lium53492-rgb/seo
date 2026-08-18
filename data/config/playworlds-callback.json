@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "producer": "playworlds",
+  "product": "playworlds",
+  "paths": {
+    "conversion": "/api/attribution/playworlds/conversion",
+    "handshake": "/api/attribution/playworlds/handshake"
+  },
+  "signature": {
+    "version": "v1",
+    "algorithm": "hmac-sha256",
+    "timestampHeader": "x-playworlds-timestamp",
+    "deliveryIdHeader": "x-playworlds-delivery-id",
+    "signatureHeader": "x-playworlds-signature",
+    "maximumClockSkewSeconds": 300,
+    "minimumSecretBytes": 32
+  },
+  "maximumBodyBytes": 16384,
+  "maximumEventAgeDays": 400,
+  "events": [
+    "trial_started",
+    "signup_completed",
+    "purchase_completed"
+  ]
+}

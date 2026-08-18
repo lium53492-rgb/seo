@@ -56,6 +56,7 @@ function snapshotEnvironment() {
     SEO_AUTOMATION_TOKEN: process.env.SEO_AUTOMATION_TOKEN,
     WORKBENCH_PASSWORD: process.env.WORKBENCH_PASSWORD,
     ATTRIBUTION_SECRET: process.env.ATTRIBUTION_SECRET,
+    PLAYWORLDS_CALLBACK_SECRET: process.env.PLAYWORLDS_CALLBACK_SECRET,
     GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL:
       process.env.GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL,
     GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY:
@@ -107,6 +108,7 @@ test("private attribution routes fail closed and accept the separate machine bea
     delete process.env.SEO_AUTOMATION_TOKEN;
     delete process.env.WORKBENCH_PASSWORD;
     delete process.env.ATTRIBUTION_SECRET;
+    delete process.env.PLAYWORLDS_CALLBACK_SECRET;
     delete process.env.GOOGLE_SEARCH_CONSOLE_CLIENT_EMAIL;
     delete process.env.GOOGLE_SEARCH_CONSOLE_PRIVATE_KEY;
     delete process.env.KV_REST_API_TOKEN;
@@ -200,6 +202,7 @@ test("readiness reports a source configuration failure without bypassing auth or
     delete process.env.UPSTASH_REDIS_REST_TOKEN;
     delete process.env.UPSTASH_REDIS_REST_URL;
     delete process.env.ATTRIBUTION_SECRET;
+    delete process.env.PLAYWORLDS_CALLBACK_SECRET;
 
     let response = await readinessRoute.GET(
       new Request("http://localhost/api/attribution/readiness", {
@@ -228,7 +231,7 @@ test("readiness reports a source configuration failure without bypassing auth or
     assert.equal(body.sources.conversionCallback.provider, "playworlds_callback");
     assert.equal(body.sources.conversionCallback.configured, false);
     assert.equal(body.sources.conversionCallback.handshake.state, "unavailable");
-    assert.match(body.sources.conversionCallback.detail, /downstream conversion callbacks remain unavailable/);
+    assert.match(body.sources.conversionCallback.detail, /callback readiness is unavailable/);
     assert.equal(body.readyFor.searchEvidence, false);
     assert.equal(body.readyFor.searchToUv, false);
     assert.equal(body.readyFor.outboundToRevenue, false);
@@ -258,6 +261,7 @@ test("search-to-UV readiness requires observed probe results, not configured cre
     delete process.env.UPSTASH_REDIS_REST_TOKEN;
     delete process.env.UPSTASH_REDIS_REST_URL;
     delete process.env.ATTRIBUTION_SECRET;
+    delete process.env.PLAYWORLDS_CALLBACK_SECRET;
 
     globalThis.fetch = async (input) => {
       const url = String(input);

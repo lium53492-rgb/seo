@@ -5,6 +5,8 @@ import {
 import seoPolicy from "@/data/config/seo-policy.json";
 import {
   attributionStoreStatus,
+  readPlayworldsCallbackHealth,
+  readPlayworldsIntegrationProbe,
 } from "@/lib/seo/attribution-store";
 import { readLiveGrowthFunnel } from "@/lib/seo/growth-funnel";
 import { listPublishedPages } from "@/lib/seo/page-store";
@@ -12,6 +14,12 @@ import { privateJson } from "@/lib/seo/private-response";
 import { shanghaiReportingWindow } from "@/lib/seo/reporting-period";
 import { searchConsoleStatus } from "@/lib/seo/search-console";
 import { landingAnalyticsStatus } from "@/lib/seo/landing-analytics";
+import {
+  evaluatePlayworldsAttributionJoin,
+  evaluatePlayworldsFullLoopReadiness,
+  playworldsCallbackContract,
+  playworldsCallbackReceiverStatus,
+} from "@/lib/seo/playworlds-callback";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -87,6 +95,7 @@ export async function GET(request: Request) {
         attributionStore: {
           state: growth.funnel.metrics.qualifiedOutboundClicks.status,
           detail: growth.funnel.metrics.qualifiedOutboundClicks.detail,
+          orphanCallbacks: growth.orphanCallbacks,
         },
       };
     } catch (error) {
@@ -116,26 +125,108 @@ export async function GET(request: Request) {
     read: attributionStoreStatus,
   });
   const callbackProbeMaxAgeHours = Number(seoPolicy.feedbackLoop.callbackProbeMaxAgeHours);
-  const callbackHandshakeRecent = false;
+  const callbackReceiver = playworldsCallbackReceiverStatus();
+  const callbackConfigured = callbackReceiver.configured && attributionStore.configured;
+  let callbackHandshake: {
+    state: "observed" | "unavailable";
+    lastObservedAt: string | null;
+    probeId: string | null;
+    recent: boolean;
+    ageHours: number | null;
+    detail: string;
+  } = {
+    state: "unavailable",
+    lastObservedAt: null,
+    probeId: null,
+    recent: false,
+    ageHours: null,
+    detail: !callbackReceiver.configured
+      ? callbackReceiver.detail
+      : !attributionStore.configured
+        ? attributionStore.detail ?? "The attribution store is not configured."
+        : "Playworlds has not completed a recent signed callback handshake.",
+  };
+  let callbackHealth: Awaited<ReturnType<typeof readPlayworldsCallbackHealth>> = {
+    state: "unavailable",
+    acceptedCallbacks: null,
+    orphanCallbacks: null,
+    lastAcceptedAt: null,
+    detail: callbackHandshake.detail,
+  };
+  if (callbackConfigured) {
+    try {
+      const [storedHandshake, storedHealth] = await Promise.all([
+        readPlayworldsIntegrationProbe(),
+        readPlayworldsCallbackHealth(),
+      ]);
+      callbackHealth = storedHealth;
+      if (storedHandshake.state === "observed" && storedHandshake.lastObservedAt) {
+        const nowMs = Date.now();
+        const lastObservedMs = Date.parse(storedHandshake.lastObservedAt);
+        const ageHours = (nowMs - lastObservedMs) / 3_600_000;
+        const recent = Number.isFinite(ageHours) &&
+          ageHours >= -(playworldsCallbackContract.signature.maximumClockSkewSeconds / 3_600) &&
+          ageHours <= callbackProbeMaxAgeHours;
+        callbackHandshake = {
+          ...storedHandshake,
+          recent,
+          ageHours: Number.isFinite(ageHours) ? Math.max(0, ageHours) : null,
+          detail: recent
+            ? storedHandshake.detail
+            : "The last signed Playworlds callback handshake is missing, stale, or dated too far in the future.",
+        };
+      } else {
+        callbackHandshake = {
+          ...storedHandshake,
+          recent: false,
+          ageHours: null,
+        };
+      }
+    } catch (error) {
+      const detail = `Playworlds callback readiness check failed: ${
+        error instanceof Error && error.message ? error.message : "unknown error"
+      }`;
+      callbackHandshake = {
+        state: "unavailable",
+        lastObservedAt: null,
+        probeId: null,
+        recent: false,
+        ageHours: null,
+        detail,
+      };
+      callbackHealth = {
+        state: "unavailable",
+        acceptedCallbacks: null,
+        orphanCallbacks: null,
+        lastAcceptedAt: null,
+        detail,
+      };
+    }
+  }
+  const callbackHandshakeRecent = callbackHandshake.state === "observed" && callbackHandshake.recent;
+  const attributionJoin = evaluatePlayworldsAttributionJoin({
+    blockOnOrphanCallbacks: seoPolicy.feedbackLoop.blockOnOrphanCallbacks === true,
+    orphanCallbacks: callbackHealth.state === "observed"
+      ? callbackHealth.orphanCallbacks
+      : null,
+  });
   const conversionCallback = {
-    configured: false,
+    configured: callbackConfigured,
     provider: "playworlds_callback" as const,
     callbackProbeMaxAgeHours,
-    handshake: {
-      state: "unavailable" as const,
-      lastObservedAt: null,
-      probeId: null,
-      recent: false,
-      ageHours: null,
-      detail: "A signed Playworlds conversion callback contract has not been implemented or verified.",
-    },
-    detail: "Playworlds outbound attribution is active, but downstream conversion callbacks remain unavailable.",
+    handshake: callbackHandshake,
+    detail: callbackConfigured
+      ? callbackHandshakeRecent
+        ? "The signed Playworlds receiver and a recent product-side handshake are configured."
+        : "The signed Playworlds receiver is configured, but a recent product-side handshake is unavailable."
+      : `Playworlds callback readiness is unavailable: ${callbackHandshake.detail}`,
   };
   const sourceProbeReady = probe && !("state" in probe) &&
     probe.searchConsole.state === "observed" &&
     probe.urlInspection.state === "observed" &&
     probe.landingUv.state === "observed" &&
-    probe.attributionStore.state === "observed";
+    probe.attributionStore.state === "observed" &&
+    attributionJoin.ready;
   const searchToUvReady = probe && !("state" in probe) &&
     probe.searchConsole.state === "observed" &&
     probe.landingUv.state === "observed";
@@ -155,6 +246,16 @@ export async function GET(request: Request) {
       attributionStore,
       conversionCallback,
     },
+    attributionJoin: {
+      policy: seoPolicy.feedbackLoop.blockOnOrphanCallbacks === true
+        ? "block_on_orphan_callbacks"
+        : "observe_orphan_callbacks",
+      ...attributionJoin,
+      healthState: callbackHealth.state,
+      acceptedCallbacks: callbackHealth.acceptedCallbacks,
+      lastAcceptedAt: callbackHealth.lastAcceptedAt,
+      detail: callbackHealth.detail,
+    },
     probe,
     readyFor: {
       searchEvidence: Boolean(
@@ -167,12 +268,14 @@ export async function GET(request: Request) {
       searchToUv: Boolean(searchToUvReady),
       outboundToRevenue: attributionStore.configured &&
         conversionCallback.configured &&
+        callbackHandshakeRecent &&
+        attributionJoin.ready,
+      fullLoop: evaluatePlayworldsFullLoopReadiness({
+        sourceProbeReady: Boolean(sourceProbeReady),
+        conversionCallbackConfigured: conversionCallback.configured,
         callbackHandshakeRecent,
-      fullLoop: Boolean(
-        sourceProbeReady &&
-        conversionCallback.configured &&
-        callbackHandshakeRecent,
-      ),
+        attributionJoinReady: attributionJoin.ready,
+      }),
     },
   });
 }
