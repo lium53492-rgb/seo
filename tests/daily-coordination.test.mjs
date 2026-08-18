@@ -564,6 +564,85 @@ test("only an explicitly user-guided owner can resume a same-day no-publish term
   }).state, "none");
 });
 
+test("an interrupted guided publication remains a cross-day release carryover", () => {
+  const date = "2026-08-06";
+  const nextDate = "2026-08-07";
+  const { coordinationRoot, worktreeA, worktreeB } = roots("guided-release-carryover");
+  const automatedOwner = coordinationOwner(worktreeA, "scheduled-run");
+  const guidedOwner = coordinationOwner(worktreeA, "interactive-user-run");
+  const nextDayOwner = coordinationOwner(worktreeB, "next-scheduled-run");
+  const startedAt = new Date("2026-08-06T01:00:00.000Z");
+  acquireDailyLease({ coordinationRoot, date, owner: automatedOwner, now: startedAt, staleAfterMinutes: 60 });
+  writeNoPublishGrowth(worktreeA, date, "2026-08-06T00:55:00.000Z");
+  writeNoPublishResearchAndReport(worktreeA, date);
+  const terminalLease = completeDailyNoPublish({
+    coordinationRoot,
+    worktreeRoot: worktreeA,
+    date,
+    owner: automatedOwner,
+    reasonCode: "growth_unavailable",
+    reason: "The protected growth endpoint remained unavailable after the configured retries.",
+    now: startedAt,
+  });
+  const feedbackId = `feedback-${date}-guided-release`;
+  writeGuidedResumeFeedback(worktreeA, date, feedbackId, terminalLease, guidedOwner);
+  resumeDailyAfterNoPublish({
+    coordinationRoot,
+    worktreeRoot: worktreeA,
+    date,
+    owner: guidedOwner,
+    feedbackId,
+    confirmation: "CONFIRM_USER_GUIDED_RESUME",
+    now: new Date("2026-08-06T02:00:00.000Z"),
+  });
+  for (const relativePath of [
+    `data/growth/${date}.json`,
+    `data/research/${date}.json`,
+    `data/reports/${date}.json`,
+    `data/reviews/${date}.json`,
+    canonicalDailyPagePath,
+    `output/pdf/seo-daily-${date}.pdf`,
+  ]) {
+    copyDailyCoordinationFixture(worktreeA, relativePath);
+  }
+  const revision = "c".repeat(40);
+  prepareAndStartRelease({
+    coordinationRoot,
+    worktreeRoot: worktreeA,
+    date,
+    owner: guidedOwner,
+    revision,
+    slug: "ai-roleplay-first-message",
+    releaseProof: releaseProof(date, revision, "ai-roleplay-first-message"),
+    now: new Date("2026-08-06T02:30:00.000Z"),
+  });
+
+  const carryover = inspectDailyCarryover({
+    coordinationRoot,
+    date: nextDate,
+    owner: nextDayOwner,
+    now: new Date("2026-08-07T01:00:00.000Z"),
+    staleAfterMinutes: 60,
+  });
+  assert.equal(carryover.state, "recoverable");
+  assert.equal(carryover.releaseDate, date);
+  assert.equal(carryover.releaseState, "in_flight");
+  assert.equal(acquireDailyLease({
+    coordinationRoot,
+    date: nextDate,
+    owner: nextDayOwner,
+    now: new Date("2026-08-07T01:00:01.000Z"),
+    staleAfterMinutes: 60,
+  }).outcome, "busy");
+  assert.equal(acquireDailyReleaseRecoveryLease({
+    coordinationRoot,
+    date,
+    owner: nextDayOwner,
+    now: new Date("2026-08-07T01:00:02.000Z"),
+    staleAfterMinutes: 60,
+  }).outcome, "busy");
+});
+
 test("an exact BigQuery Rising miss cannot close the day by itself", () => {
   const date = "2099-01-10";
   const now = new Date("2099-01-10T01:00:00.000Z");

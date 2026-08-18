@@ -407,7 +407,15 @@ export function inspectDailyCarryover({
         noPublishOutcomes.push({ releaseDate: candidateDate, lease, productionDate: null });
       }
     }
-    if (lease.status === "active" && lease.guidedResume?.schemaVersion === 1) {
+    const persistedRelease = lease.releaseInFlight || lease.releasePreparing;
+    const orphanPinnedRevision = lease.status === "active" && !persistedRelease
+      ? pinnedDailyReleaseRevision(coordinationRoot, candidateDate)
+      : null;
+    const checkpointReady = lease.status === "active" && !persistedRelease && !orphanPinnedRevision
+      ? readyReleaseCheckpoint(coordinationRoot, candidateDate, lease)
+      : null;
+    if (lease.status === "active" && lease.guidedResume?.schemaVersion === 1 &&
+      !persistedRelease && !orphanPinnedRevision && !checkpointReady) {
       if (candidateDate === date) {
         guidedRuns.push({ releaseDate: candidateDate, lease, productionDate: null });
       }
@@ -421,13 +429,6 @@ export function inspectDailyCarryover({
     if (lease.status === "completed" && productionDate === date) {
       occupied.push({ releaseDate: candidateDate, lease, productionDate });
     }
-    const persistedRelease = lease.releaseInFlight || lease.releasePreparing;
-    const orphanPinnedRevision = lease.status === "active" && !persistedRelease
-      ? pinnedDailyReleaseRevision(coordinationRoot, candidateDate)
-      : null;
-    const checkpointReady = lease.status === "active" && !persistedRelease && !orphanPinnedRevision
-      ? readyReleaseCheckpoint(coordinationRoot, candidateDate, lease)
-      : null;
     if (lease.status === "active" && (persistedRelease || orphanPinnedRevision || checkpointReady)) {
       assertReleaseSettlementWindow(
         candidateDate,
