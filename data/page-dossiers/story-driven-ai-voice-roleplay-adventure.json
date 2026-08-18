@@ -199,23 +199,82 @@
     "request": "Retire the previous product bridge, make Playworlds the product destination, and remove every old product reference from this concept page while keeping the project aimed at adult D&D audiences.",
     "decision": "adopted_as_protected_playworlds_concept_preview"
   },
+  "releaseInfrastructure": {
+    "verifiedOn": "2026-08-18",
+    "canonicalOrigin": "https://lorelens.playworlds.ai",
+    "production": {
+      "state": "verified",
+      "revision": "33de544ecbfcaff8b37d0bec70e14d3bc6988359",
+      "evidence": "The LoreLens homepage, canonical metadata, robots.txt, and sitemap.xml were verified twice on the production revision after the Playworlds environment-variable redeploy. This proves the site origin, not publication of this concept page."
+    },
+    "searchConsole": {
+      "property": "https://lorelens.playworlds.ai/",
+      "serviceAccount": "seo-search-console-reader@seo-growth-workbench.iam.gserviceaccount.com",
+      "permission": "Full",
+      "state": "observed",
+      "evidence": "The service account has Full permission on the exact URL-prefix property and the Search Console API query succeeds without the previous 403. An observed empty result is valid evidence of zero returned rows, not an unavailable state."
+    },
+    "attributedOutbound": {
+      "routeTemplate": "/go/playworlds/{source-slug}",
+      "destination": "https://store.steampowered.com/app/4911480/Playworlds/",
+      "contractState": "implemented_and_source_gated",
+      "conceptSlugState": "404_until_published",
+      "evidence": "The tracked renderer and redirect contract are implemented, but the route resolves only a valid page from data/pages. A non-writing production HEAD request for this unpublished concept slug returned 404 on 2026-08-18, as required before guarded publication."
+    },
+    "playworldsConversionCallback": {
+      "state": "unavailable",
+      "reason": "The signed LoreLens receiver contract is source-complete, but it is not yet deployed and configured with a shared product secret, and no recent signed Playworlds server handshake has been observed, so the search-to-revenue loop is not ready."
+    }
+  },
+  "schemaContract": {
+    "preview": {
+      "source": "components/seo/story-driven-adventure/preview-page.ts",
+      "route": "/workbench/concepts/story-driven-ai-voice-roleplay-adventure",
+      "shape": "schema_3_renderer_fixture",
+      "isPublishedPageArtifact": false,
+      "failClosedProof": [
+        "The fixture lives outside data/pages and the public concept slug is absent from the page store",
+        "quality.passed is false and quality.wordCount is 0",
+        "No editorialReview or servedContentDigest is present",
+        "Both hero and final CTAs render disabled in preview mode"
+      ]
+    },
+    "formalPublication": {
+      "contentStrategySchemaVersion": 2,
+      "draftSchemaVersion": 2,
+      "publishedPageSchemaVersion": 3,
+      "requirements": [
+        "A same-day policy-version 4 candidate, content strategy, draft, and report",
+        "A report- and digest-bound approved reviewBinding with every editorial and visual-audit check",
+        "A valid adult-tabletop audience job and a painPointId from the current D&D-first allowlist",
+        "A 600-1,000-word final payload with quality.passed true and an exact recomputable word count",
+        "Active Playworlds fact IDs, the original-only IP boundary, and a recomputable servedContentDigest",
+        "Guarded publisher output in data/pages followed by live canonical, schema, sitemap, and attributed-redirect verification"
+      ]
+    },
+    "conceptReadinessNote": "The renderer fixture now uses character_hook_gap, the closest current D&D-first pain point for its Want / Secret / Decision role framework. This metadata alignment does not create evidence or approval: a future same-day research decision must independently select and justify the pain point, then regenerate the report- and digest-bound draft. The concept fixture cannot be promoted directly."
+  },
   "currentReleaseBoundary": {
     "productionPolicyAllowsThisLane": false,
-    "reason": "The public /go/playworlds/{slug} CTA route has been migrated against the Playworlds Steam destination, but a Playworlds conversion callback has not been implemented or verified, the replacement production domain and matching Search Console property have not been verified, and the candidate still lacks an exact US Top Rising match from Google Trends.",
+    "reason": "The LoreLens production origin and matching Search Console property are now verified. The Playworlds outbound contract and signed LoreLens callback receiver are source-complete, but the receiver is not yet deployed and configured with a shared product secret, and no recent product-side signed handshake has been observed. This unpublished source slug intentionally remains 404 and its preview CTAs stay disabled until guarded schema-3 publication. Publication also remains blocked because the candidate lacks an exact US Top Rising match from Google Trends, and no same-day report, digest-bound editorial review, or visual audit authorizes this concept.",
     "requiredBeforePublication": [
-      "Verify the migrated /go/playworlds/{slug} route on the replacement production domain and implement and verify the Playworlds conversion callback contract",
-      "Confirm the replacement production domain and matching Search Console property",
+      "Deploy and configure the source-complete signed receiver, then complete a recent handshake from the Playworlds server environment",
+      "Run current-day growth collection and preserve observed exact-property Search Console and complete landing-UV evidence with a ready attribution join",
       "Keep D&D language limited to adult audience context until an exact SRD version, license, attribution, and copy boundary are documented",
-      "Complete the current-day growth and attribution readiness checks",
-      "Produce same-day research, report, editorial review, visual audit, and guarded publication artifacts",
-      "Pass the Google Trends rule or record an explicit user-authorized policy change rather than silently bypassing it"
+      "Regenerate the candidate under the current D&D-first policy with an allowed tabletop pain point and active Playworlds product facts",
+      "Produce same-day research, report, digest-bound editorial review, visual audit, and guarded publication artifacts",
+      "Pass the exact Google Trends Rising rule or record an explicit user-authorized policy change rather than silently bypassing it",
+      "Recheck the time-sensitive Steam release status and verify the attributed 307 redirect only after the schema-3 page is published"
     ]
   },
   "cta": {
     "label": "Wishlist Playworlds on Steam",
-    "target": "https://store.steampowered.com/app/4911480/Playworlds/",
+    "publicRouteTemplate": "/go/playworlds/{source-slug}?location={location}",
+    "routeForThisSlug": "/go/playworlds/story-driven-ai-voice-roleplay-adventure",
+    "destination": "https://store.steampowered.com/app/4911480/Playworlds/",
     "state": "disabled_in_preview",
-    "reason": "The protected preview shows the intended Steam action without creating outbound traffic. A public rendering must receive its approved CTA URL through component props."
+    "currentLiveRouteState": "404_until_schema3_publication",
+    "reason": "The protected renderer runs in preview mode and deliberately renders both CTA positions as disabled text. After guarded publication, the public renderer constructs the attributed first-party route from the source slug and location; only that route may issue the approved Steam redirect."
   },
   "reviewBinding": null
 }

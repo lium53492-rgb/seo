@@ -31,7 +31,7 @@ are separate layers with independent rejection gates.
 - `data/config/content-architecture.json`: pain points, answer shapes, semantic
   section/FAQ jobs, depth rules, cooldowns, exact novelty thresholds, and
   review checks.
-- `data/config/presentation-recipes.json`: seven implemented visual recipes,
+- `data/config/presentation-recipes.json`: eight implemented visual recipes,
   each with its own renderer ID, layout, palette, domain concepts, rejected
   defaults, and reuse policy. The policy retirement arrays currently remove
   the specimen catalog and playful story workshop from future production;
@@ -95,13 +95,13 @@ snapshot.
 
 ## Presentation and decoration
 
-The seven renderer IDs correspond one-to-one with implemented DOM/layout
+The eight renderer IDs correspond one-to-one with implemented DOM/layout
 grammars: rehearsal slate, nocturne decision grid, product field manual,
 editorial argument, specimen catalog, orbital mission log, and playful story
-workshop. This is more than a palette switch. Current D&D-first production may
-use only recipes not listed as retired, and the selected visual world must
-support the page's adult tabletop job rather than re-skinning a generic story
-worksheet.
+workshop, plus the story-driven adventure mission archive. This is more than a
+palette switch. Current D&D-first production may use only recipes not listed
+as retired, and the selected visual world must support the page's adult
+tabletop job rather than re-skinning a generic story worksheet.
 
 Signature types also change runtime semantics: comparison/diagnostic/
 myth-fact modules use definition groups; inventory/checklist modules use
@@ -130,3 +130,19 @@ original-IP-boundary judgments so metadata alone cannot certify the prose.
 Architecture work does not authorize overwriting same-day growth, research,
 report, review, page, or PDF artifacts. Existing routes migrate only through
 a legal evidence-led update with a new report, review, and release digest.
+
+### Protected preview versus published schema 3
+
+Both workbench draft previews and hand-built concept previews may adapt their
+content into a schema-3-shaped object so they exercise the exact production
+renderer. The `status: "published"` value in that in-memory renderer adapter is
+shape compatibility only; it is not a release decision.
+
+A preview remains non-publishable when it lives outside `data/pages`, renders
+with `mode="preview"`, disables outbound CTAs, lacks an approved editorial
+review or recomputable `servedContentDigest`, or has `quality.passed: false`.
+Copying the preview object into `data/pages` cannot bypass the page store: the
+schema-3 reader independently requires the active audience and IP contracts,
+allowed facts, content depth, exact word count, approved visual review,
+digest-bound editorial review, and canonical served-content digest. Only the
+guarded publisher may create that durable artifact.

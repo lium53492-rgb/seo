@@ -31,6 +31,7 @@ const rendererContractPath = join(projectRoot, "lib", "seo", "content-contract.m
 const typesPath = join(projectRoot, "lib", "seo", "types.ts");
 const recipePath = join(projectRoot, "data", "config", "presentation-recipes.json");
 const dossierPath = join(projectRoot, "data", "page-dossiers", `${slug}.json`);
+const dossierTemplatePath = join(projectRoot, "docs", "seo", "page-launch-dossier-template.md");
 const assetPath = join(projectRoot, "public", "images", "story-driven-ai-voice-adventure.webp");
 const publicPagePath = join(projectRoot, "data", "pages", `${slug}.json`);
 const oldSlug = "dnd-character-voice-without-an-accent";
@@ -74,6 +75,8 @@ test("the specialized renderer consumes schema-3 content instead of owning page 
 
   assert.match(previewPage, /satisfies PublishedSeoPage/);
   assert.match(previewPage, /schemaVersion:\s*3/);
+  assert.match(previewPage, /painPointId:\s*"character_hook_gap"/);
+  assert.doesNotMatch(previewPage, /painPointId:\s*"product_fit_uncertainty"/);
   assert.match(previewPage, /Choose a role in a voice-first AI adventure for D&D players\./i);
   assert.match(previewPage, /A signal from Mars is waiting\./i);
   assert.match(previewPage, /What makes a sci-fi campaign scenario playable for D&D players\?/i);
@@ -135,6 +138,10 @@ test("the specialized renderer emits real HTML for every build-verifier contract
       import(`${pathToFileURL(rendererModulePath).href}?renderer-contract`),
       import(`${pathToFileURL(fixtureModulePath).href}?renderer-contract`),
     ]);
+    assert.equal(storyDrivenAdventurePreviewPage.quality.passed, false);
+    assert.equal(storyDrivenAdventurePreviewPage.quality.wordCount, 0);
+    assert.equal(storyDrivenAdventurePreviewPage.editorialReview, undefined);
+    assert.equal(storyDrivenAdventurePreviewPage.servedContentDigest, undefined);
     const html = renderToStaticMarkup(createElement(StoryDrivenAdventurePage, {
       page: storyDrivenAdventurePreviewPage,
       relatedPages: [],
@@ -212,11 +219,30 @@ test("dossier records the Playworlds Steam facts and keeps release blockers expl
   assert.equal(dossier.googleTrends.exactRisingMatch, false);
   assert.match(dossier.googleTrends.snapshotDigest, /^[a-f0-9]{64}$/);
   assert.ok(dossier.googleTrends.candidates.every((candidate) => candidate.state === "not_observed"));
+  assert.equal(dossier.releaseInfrastructure.canonicalOrigin, "https://lorelens.playworlds.ai");
+  assert.equal(dossier.releaseInfrastructure.production.state, "verified");
+  assert.equal(dossier.releaseInfrastructure.searchConsole.property, "https://lorelens.playworlds.ai/");
+  assert.equal(dossier.releaseInfrastructure.searchConsole.permission, "Full");
+  assert.equal(dossier.releaseInfrastructure.searchConsole.state, "observed");
+  assert.equal(
+    dossier.releaseInfrastructure.attributedOutbound.conceptSlugState,
+    "404_until_published",
+  );
+  assert.equal(dossier.releaseInfrastructure.playworldsConversionCallback.state, "unavailable");
+  assert.equal(dossier.schemaContract.preview.isPublishedPageArtifact, false);
+  assert.equal(dossier.schemaContract.formalPublication.draftSchemaVersion, 2);
+  assert.equal(dossier.schemaContract.formalPublication.publishedPageSchemaVersion, 3);
+  assert.match(dossier.schemaContract.conceptReadinessNote, /character_hook_gap/);
+  assert.match(dossier.schemaContract.conceptReadinessNote, /same-day research decision/);
+  assert.match(dossier.schemaContract.conceptReadinessNote, /cannot be promoted directly/);
   assert.equal(dossier.currentReleaseBoundary.productionPolicyAllowsThisLane, false);
-  assert.match(dossier.currentReleaseBoundary.reason, /CTA route has been migrated/);
-  assert.match(dossier.currentReleaseBoundary.reason, /conversion callback has not been implemented or verified/);
-  assert.match(dossier.currentReleaseBoundary.reason, /production domain.*Search Console property.*not been verified/);
+  assert.match(dossier.currentReleaseBoundary.reason, /production origin.*Search Console property are now verified/);
+  assert.match(dossier.currentReleaseBoundary.reason, /callback receiver (?:is|are) source-complete/);
+  assert.match(dossier.currentReleaseBoundary.reason, /not yet deployed and configured/);
+  assert.match(dossier.currentReleaseBoundary.reason, /no recent product-side signed handshake has been observed/);
   assert.match(dossier.currentReleaseBoundary.reason, /exact US Top Rising match from Google Trends/);
+  assert.match(dossier.currentReleaseBoundary.reason, /no same-day report/);
+  assert.doesNotMatch(dossier.currentReleaseBoundary.reason, /production domain.*not been verified/);
   assert.deepEqual(dossier.productTruth.factIdsUsed, [
     "playworlds-current-product",
     "dnd-content-direction",
@@ -233,13 +259,46 @@ test("dossier records the Playworlds Steam facts and keeps release blockers expl
     "https://store.steampowered.com/app/4911480/Playworlds/",
   );
   assert.equal(
-    dossier.cta.target,
+    dossier.cta.destination,
     "https://store.steampowered.com/app/4911480/Playworlds/",
   );
+  assert.equal(
+    dossier.cta.routeForThisSlug,
+    "/go/playworlds/story-driven-ai-voice-roleplay-adventure",
+  );
   assert.equal(dossier.cta.state, "disabled_in_preview");
+  assert.equal(dossier.cta.currentLiveRouteState, "404_until_schema3_publication");
   assert.deepEqual(dossier.conceptIpBoundary.thirdPartyNames, ["Dungeons & Dragons"]);
   assert.match(dossier.conceptIpBoundary.allowedReference, /adult tabletop-audience reference/i);
   assert.doesNotMatch(dossierSource, /voice-roleplay-format|existing-story|role-selection/);
+});
+
+test("the restored dossier template covers the current fail-closed launch contract", () => {
+  const template = readFileSync(dossierTemplatePath, "utf8");
+
+  for (const heading of [
+    "Search intent and keyword source",
+    "Google Trends and breakout evidence",
+    "Competitor and source learning",
+    "Section map and passage architecture",
+    "Product truth",
+    "IP, licensing, and audience boundary",
+    "GEO and retrievable-answer plan",
+    "CTA and conversion contract",
+    "Measurement and revenue loop",
+    "Editorial, visual, and schema-3 proof",
+    "Release gate decision",
+  ]) assert.match(template, new RegExp(`## ${heading}`));
+
+  assert.match(template, /publicationEligible: false/);
+  assert.match(template, /reviewBinding: null/);
+  assert.match(template, /https:\/\/lorelens\.playworlds\.ai\//);
+  assert.match(template, /\/go\/playworlds\/\{source-slug\}/);
+  assert.match(template, /top_rising_terms/);
+  assert.match(template, /signed Playworlds callback handshake/);
+  assert.match(template, /servedContentDigest/);
+  assert.doesNotMatch(template, retiredBrandPattern);
+  assert.doesNotMatch(template, retiredRoutePattern);
 });
 
 test("all concept artifacts have retired the previous product destination", () => {

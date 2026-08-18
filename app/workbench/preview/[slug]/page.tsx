@@ -36,6 +36,9 @@ export default async function DraftPreviewPage({
   if (!draft || draft.slug.replace(/^\//, "") !== slug) notFound();
   if (draft.schemaVersion !== 2 || !draft.architecture || !draft.signatureModule) notFound();
 
+  // Renderer adapter only. This object deliberately has no editorial review or
+  // served-content digest and must never be written to data/pages; the guarded
+  // publisher owns the durable schema-3 artifact.
   const previewPage: PublishedSeoPage = {
     schemaVersion: 3,
     status: "published",

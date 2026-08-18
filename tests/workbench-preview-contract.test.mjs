@@ -23,6 +23,14 @@ test("the workbench draft preview uses the production structured renderer contra
   assert.doesNotMatch(previewSource, /MessageResponse|wb-preview-(?:shell|page|hero|h1|lede|cta|content|section|h2|links|faq|audit)/);
 });
 
+test("the workbench renderer adapter cannot masquerade as a durable schema-3 release", () => {
+  assert.match(previewSource, /Renderer adapter only/);
+  assert.match(previewSource, /schemaVersion:\s*3/);
+  assert.match(previewSource, /mode="preview"/);
+  assert.doesNotMatch(previewSource, /servedContentDigest\s*:/);
+  assert.doesNotMatch(previewSource, /editorialReview\s*:/);
+});
+
 test("the preview keeps only a fixed overlay toolbar from the workbench visual system", () => {
   const previewClasses = new Set(
     [...workbenchCss.matchAll(/\.((?:wb-preview)[a-z0-9-]*)/g)].map((match) => match[1]),

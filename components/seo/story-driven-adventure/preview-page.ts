@@ -2,8 +2,10 @@ import type { PublishedSeoPage } from "@/lib/seo/types";
 
 /**
  * A schema-3-shaped, in-memory fixture for the protected concept route.
- * It deliberately lives outside data/pages so it cannot become publishable
- * without the normal report, review, digest, and publisher gates.
+ * `status: "published"` satisfies the renderer shape only. It deliberately
+ * lives outside data/pages, fails its quality receipt, and has no editorial
+ * review or served-content digest, so the page store cannot publish it without
+ * the normal report, review, digest, and guarded-publisher gates.
  */
 export const storyDrivenAdventurePreviewPage = {
   schemaVersion: 3,
@@ -27,7 +29,7 @@ export const storyDrivenAdventurePreviewPage = {
     intent: {
       searcherJob:
         "Understand what a story-driven voice AI adventure feels like and choose a role that can act inside the opening pressure.",
-      painPointId: "product_fit_uncertainty",
+      painPointId: "character_hook_gap",
       decisionToEnable:
         "Decide whether a voice-first single-player AI adventure and its role-driven scene loop fit the tabletop experience the reader wants.",
       oneSentenceAnswer:
