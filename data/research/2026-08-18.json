@@ -1,0 +1,1167 @@
+{
+  "date": "2026-08-18",
+  "generatedAt": "2026-08-18T15:50:00+08:00",
+  "policyVersion": 4,
+  "performance": [],
+  "contentStrategy": {
+    "schemaVersion": 2,
+    "searcherJob": "Help an adult tabletop campaign player compare a dedicated AI game master with a general chatbot before choosing a solo RPG experience.",
+    "painPointId": "player_agency_gap",
+    "readerStateBefore": "The reader wants a solo tabletop campaign but cannot tell whether a dedicated AI game master offers more playable structure than a general chatbot.",
+    "readerOutcome": "The reader can compare action resolution, persistent campaign state, and voice-or-text play without relying on unsupported feature promises.",
+    "primaryPainPoint": "Generic AI roleplay pages blur the difference between prose conversation and a campaign system that interprets actions and retains RPG state.",
+    "oneSentenceAnswer": "Choose a dedicated AI game master when the job requires attempted actions, described outcomes, new choices, and persistent campaign state rather than open-ended chat alone.",
+    "originalContribution": "A decision framework that separates conversational fluency from the campaign jobs of interpreting actions, retaining state, and presenting consequential next choices.",
+    "pagePattern": "decision_page",
+    "productBridge": "Approved Playworlds facts describe a single-player voice-or-text AI adventure RPG with an AI game master, persistent campaigns, and tracked RPG state.",
+    "contextualNextStep": "After the comparison resolves the reader's decision barrier, offer one attributed visit to the official Playworlds Steam listing for current product details.",
+    "evidenceBoundary": "Public competitor and research sources establish the search task; only the approved Playworlds fact catalog may establish Playworlds capabilities.",
+    "conversionHypothesis": "A clear AI-game-master-versus-chatbot decision page should produce more qualified Playworlds outbound visits than a broad category explanation.",
+    "primaryConversion": "qualified_outbound_click",
+    "measurementPlan": "Measure the product-scoped qualified outbound by source slug and keep downstream trial, purchase, and revenue metrics unavailable until a verified Playworlds callback or an approved aggregate Steam model exists."
+  },
+  "portfolioProjectionSource": "data/growth/2026-08-18.json",
+  "portfolioFunnels": {
+    "schemaVersion": 2,
+    "privacyClass": "public_growth_evidence",
+    "generatedAt": "2026-08-18T02:38:30.425Z",
+    "periodBasis": "complete_shanghai_calendar_days",
+    "reportingWindowDays": 28,
+    "reportingLagDays": 3,
+    "aggregationKey": "source_slug+reporting_period",
+    "periodStart": "2026-07-17T16:00:00.000Z",
+    "periodEnd": "2026-08-14T16:00:00.000Z",
+    "summary": {
+      "publishedPages": 0,
+      "collectedPages": 0,
+      "unavailablePages": 0,
+      "attributionJoinReady": false,
+      "attributionJoinBlocked": false,
+      "hasSearchValidatedLandingPage": false
+    },
+    "globalAttribution": {
+      "schemaVersion": 1,
+      "product": "playworlds",
+      "state": "unavailable",
+      "attributionJoinReady": false,
+      "detail": "The immutable daily snapshot and callback audit do not establish a verified Playworlds conversion join."
+    },
+    "entries": []
+  },
+  "portfolioDecision": {
+    "schemaVersion": 1,
+    "action": "observe",
+    "targetSlug": null,
+    "evidenceSlugs": [],
+    "rationale": "The full daily research is complete, but exact Playworlds downstream attribution is not ready, so publication is not requested while the strongest decision-page intent is retained for the next guided release."
+  },
+  "evidence": [
+    {
+      "id": "playworlds-steam",
+      "title": "Playworlds on Steam",
+      "url": "https://store.steampowered.com/app/4911480/Playworlds",
+      "source": "Steam",
+      "collectedAt": "2026-08-18T15:20:00+08:00",
+      "supports": [
+        "voice first ai rpg for d&d campaign",
+        "ai rpg with persistent d&d campaigns",
+        "ai rpg with dice and inventory tracking for d&d campaign",
+        "ai game master vs chatbot for tabletop campaign",
+        "ai rpg with ai teammate for d&d campaign",
+        "ai rpg that reacts to d&d player actions in a campaign",
+        "ai text adventure with tracked rpg mechanics for tabletop campaign"
+      ]
+    },
+    {
+      "id": "agentic-gm-solo-study",
+      "title": "Static Vs. Agentic Game Master AI for Solo Role-Playing Games",
+      "url": "https://arxiv.org/abs/2502.19519",
+      "source": "arXiv",
+      "collectedAt": "2026-08-18T15:20:00+08:00",
+      "supports": [
+        "best ai game master for solo d&d campaign",
+        "ai game master vs chatbot for tabletop campaign",
+        "solo tabletop campaign without a human game master"
+      ]
+    },
+    {
+      "id": "dungeonsdeep-solo-comparison",
+      "title": "The Best AI Game Masters for Solo RPG Players in 2026",
+      "url": "https://dungeonsdeep.ai/blog/the-best-ai-game-masters-for-solo-rpg-players-in-2026",
+      "source": "Dungeons Deep",
+      "collectedAt": "2026-08-18T15:20:00+08:00",
+      "supports": [
+        "best ai game master for solo d&d campaign",
+        "solo tabletop campaign without a human game master"
+      ]
+    },
+    {
+      "id": "echoquest-about",
+      "title": "EchoQuest Audio-First Solo Tabletop Campaigns",
+      "url": "https://www.echoquest.us/about",
+      "source": "EchoQuest",
+      "collectedAt": "2026-08-18T15:20:00+08:00",
+      "supports": [
+        "voice first ai rpg for d&d campaign",
+        "solo tabletop campaign without a human game master"
+      ]
+    },
+    {
+      "id": "dungeonsdeep-home",
+      "title": "Dungeons Deep AI Game Master",
+      "url": "https://dungeonsdeep.ai/",
+      "source": "Dungeons Deep",
+      "collectedAt": "2026-08-18T15:20:00+08:00",
+      "supports": [
+        "voice first ai rpg for d&d campaign",
+        "ai game master vs chatbot for tabletop campaign",
+        "ai rpg that reacts to d&d player actions in a campaign"
+      ]
+    },
+    {
+      "id": "trismeria-home",
+      "title": "Trismeria Persistent AI RPG Campaigns",
+      "url": "https://trismeria.com/",
+      "source": "Trismeria",
+      "collectedAt": "2026-08-18T15:20:00+08:00",
+      "supports": [
+        "ai rpg with persistent d&d campaigns",
+        "ai rpg with dice and inventory tracking for d&d campaign",
+        "ai game master vs chatbot for tabletop campaign"
+      ]
+    },
+    {
+      "id": "friends-fables-memory",
+      "title": "Friends & Fables Memories",
+      "url": "https://help.fables.gg/help/articles/2838157-memories",
+      "source": "Friends & Fables",
+      "collectedAt": "2026-08-18T15:20:00+08:00",
+      "supports": [
+        "ai rpg with persistent d&d campaigns"
+      ]
+    },
+    {
+      "id": "sagabound-home",
+      "title": "SagaBound AI RPG Engine",
+      "url": "https://sagabound.com/",
+      "source": "SagaBound",
+      "collectedAt": "2026-08-18T15:20:00+08:00",
+      "supports": [
+        "ai rpg with persistent d&d campaigns",
+        "ai rpg with dice and inventory tracking for d&d campaign",
+        "ai game master vs chatbot for tabletop campaign",
+        "ai text adventure with tracked rpg mechanics for tabletop campaign"
+      ]
+    },
+    {
+      "id": "tales-conquest-home",
+      "title": "Tales & Conquest AI Game Master",
+      "url": "https://talesgame.com/",
+      "source": "Tales & Conquest",
+      "collectedAt": "2026-08-18T15:20:00+08:00",
+      "supports": [
+        "ai rpg with dice and inventory tracking for d&d campaign",
+        "ai rpg that reacts to d&d player actions in a campaign"
+      ]
+    },
+    {
+      "id": "questsmith-home",
+      "title": "Questsmith Persistent AI Adventures",
+      "url": "https://www.thequestsmith.com/en",
+      "source": "Questsmith",
+      "collectedAt": "2026-08-18T15:20:00+08:00",
+      "supports": [
+        "ai rpg with ai teammate for d&d campaign",
+        "ai rpg that reacts to d&d player actions in a campaign"
+      ]
+    },
+    {
+      "id": "aidungeon-google-play",
+      "title": "AI Dungeon on Google Play",
+      "url": "https://play.google.com/store/apps/details?hl=en&id=com.aidungeon",
+      "source": "Google Play",
+      "collectedAt": "2026-08-18T15:20:00+08:00",
+      "supports": [
+        "ai text adventure with tracked rpg mechanics for tabletop campaign"
+      ]
+    },
+    {
+      "id": "storyroll-comparison",
+      "title": "Best AI RPG Apps in 2026",
+      "url": "https://storyroll.app/blog/best-ai-rpg-apps-2026",
+      "source": "Storyroll",
+      "collectedAt": "2026-08-18T15:20:00+08:00",
+      "supports": [
+        "best ai game master for solo d&d campaign",
+        "ai game master vs chatbot for tabletop campaign",
+        "ai text adventure with tracked rpg mechanics for tabletop campaign"
+      ]
+    },
+    {
+      "id": "roleforge-home",
+      "title": "RoleForge Structured Solo RPG",
+      "url": "https://roleforge.ai/",
+      "source": "RoleForge",
+      "collectedAt": "2026-08-18T15:20:00+08:00",
+      "supports": [
+        "ai rpg with dice and inventory tracking for d&d campaign",
+        "ai game master vs chatbot for tabletop campaign",
+        "ai text adventure with tracked rpg mechanics for tabletop campaign"
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "keyword": "best ai game master for solo d&d campaign",
+      "seed": "best ai game master",
+      "demandScore": 76,
+      "difficulty": 79,
+      "intent": "commercial",
+      "funnelStage": "purchase",
+      "conversionGoal": "purchase",
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "agentic-gm-solo-study",
+          "dungeonsdeep-solo-comparison",
+          "storyroll-comparison"
+        ],
+        "searcherJob": "Help an adult D&D player compare dedicated AI game masters before choosing a product for a continuing solo campaign.",
+        "productFactIds": [
+          "dnd-content-direction",
+          "dnd-primary-audience",
+          "playworlds-current-product",
+          "playworlds-voice-text-single-player-rpg",
+          "playworlds-ai-game-master",
+          "playworlds-persistent-campaigns",
+          "playworlds-rpg-state"
+        ],
+        "productSignals": [
+          "dnd_content",
+          "adult_tabletop_audience",
+          "playworlds_current_product",
+          "playworlds_voice_text_rpg",
+          "playworlds_ai_game_master",
+          "playworlds_persistent_campaigns",
+          "playworlds_rpg_state"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking",
+          "action_language"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking",
+          "recurring_use"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "An academic solo-GM study and multiple current comparison pages show a visible decision task around choosing an AI game master.",
+          "difficulty": "The best-product wording attracts established vendor comparison pages, making this the strongest but most competitive candidate in the set.",
+          "productFit": "Approved Playworlds facts directly support single-player voice-or-text play, an AI game master, persistent campaigns, and tracked RPG state.",
+          "trialIntent": "The reader is solution-aware and wants to select an experience for an immediate solo campaign rather than learn a broad category definition.",
+          "revenueIntent": "Best-product comparison language indicates alternative evaluation and recurring campaign use close to a commercial decision.",
+          "intentSpecificity": "The query names the adult D&D audience, a solo campaign job, an AI game master format, and a comparative modifier.",
+          "originality": "The proposed answer would use transparent selection criteria and would not claim Playworlds is universally the best option.",
+          "ipRisk": "The page can use original generic tabletop situations while treating D&D only as an audience reference without protected rules or settings.",
+          "cannibalizationRisk": "No active public LoreLens page answers this product-comparison job, and the held legacy page addressed a different story-start decision."
+        }
+      }
+    },
+    {
+      "keyword": "voice first ai rpg for d&d campaign",
+      "seed": "voice first ai rpg",
+      "demandScore": 60,
+      "difficulty": 57,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "echoquest-about",
+          "dungeonsdeep-home",
+          "playworlds-steam"
+        ],
+        "searcherJob": "Help an adult D&D player decide whether voice-first interaction with optional text fits a solo campaign session better than text-only play.",
+        "productFactIds": [
+          "dnd-content-direction",
+          "dnd-primary-audience",
+          "playworlds-current-product",
+          "playworlds-voice-text-single-player-rpg",
+          "playworlds-ai-game-master",
+          "playworlds-persistent-campaigns",
+          "playworlds-rpg-state"
+        ],
+        "productSignals": [
+          "dnd_content",
+          "adult_tabletop_audience",
+          "playworlds_current_product",
+          "playworlds_voice_text_rpg",
+          "playworlds_ai_game_master",
+          "playworlds_persistent_campaigns",
+          "playworlds_rpg_state"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking",
+          "action_language"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking",
+          "recurring_use"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Independent products use audio-first or spoken interaction as a visible category differentiator, showing a concrete evaluation task.",
+          "difficulty": "The exact voice-first RPG comparison is less crowded than broad AI RPG queries, although several products already lead with audio features.",
+          "productFit": "Playworlds is officially described as a single-player voice-first AI adventure RPG that also permits text input and uses an AI game master.",
+          "trialIntent": "The searcher is choosing an interaction mode for an upcoming campaign session and can evaluate the official product description immediately.",
+          "revenueIntent": "The format comparison can qualify a product visit, but the query is less purchase-led than a best-product or versus query.",
+          "intentSpecificity": "The query defines a voice-first format, an AI RPG category, an adult D&D campaign audience, and a session-use decision.",
+          "originality": "The answer would compare interaction modes and tabletop session fit rather than repeat the retired story-versus-prompt decision.",
+          "ipRisk": "All examples can remain original generic tabletop fantasy with no named D&D rules, settings, monsters, classes, or logos.",
+          "cannibalizationRisk": "No active public page covers this interaction-mode campaign decision; a future page must still avoid repeating retired story-entry content."
+        }
+      }
+    },
+    {
+      "keyword": "ai rpg with persistent d&d campaigns",
+      "seed": "ai rpg persistent campaign",
+      "demandScore": 74,
+      "difficulty": 71,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "trismeria-home",
+          "friends-fables-memory",
+          "sagabound-home",
+          "playworlds-steam"
+        ],
+        "searcherJob": "Help an adult D&D player find an AI RPG that can save and resume the same campaign instead of restarting from empty context.",
+        "productFactIds": [
+          "dnd-content-direction",
+          "dnd-primary-audience",
+          "playworlds-current-product",
+          "playworlds-voice-text-single-player-rpg",
+          "playworlds-ai-game-master",
+          "playworlds-persistent-campaigns",
+          "playworlds-rpg-state"
+        ],
+        "productSignals": [
+          "dnd_content",
+          "adult_tabletop_audience",
+          "playworlds_current_product",
+          "playworlds_voice_text_rpg",
+          "playworlds_ai_game_master",
+          "playworlds_persistent_campaigns",
+          "playworlds_rpg_state"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking",
+          "action_language"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking",
+          "recurring_use"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Several current AI RPG competitors place saved campaigns or memory in prominent product documentation, supporting a recurring continuity problem.",
+          "difficulty": "Persistent campaign claims are common enough to create competition, but the exact tabletop continuity job is narrower than generic AI RPG discovery.",
+          "productFit": "Approved Playworlds facts explicitly support creating, saving, and resuming campaigns together with an AI game master and tracked RPG state.",
+          "trialIntent": "A reader seeking persistent campaigns is evaluating whether to begin a continuing experience rather than reading purely informational content.",
+          "revenueIntent": "Campaign persistence implies recurring use and alternative evaluation, creating a meaningful qualified-outbound opportunity without a price claim.",
+          "intentSpecificity": "The query names an AI RPG format, persistent D&D campaign continuity, an adult tabletop audience, and a concrete resume job.",
+          "originality": "A future page can explain exactly what save and resume prove while refusing unsupported claims about unlimited or perfect memory.",
+          "ipRisk": "Original generic campaign examples avoid licensed settings and mechanics while using D&D solely to identify the intended audience.",
+          "cannibalizationRisk": "No active page covers persistent campaign continuity, so this is distinct from the held page's earlier story-entry decision."
+        }
+      }
+    },
+    {
+      "keyword": "ai rpg with dice and inventory tracking for d&d campaign",
+      "seed": "ai rpg dice inventory tracking",
+      "demandScore": 68,
+      "difficulty": 64,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "trismeria-home",
+          "sagabound-home",
+          "tales-conquest-home",
+          "roleforge-home"
+        ],
+        "searcherJob": "Help an adult D&D player choose an AI RPG that tracks campaign dice, inventory, and character state instead of producing prose alone.",
+        "productFactIds": [
+          "dnd-content-direction",
+          "dnd-primary-audience",
+          "playworlds-current-product",
+          "playworlds-voice-text-single-player-rpg",
+          "playworlds-ai-game-master",
+          "playworlds-persistent-campaigns",
+          "playworlds-rpg-state"
+        ],
+        "productSignals": [
+          "dnd_content",
+          "adult_tabletop_audience",
+          "playworlds_current_product",
+          "playworlds_voice_text_rpg",
+          "playworlds_ai_game_master",
+          "playworlds_persistent_campaigns",
+          "playworlds_rpg_state"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking",
+          "action_language"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking",
+          "recurring_use"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Multiple independent product pages use dice, inventory, and persistent status as decision criteria, showing a recurring structured-RPG need.",
+          "difficulty": "The long-tail mechanics combination is more focused than broad AI RPG terms, but several specialist products already compete on the same distinction.",
+          "productFit": "Playworlds facts approve player and party state, action resolution, dice, inventory, journey history, and an AI game master.",
+          "trialIntent": "The reader has defined the exact mechanics needed for a campaign and is ready to inspect whether a product supports them.",
+          "revenueIntent": "Structured-state comparison narrows alternatives and can qualify a recurring-use product visit even without an immediate purchase claim.",
+          "intentSpecificity": "The query specifies dice and inventory tracking, a D&D campaign audience, an AI RPG format, and a concrete state-management task.",
+          "originality": "The page can provide an auditable state checklist instead of another broad feature list or unsupported real-RPG superlative.",
+          "ipRisk": "A state-tracking explanation can stay generic and original without reproducing D&D rules text, named items, classes, or settings.",
+          "cannibalizationRisk": "The mechanics-and-state decision has no active equivalent in the current corpus and is distinct from story-start content."
+        }
+      }
+    },
+    {
+      "keyword": "ai game master vs chatbot for tabletop campaign",
+      "seed": "ai game master vs chatbot",
+      "demandScore": 69,
+      "difficulty": 66,
+      "intent": "commercial",
+      "funnelStage": "purchase",
+      "conversionGoal": "purchase",
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "trismeria-home",
+          "sagabound-home",
+          "roleforge-home",
+          "agentic-gm-solo-study"
+        ],
+        "searcherJob": "Help an adult tabletop player compare a dedicated AI game master with a general chatbot before committing to a continuing campaign.",
+        "productFactIds": [
+          "dnd-content-direction",
+          "dnd-primary-audience",
+          "playworlds-current-product",
+          "playworlds-voice-text-single-player-rpg",
+          "playworlds-ai-game-master",
+          "playworlds-persistent-campaigns",
+          "playworlds-rpg-state"
+        ],
+        "productSignals": [
+          "dnd_content",
+          "adult_tabletop_audience",
+          "playworlds_current_product",
+          "playworlds_voice_text_rpg",
+          "playworlds_ai_game_master",
+          "playworlds_persistent_campaigns",
+          "playworlds_rpg_state"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking",
+          "action_language"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking",
+          "recurring_use"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Several competitors explicitly contrast an RPG engine or AI game master with a chatbot, and academic work studies the agentic GM distinction.",
+          "difficulty": "The versus format has visible commercial competition but remains narrower and more answerable than an undifferentiated best-AI-RPG page.",
+          "productFit": "Playworlds facts support the comparison through action interpretation, outcomes, new choices, persistent campaigns, and tracked RPG state.",
+          "trialIntent": "The reader is already comparing solution types and can act immediately after understanding the exact campaign jobs each format performs.",
+          "revenueIntent": "A versus query carries commercial comparison and alternative-seeking intent close to a qualified product evaluation.",
+          "intentSpecificity": "The query defines two formats, an adult tabletop campaign audience, a comparison task, and a recurring-use context.",
+          "originality": "A passage-level decision matrix can distinguish state, action resolution, and continuity without attacking or naming a competitor.",
+          "ipRisk": "The comparison can use only generic tabletop terminology and original examples, avoiding all protected D&D mechanics and settings.",
+          "cannibalizationRisk": "This product-format decision is not answered by any active page and differs materially from choosing a prompt or existing story."
+        }
+      }
+    },
+    {
+      "keyword": "ai rpg with ai teammate for d&d campaign",
+      "seed": "ai rpg ai teammate",
+      "demandScore": 52,
+      "difficulty": 49,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "playworlds-steam",
+          "questsmith-home"
+        ],
+        "searcherJob": "Help an adult D&D solo player find a campaign experience with an in-world AI teammate for conversation, planning, and adventure decisions.",
+        "productFactIds": [
+          "dnd-content-direction",
+          "dnd-primary-audience",
+          "playworlds-current-product",
+          "playworlds-voice-text-single-player-rpg",
+          "playworlds-ai-game-master",
+          "playworlds-in-world-companion",
+          "playworlds-persistent-campaigns"
+        ],
+        "productSignals": [
+          "dnd_content",
+          "adult_tabletop_audience",
+          "playworlds_current_product",
+          "playworlds_voice_text_rpg",
+          "playworlds_ai_game_master",
+          "playworlds_in_world_companion",
+          "playworlds_persistent_campaigns"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking",
+          "action_language"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking",
+          "recurring_use"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Playworlds and an independent competitor both foreground a story-world companion or teammate, indicating a novel but visible solo-player job.",
+          "difficulty": "Few dedicated comparison pages target in-world AI teammates, lowering competition while leaving more uncertainty about exact query volume.",
+          "productFit": "The approved Playworlds catalog explicitly supports an in-world AI companion alongside voice-or-text play, an AI game master, and persistent campaigns.",
+          "trialIntent": "The reader seeks a specific solo campaign experience and can evaluate whether companion interaction fits the desired play pattern.",
+          "revenueIntent": "The query compares a differentiated product feature with recurring campaign use, but its commercial intent is weaker than a direct versus query.",
+          "intentSpecificity": "The query defines an AI teammate, a D&D solo campaign audience, an AI RPG format, and conversation and planning tasks.",
+          "originality": "A future page can distinguish an in-world teammate from the game-master role and avoid generic AI companion framing.",
+          "ipRisk": "Original teammate examples can remain generic tabletop fantasy and avoid licensed D&D characters, parties, classes, and rules.",
+          "cannibalizationRisk": "The companion decision is a new intent with no active corpus overlap, although later SERP validation must exclude generic companion-app intent."
+        }
+      }
+    },
+    {
+      "keyword": "solo tabletop campaign without a human game master",
+      "seed": "solo tabletop rpg without gm",
+      "demandScore": 72,
+      "difficulty": 73,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "agentic-gm-solo-study",
+          "echoquest-about",
+          "dungeonsdeep-solo-comparison"
+        ],
+        "searcherJob": "Help an adult tabletop player begin a continuing solo campaign when no human game master is available for the session.",
+        "productFactIds": [
+          "dnd-content-direction",
+          "dnd-primary-audience",
+          "playworlds-current-product",
+          "playworlds-voice-text-single-player-rpg",
+          "playworlds-ai-game-master",
+          "playworlds-persistent-campaigns",
+          "playworlds-rpg-state"
+        ],
+        "productSignals": [
+          "dnd_content",
+          "adult_tabletop_audience",
+          "playworlds_current_product",
+          "playworlds_voice_text_rpg",
+          "playworlds_ai_game_master",
+          "playworlds_persistent_campaigns",
+          "playworlds_rpg_state"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking",
+          "action_language"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking",
+          "recurring_use"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Academic research, an audio-first product, and current comparison content all address playing a solo campaign without a human game master.",
+          "difficulty": "This task competes with traditional solo-oracle content and AI GM products, creating meaningful competition despite clear demand.",
+          "productFit": "Playworlds is approved as a single-player voice-or-text AI adventure RPG with an AI game master and persistent campaign state.",
+          "trialIntent": "The absence of a human game master creates an immediate session problem that can motivate near-term product evaluation.",
+          "revenueIntent": "The query is primarily problem-solving but includes alternative seeking and recurring campaign use that can qualify an outbound visit.",
+          "intentSpecificity": "The query identifies an adult tabletop audience, solo campaign format, missing human game master, and immediate session job.",
+          "originality": "The answer can compare an AI game master with solo oracles and scripted adventures without claiming one solution fits every table.",
+          "ipRisk": "The guidance can use original generic tabletop-fantasy scenarios and avoids all named D&D rules, monsters, settings, and classes.",
+          "cannibalizationRisk": "No active page answers the no-human-GM campaign task, making it distinct from previous roleplay starting-point content."
+        }
+      }
+    },
+    {
+      "keyword": "ai rpg that reacts to d&d player actions in a campaign",
+      "seed": "ai rpg reacts to player actions",
+      "demandScore": 63,
+      "difficulty": 60,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "dungeonsdeep-home",
+          "tales-conquest-home",
+          "questsmith-home",
+          "playworlds-steam"
+        ],
+        "searcherJob": "Help an adult D&D player find an AI RPG that interprets free-form campaign actions and returns outcomes, risks, and new choices.",
+        "productFactIds": [
+          "dnd-content-direction",
+          "dnd-primary-audience",
+          "playworlds-current-product",
+          "playworlds-voice-text-single-player-rpg",
+          "playworlds-ai-game-master",
+          "playworlds-persistent-campaigns",
+          "playworlds-rpg-state"
+        ],
+        "productSignals": [
+          "dnd_content",
+          "adult_tabletop_audience",
+          "playworlds_current_product",
+          "playworlds_voice_text_rpg",
+          "playworlds_ai_game_master",
+          "playworlds_persistent_campaigns",
+          "playworlds_rpg_state"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking",
+          "action_language"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking",
+          "recurring_use"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Several independent product pages make action interpretation and consequential choices central to their AI RPG positioning.",
+          "difficulty": "The agency-focused long tail is less crowded than generic AI adventure terms, though many products use broad claims about reacting to choices.",
+          "productFit": "Official Playworlds facts support voice-or-text attempted actions, AI game-master interpretation, described outcomes, and new choices or risks.",
+          "trialIntent": "The reader wants to test a concrete campaign interaction model and can evaluate an official description immediately after the answer.",
+          "revenueIntent": "The action-response requirement narrows product alternatives and supports a qualified visit tied to recurring campaign agency.",
+          "intentSpecificity": "The query names a D&D campaign audience, free-form player actions, an AI RPG format, and an outcome-and-choice job.",
+          "originality": "A future answer can define testable action-response criteria and explicitly avoid promising that every attempted action succeeds.",
+          "ipRisk": "All action examples can be original generic tabletop fantasy without reproducing D&D rules, monsters, settings, or trademarks as product claims.",
+          "cannibalizationRisk": "No active page focuses on action interpretation and campaign agency, so overlap with the held story-start page is low."
+        }
+      }
+    },
+    {
+      "keyword": "ai text adventure with tracked rpg mechanics for tabletop campaign",
+      "seed": "ai text adventure rpg mechanics",
+      "demandScore": 70,
+      "difficulty": 68,
+      "intent": "commercial",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "aidungeon-google-play",
+          "sagabound-home",
+          "storyroll-comparison",
+          "roleforge-home"
+        ],
+        "searcherJob": "Help an adult tabletop player distinguish a free-form AI text adventure from a campaign experience with tracked RPG mechanics.",
+        "productFactIds": [
+          "dnd-content-direction",
+          "dnd-primary-audience",
+          "playworlds-current-product",
+          "playworlds-voice-text-single-player-rpg",
+          "playworlds-ai-game-master",
+          "playworlds-persistent-campaigns",
+          "playworlds-rpg-state"
+        ],
+        "productSignals": [
+          "dnd_content",
+          "adult_tabletop_audience",
+          "playworlds_current_product",
+          "playworlds_voice_text_rpg",
+          "playworlds_ai_game_master",
+          "playworlds_persistent_campaigns",
+          "playworlds_rpg_state"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking",
+          "action_language"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking",
+          "recurring_use"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "AI text adventure is an established category, while specialist products and comparison pages use tracked mechanics to differentiate structured RPG play.",
+          "difficulty": "The mature text-adventure category creates competition, but the tracked-mechanics modifier narrows the query to a more specific comparison task.",
+          "productFit": "Playworlds approved facts support text input, AI game-master action resolution, persistent campaigns, dice, inventory, and journey history.",
+          "trialIntent": "The reader has moved beyond category discovery and wants to test whether a product preserves the mechanics needed for campaign play.",
+          "revenueIntent": "The format-versus-mechanics comparison is commercially relevant and can qualify a recurring-use product visit without overstating availability.",
+          "intentSpecificity": "The query names an AI text-adventure format, tracked RPG mechanics, an adult tabletop campaign audience, and a differentiation job.",
+          "originality": "The answer can replace the vague phrase real RPG mechanics with an auditable checklist of state, dice, inventory, and continuity.",
+          "ipRisk": "The mechanics checklist can remain system-neutral and original while D&D appears only as an audience reference where needed.",
+          "cannibalizationRisk": "This structured-mechanics comparison is not covered by an active page and does not duplicate the earlier prompt-versus-story decision."
+        }
+      }
+    }
+  ],
+  "funnel": {
+    "schemaVersion": 1,
+    "aggregationKey": "source_slug+reporting_period",
+    "conversionJoinKey": "seo_click_id",
+    "periodStart": "2026-07-17T16:00:00.000Z",
+    "periodEnd": "2026-08-14T16:00:00.000Z",
+    "metrics": {
+      "organicClicks": {
+        "status": "unavailable",
+        "value": null,
+        "source": "search_console",
+        "detail": "The immutable same-day snapshot did not expose a usable active-page Search Console aggregate."
+      },
+      "landingUv": {
+        "status": "unavailable",
+        "value": null,
+        "source": "vercel_analytics",
+        "detail": "Exact-page landing UV is unavailable because there are currently no active public page entries."
+      },
+      "qualifiedOutboundClicks": {
+        "status": "unavailable",
+        "value": null,
+        "source": "seo_redirect",
+        "detail": "The immutable snapshot does not expose a usable qualified-outbound aggregate for an active page."
+      },
+      "trialStarts": {
+        "status": "unavailable",
+        "value": null,
+        "source": "product_analytics",
+        "detail": "A verified Playworlds trial callback and recent signed product-side handshake are not connected."
+      },
+      "signups": {
+        "status": "unavailable",
+        "value": null,
+        "source": "product_analytics",
+        "detail": "A verified Playworlds signup callback and recent signed product-side handshake are not connected."
+      },
+      "paidConversions": {
+        "status": "unavailable",
+        "value": null,
+        "source": "payments",
+        "detail": "Exact attributed Playworlds payments are unavailable through the current direct Steam destination."
+      },
+      "revenueMinor": {
+        "status": "unavailable",
+        "value": null,
+        "source": "payments",
+        "detail": "Exact attributed Playworlds revenue is unavailable through the current direct Steam destination."
+      }
+    }
+  },
+  "feedbackDecisions": [],
+  "trendCollection": {
+    "schemaVersion": 2,
+    "provider": "google_trends_bigquery_public_dataset",
+    "state": "observed",
+    "collectedAt": "2026-08-18T07:57:11.958Z",
+    "sourceUrl": "https://support.google.com/trends/answer/12764470?hl=en",
+    "geo": "US",
+    "coverage": {
+      "label": "Top 25 and Top 25 Rising Google Trends terms by US DMA",
+      "topTermsPerDma": 25,
+      "topRisingTermsPerDma": 25,
+      "arbitraryQueryCoverage": false,
+      "absenceMeansZero": false
+    },
+    "query": {
+      "location": "US",
+      "useLegacySql": false,
+      "maximumBytesBilled": "104857600",
+      "timeoutMs": 15000,
+      "asOfDate": "2026-08-18",
+      "refreshDateRule": "as_of_date_minus_1_day",
+      "topTermsSqlDigest": "538962e0b1646c7d40a12471e1af3904eda46fea3c0f833e92ee2326a1065a05",
+      "topRisingTermsSqlDigest": "b354b8eae3eb1ebd9a85dac0c56126df6824d2a5cd8a26da6450534438ad580e"
+    },
+    "refreshDate": "2026-08-17",
+    "week": "2026-08-16",
+    "results": {
+      "topTerms": {
+        "rowCount": 25,
+        "resultDigest": "281dcfebb14ba1f46063a3cefd5705874ccfff5eee8a6d8316061dbf0debea13"
+      },
+      "topRisingTerms": {
+        "rowCount": 25,
+        "resultDigest": "caffa811d7f0ca468fd88b58793a291b5f5b433bbc19fb1f65e3221396d00336"
+      }
+    },
+    "exactCandidateMatches": [
+      {
+        "keyword": "best ai game master for solo d&d campaign",
+        "normalizedKeyword": "best ai game master for solo d&d campaign",
+        "topTerm": null,
+        "risingTerm": null
+      },
+      {
+        "keyword": "voice first ai rpg for d&d campaign",
+        "normalizedKeyword": "voice first ai rpg for d&d campaign",
+        "topTerm": null,
+        "risingTerm": null
+      },
+      {
+        "keyword": "ai rpg with persistent d&d campaigns",
+        "normalizedKeyword": "ai rpg with persistent d&d campaigns",
+        "topTerm": null,
+        "risingTerm": null
+      },
+      {
+        "keyword": "ai rpg with dice and inventory tracking for d&d campaign",
+        "normalizedKeyword": "ai rpg with dice and inventory tracking for d&d campaign",
+        "topTerm": null,
+        "risingTerm": null
+      },
+      {
+        "keyword": "ai game master vs chatbot for tabletop campaign",
+        "normalizedKeyword": "ai game master vs chatbot for tabletop campaign",
+        "topTerm": null,
+        "risingTerm": null
+      },
+      {
+        "keyword": "ai rpg with ai teammate for d&d campaign",
+        "normalizedKeyword": "ai rpg with ai teammate for d&d campaign",
+        "topTerm": null,
+        "risingTerm": null
+      },
+      {
+        "keyword": "solo tabletop campaign without a human game master",
+        "normalizedKeyword": "solo tabletop campaign without a human game master",
+        "topTerm": null,
+        "risingTerm": null
+      },
+      {
+        "keyword": "ai rpg that reacts to d&d player actions in a campaign",
+        "normalizedKeyword": "ai rpg that reacts to d&d player actions in a campaign",
+        "topTerm": null,
+        "risingTerm": null
+      },
+      {
+        "keyword": "ai text adventure with tracked rpg mechanics for tabletop campaign",
+        "normalizedKeyword": "ai text adventure with tracked rpg mechanics for tabletop campaign",
+        "topTerm": null,
+        "risingTerm": null
+      }
+    ],
+    "discoveryLeads": [],
+    "detail": "Observed the official Google Trends public BigQuery Top 25 and Top 25 Rising terms for the latest weekly period in the requested US DMA daily partition. Coverage is not an arbitrary-query interest measurement.",
+    "attestation": {
+      "algorithm": "RSA-SHA256",
+      "clientEmail": "lorelens-trends-collector@seo-growth-workbench.iam.gserviceaccount.com",
+      "keyFingerprint": "497683d75d80428447f27f439be1aac4475807ac189a92ece8ccd5c492ac964d",
+      "signature": "KNXKnX9Bg91QsWI6lV/lThxCQQ6QmSmBW1XOdHHUMwdDI1A+RBD29lNLWCCsOQ9FaIeuPWalz56/IdmDfeQMYpeNI+nBXgGvUowwdmTJiUWupRl3ED5AXcTm/YdXE9v5CVRoOuXL9YT1Qo4nOqRzpeu/zOiLnfSWUvxDJ5qwmOwdJSpK8SkaA3pxHqY0JJx66UGdjUEcI7SJ4mVh+rrDtLOQgBbVJUqKcGCPrY86xn9z5D04Q6HlyGhUekV9uZ4urKkzeUJreIwvxZt517fBw/4cxx9N02ZsrqzmG8/LhjSP7JG2iDm7Yv20mraHI4bkVCu5ObGynT8M+0RLlX+QPg=="
+    },
+    "snapshotDigest": "c48866832eea743af0dff7c62c4a207c0b3b60fe53a993abe883f227e404d34b"
+  },
+  "trendSignals": [
+    {
+      "schemaVersion": 2,
+      "keyword": "best ai game master for solo d&d campaign",
+      "source": "google_trends",
+      "collectionMethod": "bigquery_public_dataset",
+      "sourceUrl": "https://support.google.com/trends/answer/12764470?hl=en",
+      "sourceTable": "bigquery-public-data.google_trends.top_rising_terms",
+      "state": "not_observed",
+      "relativeInterest": null,
+      "direction": "unknown",
+      "geo": "US",
+      "period": "week starting 2026-08-16",
+      "collectedAt": "2026-08-18T07:57:11.958Z",
+      "detail": "The exact normalized candidate did not appear in the US DMA Top 25 Rising dataset. This restricted-list absence is not zero search interest.",
+      "refreshDate": "2026-08-17",
+      "week": "2026-08-16",
+      "bestRank": null,
+      "maxPercentGain": null,
+      "dmaCount": null,
+      "snapshotDigest": "c48866832eea743af0dff7c62c4a207c0b3b60fe53a993abe883f227e404d34b"
+    },
+    {
+      "schemaVersion": 2,
+      "keyword": "voice first ai rpg for d&d campaign",
+      "source": "google_trends",
+      "collectionMethod": "bigquery_public_dataset",
+      "sourceUrl": "https://support.google.com/trends/answer/12764470?hl=en",
+      "sourceTable": "bigquery-public-data.google_trends.top_rising_terms",
+      "state": "not_observed",
+      "relativeInterest": null,
+      "direction": "unknown",
+      "geo": "US",
+      "period": "week starting 2026-08-16",
+      "collectedAt": "2026-08-18T07:57:11.958Z",
+      "detail": "The exact normalized candidate did not appear in the US DMA Top 25 Rising dataset. This restricted-list absence is not zero search interest.",
+      "refreshDate": "2026-08-17",
+      "week": "2026-08-16",
+      "bestRank": null,
+      "maxPercentGain": null,
+      "dmaCount": null,
+      "snapshotDigest": "c48866832eea743af0dff7c62c4a207c0b3b60fe53a993abe883f227e404d34b"
+    },
+    {
+      "schemaVersion": 2,
+      "keyword": "ai rpg with persistent d&d campaigns",
+      "source": "google_trends",
+      "collectionMethod": "bigquery_public_dataset",
+      "sourceUrl": "https://support.google.com/trends/answer/12764470?hl=en",
+      "sourceTable": "bigquery-public-data.google_trends.top_rising_terms",
+      "state": "not_observed",
+      "relativeInterest": null,
+      "direction": "unknown",
+      "geo": "US",
+      "period": "week starting 2026-08-16",
+      "collectedAt": "2026-08-18T07:57:11.958Z",
+      "detail": "The exact normalized candidate did not appear in the US DMA Top 25 Rising dataset. This restricted-list absence is not zero search interest.",
+      "refreshDate": "2026-08-17",
+      "week": "2026-08-16",
+      "bestRank": null,
+      "maxPercentGain": null,
+      "dmaCount": null,
+      "snapshotDigest": "c48866832eea743af0dff7c62c4a207c0b3b60fe53a993abe883f227e404d34b"
+    },
+    {
+      "schemaVersion": 2,
+      "keyword": "ai rpg with dice and inventory tracking for d&d campaign",
+      "source": "google_trends",
+      "collectionMethod": "bigquery_public_dataset",
+      "sourceUrl": "https://support.google.com/trends/answer/12764470?hl=en",
+      "sourceTable": "bigquery-public-data.google_trends.top_rising_terms",
+      "state": "not_observed",
+      "relativeInterest": null,
+      "direction": "unknown",
+      "geo": "US",
+      "period": "week starting 2026-08-16",
+      "collectedAt": "2026-08-18T07:57:11.958Z",
+      "detail": "The exact normalized candidate did not appear in the US DMA Top 25 Rising dataset. This restricted-list absence is not zero search interest.",
+      "refreshDate": "2026-08-17",
+      "week": "2026-08-16",
+      "bestRank": null,
+      "maxPercentGain": null,
+      "dmaCount": null,
+      "snapshotDigest": "c48866832eea743af0dff7c62c4a207c0b3b60fe53a993abe883f227e404d34b"
+    },
+    {
+      "schemaVersion": 2,
+      "keyword": "ai game master vs chatbot for tabletop campaign",
+      "source": "google_trends",
+      "collectionMethod": "bigquery_public_dataset",
+      "sourceUrl": "https://support.google.com/trends/answer/12764470?hl=en",
+      "sourceTable": "bigquery-public-data.google_trends.top_rising_terms",
+      "state": "not_observed",
+      "relativeInterest": null,
+      "direction": "unknown",
+      "geo": "US",
+      "period": "week starting 2026-08-16",
+      "collectedAt": "2026-08-18T07:57:11.958Z",
+      "detail": "The exact normalized candidate did not appear in the US DMA Top 25 Rising dataset. This restricted-list absence is not zero search interest.",
+      "refreshDate": "2026-08-17",
+      "week": "2026-08-16",
+      "bestRank": null,
+      "maxPercentGain": null,
+      "dmaCount": null,
+      "snapshotDigest": "c48866832eea743af0dff7c62c4a207c0b3b60fe53a993abe883f227e404d34b"
+    },
+    {
+      "schemaVersion": 2,
+      "keyword": "ai rpg with ai teammate for d&d campaign",
+      "source": "google_trends",
+      "collectionMethod": "bigquery_public_dataset",
+      "sourceUrl": "https://support.google.com/trends/answer/12764470?hl=en",
+      "sourceTable": "bigquery-public-data.google_trends.top_rising_terms",
+      "state": "not_observed",
+      "relativeInterest": null,
+      "direction": "unknown",
+      "geo": "US",
+      "period": "week starting 2026-08-16",
+      "collectedAt": "2026-08-18T07:57:11.958Z",
+      "detail": "The exact normalized candidate did not appear in the US DMA Top 25 Rising dataset. This restricted-list absence is not zero search interest.",
+      "refreshDate": "2026-08-17",
+      "week": "2026-08-16",
+      "bestRank": null,
+      "maxPercentGain": null,
+      "dmaCount": null,
+      "snapshotDigest": "c48866832eea743af0dff7c62c4a207c0b3b60fe53a993abe883f227e404d34b"
+    },
+    {
+      "schemaVersion": 2,
+      "keyword": "solo tabletop campaign without a human game master",
+      "source": "google_trends",
+      "collectionMethod": "bigquery_public_dataset",
+      "sourceUrl": "https://support.google.com/trends/answer/12764470?hl=en",
+      "sourceTable": "bigquery-public-data.google_trends.top_rising_terms",
+      "state": "not_observed",
+      "relativeInterest": null,
+      "direction": "unknown",
+      "geo": "US",
+      "period": "week starting 2026-08-16",
+      "collectedAt": "2026-08-18T07:57:11.958Z",
+      "detail": "The exact normalized candidate did not appear in the US DMA Top 25 Rising dataset. This restricted-list absence is not zero search interest.",
+      "refreshDate": "2026-08-17",
+      "week": "2026-08-16",
+      "bestRank": null,
+      "maxPercentGain": null,
+      "dmaCount": null,
+      "snapshotDigest": "c48866832eea743af0dff7c62c4a207c0b3b60fe53a993abe883f227e404d34b"
+    },
+    {
+      "schemaVersion": 2,
+      "keyword": "ai rpg that reacts to d&d player actions in a campaign",
+      "source": "google_trends",
+      "collectionMethod": "bigquery_public_dataset",
+      "sourceUrl": "https://support.google.com/trends/answer/12764470?hl=en",
+      "sourceTable": "bigquery-public-data.google_trends.top_rising_terms",
+      "state": "not_observed",
+      "relativeInterest": null,
+      "direction": "unknown",
+      "geo": "US",
+      "period": "week starting 2026-08-16",
+      "collectedAt": "2026-08-18T07:57:11.958Z",
+      "detail": "The exact normalized candidate did not appear in the US DMA Top 25 Rising dataset. This restricted-list absence is not zero search interest.",
+      "refreshDate": "2026-08-17",
+      "week": "2026-08-16",
+      "bestRank": null,
+      "maxPercentGain": null,
+      "dmaCount": null,
+      "snapshotDigest": "c48866832eea743af0dff7c62c4a207c0b3b60fe53a993abe883f227e404d34b"
+    },
+    {
+      "schemaVersion": 2,
+      "keyword": "ai text adventure with tracked rpg mechanics for tabletop campaign",
+      "source": "google_trends",
+      "collectionMethod": "bigquery_public_dataset",
+      "sourceUrl": "https://support.google.com/trends/answer/12764470?hl=en",
+      "sourceTable": "bigquery-public-data.google_trends.top_rising_terms",
+      "state": "not_observed",
+      "relativeInterest": null,
+      "direction": "unknown",
+      "geo": "US",
+      "period": "week starting 2026-08-16",
+      "collectedAt": "2026-08-18T07:57:11.958Z",
+      "detail": "The exact normalized candidate did not appear in the US DMA Top 25 Rising dataset. This restricted-list absence is not zero search interest.",
+      "refreshDate": "2026-08-17",
+      "week": "2026-08-16",
+      "bestRank": null,
+      "maxPercentGain": null,
+      "dmaCount": null,
+      "snapshotDigest": "c48866832eea743af0dff7c62c4a207c0b3b60fe53a993abe883f227e404d34b"
+    }
+  ]
+}
