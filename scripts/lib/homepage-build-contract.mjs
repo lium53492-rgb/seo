@@ -12,6 +12,13 @@ export function requiredHomepageBuildFragments({ activePageCount, siteUrl }) {
     ],
     [`rel="canonical" href="${siteUrl}"`, "canonical URL"],
     ['"@type":"FAQPage"', "FAQ JSON-LD"],
+    ['data-ip-boundary="original-tabletop-fantasy"', "original-only D&D notice"],
+    ['data-srd-material-used="false"', "SRD material boundary"],
+    ["Independent, original-only guide", "D&D independence notice heading"],
+    [
+      "Dungeons &amp; Dragons and D&amp;D are trademarks of Wizards of the Coast.",
+      "D&D independence notice body",
+    ],
   ];
 
   if (activePageCount > 0) {

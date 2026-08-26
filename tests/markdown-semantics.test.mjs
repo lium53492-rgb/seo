@@ -6,6 +6,7 @@ import {
   listMarkdownRenderBlocks,
   markdownSemanticBlockCount,
   parseMarkdownBlocks,
+  renderedMarkdownText,
   unsupportedMarkdownReason,
 } from "../lib/seo/markdown-semantics.mjs";
 
@@ -75,6 +76,20 @@ test("comparison parsing retains bullet semantics and wrapped item text", () => 
     },
     { type: "prose", text: "Record the difference." },
   ]);
+});
+
+test("rendered Markdown text omits browser-generated ordered-list markers", () => {
+  const value = [
+    "Test the campaign loop.",
+    "1. **Action:** Name the attempt.",
+    "2. **Outcome:** Confirm what changed.",
+    "Read the result separately.",
+  ].join("\n");
+
+  assert.equal(
+    renderedMarkdownText(value),
+    "Test the campaign loop. **Action:** Name the attempt. **Outcome:** Confirm what changed. Read the result separately.",
+  );
 });
 
 test("supported Markdown rejects syntax the production renderer cannot render", () => {

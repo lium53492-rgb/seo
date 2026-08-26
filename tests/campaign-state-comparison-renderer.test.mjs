@@ -106,6 +106,10 @@ test("custom renderer emits crawlable sections, four comparison checkpoints, FAQ
   const fixtureModulePath = join(root, "tests", `.campaign-state-page-${process.pid}-${Date.now()}.mjs`);
   const rendererSource = readFileSync(componentPath, "utf8")
     .replace(
+      'import Image from "next/image";',
+      'const Image = ({ fill, priority, ...props }) => <img {...props} />;',
+    )
+    .replace(
       'import { TrackedPlayworldsLink } from "@/app/components/TrackedPlayworldsLink";',
       'const TrackedPlayworldsLink = ({ children, sourceSlug, location, ...props }) => <a {...props} href={`/go/playworlds/${sourceSlug}?location=${location}`}>{children}</a>;',
     )
@@ -145,9 +149,17 @@ test("custom renderer emits crawlable sections, four comparison checkpoints, FAQ
     assert.match(html, /data-presentation-recipe="campaign-state-comparison-v1"/);
     assert.match(html, /data-renderer="campaign_state_comparison"/);
     assert.match(html, /data-signature-module="campaign-loop-test"/);
+    assert.ok(
+      html.indexOf('class="instrumentBand"') > html.indexOf("</header>"),
+      "the Campaign Loop Test must follow the hero instead of covering its character",
+    );
+    assert.match(html, /src="\/story-scenes\/campaign-keeper-v1\.webp"/);
+    assert.match(html, /alt="An original dark-fantasy campaign keeper framed by fog and an ember-lit ritual circle\."/);
     assert.equal((html.match(/class="traceStage"/g) ?? []).length, 4);
     assert.equal((html.match(/data-content-role=/g) ?? []).length, page.sections.length);
     assert.equal((html.match(/data-faq-job=/g) ?? []).length, page.faqs.length);
+    assert.match(html, /aria-hidden="true">↺ \/ NEXT CHOICE<\/span>/);
+    assert.match(html, /class="screenReaderOnly">04 \/ NEXT CHOICE<\/span>/);
     for (const section of page.sections) {
       assert.ok(html.includes(`id="${section.id}"`), `missing standalone section ${section.id}`);
       assert.ok(normalizedHtml.includes(section.heading), `missing heading ${section.heading}`);
@@ -171,6 +183,10 @@ test("StructuredContentPage dispatches the campaign renderer inside its main she
   const fixtureModulePath = join(root, "tests", `.campaign-state-integrated-page-${nonce}.mjs`);
   const structuredModulePath = join(root, "tests", `.campaign-state-structured-renderer-${nonce}.mjs`);
   const rendererSource = readFileSync(componentPath, "utf8")
+    .replace(
+      'import Image from "next/image";',
+      'const Image = ({ fill, priority, ...props }) => <img {...props} />;',
+    )
     .replace(
       'import { TrackedPlayworldsLink } from "@/app/components/TrackedPlayworldsLink";',
       'const TrackedPlayworldsLink = ({ children, sourceSlug, location, ...props }) => <a {...props} href={`/go/playworlds/${sourceSlug}?location=${location}`}>{children}</a>;',
@@ -237,7 +253,7 @@ test("StructuredContentPage dispatches the campaign renderer inside its main she
       mode: "preview",
     }));
 
-    assert.match(html, /^<main class="shell" id="top"/);
+    assert.match(html, /<main class="shell" id="top"/);
     assert.equal((html.match(/data-renderer="campaign_state_comparison"/g) ?? []).length, 2);
     assert.match(html, /data-signature-module="campaign-loop-test"/);
     assert.match(html, /<\/main><aside data-ip-boundary="original-tabletop-fantasy" data-srd-material-used="false">/);
@@ -263,11 +279,15 @@ test("campaign-state CSS commits to one adult dark-tabletop visual system", () =
     "--campaign-display",
     "--campaign-ledger",
   ]) assert.match(css, new RegExp(token));
+  assert.match(css, /--lampblack:\s*#030712/);
+  assert.match(css, /\.instrumentBand/);
   assert.match(css, /\.traceStages/);
   assert.match(css, /\.laneComparison/);
   assert.match(css, /\.sectionUnit:nth-child\(even\) \.passage/);
   assert.doesNotMatch(css, /\.passage:nth-child\(even\)/);
   assert.match(css, /prefers-reduced-motion/);
   assert.match(css, /@media \(max-width: 780px\)/);
+  assert.match(css, /\.disabledCta,[\s\S]*?\.heroCta\s*\{[\s\S]*?order:\s*1/);
+  assert.match(css, /\.heroAnswer\s*\{\s*order:\s*2/);
   assert.doesNotMatch(css, /purple|glassmorphism|border-radius:\s*(?:1[2-9]|[2-9]\d)px/i);
 });

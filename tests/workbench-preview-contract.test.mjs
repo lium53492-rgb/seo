@@ -14,6 +14,7 @@ const workbenchCss = await readFile(
 test("the workbench draft preview uses the production structured renderer contract", () => {
   assert.match(previewSource, /import \{ StructuredContentPage \} from "@\/app\/\[slug\]\/StructuredContentPage"/);
   assert.match(previewSource, /resolvePagePresentation\(previewPage\)/);
+  assert.match(previewSource, /ipBoundary:\s*draft\.ipBoundary/);
   assert.match(previewSource, /resolveRelatedSeoPages\(previewPage, await listPublishedPages\(\)\)/);
   assert.match(
     previewSource,

@@ -15,12 +15,12 @@ export const aiGameMasterVsChatbotPreviewPage = {
   updatedAt: "2026-08-18T00:00:00.000Z",
   generatedFromReport: "concept-2026-08-18-ai-game-master-vs-chatbot-for-dnd",
   pagePattern: "decision_page",
-  title: "AI Game Master vs Chatbot for D&D Campaigns | Playworlds",
+  title: "AI Game Master vs Chatbot: 4 Differences for D&D Players",
   metaDescription:
-    "Compare an AI game master and chatbot for D&D campaigns across action, outcome, persistent state, and next choice.",
+    "Use the Campaign Loop Test to compare action resolution, consequences, persistent state, and next choices—then decide what fits your solo campaign.",
   h1: "AI Game Master vs Chatbot: Which One Fits a D&D Campaign?",
   heroMarkdown:
-    "Choose an AI game master when actions must produce outcomes, update campaign state, and return consequential choices. Choose a chatbot for conversation or brainstorming without that campaign loop.",
+    "Choose an AI game master when actions must change campaign state and produce consequential choices. Choose a chatbot for conversation or brainstorming without that loop.",
   primaryCta: "Check Playworlds against the Campaign Loop Test",
   architecture: {
     schemaVersion: 1,
@@ -44,7 +44,7 @@ export const aiGameMasterVsChatbotPreviewPage = {
       originalContribution:
         "The Campaign Loop Test compares action interpretation, outcome, persistent state, and the next choice through one original tabletop-fantasy scene.",
       tone:
-        "Adult tabletop field analysis with a dark campaign-control-room presentation and concise, answer-first passages.",
+        "Adult tabletop field analysis with a midnight-blue campaign-control-room presentation and concise, answer-first passages that remain understandable in isolation.",
       openingMove: "direct_answer",
       avoidPhrases: [
         "endless possibilities",
@@ -200,7 +200,7 @@ export const aiGameMasterVsChatbotPreviewPage = {
       format: "comparison",
       heading: "What is the practical difference between an AI game master and a chatbot for D&D players?",
       bodyMarkdown:
-        "An AI game master keeps a campaign moving; a chatbot supports flexible conversation. Both can describe scenes. The difference appears after a player acts: the game master interprets intent, resolves an outcome, preserves what changed, and offers a consequential next choice.\n\nUse a chatbot for brainstorming. Choose an AI game master when one decision must become the next scene's starting state.",
+        "For D&D play, an AI game master and a chatbot do different jobs after the player acts.\n\n- **General chatbot:** Supports brainstorming or dialogue without resolving campaign state.\n- **AI game master:** Interprets the attempt, resolves its outcome, preserves state, and presents the next consequential choice.\n\nChoose a chatbot for conversation. Choose an AI game master when one decision must become the next scene's starting state.",
     },
     {
       id: "eloquent-but-unplayable",
@@ -208,7 +208,7 @@ export const aiGameMasterVsChatbotPreviewPage = {
       format: "prose",
       heading: "Why can an eloquent chatbot still feel weak during a tabletop campaign?",
       bodyMarkdown:
-        "An eloquent chatbot can fail a tabletop campaign because prose and play state are different. It may sound atmospheric while leaving the action unresolved or forgetting its cost.\n\nIf the player must restate danger, inventory, relationships, and the last outcome, the tool is writing around the campaign. An AI game master connects consequence to persistent state and returns a specific decision.",
+        "An eloquent chatbot can fail a tabletop campaign because polished prose is not persistent state. It may leave the player's action unresolved.\n\nIf the player must restate danger, inventory, and the last outcome, the tool is writing around the campaign. An AI game master preserves consequence and returns a specific decision.",
     },
     {
       id: "campaign-loop-test",
@@ -216,7 +216,7 @@ export const aiGameMasterVsChatbotPreviewPage = {
       format: "steps",
       heading: "How can you test an AI tool before trusting it with a D&D campaign?",
       bodyMarkdown:
-        "Test any AI campaign tool with four system-neutral checkpoints.\n\n1. **Action:** Name the attempt, intent, and risk.\n2. **Outcome:** Confirm what happened.\n3. **State:** Identify what persists.\n4. **Next choice:** Require a concrete decision that returns agency.\n\nTogether they show whether an original fantasy scene stays coherent after the player changes it.",
+        "For D&D campaign play, the Campaign Loop Test separates an AI game master from a chatbot with four checkpoints.\n\n1. **Action:** Name the attempt, intent, and risk.\n2. **Outcome:** Confirm what happened and what pressure, opportunity, or cost followed.\n3. **State:** Identify what persists into the next turn.\n4. **Next choice:** Require a concrete decision that returns agency.\n\nEach works alone; together they reveal a coherent campaign loop.",
     },
     {
       id: "locked-chapel-example",
@@ -224,7 +224,7 @@ export const aiGameMasterVsChatbotPreviewPage = {
       format: "examples",
       heading: "What does the Campaign Loop Test look like in an original fantasy scene?",
       bodyMarkdown:
-        "During a storm, a courier with medicine reaches a locked chapel. The caretaker refuses entry after its bell rang alone. The courier sets down the chest and asks for the old tunnel.\n\nA chat-shaped answer may describe rain. A campaign-shaped answer resolves the attempt: the caretaker trusts the medicine, recognizes the courier's seal, reports the tunnel flooded, and demands collateral. State now includes a surrendered resource, blocked route, and exposed identity. Next choice: explain the seal or seek another road.\n\nThis original scene uses no D&D rules or setting content.",
+        "Compare an AI chatbot and an AI game master with one original tabletop-fantasy scene.\n\n- **Scene:** In a storm, a medicine courier reaches a locked chapel. The caretaker refuses entry after its bell rang alone.\n- **Chat-shaped response:** Describes the rain without deciding what changed.\n- **Campaign-shaped response:** The caretaker trusts the medicine, recognizes the courier's seal, says the tunnel is flooded, and demands collateral. Persistent state: surrendered resource, blocked route, exposed identity. Next choice: explain the seal or seek another road.\n\nThis original example contains no D&D rules or setting content.",
     },
     {
       id: "choose-the-right-tool",
@@ -232,7 +232,7 @@ export const aiGameMasterVsChatbotPreviewPage = {
       format: "checklist",
       heading: "When should a D&D player choose a chatbot, and when should they choose an AI game master?",
       bodyMarkdown:
-        "Choose a chatbot for names, themes, dialogue, or loose character exploration. Choose an AI game master when actions must create persistent outcomes.\n\n- **Choose conversation** when flexibility matters more than continuity.\n- **Choose a campaign loop** when inventory, party condition, resolved actions, and journey history must stay connected.\n- **Check the next turn:** the reply should state what changed and what decision follows.\n\nPlayworlds' public listing describes a single-player AI adventure RPG with voice or text actions, an AI game master, saved campaigns, and tracked RPG state. D&D names the adult audience; this guide is independent and original.",
+        "For a D&D player, choose by what must persist after the reply.\n\n- **Choose conversation** when names or dialogue matter more than continuity.\n- **Choose a campaign loop** when inventory, party condition, actions, and history must stay connected.\n- **Check the next turn:** The reply should state what changed and what decision follows.\n\nPlayworlds' public listing describes voice or text actions, an AI game master, saved campaigns, and tracked RPG state in a single-player AI adventure RPG. D&D identifies this independent guide's adult audience; it does not imply affiliation or rules compatibility.",
     },
   ],
   faqs: [
@@ -241,28 +241,28 @@ export const aiGameMasterVsChatbotPreviewPage = {
       job: "definition",
       question: "Is every fantasy AI chatbot an AI game master?",
       answerMarkdown:
-        "No. Fantasy tone alone does not create a game-master loop. The system must resolve action, preserve state, and return a specific choice.",
+        "A fantasy chatbot is not automatically an AI game master. Fantasy tone alone cannot resolve action, preserve state, and return a specific choice.",
     },
     {
       id: "faq-replacement",
       job: "constraint",
       question: "Does an AI game master replace a human Dungeon Master?",
       answerMarkdown:
-        "No universal replacement claim is made. Playworlds is a single-player AI adventure RPG; this comparison helps choose a solo tool, not replace human-led tables.",
+        "An AI game master does not universally replace a human Dungeon Master. Playworlds is described for solo play, which is the scope of this comparison.",
     },
     {
       id: "faq-input",
       job: "setup",
       question: "Does Playworlds require voice input?",
       answerMarkdown:
-        "No. The listing describes voice or keyboard input and an optional microphone. Voice-first is not a requirement.",
+        "Playworlds does not require voice input. Its official listing describes voice or keyboard input and says a microphone is optional.",
     },
     {
       id: "faq-ip",
       job: "constraint",
       question: "What does the D&D reference mean on this page?",
       answerMarkdown:
-        "D&D identifies the adult audience for this independent guide. The original example reproduces no D&D rules, settings, characters, monsters, maps, or adventure text.",
+        "Here, D&D identifies the adult audience. The original example contains no D&D rules or setting content, and the page claims no compatibility or affiliation.",
     },
   ],
   factIdsUsed: [

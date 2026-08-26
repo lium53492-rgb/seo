@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { FAQJsonLd } from "next-seo";
+import { DndOriginalOnlyNotice } from "@/components/seo/DndOriginalOnlyNotice";
 import { listPublishedPages } from "@/lib/seo/page-store";
+import type { OriginalIpBoundary } from "@/lib/seo/types";
 
 const pageTitle = "D&D Field Guides for Players and Game Masters";
 const pageDescription =
@@ -38,14 +40,27 @@ const faqs = [
   },
 ];
 
+const homepageIpBoundary = {
+  schemaVersion: 1,
+  contentBasis: "original_tabletop_fantasy",
+  dndReferenceScope: "audience_reference_only",
+  srdMaterialUsed: false,
+  thirdPartyNames: [],
+} satisfies OriginalIpBoundary;
+
+const featuredComparisonSlug = "ai-game-master-vs-chatbot-for-tabletop-campaign";
+
 export default async function Home() {
   const publishedPages = await listPublishedPages();
   const archiveAvailable = publishedPages.length > 0;
-  const primaryHref = archiveAvailable ? "#guide-library" : "#campaign-pressure";
+  const archiveHref = archiveAvailable ? "#guide-library" : "#campaign-pressure";
+  const featuredComparison = publishedPages.find((page) => page.slug === featuredComparisonSlug);
+  const primaryHref = featuredComparison?.path ?? archiveHref;
 
   return (
-    <main>
-      <FAQJsonLd questions={faqs} scriptId="homepage-faq-jsonld" />
+    <>
+      <main>
+        <FAQJsonLd questions={faqs} scriptId="homepage-faq-jsonld" />
 
       <section className="hero">
         <nav className="homeNav" aria-label="Primary navigation">
@@ -53,7 +68,7 @@ export default async function Home() {
             <span className="wordmarkMark" aria-hidden="true">20</span>
             <span>TABLETOP / FIELD NOTES</span>
           </a>
-          <a className="navGuide" href={primaryHref}>
+          <a className="navGuide" href={archiveHref}>
             {archiveAvailable ? "Open the archive" : "Read the field notes"} <span aria-hidden="true">-&gt;</span>
           </a>
         </nav>
@@ -67,7 +82,7 @@ export default async function Home() {
           </p>
           <div className="actions">
             <a className="primaryAction" href={primaryHref}>
-              {archiveAvailable ? "Read the field guides" : "See the editorial lanes"}
+              {featuredComparison ? "AI Game Master vs Chatbot" : archiveAvailable ? "Read the field guides" : "See the editorial lanes"}
             </a>
             <a className="secondaryAction" href="#campaign-pressure">
               See the editorial lanes
@@ -171,17 +186,19 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="finalCta">
-        <h2>Bring one sharper decision to the table</h2>
-        <p>
-          {archiveAvailable
-            ? "Start with the current archive. Future pages will focus on distinct D&D player and Game Master problems, with their own voice, visual world, and table-ready tool."
-            : "The Playworlds field-guide archive is being rebuilt around verified product facts. Start with the editorial lanes while the first reviewed guide completes its release checks."}
-        </p>
-        <a className="primaryAction" href={primaryHref}>
-          {archiveAvailable ? "Open the field guide archive" : "Review the field-guide lanes"}
-        </a>
-      </section>
-    </main>
+        <section className="finalCta">
+          <h2>Bring one sharper decision to the table</h2>
+          <p>
+            {archiveAvailable
+              ? "Start with the current archive. Future pages will focus on distinct D&D player and Game Master problems, with their own voice, visual world, and table-ready tool."
+              : "The Playworlds field-guide archive is being rebuilt around verified product facts. Start with the editorial lanes while the first reviewed guide completes its release checks."}
+          </p>
+          <a className="primaryAction" href={primaryHref}>
+            {featuredComparison ? "Read AI Game Master vs Chatbot" : archiveAvailable ? "Open the field guide archive" : "Review the field-guide lanes"}
+          </a>
+        </section>
+      </main>
+      <DndOriginalOnlyNotice ipBoundary={homepageIpBoundary} />
+    </>
   );
 }

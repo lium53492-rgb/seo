@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { TrackedPlayworldsLink } from "@/app/components/TrackedPlayworldsLink";
 import { parseMarkdownBlocks } from "@/lib/seo/markdown-semantics.mjs";
 import type { RelatedSeoPage } from "@/lib/seo/page-presentation";
@@ -59,6 +60,30 @@ function sectionMarker(role: PublishedSeoPage["sections"][number]["role"]) {
   return String(role || "section").replaceAll("_", " ");
 }
 
+function loopMarker(index: number) {
+  return index < 3 ? String(index + 1).padStart(2, "0") : "↺";
+}
+
+function loopLabel(label: string, index: number) {
+  return index < 3 ? label : label.replace(/^\d+\s*\/\s*/, "↺ / ");
+}
+
+function LoopLabel({ label, index }: { label: string; index: number }) {
+  const visibleLabel = loopLabel(label, index);
+  if (visibleLabel === label) return <span>{label}</span>;
+  return (
+    <>
+      <span aria-hidden="true">{visibleLabel}</span>
+      <span className={styles.screenReaderOnly}>{label}</span>
+    </>
+  );
+}
+
+function routeMarker(index: number) {
+  if (index < 3) return String(index + 1).padStart(2, "0");
+  return index === 3 ? "EX" : "GO";
+}
+
 export function CampaignStateComparisonPage({
   page,
   relatedPages,
@@ -91,6 +116,17 @@ export function CampaignStateComparisonPage({
       ) : null}
 
       <header className={styles.hero}>
+        <div className={styles.heroImage}>
+          <Image
+            className={styles.heroImageMedia}
+            src="/story-scenes/campaign-keeper-v1.webp"
+            alt="An original dark-fantasy campaign keeper framed by fog and an ember-lit ritual circle."
+            fill
+            sizes="100vw"
+            priority
+          />
+        </div>
+        <div className={styles.heroShade} aria-hidden="true" />
         <div className={styles.mapGrid} aria-hidden="true" />
         <div className={styles.fog} aria-hidden="true" />
 
@@ -112,8 +148,11 @@ export function CampaignStateComparisonPage({
               </TrackedPlayworldsLink>
             )}
           </div>
+        </div>
+      </header>
 
-          <aside className={styles.turnInstrument} aria-label={signatureModule.title}>
+      <section className={styles.instrumentBand} aria-label="Campaign loop test summary">
+        <aside className={styles.turnInstrument} aria-label={signatureModule.title}>
             <div className={styles.instrumentHead}>
               <span>{architecture.content.signature.readerAction}</span>
               <strong>{signatureModule.title}</strong>
@@ -121,16 +160,15 @@ export function CampaignStateComparisonPage({
             <ol className={styles.loopPreview}>
               {signatureModule.items.map((item, index) => (
                 <li key={`${item.label}-${item.title}`}>
-                  <span>{item.label}</span>
+                  <LoopLabel label={item.label} index={index} />
                   <p>{item.title}</p>
-                  <i aria-hidden="true">{String(index + 1).padStart(2, "0")}</i>
+                  <i aria-hidden="true">{loopMarker(index)}</i>
                 </li>
               ))}
             </ol>
             <p className={styles.instrumentThesis}>{architecture.content.thesis}</p>
-          </aside>
-        </div>
-      </header>
+        </aside>
+      </section>
 
       <nav className={styles.contents} aria-label="On this page">
         <span>{copy.contentsLabel}</span>
@@ -138,7 +176,7 @@ export function CampaignStateComparisonPage({
           {page.sections.map((section, index) => (
             <li key={section.id}>
               <a href={`#${section.id}`}>
-                <b>{String(index + 1).padStart(2, "0")}</b>
+                <b>{routeMarker(index)}</b>
                 <span>{section.heading}</span>
               </a>
             </li>
@@ -158,8 +196,8 @@ export function CampaignStateComparisonPage({
               aria-labelledby={`${section.id}-heading`}
             >
               <div className={styles.passageRail}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <b>{sectionMarker(section.role)}</b>
+                <span>{routeMarker(index)}</span>
+                <b>{copy.sectionLabel} / {sectionMarker(section.role)}</b>
               </div>
               <div className={styles.passageHeading}>
                 <p>{sectionPlan.get(section.id ?? section.heading)?.readerQuestion}</p>
@@ -194,8 +232,8 @@ export function CampaignStateComparisonPage({
                     return (
                       <li className={styles.traceStage} key={`${item.label}-${item.title}`}>
                         <div className={styles.traceIndex}>
-                          <span>{item.label}</span>
-                          <b>{String(itemIndex + 1).padStart(2, "0")}</b>
+                          <LoopLabel label={item.label} index={itemIndex} />
+                          <b>{loopMarker(itemIndex)}</b>
                         </div>
                         <h3>{item.title}</h3>
                         <div className={styles.laneComparison}>

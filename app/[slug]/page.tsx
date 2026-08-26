@@ -20,6 +20,19 @@ import { StructuredContentPage } from "./StructuredContentPage";
 
 type PageProps = { params: Promise<{ slug: string }> };
 
+const pageHeroImages = {
+  "ai-game-master-vs-chatbot-for-tabletop-campaign": {
+    path: "/story-scenes/campaign-keeper-v1.webp",
+    alt: "An original dark-fantasy campaign keeper framed by fog and an ember-lit ritual circle.",
+    width: 1672,
+    height: 941,
+  },
+} as const;
+
+function pageHeroImage(slug: string) {
+  return pageHeroImages[slug as keyof typeof pageHeroImages];
+}
+
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
@@ -29,6 +42,8 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const page = await readPublishedPage((await params).slug);
   if (!page) return {};
+  const heroImage = pageHeroImage(page.slug);
+  const absoluteHeroImage = heroImage ? absoluteSiteUrl(heroImage.path) : undefined;
   return {
     title: page.title,
     description: page.metaDescription,
@@ -40,7 +55,27 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       type: "article",
       publishedTime: page.publishedAt,
       modifiedTime: page.updatedAt,
+      ...(heroImage && absoluteHeroImage
+        ? {
+            images: [{
+              url: absoluteHeroImage,
+              width: heroImage.width,
+              height: heroImage.height,
+              alt: heroImage.alt,
+            }],
+          }
+        : {}),
     },
+    ...(heroImage && absoluteHeroImage
+      ? {
+          twitter: {
+            card: "summary_large_image",
+            title: page.title,
+            description: page.metaDescription,
+            images: [{ url: absoluteHeroImage, alt: heroImage.alt }],
+          },
+        }
+      : {}),
   };
 }
 
@@ -52,6 +87,8 @@ export default async function PublishedSeoPage({ params }: PageProps) {
   const relatedPages = resolveRelatedSeoPages(page, publishedPages);
 
   const canonicalUrl = absoluteSiteUrl(page.path);
+  const heroImage = pageHeroImage(page.slug);
+  const absoluteHeroImage = heroImage ? absoluteSiteUrl(heroImage.path) : undefined;
 
   const presentation = resolvePagePresentation(page);
   const companionPolicy = resolveCompanionPolicy(page, presentation);
@@ -79,6 +116,15 @@ export default async function PublishedSeoPage({ params }: PageProps) {
         mainEntityOfPage={canonicalUrl}
         datePublished={page.publishedAt}
         dateModified={page.updatedAt}
+        image={heroImage && absoluteHeroImage
+          ? {
+              "@type": "ImageObject",
+              url: absoluteHeroImage,
+              width: heroImage.width,
+              height: heroImage.height,
+              caption: heroImage.alt,
+            }
+          : undefined}
         scriptId={`article-jsonld-${page.slug}`}
       />
       <FAQJsonLd

@@ -241,7 +241,7 @@ test("readiness reports a source configuration failure without bypassing auth or
   }
 });
 
-test("search-to-UV readiness requires observed probe results, not configured credentials alone", async () => {
+test("active-page readiness requires observed search results, not configured credentials alone", async () => {
   const environment = snapshotEnvironment();
   const originalFetch = globalThis.fetch;
   const machineToken = "machine-secret-with-at-least-32-bytes";
@@ -280,7 +280,13 @@ test("search-to-UV readiness requires observed probe results, not configured cre
     const body = await response.json();
     assert.equal(body.sources.searchConsole.configured, true);
     assert.equal(body.sources.landingUv.configured, true);
-    assert.equal(body.probe, null, "no active pages means there is no page-level probe target");
+    assert.equal(
+      body.probe.sourceSlug,
+      "ai-game-master-vs-chatbot-for-tabletop-campaign",
+      "the published page becomes the readiness probe target",
+    );
+    assert.equal(body.probe.searchConsole.state, "unavailable");
+    assert.equal(body.probe.landingUv.state, "observed");
     assert.equal(body.readyFor.searchToUv, false);
   } finally {
     globalThis.fetch = originalFetch;

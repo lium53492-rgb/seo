@@ -5,6 +5,7 @@ import { resolve } from "node:path";
 import { renderedBodyCopyFragments, servedContentDigest } from "../lib/seo/served-content.mjs";
 import { assertPreservedProductMigrationHolds } from "../lib/seo/product-migration-hold.mjs";
 import { normalizeContentText } from "../lib/seo/content-similarity.mjs";
+import { renderedMarkdownText } from "../lib/seo/markdown-semantics.mjs";
 import {
   canonicalSiteOrigin,
   configuredProductionSiteOrigin,
@@ -14,7 +15,8 @@ import { requiredHomepageBuildFragments } from "./lib/homepage-build-contract.mj
 import { readBuiltAttributedCtaContracts } from "./lib/built-cta-contract.mjs";
 
 const pageDirectory = resolve("data/pages");
-const buildDirectory = resolve(".next/server/app");
+const configuredDistDirectory = process.env.NEXT_DIST_DIR?.trim() || ".next";
+const buildDirectory = resolve(configuredDistDirectory, "server/app");
 const siteUrl = canonicalSiteOrigin;
 if (process.env.NEXT_PUBLIC_SITE_URL?.trim()) {
   configuredProductionSiteOrigin(
@@ -93,7 +95,9 @@ function rejectLegacyOrigins(value, label) {
 }
 
 if (!existsSync(buildDirectory)) {
-  throw new Error("Missing .next build output. Run npm run build before verify:pages.");
+  throw new Error(
+    `Missing ${configuredDistDirectory} build output. Run npm run build before verify:pages.`,
+  );
 }
 
 const pageArtifacts = readdirSync(pageDirectory)
@@ -228,7 +232,7 @@ for (const page of pages) {
     if (!mainHtml) throw new Error(`/${page.slug} is missing its structured main element.`);
     const mainText = normalizedHtmlText(mainHtml);
     for (const fragment of renderedBodyCopyFragments(page)) {
-      const expectedText = normalizeContentText(fragment);
+      const expectedText = normalizeContentText(renderedMarkdownText(fragment));
       if (expectedText && !mainText.includes(expectedText)) {
         throw new Error(`/${page.slug} is missing reviewed runtime copy in its structured main element: ${fragment.slice(0, 48)}.`);
       }

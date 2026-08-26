@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -12,15 +12,21 @@ const slug = "ai-game-master-vs-chatbot-for-tabletop-campaign";
 const routePath = join(root, "app", "workbench", "concepts", slug, "page.tsx");
 const fixturePath = join(root, "components", "seo", "ai-game-master-vs-chatbot", "preview-page.ts");
 const dossierPath = join(root, "data", "page-dossiers", `${slug}.json`);
-const publicArtifact = join(root, "data", "pages", `${slug}.json`);
+const rendererStylesPath = join(
+  root,
+  "components",
+  "seo",
+  "ai-game-master-vs-chatbot",
+  "campaign-state-comparison.module.css",
+);
+const shellStylesPath = join(root, "app", "[slug]", "structured-content.module.css");
 
-test("AI game master comparison remains a protected concept outside data/pages", () => {
+test("AI game master renderer fixture remains a protected noindex preview", () => {
   const route = readFileSync(routePath, "utf8");
   assert.match(route, /isBasicAuthHeaderAuthorized/);
   assert.match(route, /robots:\s*\{\s*index:\s*false,\s*follow:\s*false/);
   assert.match(route, /aiGameMasterVsChatbotPreviewPage/);
   assert.match(route, /mode="preview"/);
-  assert.equal(existsSync(publicArtifact), false);
 });
 
 test("concept copy answers a distinct AI and D&D campaign decision with standalone passages", () => {
@@ -65,8 +71,8 @@ test("canonical visible concept copy stays within the 850 to 950 word decision-p
 
 test("dossier records early-stage metrics, multi-platform readiness, and the IP boundary", () => {
   const dossier = JSON.parse(readFileSync(dossierPath, "utf8"));
-  assert.equal(dossier.status, "concept_preview");
-  assert.equal(dossier.publicationEligible, false);
+  assert.equal(dossier.status, "approved");
+  assert.equal(dossier.publicationEligible, true);
   assert.equal(dossier.positioning.primaryKeyword, "ai game master vs chatbot for tabletop campaign");
   assert.equal(dossier.measurement.stage, "early_search_visibility");
   assert.ok(dossier.measurement.primary.includes("Google Search impressions"));
@@ -77,7 +83,11 @@ test("dossier records early-stage metrics, multi-platform readiness, and the IP 
   assert.equal(dossier.ipBoundary.srdMaterialUsed, false);
   assert.match(dossier.ipBoundary.legalBoundary, /does not grant/i);
   assert.equal(dossier.releaseBoundary.revenueAttributionBlocksPublication, false);
-  assert.equal(dossier.reviewBinding, null);
+  assert.equal(dossier.releaseBoundary.publicationEligible, true);
+  assert.equal(dossier.reviewBinding.reportId, "seo-2026-08-26");
+  assert.equal(dossier.reviewBinding.slug, slug);
+  assert.equal(dossier.reviewBinding.decision, "approved");
+  assert.match(dossier.reviewBinding.draftDigest, /^[a-f0-9]{64}$/);
 });
 
 test("older science-fiction concept is explicitly superseded rather than silently repurposed", () => {
@@ -88,4 +98,16 @@ test("older science-fiction concept is explicitly superseded rather than silentl
   assert.equal(old.status, "superseded_concept");
   assert.equal(old.supersededBy, slug);
   assert.equal(old.publicationEligible, false);
+});
+
+test("concept renderer constrains the title and intrinsic CTA width at the mobile gate", () => {
+  const rendererStyles = readFileSync(rendererStylesPath, "utf8");
+  const shellStyles = readFileSync(shellStylesPath, "utf8");
+
+  assert.match(rendererStyles, /font-size:\s*clamp\(3\.4rem,\s*5\.4vw,\s*6\.6rem\)/);
+  assert.match(rendererStyles, /grid-template-columns:\s*minmax\(0,\s*1fr\)/);
+  assert.match(rendererStyles, /font-size:\s*clamp\(2\.45rem,\s*10\.5vw,\s*3\.4rem\)/);
+  assert.match(rendererStyles, /\.disabledCta,[\s\S]*?\.heroCta\s*\{[\s\S]*?white-space:\s*normal/);
+  assert.match(shellStyles, /\.nav\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0,\s*\.8fr\)\s*minmax\(0,\s*1\.2fr\)/);
+  assert.match(shellStyles, /\.nav\s*>\s*\*\s*\{[\s\S]*?overflow-wrap:\s*anywhere/);
 });

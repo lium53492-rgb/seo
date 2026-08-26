@@ -375,6 +375,19 @@
 .workshopLayers .signature { border-radius: 0 42px 0 42px; }
 
 @media (max-width: 820px) {
+  .nav {
+    min-height: 76px;
+    display: grid;
+    grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+    align-items: center;
+    gap: 16px;
+    padding-block: 12px;
+  }
+  .nav > * {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .nav span { text-align: right; }
   .hero,
   .faq,
   .shell[data-presentation-recipe="editorial-argument-v1"] .editorialHero,

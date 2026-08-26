@@ -52,6 +52,7 @@ export default async function DraftPreviewPage({
     pagePattern: report.contentStrategy?.pagePattern,
     architecture: draft.architecture,
     signatureModule: draft.signatureModule,
+    ipBoundary: draft.ipBoundary,
     title: draft.title,
     metaDescription: draft.metaDescription,
     h1: draft.h1,
