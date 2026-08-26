@@ -1,6 +1,6 @@
 # Pending SEO feedback
 
-Last updated: 2026-08-18 (Asia/Shanghai)
+Last updated: 2026-08-26 (Asia/Shanghai)
 
 ## Operating constraints
 
@@ -58,6 +58,20 @@ Last updated: 2026-08-18 (Asia/Shanghai)
 
 - Verbatim: 我修改一下关于数据这方面的预期：我们做的seo  目前这个处于初期阶段  只需要知道点击  曝光  等数据就可以了  这个需要你确认一下  gsc是否会收录steam的数据  其次 产品不会只在steam上线  所以我们做的数据汇总  要多平台适用  然后页面方向 我的想法是需要重新修改  针对我们 ai&dnd的受众 重新写页面方向 像文案这些  你也看之前我给你发的那段英文 （那个是我在推特上看的）  收入归因就可以先不做  产品初级阶段就要有收入比较困难  D&D的版权表述这块  我的理解是加一些代码就可以了  你试着解决一下
 - Decision: adopted and controlling for the current product stage. LoreLens Search Console supplies impressions, clicks, CTR, and average position for LoreLens URLs only; it cannot report Steam or another external platform. Keep first-party landing and outbound clicks as supporting measurements, aggregate outbound activity by source slug, CTA location, and allowlisted destination platform, and keep each platform's own report separate. Revenue, trial, signup, purchase, callback handshake, and exact click-to-income joins are not publication gates during the early-search-visibility stage. Future pages target adult AI-and-D&D searchers through concrete tabletop decisions; the current comparison concept is `AI Game Master vs Chatbot`, structured so every H2 passage stands alone. D&D remains an audience reference, all examples remain original, and code must enforce prohibited relationship/compatibility claims plus a visible non-affiliation notice; code does not create trademark or copyright permission.
+
+## User feedback adopted 2026-08-26
+
+- Verbatim: 以后 无人值守自动发布不用搞了  删除这个吧  然后现在继续上次做页面的进度
+- Decision: adopted and controlling. Remove the Codex SEO publishing schedules and retire repository entry points that start, coordinate, recover, or publish pages without an active user-guided task. Keep the manual growth collection, candidate research, independent editorial review, guarded publisher, live release verification, and landing-analytics rollover paths. Continue the protected `AI Game Master vs Chatbot` concept through the current evidence and review gates; manual continuation does not waive any failed product, IP, analytics, editorial, visual, or release gate.
+
+- Verbatim: 刚才你分析的seo为什么只有曝光没有点击是好的  我记得之前有一个页面是很好的  背景是一个人  非常暗黑  像是个法师之类的角色  当时那个页面的数据就比较好  像现在做dnd的  也可以参考当时那个页面 背景做成dnd很火的ip形象之类的  也生成暗黑风  这个就比较吸引人  然后后续就不用每天自动生成页面并且上新了   你自己做内容不好  后续我会把大量的精力拿来做seo  我知道你做内容
+- Decision: adopted and controlling. Impressions with zero clicks are an early visibility signal, not a successful SEO outcome. Use the August 1 black-clad-character page as a visual benchmark for the current AI Game Master comparison, but create an original dark-fantasy campaign keeper instead of reproducing recognizable D&D characters, monsters, official art, logos, or settings. Future content direction and release decisions are user-guided; no unattended schedule may generate or publish pages.
+
+- Verbatim: 可以的  你做吧
+- Decision: adopted. Apply the approved click-improvement pass to the current comparison page: use a concise query-led title and specific snippet, expose the original dark-fantasy campaign keeper through crawlable image markup and image metadata, and add a descriptive homepage link. Keep release manual; this instruction does not authorize automatic deployment.
+
+- Verbatim: 尽量不要挡住人物   可以考虑暗蓝渐变暗黑  还有文案  可以参考之前我给你的那段英文指导  那个是推特上的 &#x20;
+- Decision: adopted. Keep the original campaign keeper unobstructed by moving the Campaign Loop Test out of the hero image and keeping hero copy inside a left-side safe area. Shift the visual system toward an abyss-navy-to-lampblack gradient with cold steel-blue structure and one restrained amber signal color. Apply the earlier social-media passage-retrieval guidance as an editorial principle rather than copied prose: every section and FAQ answer must name its subject and remain accurate and understandable when retrieved alone. Keep deployment manual.
 
 ## User feedback awaiting intake
 

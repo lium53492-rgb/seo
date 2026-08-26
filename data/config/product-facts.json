@@ -40,37 +40,37 @@
     {
       "id": "playworlds-current-product",
       "statement": "Playworlds is the current overseas product and replaces NovelAI as the destination for future SEO work.",
-      "source": "Product direction supplied by the user, 2026-08-16; product name corroborated by the official Steam store listing for app 4911480",
+      "source": "Product direction supplied by the user, 2026-08-16; product name corroborated by the official Steam store listing for app 4911480, revalidated 2026-08-26",
       "status": "active"
     },
     {
       "id": "playworlds-voice-text-single-player-rpg",
       "statement": "The official Steam listing describes Playworlds as an online, single-player, voice-first AI adventure RPG in which players can speak or type what their character attempts; a microphone is optional.",
-      "source": "Official Playworlds Steam store listing, app 4911480, observed 2026-08-16",
+      "source": "Official Playworlds Steam store listing, app 4911480, revalidated 2026-08-26",
       "status": "active"
     },
     {
       "id": "playworlds-ai-game-master",
       "statement": "The official Steam listing says the Playworlds AI game master interprets player actions, describes outcomes, and presents new choices, risks, and opportunities.",
-      "source": "Official Playworlds Steam store listing, app 4911480, observed 2026-08-16",
+      "source": "Official Playworlds Steam store listing, app 4911480, revalidated 2026-08-26",
       "status": "active"
     },
     {
       "id": "playworlds-in-world-companion",
       "statement": "The official Steam listing says players can talk, plan, and adventure with an AI teammate that responds from a role inside the story.",
-      "source": "Official Playworlds Steam store listing, app 4911480, observed 2026-08-16",
+      "source": "Official Playworlds Steam store listing, app 4911480, revalidated 2026-08-26",
       "status": "active"
     },
     {
       "id": "playworlds-persistent-campaigns",
       "statement": "The official Steam listing says players can create, save, and resume persistent campaigns instead of beginning with a blank conversation each time.",
-      "source": "Official Playworlds Steam store listing, app 4911480, observed 2026-08-16",
+      "source": "Official Playworlds Steam store listing, app 4911480, revalidated 2026-08-26",
       "status": "active"
     },
     {
       "id": "playworlds-rpg-state",
       "statement": "The official Steam listing says Playworlds tracks player and party status, action resolution, dice results, inventory, and journey history.",
-      "source": "Official Playworlds Steam store listing, app 4911480, observed 2026-08-16",
+      "source": "Official Playworlds Steam store listing, app 4911480, revalidated 2026-08-26",
       "status": "active"
     }
   ],
@@ -83,7 +83,7 @@
     "The Playworlds Steam listing does not establish official Dungeons & Dragons affiliation, endorsement, licensing, or 5e compatibility.",
     "The automated publishing path may use only original tabletop-fantasy material until a structured SRD version, license, and Creative Commons attribution contract is implemented.",
     "Do not imply that a feature is already shipped when the approved facts only describe the product direction.",
-    "The Steam listing was marked coming soon when observed on 2026-08-16; revalidate release, availability, platform, and price before making any time-sensitive claim."
+    "The Steam listing still showed a planned Q3 2026 release and stated that the game was not yet available when revalidated on 2026-08-26; revalidate release, availability, platform, and price before making any time-sensitive claim."
   ],
   "forbiddenClaimPatterns": [
     "\\bmultiplayer\\b",

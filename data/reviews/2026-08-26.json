@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "reportId": "seo-2026-08-26",
+  "slug": "ai-game-master-vs-chatbot-for-tabletop-campaign",
+  "draftDigest": "eccfffad89993417ce42c6699159e5e456883e268c2930ba79f05431ffba6bcc",
+  "reviewerType": "codex_editor",
+  "reviewer": "Codex SEO editorial reviewer",
+  "reviewedAt": "2026-08-26T16:59:55+08:00",
+  "decision": "approved",
+  "notes": "Independent Codex editorial review approves the exact user-guided midnight-blue revision. The original dark-fantasy campaign keeper remains unobstructed while the copy stays in a separate safe area, and the Campaign Loop Test now follows the hero instead of covering the character. Each section restates its subject and answer so a retrieved passage remains understandable in isolation, applying the user's cited guidance without copying its prose. The page still uses only approved Playworlds facts, keeps D&D to an audience reference, and passed fresh protected-preview inspection at both required viewports.",
+  "checks": [
+    {
+      "id": "search-intent",
+      "passed": true,
+      "detail": "The page answers the distinct decision between a general chatbot and a dedicated AI game master for a continuing adult tabletop campaign."
+    },
+    {
+      "id": "product-truth",
+      "passed": true,
+      "detail": "Every Playworlds statement is limited to the active single-player, voice-or-text, AI game-master, saved-campaign, and tracked-state facts."
+    },
+    {
+      "id": "conversion-path",
+      "passed": true,
+      "detail": "The protected preview disables its CTA, while the schema-3 renderer will supply the attributed Playworlds redirect for the published source slug."
+    },
+    {
+      "id": "source-accuracy",
+      "passed": true,
+      "detail": "The same-day report separates public intent evidence, current official product evidence, proxy scores, and unavailable first-party performance data."
+    },
+    {
+      "id": "content-distinctness",
+      "passed": true,
+      "detail": "The Campaign Loop Test contributes an original action, outcome, state, and next-choice comparison instead of duplicating the held legacy story page."
+    },
+    {
+      "id": "presentation-distinctness",
+      "passed": true,
+      "detail": "The abyss-navy campaign control room, unobstructed original keeper, separate continuous-loop route band, passage rails, and lane comparison form a distinct registered presentation recipe."
+    },
+    {
+      "id": "signature-module",
+      "passed": true,
+      "detail": "The Campaign Loop Test is rendered as a connected decision route with three numbered checkpoints and a return-loop marker, not uniform feature cards."
+    },
+    {
+      "id": "rendered-preview",
+      "passed": true,
+      "detail": "The revised report-backed preview passed real 1440 by 1000 and 390 by 844 checks for four-line title wrapping, first-screen CTA, zero horizontal overflow, no raw Markdown, a visible signature module, a semantic original hero image, and a Campaign Loop Test band that begins after the hero instead of covering the character."
+    },
+    {
+      "id": "adult-tabletop-audience",
+      "passed": true,
+      "detail": "Language, examples, typography, and decision framing address adult tabletop players and game masters without child-directed presentation."
+    },
+    {
+      "id": "original-ip-boundary",
+      "passed": true,
+      "detail": "D&D appears only as an audience and trademark reference; the page includes the required notice and uses no rules, settings, characters, monsters, or SRD copy."
+    }
+  ],
+  "visualAudit": {
+    "schemaVersion": 1,
+    "draftDigest": "eccfffad89993417ce42c6699159e5e456883e268c2930ba79f05431ffba6bcc",
+    "inspectedAt": "2026-08-26T16:59:55+08:00",
+    "previewPath": "/workbench/preview/ai-game-master-vs-chatbot-for-tabletop-campaign",
+    "passed": true,
+    "viewports": [
+      {
+        "id": "desktop",
+        "width": 1440,
+        "height": 1000,
+        "screenshotPath": "output/previews/2026-08-26/ai-game-master-vs-chatbot-for-tabletop-campaign-desktop.png",
+        "screenshotSha256": "e8145b08ed1ed337ea555cd55855e7651233c39cd9d5da296c67fef6b0c330c5",
+        "h1Lines": 4,
+        "h1ViewportRatio": 0.2612,
+        "ctaInFirstViewport": true,
+        "horizontalOverflowPx": 0,
+        "rawMarkdownVisible": false,
+        "signatureVisible": true,
+        "maxUniformNumberedRun": 3
+      },
+      {
+        "id": "mobile",
+        "width": 390,
+        "height": 844,
+        "screenshotPath": "output/previews/2026-08-26/ai-game-master-vs-chatbot-for-tabletop-campaign-mobile.png",
+        "screenshotSha256": "e267aeed9c634fcd6a3d22867c80af34709d14e256041faff01c739c8d2ffdb8",
+        "h1Lines": 4,
+        "h1ViewportRatio": 0.1785,
+        "ctaInFirstViewport": true,
+        "horizontalOverflowPx": 0,
+        "rawMarkdownVisible": false,
+        "signatureVisible": true,
+        "maxUniformNumberedRun": 3
+      }
+    ]
+  }
+}

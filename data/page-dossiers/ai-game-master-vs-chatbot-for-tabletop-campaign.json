@@ -1,10 +1,11 @@
 {
   "schemaVersion": 1,
-  "status": "concept_preview",
-  "publicationEligible": false,
+  "status": "approved",
+  "publicationEligible": true,
   "createdOn": "2026-08-18",
+  "approvedOn": "2026-08-26",
   "slug": "ai-game-master-vs-chatbot-for-tabletop-campaign",
-  "previewRoute": "/workbench/concepts/ai-game-master-vs-chatbot-for-tabletop-campaign",
+  "previewRoute": "/workbench/preview/ai-game-master-vs-chatbot-for-tabletop-campaign",
   "positioning": {
     "primaryKeyword": "ai game master vs chatbot for tabletop campaign",
     "supportingKeywords": [
@@ -14,7 +15,7 @@
       "d&d ai game master",
       "ai gm campaign tool"
     ],
-    "title": "AI Game Master vs Chatbot for D&D Campaigns | Playworlds",
+    "title": "AI Game Master vs Chatbot: 4 Differences for D&D Players",
     "h1": "AI Game Master vs Chatbot: Which One Fits a D&D Campaign?",
     "intent": "Help an adult D&D player compare loose AI conversation with a dedicated campaign loop before choosing a solo AI game-master tool.",
     "distinctAnswer": "The decision turns on whether the tool connects action, outcome, persistent state, and the next choice, not on which system produces more decorative prose."
@@ -44,12 +45,28 @@
     ]
   },
   "research": {
-    "date": "2026-08-18",
-    "dailyResearchArtifact": "data/research/2026-08-18.json",
-    "dailyReportArtifact": "data/reports/2026-08-18.json",
+    "date": "2026-08-26",
+    "dailyResearchArtifact": "data/research/2026-08-26.json",
+    "dailyReportArtifact": "data/reports/2026-08-26.json",
+    "reportId": "seo-2026-08-26",
+    "draftDigest": "eccfffad89993417ce42c6699159e5e456883e268c2930ba79f05431ffba6bcc",
     "observedCandidate": "ai game master vs chatbot for tabletop campaign",
-    "decision": "The current daily research identifies this as the strongest Playworlds-aligned comparison intent, but the protected concept must be regenerated from a future create_page report before publication.",
-    "evidenceBoundary": "Public sources support the search intent, product facts, and competitor structures. They do not prove search volume, ranking, clicks, or conversions for this exact page."
+    "decision": "The same-day report selected this distinct comparison intent for a guarded manual create-page publication after all policy-derived evidence and draft gates passed.",
+    "evidenceBoundary": "Public sources support the search intent, product facts, and competitor structures. They do not prove search volume, ranking, clicks, or conversions for this exact page.",
+    "googleTrends": {
+      "collectionState": "observed",
+      "selectedSignal": "not_observed",
+      "snapshotDigest": "54c918607612b6df0eecbd8dbf3282419fa6b28cab9033ca16578de48d8febcd",
+      "interpretation": "The exact term was not present in the signed US Top 25 Rising result. This is not a zero-volume claim and is not a publication blocker."
+    },
+    "breakoutEvidence": {
+      "id": "reddit-solo-gm-continuity",
+      "kind": "breakout_page",
+      "signalType": "publishing_velocity",
+      "value": 1,
+      "unit": "near-exact demand post in sampled 4-day window",
+      "url": "https://www.reddit.com/r/Solo_Roleplaying/comments/1vus9ic/what_is_the_best_ai_for_running_a_solo_rpg_as_the/"
+    }
   },
   "productTruth": {
     "factIdsUsed": [
@@ -64,7 +81,7 @@
     "source": {
       "name": "Playworlds on Steam",
       "url": "https://store.steampowered.com/app/4911480/Playworlds/",
-      "observedOn": "2026-08-18"
+      "observedOn": "2026-08-26"
     },
     "allowedClaims": [
       "Playworlds is described as an online, single-player, voice-first AI adventure RPG.",
@@ -90,8 +107,8 @@
   "designDirection": {
     "human": "An adult tabletop player comparing tools, not a child browsing a fantasy story generator.",
     "action": "Run the Campaign Loop Test, read one original example, and decide whether persistent campaign play is the desired format.",
-    "feel": "Dark campaign control room: iron-black surfaces, muted amber route lights, parchment-white text, restrained red warnings, and no playful mascot styling.",
-    "visualSignature": "A continuous route switch connects Action, Outcome, State, and Next Choice as one loop rather than four unrelated feature cards.",
+    "feel": "Midnight campaign control room: abyss-navy gradients fall into lampblack, cold steel-blue grid lines create depth, parchment-white text stays in the left safe area, and one muted amber signal color marks decisions.",
+    "visualSignature": "An original dark-fantasy campaign keeper remains unobstructed on the first screen; the Campaign Loop Test moves into a separate horizontal route band below the hero, where Action, Outcome, State, and Next Choice remain one connected system rather than four feature cards.",
     "recipe": "campaign-state-comparison-v1"
   },
   "measurement": {
@@ -116,15 +133,56 @@
     "multiPlatformBoundary": "LoreLens records the first-party outbound click before redirecting to an allowlisted Steam, web, iOS, Android, Epic, GOG, or later approved destination. Platform reports remain separate supporting sources."
   },
   "releaseBoundary": {
-    "publicationEligible": false,
-    "reason": "This is a protected noindex concept outside data/pages. It has no current create_page report, digest-bound editorial approval, visual receipt, schema-3 publication artifact, or live release verification.",
+    "publicationEligible": true,
+    "reason": "All gates required for guarded manual repository publication passed on 2026-08-26. This approval does not claim a commit, deployment, live route, sitemap inclusion, or production redirect verification.",
     "revenueAttributionBlocksPublication": false,
-    "requiredBeforePublication": [
-      "Generate a current create_page research report and draft for this exact intent under the current policy.",
-      "Bind an approved dossier and independent editorial review to the exact report and draft digest.",
-      "Verify the visible D&D audience notice, original-only text, and visual asset boundary.",
-      "Verify GSC collection, first-party outbound recording, the selected allowlisted destination, canonical, robots, sitemap, and the exact live revision."
+    "publicationGates": [
+      {
+        "id": "same-day-growth",
+        "status": "passed",
+        "evidence": "data/growth/2026-08-26.json covers the complete configured Shanghai reporting window; the active-page portfolio is empty because the legacy page is on product-migration hold."
+      },
+      {
+        "id": "research-and-trends",
+        "status": "passed",
+        "evidence": "The same-day research and ready-for-review report contain independent evidence, a signed Trends collection with an exact not-observed result, and page-specific breakout evidence."
+      },
+      {
+        "id": "product-and-ip",
+        "status": "passed",
+        "evidence": "Official product facts were rechecked on 2026-08-26; the draft uses only active facts and the original-only adult D&D audience boundary."
+      },
+      {
+        "id": "editorial-and-visual",
+        "status": "passed",
+        "evidence": "data/reviews/2026-08-26.json approves the exact digest and binds real 1440x1000 and 390x844 screenshot hashes from the report-backed preview."
+      },
+      {
+        "id": "daily-slot-and-manual-publisher",
+        "status": "passed",
+        "evidence": "No other 2026-08-26 schema-3 page or retirement receipt occupies the daily slot; the guarded manual publisher remains the only authorized page writer."
+      },
+      {
+        "id": "revenue-attribution",
+        "status": "passed",
+        "evidence": "The current early-traffic policy does not require a revenue callback for this publication, and the observed growth snapshot reports no orphan callback blocker."
+      }
+    ],
+    "remainingBeforeDeployment": [
+      "Create a scoped commit that excludes unrelated user work and push the exact revision only with explicit release authorization.",
+      "Observe Vercel READY for that exact revision, then verify the live H1, canonical, robots, sitemap entry, and attributed Playworlds redirect twice."
     ]
   },
-  "reviewBinding": null
+  "reviewBinding": {
+    "schemaVersion": 1,
+    "reportId": "seo-2026-08-26",
+    "reportPath": "data/reports/2026-08-26.json",
+    "reviewArtifact": "data/reviews/2026-08-26.json",
+    "slug": "ai-game-master-vs-chatbot-for-tabletop-campaign",
+    "draftDigest": "eccfffad89993417ce42c6699159e5e456883e268c2930ba79f05431ffba6bcc",
+    "decision": "approved",
+    "reviewerType": "codex_editor",
+    "reviewer": "Codex SEO editorial reviewer",
+    "reviewedAt": "2026-08-26T16:59:55+08:00"
+  }
 }

@@ -1,0 +1,45 @@
+{
+  "date": "2026-08-26",
+  "entries": [
+    {
+      "id": "feedback-2026-08-26-retire-unattended-publishing-resume-page",
+      "createdAt": "2026-08-26T11:36:52+08:00",
+      "message": "以后 无人值守自动发布不用搞了  删除这个吧  然后现在继续上次做页面的进度",
+      "source": "codex_chat",
+      "kind": "content_guidance",
+      "consumedAt": "2026-08-26T11:36:52+08:00",
+      "decision": "adopted",
+      "rationale": "Delete the Codex SEO publishing schedules and retire the repository's unattended daily publishing, coordination, recovery, and cron entry points. Preserve the manual growth, research, editorial review, guarded publisher, live verification, and landing-analytics rollover paths. Resume the protected AI Game Master vs Chatbot page through the current evidence and review gates; this instruction authorizes manual continuation, not publication that bypasses a failed gate."
+    },
+    {
+      "id": "feedback-2026-08-26-dark-character-benchmark-human-led-content",
+      "createdAt": "2026-08-26T15:34:57+08:00",
+      "message": "刚才你分析的seo为什么只有曝光没有点击是好的  我记得之前有一个页面是很好的  背景是一个人  非常暗黑  像是个法师之类的角色  当时那个页面的数据就比较好  像现在做dnd的  也可以参考当时那个页面 背景做成dnd很火的ip形象之类的  也生成暗黑风  这个就比较吸引人  然后后续就不用每天自动生成页面并且上新了   你自己做内容不好  后续我会把大量的精力拿来做seo  我知道你做内容",
+      "source": "codex_chat",
+      "kind": "content_guidance",
+      "consumedAt": "2026-08-26T15:34:57+08:00",
+      "decision": "adopted",
+      "rationale": "Treat impressions without clicks as indexing and demand evidence, not a successful outcome. Use the August 1 black-clad-character page as the visual benchmark for the current AI Game Master comparison, with a newly generated original dark-fantasy campaign keeper rather than recognizable or licensed D&D characters or art. Keep future content and publication human-guided; the unattended Codex publishing schedules and repository cron/recovery entry points remain removed."
+    },
+    {
+      "id": "feedback-2026-08-26-approve-click-improvements",
+      "createdAt": "2026-08-26T16:06:55+08:00",
+      "message": "可以的  你做吧",
+      "source": "codex_chat",
+      "kind": "content_guidance",
+      "consumedAt": "2026-08-26T16:06:55+08:00",
+      "decision": "adopted",
+      "rationale": "Implement the three explicitly proposed click-improvement changes on the current comparison page: a shorter query-led title and specific snippet, a crawlable semantic original hero image with image metadata, and a descriptive homepage link. Keep the change local and reviewed; this approval does not authorize automatic deployment."
+    },
+    {
+      "id": "feedback-2026-08-26-unobstructed-character-midnight-blue-passages",
+      "createdAt": "2026-08-26T16:41:42+08:00",
+      "message": "尽量不要挡住人物   可以考虑暗蓝渐变暗黑  还有文案  可以参考之前我给你的那段英文指导  那个是推特上的 &#x20;",
+      "source": "codex_chat",
+      "kind": "content_guidance",
+      "consumedAt": "2026-08-26T16:41:42+08:00",
+      "decision": "adopted",
+      "rationale": "Keep the original campaign keeper visually unobstructed by confining hero copy to a left-side safe area and moving the Campaign Loop Test into a separate band below the hero image. Shift the atmosphere to an abyss-navy-to-lampblack gradient with one restrained amber signal color. Apply the user's earlier social-media guidance as a passage-retrieval editorial principle: every section and FAQ answer must identify its subject and remain accurate and understandable in isolation. Do not copy the source wording, change the approved product/IP boundary, or deploy automatically."
+    }
+  ]
+}

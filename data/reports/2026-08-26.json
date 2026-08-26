@@ -1,0 +1,2055 @@
+{
+  "id": "seo-2026-08-26",
+  "date": "2026-08-26",
+  "policyVersion": 4,
+  "publicationMode": "create",
+  "generatedAt": "2026-08-26T11:41:00+08:00",
+  "mode": "live",
+  "headline": "Today's early traffic-validation priority: create a new page",
+  "summary": {
+    "candidatesAnalyzed": 8,
+    "publishableOpportunities": 4,
+    "eligibleFallbackIntents": 3,
+    "totalClicks": 0,
+    "totalImpressions": 0,
+    "averageCtr": 0
+  },
+  "candidateIntentGate": {
+    "schemaVersion": 1,
+    "state": "passed",
+    "requiredDistinctCreateIntents": 1,
+    "eligibleDistinctCreateIntents": 4,
+    "selectedKeyword": "ai game master vs chatbot for tabletop campaign",
+    "eligibleFallbackCount": 3,
+    "eligibleFallbacks": [
+      {
+        "rank": 1,
+        "keyword": "ai companion chatbot vs ai game master for a solo campaign",
+        "searcherJob": "Help an adult solo player decide whether the AI should act as an in-world companion or control scene outcomes as the game master.",
+        "score": 79,
+        "action": "create_page"
+      },
+      {
+        "rank": 2,
+        "keyword": "ai game master vs gm emulator oracle for solo tabletop campaign",
+        "searcherJob": "Help an adult solo player choose between an AI that narrates and resolves scenes or an oracle whose prompts the player interprets.",
+        "score": 77,
+        "action": "create_page"
+      },
+      {
+        "rank": 3,
+        "keyword": "voice ai game master vs text roleplay chatbot for solo play",
+        "searcherJob": "Help an adult solo player decide whether spoken game-master interaction or a text character-chat format better fits the next session.",
+        "score": 76,
+        "action": "create_page"
+      }
+    ]
+  },
+  "opportunities": [
+    {
+      "keyword": "ai game master vs chatbot for tabletop campaign",
+      "seed": "ai game master vs chatbot",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 82,
+      "volume": 0,
+      "difficulty": 72,
+      "cpc": 0,
+      "intent": "commercial",
+      "funnelStage": "purchase",
+      "conversionGoal": "purchase",
+      "trend": [],
+      "productFit": 100,
+      "originality": 90,
+      "conversionIntent": 100,
+      "trialIntent": 100,
+      "revenueIntent": 70,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 10,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "aeveth-not-chatbot",
+          "agentic-gm-solo-study",
+          "trismeria-table-state",
+          "reddit-solo-gm-continuity"
+        ],
+        "searcherJob": "Compare a general AI chatbot with a dedicated AI game master before choosing a tool for an adult D&D campaign.",
+        "productFactIds": [
+          "dnd-content-direction",
+          "dnd-primary-audience",
+          "playworlds-current-product",
+          "playworlds-voice-text-single-player-rpg",
+          "playworlds-ai-game-master",
+          "playworlds-persistent-campaigns",
+          "playworlds-rpg-state"
+        ],
+        "productSignals": [
+          "dnd_content",
+          "adult_tabletop_audience",
+          "playworlds_current_product",
+          "playworlds_voice_text_rpg",
+          "playworlds_ai_game_master",
+          "playworlds_persistent_campaigns",
+          "playworlds_rpg_state"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking",
+          "action_language"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking",
+          "recurring_use"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "A new public user question, independent product pages, and an academic solo-GM comparison all expose the same need for campaign continuity beyond fluent prose.",
+          "difficulty": "The versus format has visible commercial competition, but a neutral campaign-loop comparison remains less saturated than broad best-AI-RPG rankings.",
+          "productFit": "Approved Playworlds facts support the comparison through attempted actions, outcomes, new choices, persistent campaigns, and tracked RPG state.",
+          "trialIntent": "The reader is already comparing solution types and can act immediately after understanding the exact campaign jobs each format performs.",
+          "revenueIntent": "A versus query carries commercial comparison and alternative-seeking intent close to a qualified product evaluation without requiring a price claim.",
+          "intentSpecificity": "The query defines two formats, an adult tabletop campaign audience, a comparison task, and a recurring-use context.",
+          "originality": "The Campaign Loop Test makes action, outcome, state, and next choice independently auditable instead of repeating a generic feature table.",
+          "ipRisk": "The comparison uses system-neutral tabletop language and an original fantasy scene without protected rules, settings, monsters, or compatibility claims.",
+          "cannibalizationRisk": "No active public page answers this product-format decision; the protected concept is the same intended canonical asset rather than a competing page."
+        }
+      },
+      "score": 84,
+      "action": "create_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; meaningful payment intent; specific searcher job; evidence-derived opportunity score 84; revenue intent is advisory during early traffic validation."
+    },
+    {
+      "keyword": "ai companion chatbot vs ai game master for a solo campaign",
+      "seed": "ai companion vs ai game master",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 61,
+      "volume": 0,
+      "difficulty": 57,
+      "cpc": 0,
+      "intent": "commercial",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 100,
+      "originality": 90,
+      "conversionIntent": 85,
+      "trialIntent": 85,
+      "revenueIntent": 70,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 10,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "wyrdlyre-voice-gm",
+          "character-ai-quickstart"
+        ],
+        "searcherJob": "Help an adult solo player decide whether the AI should act as an in-world companion or control scene outcomes as the game master.",
+        "productFactIds": [
+          "dnd-content-direction",
+          "dnd-primary-audience",
+          "playworlds-current-product",
+          "playworlds-voice-text-single-player-rpg",
+          "playworlds-ai-game-master",
+          "playworlds-in-world-companion",
+          "playworlds-persistent-campaigns"
+        ],
+        "productSignals": [
+          "dnd_content",
+          "adult_tabletop_audience",
+          "playworlds_current_product",
+          "playworlds_voice_text_rpg",
+          "playworlds_ai_game_master",
+          "playworlds_in_world_companion",
+          "playworlds_persistent_campaigns"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking",
+          "recurring_use"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Current products expose both character-chat and game-master roles, making responsibility inside a solo campaign a visible product decision.",
+          "difficulty": "Companion queries attract broad chatbot competition, but the game-master contrast narrows the campaign-specific task.",
+          "productFit": "Approved Playworlds facts separately support an in-world companion, an AI game master, voice-or-text play, and persistent campaigns.",
+          "trialIntent": "The reader is deciding which interaction role matters for the next solo experience and can evaluate the role boundary directly.",
+          "revenueIntent": "Role selection creates an alternative-seeking product comparison tied to recurring campaign use without promising a purchase outcome.",
+          "intentSpecificity": "The query defines companion and game-master roles, a solo campaign audience, and a clear responsibility decision.",
+          "originality": "A future page can map conversation, planning, adjudication, consequence, and world control to separate roles.",
+          "ipRisk": "The roles can be explained with original generic tabletop scenes and no licensed setting or rules material.",
+          "cannibalizationRisk": "The role-allocation job is distinct from asking whether a general chatbot provides enough campaign structure."
+        }
+      },
+      "score": 79,
+      "action": "create_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; meaningful payment intent; specific searcher job; evidence-derived opportunity score 79; revenue intent is advisory during early traffic validation."
+    },
+    {
+      "keyword": "ai game master vs gm emulator oracle for solo tabletop campaign",
+      "seed": "ai gm vs oracle emulator",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 66,
+      "volume": 0,
+      "difficulty": 55,
+      "cpc": 0,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 85,
+      "originality": 90,
+      "conversionIntent": 85,
+      "trialIntent": 85,
+      "revenueIntent": 70,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 10,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "auferet-solo-ai-gm",
+          "mythic-gme-official"
+        ],
+        "searcherJob": "Help an adult solo player choose between an AI that narrates and resolves scenes or an oracle whose prompts the player interprets.",
+        "productFactIds": [
+          "dnd-content-direction",
+          "dnd-primary-audience",
+          "playworlds-current-product",
+          "playworlds-voice-text-single-player-rpg",
+          "playworlds-ai-game-master",
+          "playworlds-persistent-campaigns"
+        ],
+        "productSignals": [
+          "dnd_content",
+          "adult_tabletop_audience",
+          "playworlds_current_product",
+          "playworlds_voice_text_rpg",
+          "playworlds_ai_game_master",
+          "playworlds_persistent_campaigns"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking",
+          "recurring_use"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Official oracle material and a current AI-GM comparison page show two established ways to replace missing game-master input in solo play.",
+          "difficulty": "The exact comparison is less commercially saturated, although established solo-roleplaying communities already understand oracle terminology.",
+          "productFit": "Playworlds supports the AI-game-master side through voice-or-text action, an AI GM, and persistent campaigns; it makes no oracle claim.",
+          "trialIntent": "The reader is selecting the operating model for an immediate solo campaign and can act after understanding interpretation burden.",
+          "revenueIntent": "Alternative-seeking and recurring campaign use support qualified interest, while the oracle side keeps the query partly informational.",
+          "intentSpecificity": "The query defines two operating models, a solo tabletop campaign audience, and who interprets uncertain prompts.",
+          "originality": "A future decision chart can compare authorship load, surprise, interpretation, state, and narration without ranking a proprietary oracle.",
+          "ipRisk": "Oracle and AI-game-master categories are generic concepts and can be described without copying system text or licensed settings.",
+          "cannibalizationRisk": "Choosing an oracle versus an AI narrator is a distinct workflow decision from choosing a chatbot versus campaign system."
+        }
+      },
+      "score": 77,
+      "action": "create_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; meaningful payment intent; specific searcher job; evidence-derived opportunity score 77; revenue intent is advisory during early traffic validation."
+    },
+    {
+      "keyword": "voice ai game master vs text roleplay chatbot for solo play",
+      "seed": "voice ai game master vs text chatbot",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 64,
+      "volume": 0,
+      "difficulty": 58,
+      "cpc": 0,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 85,
+      "originality": 90,
+      "conversionIntent": 85,
+      "trialIntent": 85,
+      "revenueIntent": 70,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 10,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "wyrdlyre-voice-gm",
+          "character-ai-quickstart"
+        ],
+        "searcherJob": "Help an adult solo player decide whether spoken game-master interaction or a text character-chat format better fits the next session.",
+        "productFactIds": [
+          "dnd-content-direction",
+          "dnd-primary-audience",
+          "playworlds-current-product",
+          "playworlds-voice-text-single-player-rpg",
+          "playworlds-ai-game-master",
+          "playworlds-persistent-campaigns"
+        ],
+        "productSignals": [
+          "dnd_content",
+          "adult_tabletop_audience",
+          "playworlds_current_product",
+          "playworlds_voice_text_rpg",
+          "playworlds_ai_game_master",
+          "playworlds_persistent_campaigns"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking",
+          "recurring_use"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Independent products visibly differentiate voice-driven game-master sessions from character-chat creation and text conversation workflows.",
+          "difficulty": "The interface comparison is narrower than broad AI RPG discovery, although voice and character-chat products already occupy both sides.",
+          "productFit": "Approved Playworlds facts support optional voice or text input, an AI game master, single-player play, and persistent campaigns.",
+          "trialIntent": "The reader is selecting an interaction mode for an upcoming solo session and can evaluate the official product description immediately.",
+          "revenueIntent": "The format comparison can qualify a product visit, but it is less purchase-led than the primary campaign-system versus query.",
+          "intentSpecificity": "The query identifies voice and text formats, a solo audience, two product roles, and a concrete session-fit decision.",
+          "originality": "A future page can compare speaking load, reading pace, correction, and optional input without claiming a universal winner.",
+          "ipRisk": "The interface decision needs no licensed rules or setting references and can remain entirely system-neutral.",
+          "cannibalizationRisk": "Voice-versus-text session fit is adjacent to, but not the same job as, deciding whether a system maintains a campaign loop."
+        }
+      },
+      "score": 76,
+      "action": "create_page",
+      "gate": {
+        "passed": true,
+        "blockers": []
+      },
+      "reason": "strong trial intent; meaningful payment intent; specific searcher job; evidence-derived opportunity score 76; revenue intent is advisory during early traffic validation."
+    },
+    {
+      "keyword": "autonomous ai game master vs gm assistant for tabletop sessions",
+      "seed": "ai game master vs gm assistant",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 62,
+      "volume": 0,
+      "difficulty": 60,
+      "cpc": 0,
+      "intent": "commercial",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 85,
+      "originality": 90,
+      "conversionIntent": 85,
+      "trialIntent": 85,
+      "revenueIntent": 70,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 10,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "questportal-gm-assistant",
+          "calypso-gm-assistant-study"
+        ],
+        "searcherJob": "Help a tabletop player distinguish a system that runs a solo scene from a copilot that supports an active human game master.",
+        "productFactIds": [
+          "dnd-content-direction",
+          "dnd-primary-audience",
+          "playworlds-current-product",
+          "playworlds-voice-text-single-player-rpg",
+          "playworlds-ai-game-master",
+          "playworlds-persistent-campaigns"
+        ],
+        "productSignals": [
+          "dnd_content",
+          "adult_tabletop_audience",
+          "playworlds_current_product",
+          "playworlds_voice_text_rpg",
+          "playworlds_ai_game_master",
+          "playworlds_persistent_campaigns"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking",
+          "recurring_use"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "A current GM-assistant product and academic assistant research demonstrate a real distinction between human-GM support and autonomous solo play.",
+          "difficulty": "Assistant terminology is shared across many tools, but the autonomous-versus-copilot role boundary creates a focused comparison task.",
+          "productFit": "Playworlds facts support the autonomous single-player side through an AI game master, voice-or-text actions, and persistent campaigns.",
+          "trialIntent": "The reader must choose a product role before a session and is already solution-aware enough to compare operating models.",
+          "revenueIntent": "The role comparison narrows alternatives and recurring use, though it does not contain explicit purchase language.",
+          "intentSpecificity": "The query names autonomous and assistant roles, the tabletop-session context, an adult audience, and a product comparison.",
+          "originality": "A responsibility map can show who prepares, adjudicates, remembers, and controls the table without attacking either model.",
+          "ipRisk": "The role comparison is generic tabletop guidance and requires no protected rules, characters, monsters, or settings.",
+          "cannibalizationRisk": "This asks who remains in the game-master seat, which is distinct from the primary chatbot-versus-campaign-system decision."
+        }
+      },
+      "score": 76,
+      "action": "observe",
+      "gate": {
+        "passed": false,
+        "blockers": [
+          "search intent does not name a player or Game Master table job"
+        ]
+      },
+      "reason": "Blocked: search intent does not name a player or Game Master table job; evidence-derived opportunity score 76; revenue intent is advisory during early traffic validation."
+    },
+    {
+      "keyword": "ai game master vs human game master for solo tabletop play",
+      "seed": "ai game master vs human gm",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 74,
+      "volume": 0,
+      "difficulty": 78,
+      "cpc": 0,
+      "intent": "mixed",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 85,
+      "originality": 90,
+      "conversionIntent": 85,
+      "trialIntent": 85,
+      "revenueIntent": 70,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 10,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "auferet-solo-ai-gm",
+          "neural-initiative-about",
+          "agentic-gm-solo-study"
+        ],
+        "searcherJob": "Help an adult solo player understand where an AI game master differs from human-led tabletop play without making a universal replacement claim.",
+        "productFactIds": [
+          "dnd-content-direction",
+          "dnd-primary-audience",
+          "playworlds-current-product",
+          "playworlds-voice-text-single-player-rpg",
+          "playworlds-ai-game-master",
+          "playworlds-persistent-campaigns"
+        ],
+        "productSignals": [
+          "dnd_content",
+          "adult_tabletop_audience",
+          "playworlds_current_product",
+          "playworlds_voice_text_rpg",
+          "playworlds_ai_game_master",
+          "playworlds_persistent_campaigns"
+        ],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking",
+          "recurring_use"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Solo AI-GM pages and academic evaluation demonstrate an active comparison between automated sessions and human-led play.",
+          "difficulty": "Human-versus-AI framing is broad and competitive, so a useful page would require tight solo-session boundaries and careful claims.",
+          "productFit": "Playworlds facts support a single-player AI-game-master experience but do not support replacing every human game master or group format.",
+          "trialIntent": "A solo player without a current table can evaluate the experience immediately while keeping human-led play as a separate context.",
+          "revenueIntent": "The alternative comparison can qualify recurring-use interest but remains partly informational and contains no purchase language.",
+          "intentSpecificity": "The query identifies AI and human roles, solo tabletop play, an adult audience, and a bounded comparison decision.",
+          "originality": "A future page can compare availability, improvisation, social judgment, and solo continuity without declaring a replacement winner.",
+          "ipRisk": "The comparison can remain system-neutral and avoid all protected rules, settings, characters, and compatibility statements.",
+          "cannibalizationRisk": "Human-led social play is a distinct comparison axis rather than a synonym for chatbot-versus-campaign software."
+        }
+      },
+      "score": 76,
+      "action": "observe",
+      "gate": {
+        "passed": false,
+        "blockers": [
+          "search intent does not name a player or Game Master table job"
+        ]
+      },
+      "reason": "Blocked: search intent does not name a player or Game Master table job; evidence-derived opportunity score 76; revenue intent is advisory during early traffic validation."
+    },
+    {
+      "keyword": "ai game master for a multiplayer tabletop group",
+      "seed": "multiplayer ai game master",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 70,
+      "volume": 0,
+      "difficulty": 74,
+      "cpc": 0,
+      "intent": "commercial",
+      "funnelStage": "trial",
+      "conversionGoal": "trial_start",
+      "trend": [],
+      "productFit": 0,
+      "originality": 90,
+      "conversionIntent": 85,
+      "trialIntent": 85,
+      "revenueIntent": 70,
+      "intentSpecificity": 100,
+      "ipRisk": 0,
+      "cannibalizationRisk": 10,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "wyrdlyre-voice-gm",
+          "neural-initiative-about"
+        ],
+        "searcherJob": "Help a tabletop group find an AI game master that can run a shared multiplayer campaign for several human participants.",
+        "productFactIds": [
+          "dnd-content-direction",
+          "dnd-primary-audience",
+          "playworlds-current-product"
+        ],
+        "productSignals": [],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking",
+          "recurring_use"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "original_generic",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Specialist competitors advertise group or multiplayer AI-game-master use, demonstrating a visible shared-table search task.",
+          "difficulty": "Group campaign products and virtual tabletops create substantial competition around shared multiplayer sessions.",
+          "productFit": "Approved Playworlds facts describe single-player play and do not approve multiplayer, friends, or group capability claims.",
+          "trialIntent": "The searcher has an immediate group-session need, but the approved product cannot presently answer that requirement.",
+          "revenueIntent": "Commercial comparison and recurring group use indicate a meaningful product-selection intent despite the hard mismatch.",
+          "intentSpecificity": "The query defines a multiplayer group, AI game-master role, tabletop format, and shared campaign task.",
+          "originality": "A group-workflow guide could be distinct, but publishing it now would create an unsupported Playworlds implication.",
+          "ipRisk": "The concept can remain generic, but product truth independently blocks the candidate before publication.",
+          "cannibalizationRisk": "No active page covers multiplayer group play, yet low overlap does not override the single-player product boundary."
+        }
+      },
+      "score": 57,
+      "action": "observe",
+      "gate": {
+        "passed": false,
+        "blockers": [
+          "primary audience requires product signal dnd_content",
+          "primary audience requires product signal adult_tabletop_audience",
+          "primary audience requires product signal playworlds_current_product",
+          "product fit is below the gate"
+        ]
+      },
+      "reason": "Blocked: primary audience requires product signal dnd_content; primary audience requires product signal adult_tabletop_audience; primary audience requires product signal playworlds_current_product; product fit is below the gate; evidence-derived opportunity score 57; revenue intent is advisory during early traffic validation."
+    },
+    {
+      "keyword": "best d&d 5e ai dungeon master for a campaign",
+      "seed": "best 5e ai dungeon master",
+      "source": "codex_research",
+      "metricBasis": "research_proxy",
+      "scoreBasis": "evidence_signals_v1",
+      "demandScore": 84,
+      "volume": 0,
+      "difficulty": 86,
+      "cpc": 0,
+      "intent": "commercial",
+      "funnelStage": "purchase",
+      "conversionGoal": "purchase",
+      "trend": [],
+      "productFit": 0,
+      "originality": 90,
+      "conversionIntent": 100,
+      "trialIntent": 85,
+      "revenueIntent": 100,
+      "intentSpecificity": 100,
+      "ipRisk": 50,
+      "cannibalizationRisk": 10,
+      "decisionEvidence": {
+        "schemaVersion": 1,
+        "evidenceRefs": [
+          "wyrdlyre-voice-gm",
+          "neural-initiative-about"
+        ],
+        "searcherJob": "Help an adult D&D player select a product that explicitly supports fifth-edition rules and campaign adjudication.",
+        "productFactIds": [
+          "dnd-content-direction",
+          "dnd-primary-audience",
+          "playworlds-current-product"
+        ],
+        "productSignals": [],
+        "trialSignals": [
+          "solution_aware",
+          "immediate_use",
+          "experience_seeking"
+        ],
+        "revenueSignals": [
+          "commercial_comparison",
+          "alternative_seeking",
+          "purchase_language",
+          "recurring_use"
+        ],
+        "specificitySignals": [
+          "defined_task",
+          "defined_format",
+          "defined_audience",
+          "narrow_modifier"
+        ],
+        "ipClass": "ambiguous_reference",
+        "cannibalizationClass": "new_intent",
+        "nearestExistingSlug": null,
+        "rationale": {
+          "demand": "Specialist competitors visibly use D&D and fifth-edition support in product positioning, indicating strong commercial search interest.",
+          "difficulty": "Established products compete directly on 5e rules and campaign claims, making this one of the most difficult candidate intents.",
+          "productFit": "Playworlds has no approved 5e compatibility, rules-support, or licensed D&D fact, so competitor capabilities cannot establish product fit.",
+          "trialIntent": "The reader is solution-aware and wants immediate rules support, but that intent cannot be satisfied with the approved Playworlds facts.",
+          "revenueIntent": "Best-product and explicit alternative language indicate strong commercial intent despite the product-truth failure.",
+          "intentSpecificity": "The query defines a fifth-edition ruleset, D&D audience, AI dungeon-master format, and continuing campaign use.",
+          "originality": "A neutral comparison could be original, but publishing it for Playworlds would imply unsupported compatibility.",
+          "ipRisk": "The exact 5e relationship is not covered by the current original-only boundary and lacks a recorded SRD or other permission basis.",
+          "cannibalizationRisk": "No active page covers the query, but low overlap cannot cure the product and rights hard failures."
+        }
+      },
+      "score": 52,
+      "action": "observe",
+      "gate": {
+        "passed": false,
+        "blockers": [
+          "primary audience requires product signal dnd_content",
+          "primary audience requires product signal adult_tabletop_audience",
+          "primary audience requires product signal playworlds_current_product",
+          "D&D-first automation currently requires original tabletop-fantasy content",
+          "product fit is below the gate",
+          "IP risk exceeds the gate"
+        ]
+      },
+      "reason": "Blocked: primary audience requires product signal dnd_content; primary audience requires product signal adult_tabletop_audience; primary audience requires product signal playworlds_current_product; D&D-first automation currently requires original tabletop-fantasy content; product fit is below the gate; IP risk exceeds the gate; evidence-derived opportunity score 52; revenue intent is advisory during early traffic validation."
+    }
+  ],
+  "performance": [],
+  "trendSignals": [
+    {
+      "schemaVersion": 2,
+      "keyword": "ai game master vs chatbot for tabletop campaign",
+      "source": "google_trends",
+      "collectionMethod": "bigquery_public_dataset",
+      "sourceUrl": "https://support.google.com/trends/answer/12764470?hl=en",
+      "sourceTable": "bigquery-public-data.google_trends.top_rising_terms",
+      "state": "not_observed",
+      "relativeInterest": null,
+      "direction": "unknown",
+      "geo": "US",
+      "period": "week starting 2026-08-23",
+      "collectedAt": "2026-08-26T03:44:24.828Z",
+      "detail": "The exact normalized candidate did not appear in the US DMA Top 25 Rising dataset. This restricted-list absence is not zero search interest.",
+      "refreshDate": "2026-08-25",
+      "week": "2026-08-23",
+      "bestRank": null,
+      "maxPercentGain": null,
+      "dmaCount": null,
+      "snapshotDigest": "54c918607612b6df0eecbd8dbf3282419fa6b28cab9033ca16578de48d8febcd"
+    },
+    {
+      "schemaVersion": 2,
+      "keyword": "voice ai game master vs text roleplay chatbot for solo play",
+      "source": "google_trends",
+      "collectionMethod": "bigquery_public_dataset",
+      "sourceUrl": "https://support.google.com/trends/answer/12764470?hl=en",
+      "sourceTable": "bigquery-public-data.google_trends.top_rising_terms",
+      "state": "not_observed",
+      "relativeInterest": null,
+      "direction": "unknown",
+      "geo": "US",
+      "period": "week starting 2026-08-23",
+      "collectedAt": "2026-08-26T03:44:24.828Z",
+      "detail": "The exact normalized candidate did not appear in the US DMA Top 25 Rising dataset. This restricted-list absence is not zero search interest.",
+      "refreshDate": "2026-08-25",
+      "week": "2026-08-23",
+      "bestRank": null,
+      "maxPercentGain": null,
+      "dmaCount": null,
+      "snapshotDigest": "54c918607612b6df0eecbd8dbf3282419fa6b28cab9033ca16578de48d8febcd"
+    },
+    {
+      "schemaVersion": 2,
+      "keyword": "autonomous ai game master vs gm assistant for tabletop sessions",
+      "source": "google_trends",
+      "collectionMethod": "bigquery_public_dataset",
+      "sourceUrl": "https://support.google.com/trends/answer/12764470?hl=en",
+      "sourceTable": "bigquery-public-data.google_trends.top_rising_terms",
+      "state": "not_observed",
+      "relativeInterest": null,
+      "direction": "unknown",
+      "geo": "US",
+      "period": "week starting 2026-08-23",
+      "collectedAt": "2026-08-26T03:44:24.828Z",
+      "detail": "The exact normalized candidate did not appear in the US DMA Top 25 Rising dataset. This restricted-list absence is not zero search interest.",
+      "refreshDate": "2026-08-25",
+      "week": "2026-08-23",
+      "bestRank": null,
+      "maxPercentGain": null,
+      "dmaCount": null,
+      "snapshotDigest": "54c918607612b6df0eecbd8dbf3282419fa6b28cab9033ca16578de48d8febcd"
+    },
+    {
+      "schemaVersion": 2,
+      "keyword": "ai companion chatbot vs ai game master for a solo campaign",
+      "source": "google_trends",
+      "collectionMethod": "bigquery_public_dataset",
+      "sourceUrl": "https://support.google.com/trends/answer/12764470?hl=en",
+      "sourceTable": "bigquery-public-data.google_trends.top_rising_terms",
+      "state": "not_observed",
+      "relativeInterest": null,
+      "direction": "unknown",
+      "geo": "US",
+      "period": "week starting 2026-08-23",
+      "collectedAt": "2026-08-26T03:44:24.828Z",
+      "detail": "The exact normalized candidate did not appear in the US DMA Top 25 Rising dataset. This restricted-list absence is not zero search interest.",
+      "refreshDate": "2026-08-25",
+      "week": "2026-08-23",
+      "bestRank": null,
+      "maxPercentGain": null,
+      "dmaCount": null,
+      "snapshotDigest": "54c918607612b6df0eecbd8dbf3282419fa6b28cab9033ca16578de48d8febcd"
+    },
+    {
+      "schemaVersion": 2,
+      "keyword": "ai game master vs human game master for solo tabletop play",
+      "source": "google_trends",
+      "collectionMethod": "bigquery_public_dataset",
+      "sourceUrl": "https://support.google.com/trends/answer/12764470?hl=en",
+      "sourceTable": "bigquery-public-data.google_trends.top_rising_terms",
+      "state": "not_observed",
+      "relativeInterest": null,
+      "direction": "unknown",
+      "geo": "US",
+      "period": "week starting 2026-08-23",
+      "collectedAt": "2026-08-26T03:44:24.828Z",
+      "detail": "The exact normalized candidate did not appear in the US DMA Top 25 Rising dataset. This restricted-list absence is not zero search interest.",
+      "refreshDate": "2026-08-25",
+      "week": "2026-08-23",
+      "bestRank": null,
+      "maxPercentGain": null,
+      "dmaCount": null,
+      "snapshotDigest": "54c918607612b6df0eecbd8dbf3282419fa6b28cab9033ca16578de48d8febcd"
+    },
+    {
+      "schemaVersion": 2,
+      "keyword": "ai game master vs gm emulator oracle for solo tabletop campaign",
+      "source": "google_trends",
+      "collectionMethod": "bigquery_public_dataset",
+      "sourceUrl": "https://support.google.com/trends/answer/12764470?hl=en",
+      "sourceTable": "bigquery-public-data.google_trends.top_rising_terms",
+      "state": "not_observed",
+      "relativeInterest": null,
+      "direction": "unknown",
+      "geo": "US",
+      "period": "week starting 2026-08-23",
+      "collectedAt": "2026-08-26T03:44:24.828Z",
+      "detail": "The exact normalized candidate did not appear in the US DMA Top 25 Rising dataset. This restricted-list absence is not zero search interest.",
+      "refreshDate": "2026-08-25",
+      "week": "2026-08-23",
+      "bestRank": null,
+      "maxPercentGain": null,
+      "dmaCount": null,
+      "snapshotDigest": "54c918607612b6df0eecbd8dbf3282419fa6b28cab9033ca16578de48d8febcd"
+    },
+    {
+      "schemaVersion": 2,
+      "keyword": "best d&d 5e ai dungeon master for a campaign",
+      "source": "google_trends",
+      "collectionMethod": "bigquery_public_dataset",
+      "sourceUrl": "https://support.google.com/trends/answer/12764470?hl=en",
+      "sourceTable": "bigquery-public-data.google_trends.top_rising_terms",
+      "state": "not_observed",
+      "relativeInterest": null,
+      "direction": "unknown",
+      "geo": "US",
+      "period": "week starting 2026-08-23",
+      "collectedAt": "2026-08-26T03:44:24.828Z",
+      "detail": "The exact normalized candidate did not appear in the US DMA Top 25 Rising dataset. This restricted-list absence is not zero search interest.",
+      "refreshDate": "2026-08-25",
+      "week": "2026-08-23",
+      "bestRank": null,
+      "maxPercentGain": null,
+      "dmaCount": null,
+      "snapshotDigest": "54c918607612b6df0eecbd8dbf3282419fa6b28cab9033ca16578de48d8febcd"
+    },
+    {
+      "schemaVersion": 2,
+      "keyword": "ai game master for a multiplayer tabletop group",
+      "source": "google_trends",
+      "collectionMethod": "bigquery_public_dataset",
+      "sourceUrl": "https://support.google.com/trends/answer/12764470?hl=en",
+      "sourceTable": "bigquery-public-data.google_trends.top_rising_terms",
+      "state": "not_observed",
+      "relativeInterest": null,
+      "direction": "unknown",
+      "geo": "US",
+      "period": "week starting 2026-08-23",
+      "collectedAt": "2026-08-26T03:44:24.828Z",
+      "detail": "The exact normalized candidate did not appear in the US DMA Top 25 Rising dataset. This restricted-list absence is not zero search interest.",
+      "refreshDate": "2026-08-25",
+      "week": "2026-08-23",
+      "bestRank": null,
+      "maxPercentGain": null,
+      "dmaCount": null,
+      "snapshotDigest": "54c918607612b6df0eecbd8dbf3282419fa6b28cab9033ca16578de48d8febcd"
+    }
+  ],
+  "trendCollection": {
+    "schemaVersion": 2,
+    "provider": "google_trends_bigquery_public_dataset",
+    "state": "observed",
+    "collectedAt": "2026-08-26T03:44:24.828Z",
+    "sourceUrl": "https://support.google.com/trends/answer/12764470?hl=en",
+    "geo": "US",
+    "coverage": {
+      "label": "Top 25 and Top 25 Rising Google Trends terms by US DMA",
+      "topTermsPerDma": 25,
+      "topRisingTermsPerDma": 25,
+      "arbitraryQueryCoverage": false,
+      "absenceMeansZero": false
+    },
+    "query": {
+      "location": "US",
+      "useLegacySql": false,
+      "maximumBytesBilled": "104857600",
+      "timeoutMs": 15000,
+      "asOfDate": "2026-08-26",
+      "refreshDateRule": "as_of_date_minus_1_day",
+      "topTermsSqlDigest": "538962e0b1646c7d40a12471e1af3904eda46fea3c0f833e92ee2326a1065a05",
+      "topRisingTermsSqlDigest": "b354b8eae3eb1ebd9a85dac0c56126df6824d2a5cd8a26da6450534438ad580e"
+    },
+    "refreshDate": "2026-08-25",
+    "week": "2026-08-23",
+    "results": {
+      "topTerms": {
+        "rowCount": 25,
+        "resultDigest": "f59e4b33eb1041f544f8f9d989e3d2188c6b2ba5d07dafd8598bed413ee62e4d"
+      },
+      "topRisingTerms": {
+        "rowCount": 25,
+        "resultDigest": "84610c5e11b7bcd7795284d80f8bb3f882cc0e19f358a3306f001e4fc0f866f4"
+      }
+    },
+    "exactCandidateMatches": [
+      {
+        "keyword": "ai game master vs chatbot for tabletop campaign",
+        "normalizedKeyword": "ai game master vs chatbot for tabletop campaign",
+        "topTerm": null,
+        "risingTerm": null
+      },
+      {
+        "keyword": "voice ai game master vs text roleplay chatbot for solo play",
+        "normalizedKeyword": "voice ai game master vs text roleplay chatbot for solo play",
+        "topTerm": null,
+        "risingTerm": null
+      },
+      {
+        "keyword": "autonomous ai game master vs gm assistant for tabletop sessions",
+        "normalizedKeyword": "autonomous ai game master vs gm assistant for tabletop sessions",
+        "topTerm": null,
+        "risingTerm": null
+      },
+      {
+        "keyword": "ai companion chatbot vs ai game master for a solo campaign",
+        "normalizedKeyword": "ai companion chatbot vs ai game master for a solo campaign",
+        "topTerm": null,
+        "risingTerm": null
+      },
+      {
+        "keyword": "ai game master vs human game master for solo tabletop play",
+        "normalizedKeyword": "ai game master vs human game master for solo tabletop play",
+        "topTerm": null,
+        "risingTerm": null
+      },
+      {
+        "keyword": "ai game master vs gm emulator oracle for solo tabletop campaign",
+        "normalizedKeyword": "ai game master vs gm emulator oracle for solo tabletop campaign",
+        "topTerm": null,
+        "risingTerm": null
+      },
+      {
+        "keyword": "best d&d 5e ai dungeon master for a campaign",
+        "normalizedKeyword": "best d&d 5e ai dungeon master for a campaign",
+        "topTerm": null,
+        "risingTerm": null
+      },
+      {
+        "keyword": "ai game master for a multiplayer tabletop group",
+        "normalizedKeyword": "ai game master for a multiplayer tabletop group",
+        "topTerm": null,
+        "risingTerm": null
+      }
+    ],
+    "discoveryLeads": [],
+    "detail": "Observed the official Google Trends public BigQuery Top 25 and Top 25 Rising terms for the latest weekly period in the requested US DMA daily partition. Coverage is not an arbitrary-query interest measurement.",
+    "attestation": {
+      "algorithm": "RSA-SHA256",
+      "clientEmail": "lorelens-trends-collector@seo-growth-workbench.iam.gserviceaccount.com",
+      "keyFingerprint": "497683d75d80428447f27f439be1aac4475807ac189a92ece8ccd5c492ac964d",
+      "signature": "JyvuKi/iOKgpOMrKgEE2t7htAm/bML7BkJ2zGGTod9L5hJZtBeQOOF9q2j2ZjkePU3lsIOvJoM7cgyHJXIvjavH7Dvugy7qxPDnEFhItsoDPVTGzL1kixjzy5+jnqIwNM/QrCPv375XZJ+/byCxscHjpBBZAbAzmE5IXzURxnlDOnUPsLhLS2JiCFokMeUM60I+NdHefqX9B85i9TfEDYoUWjb6Ciy0xRydUOue72WIH+BcJbt5RnB2moW/C5cnJGKHHzVqILX+BPrlf+3Jm8XysVsYNVrUwfQKvdERY/o3AT46Zs9mjsp8xRHhaLeq3mHj23ezPj5KiyoCdadlepg=="
+    },
+    "snapshotDigest": "54c918607612b6df0eecbd8dbf3282419fa6b28cab9033ca16578de48d8febcd"
+  },
+  "feedbackDecisions": [
+    {
+      "id": "feedback-2026-08-26-approve-click-improvements",
+      "date": "2026-08-26",
+      "message": "可以的  你做吧",
+      "decision": "adopted",
+      "rationale": "Implement the approved shorter query-led title and specific snippet, semantic original hero image and image metadata, and descriptive homepage link while keeping deployment manual."
+    },
+    {
+      "id": "feedback-2026-08-26-unobstructed-character-midnight-blue-passages",
+      "date": "2026-08-26",
+      "message": "尽量不要挡住人物   可以考虑暗蓝渐变暗黑  还有文案  可以参考之前我给你的那段英文指导  那个是推特上的 &#x20;",
+      "decision": "adopted",
+      "rationale": "Move the Campaign Loop Test below the hero so the original campaign keeper remains unobstructed, use an abyss-navy-to-lampblack gradient with restrained amber signals, and rewrite every section and FAQ answer as a self-contained retrieval passage without copying the source wording. Keep deployment manual."
+    }
+  ],
+  "portfolioFunnels": {
+    "schemaVersion": 2,
+    "privacyClass": "public_growth_evidence",
+    "generatedAt": "2026-08-26T03:32:22.300Z",
+    "periodBasis": "complete_shanghai_calendar_days",
+    "reportingWindowDays": 28,
+    "reportingLagDays": 3,
+    "aggregationKey": "source_slug+reporting_period",
+    "periodStart": "2026-07-25T16:00:00.000Z",
+    "periodEnd": "2026-08-22T16:00:00.000Z",
+    "summary": {
+      "publishedPages": 0,
+      "collectedPages": 0,
+      "unavailablePages": 0,
+      "attributionJoinReady": false,
+      "attributionJoinBlocked": false,
+      "hasSearchValidatedLandingPage": false
+    },
+    "globalAttribution": {
+      "schemaVersion": 1,
+      "product": "playworlds",
+      "state": "observed",
+      "attributionJoinReady": false,
+      "detail": "The independent Playworlds callback handshake or attribution store probe is not ready."
+    },
+    "entries": []
+  },
+  "measurementPhase": {
+    "schemaVersion": 1,
+    "phase": "early_traffic_validation",
+    "ready": true,
+    "primaryMetrics": [
+      "search_console_impressions",
+      "search_console_clicks",
+      "search_console_ctr",
+      "search_console_average_position"
+    ],
+    "supportingMetrics": [
+      "landing_uv",
+      "qualified_outbound_clicks"
+    ],
+    "optionalDownstreamMetrics": [
+      "trial_starts",
+      "signups",
+      "paid_conversions",
+      "revenue"
+    ],
+    "failedSlugs": [],
+    "failures": []
+  },
+  "portfolioDecision": {
+    "schemaVersion": 1,
+    "action": "create_page",
+    "targetSlug": null,
+    "rationale": "The current active portfolio is empty because the sole legacy page remains on product-migration hold, so the complete same-window growth snapshot contains no uncovered active page. The user explicitly requested manual continuation of the protected comparison concept, and current independent evidence supports a distinct product-format decision without relying on revenue attribution or a prohibited capability.",
+    "evidenceSlugs": []
+  },
+  "publication": {
+    "status": "published",
+    "slug": "ai-game-master-vs-chatbot-for-tabletop-campaign",
+    "path": "/ai-game-master-vs-chatbot-for-tabletop-campaign",
+    "slot": "manual",
+    "publishedAt": "2026-08-26T04:04:01.283Z",
+    "updatedAt": "2026-08-26T09:01:34.774Z",
+    "draftDigest": "eccfffad89993417ce42c6699159e5e456883e268c2930ba79f05431ffba6bcc",
+    "reason": "Approved by codex_editor Codex SEO editorial reviewer after deterministic and editorial gates passed."
+  },
+  "publications": [
+    {
+      "status": "published",
+      "slug": "ai-game-master-vs-chatbot-for-tabletop-campaign",
+      "path": "/ai-game-master-vs-chatbot-for-tabletop-campaign",
+      "slot": "manual",
+      "publishedAt": "2026-08-26T04:04:01.283Z",
+      "updatedAt": "2026-08-26T09:01:34.774Z",
+      "draftDigest": "eccfffad89993417ce42c6699159e5e456883e268c2930ba79f05431ffba6bcc",
+      "reason": "Approved by codex_editor Codex SEO editorial reviewer after deterministic and editorial gates passed."
+    }
+  ],
+  "actions": [
+    {
+      "priority": "P0",
+      "action": "create a new page",
+      "why": "The current active portfolio is empty because the sole legacy page remains on product-migration hold, so the complete same-window growth snapshot contains no uncovered active page. The user explicitly requested manual continuation of the protected comparison concept, and current independent evidence supports a distinct product-format decision without relying on revenue attribution or a prohibited capability.",
+      "expectedImpact": "Test a specific searcher job with measurable Google impressions and clicks."
+    },
+    {
+      "priority": "P1",
+      "action": "Verify evidence, intent, and the early traffic hypothesis",
+      "why": "Research proxies rank options; they do not replace observed Search Console impressions, clicks, CTR, or average position.",
+      "expectedImpact": "Keep early SEO decisions tied to measurable search visibility while the product is still validating demand."
+    },
+    {
+      "priority": "P2",
+      "action": "Build and publish /ai-game-master-vs-chatbot-for-tabletop-campaign",
+      "why": "Approved by codex_editor Codex SEO editorial reviewer after deterministic and editorial gates passed.",
+      "expectedImpact": "Release one reviewed, measurable page."
+    }
+  ],
+  "brief": {
+    "keyword": "ai game master vs chatbot for tabletop campaign",
+    "slug": "/ai-game-master-vs-chatbot-for-tabletop-campaign",
+    "pageType": "product",
+    "searchIntent": "commercial",
+    "title": "AI Game Master vs Chatbot: 4 Differences for D&D Players",
+    "description": "Use the Campaign Loop Test to compare action resolution, consequences, persistent state, and next choices—then decide what fits your solo campaign.",
+    "h1": "AI Game Master vs Chatbot: Which One Fits a D&D Campaign?",
+    "primaryCta": "Check Playworlds against the Campaign Loop Test",
+    "sections": [
+      "direct_answer: The dividing line is a maintained campaign loop, not whether both tools can produce fantasy prose.",
+      "failure_analysis: A polished reply is not playable when it fails to resolve the action, preserve the new state, or create a next decision.",
+      "framework: Action, outcome, state, and next choice expose whether a system is chatting about a campaign or running a coherent scene loop.",
+      "worked_example: The worked example shows how state continuity changes the next playable choice without borrowing D&D rules or setting content.",
+      "next_step: Use a chatbot for open-ended ideation and a dedicated AI game master when campaign state and consequential play are the priority."
+    ],
+    "evidenceRequired": [
+      "Public evidence for the intent",
+      "Approved product facts",
+      "Original non-infringing material",
+      "Verified CTA and attribution route"
+    ],
+    "qualityGate": [
+      "One intent and one H1",
+      "Content and presentation contracts passed",
+      "No unlicensed third-party IP",
+      "Independent editorial review",
+      "Render, link, and index checks"
+    ]
+  },
+  "draft": {
+    "schemaVersion": 2,
+    "slot": "manual",
+    "keyword": "ai game master vs chatbot for tabletop campaign",
+    "slug": "/ai-game-master-vs-chatbot-for-tabletop-campaign",
+    "language": "en",
+    "model": "codex",
+    "generatedAt": "2026-08-26T11:40:00+08:00",
+    "reviewRequired": true,
+    "factIdsUsed": [
+      "playworlds-current-product",
+      "dnd-content-direction",
+      "dnd-primary-audience",
+      "playworlds-voice-text-single-player-rpg",
+      "playworlds-ai-game-master",
+      "playworlds-persistent-campaigns",
+      "playworlds-rpg-state"
+    ],
+    "title": "AI Game Master vs Chatbot: 4 Differences for D&D Players",
+    "metaDescription": "Use the Campaign Loop Test to compare action resolution, consequences, persistent state, and next choices—then decide what fits your solo campaign.",
+    "h1": "AI Game Master vs Chatbot: Which One Fits a D&D Campaign?",
+    "heroMarkdown": "Choose an AI game master when actions must change campaign state and produce consequential choices. Choose a chatbot for conversation or brainstorming without that loop.",
+    "primaryCta": "Check Playworlds against the Campaign Loop Test",
+    "ipBoundary": {
+      "schemaVersion": 1,
+      "contentBasis": "original_tabletop_fantasy",
+      "dndReferenceScope": "audience_reference_only",
+      "srdMaterialUsed": false,
+      "thirdPartyNames": []
+    },
+    "sections": [
+      {
+        "id": "practical-difference",
+        "role": "direct_answer",
+        "format": "comparison",
+        "heading": "What is the practical difference between an AI game master and a chatbot for D&D players?",
+        "bodyMarkdown": "For D&D play, an AI game master and a chatbot do different jobs after the player acts.\n\n- **General chatbot:** Supports brainstorming or dialogue without resolving campaign state.\n- **AI game master:** Interprets the attempt, resolves its outcome, preserves state, and presents the next consequential choice.\n\nChoose a chatbot for conversation. Choose an AI game master when one decision must become the next scene's starting state."
+      },
+      {
+        "id": "eloquent-but-unplayable",
+        "role": "failure_analysis",
+        "format": "prose",
+        "heading": "Why can an eloquent chatbot still feel weak during a tabletop campaign?",
+        "bodyMarkdown": "An eloquent chatbot can fail a tabletop campaign because polished prose is not persistent state. It may leave the player's action unresolved.\n\nIf the player must restate danger, inventory, and the last outcome, the tool is writing around the campaign. An AI game master preserves consequence and returns a specific decision."
+      },
+      {
+        "id": "campaign-loop-test",
+        "role": "framework",
+        "format": "steps",
+        "heading": "How can you test an AI tool before trusting it with a D&D campaign?",
+        "bodyMarkdown": "For D&D campaign play, the Campaign Loop Test separates an AI game master from a chatbot with four checkpoints.\n\n1. **Action:** Name the attempt, intent, and risk.\n2. **Outcome:** Confirm what happened and what pressure, opportunity, or cost followed.\n3. **State:** Identify what persists into the next turn.\n4. **Next choice:** Require a concrete decision that returns agency.\n\nEach works alone; together they reveal a coherent campaign loop."
+      },
+      {
+        "id": "locked-chapel-example",
+        "role": "worked_example",
+        "format": "examples",
+        "heading": "What does the Campaign Loop Test look like in an original fantasy scene?",
+        "bodyMarkdown": "Compare an AI chatbot and an AI game master with one original tabletop-fantasy scene.\n\n- **Scene:** In a storm, a medicine courier reaches a locked chapel. The caretaker refuses entry after its bell rang alone.\n- **Chat-shaped response:** Describes the rain without deciding what changed.\n- **Campaign-shaped response:** The caretaker trusts the medicine, recognizes the courier's seal, says the tunnel is flooded, and demands collateral. Persistent state: surrendered resource, blocked route, exposed identity. Next choice: explain the seal or seek another road.\n\nThis original example contains no D&D rules or setting content."
+      },
+      {
+        "id": "choose-the-right-tool",
+        "role": "next_step",
+        "format": "checklist",
+        "heading": "When should a D&D player choose a chatbot, and when should they choose an AI game master?",
+        "bodyMarkdown": "For a D&D player, choose by what must persist after the reply.\n\n- **Choose conversation** when names or dialogue matter more than continuity.\n- **Choose a campaign loop** when inventory, party condition, actions, and history must stay connected.\n- **Check the next turn:** The reply should state what changed and what decision follows.\n\nPlayworlds' public listing describes voice or text actions, an AI game master, saved campaigns, and tracked RPG state in a single-player AI adventure RPG. D&D identifies this independent guide's adult audience; it does not imply affiliation or rules compatibility."
+      }
+    ],
+    "faqs": [
+      {
+        "id": "faq-definition",
+        "job": "definition",
+        "question": "Is every fantasy AI chatbot an AI game master?",
+        "answerMarkdown": "A fantasy chatbot is not automatically an AI game master. Fantasy tone alone cannot resolve action, preserve state, and return a specific choice."
+      },
+      {
+        "id": "faq-replacement",
+        "job": "constraint",
+        "question": "Does an AI game master replace a human Dungeon Master?",
+        "answerMarkdown": "An AI game master does not universally replace a human Dungeon Master. Playworlds is described for solo play, which is the scope of this comparison."
+      },
+      {
+        "id": "faq-input",
+        "job": "setup",
+        "question": "Does Playworlds require voice input?",
+        "answerMarkdown": "Playworlds does not require voice input. Its official listing describes voice or keyboard input and says a microphone is optional."
+      },
+      {
+        "id": "faq-ip",
+        "job": "constraint",
+        "question": "What does the D&D reference mean on this page?",
+        "answerMarkdown": "Here, D&D identifies the adult audience. The original example contains no D&D rules or setting content, and the page claims no compatibility or affiliation."
+      }
+    ],
+    "architecture": {
+      "schemaVersion": 1,
+      "intent": {
+        "searcherJob": "Compare a general AI chatbot with a dedicated AI game master before choosing a tool for an adult D&D campaign.",
+        "painPointId": "campaign_prep_overload",
+        "decisionToEnable": "Decide whether the reader needs flexible conversation or a persistent action-outcome-state-choice loop for campaign play.",
+        "oneSentenceAnswer": "A chatbot discusses campaigns; an AI game master resolves actions, preserves state, and presents the next decision.",
+        "nonGoals": [
+          "D&D identifies the intended audience only; product-relationship and edition-compatibility claims are outside this page.",
+          "Do not reproduce D&D rules, settings, characters, monsters, artwork, maps, or adventure text."
+        ]
+      },
+      "content": {
+        "archetype": "comparison",
+        "thesis": "The difference is not prettier prose; it is whether each response completes a playable campaign loop.",
+        "originalContribution": "The Campaign Loop Test compares action interpretation, outcome, persistent state, and the next choice through one original tabletop-fantasy scene.",
+        "tone": "Adult tabletop field analysis with a midnight-blue campaign-control-room presentation and concise, answer-first passages that remain understandable in isolation.",
+        "openingMove": "direct_answer",
+        "avoidPhrases": [
+          "endless possibilities",
+          "epic adventure awaits",
+          "bring your imagination to life"
+        ],
+        "sections": [
+          {
+            "id": "practical-difference",
+            "role": "direct_answer",
+            "format": "comparison",
+            "readerQuestion": "The decision in one minute",
+            "uniqueTakeaway": "The dividing line is a maintained campaign loop, not whether both tools can produce fantasy prose."
+          },
+          {
+            "id": "eloquent-but-unplayable",
+            "role": "failure_analysis",
+            "format": "prose",
+            "readerQuestion": "Why good writing can still fail at the table",
+            "uniqueTakeaway": "A polished reply is not playable when it fails to resolve the action, preserve the new state, or create a next decision."
+          },
+          {
+            "id": "campaign-loop-test",
+            "role": "framework",
+            "format": "steps",
+            "readerQuestion": "A four-part test for any AI tool",
+            "uniqueTakeaway": "Action, outcome, state, and next choice expose whether a system is chatting about a campaign or running a coherent scene loop."
+          },
+          {
+            "id": "locked-chapel-example",
+            "role": "worked_example",
+            "format": "examples",
+            "readerQuestion": "One original scene, two different responses",
+            "uniqueTakeaway": "The worked example shows how state continuity changes the next playable choice without borrowing D&D rules or setting content."
+          },
+          {
+            "id": "choose-the-right-tool",
+            "role": "next_step",
+            "format": "checklist",
+            "readerQuestion": "Choose by the experience you actually want",
+            "uniqueTakeaway": "Use a chatbot for open-ended ideation and a dedicated AI game master when campaign state and consequential play are the priority."
+          }
+        ],
+        "faqs": [
+          {
+            "id": "faq-definition",
+            "job": "definition",
+            "readerObstacle": "The reader assumes every fantasy chatbot is already an AI game master.",
+            "answerBoundary": "Define the category through the campaign loop rather than unsupported marketing claims."
+          },
+          {
+            "id": "faq-replacement",
+            "job": "constraint",
+            "readerObstacle": "The reader may expect an AI tool to replace a human Dungeon Master in every group.",
+            "answerBoundary": "Explain the single-player Playworlds context without making a universal replacement claim."
+          },
+          {
+            "id": "faq-input",
+            "job": "setup",
+            "readerObstacle": "The reader may assume voice-first means a microphone is mandatory.",
+            "answerBoundary": "Use the approved voice-or-text and optional-microphone facts only."
+          },
+          {
+            "id": "faq-ip",
+            "job": "constraint",
+            "readerObstacle": "The audience reference could be mistaken for a product relationship.",
+            "answerBoundary": "State the original-only, independent audience boundary clearly."
+          }
+        ],
+        "signature": {
+          "id": "campaign-loop-test",
+          "type": "comparison",
+          "readerAction": "Run the Campaign Loop Test",
+          "afterSectionId": "campaign-loop-test"
+        }
+      },
+      "differentiation": {
+        "against": []
+      },
+      "presentation": {
+        "recipeId": "campaign-state-comparison-v1",
+        "rendererId": "campaign_state_comparison",
+        "visualSystemId": "campaign-state-console",
+        "layoutId": "split-turn-trace",
+        "paletteId": "lampblack-ember",
+        "typographyId": "campaign-serif-ledger",
+        "motifId": "action-outcome-state-choice",
+        "companion": "none",
+        "gallery": "none",
+        "surfaceCopy": {
+          "eyebrow": "Playworlds / Campaign decision field guide",
+          "shortAnswerLabel": "Chat about the world, or keep the world moving?",
+          "contentsLabel": "Campaign control / Decision routes",
+          "sectionLabel": "Independent field note",
+          "faqEyebrow": "Table ruling / FAQ",
+          "faqHeading": "AI game master vs chatbot FAQ",
+          "relatedHeading": "More Playworlds field guides",
+          "finalCtaEyebrow": "Product boundary / Current public listing",
+          "finalCtaHeading": "See the AI game master loop described for Playworlds.",
+          "finalCtaBody": "Playworlds is described as a single-player AI adventure RPG with voice or text, an AI game master, saved campaigns, and tracked RPG state.",
+          "backToTop": "Return to campaign control"
+        }
+      }
+    },
+    "signatureModule": {
+      "id": "campaign-loop-test",
+      "type": "comparison",
+      "title": "The Campaign Loop Test",
+      "intro": "Read each checkpoint alone. A campaign system connects all four; polished prose cannot repair missing state.",
+      "items": [
+        {
+          "label": "01 / ACTION",
+          "title": "Does the system understand the player's attempt?",
+          "bodyMarkdown": "**General chatbot:** Paraphrases the request or continues the conversation.\n\n**AI game master:** Interprets the attempt inside the current scene, including intent and risk."
+        },
+        {
+          "label": "02 / OUTCOME",
+          "title": "Does the answer create a consequence?",
+          "bodyMarkdown": "**General chatbot:** May write vivid prose without deciding what changed.\n\n**AI game master:** Resolves an uncertainty and creates a pressure, opportunity, or cost."
+        },
+        {
+          "label": "03 / STATE",
+          "title": "Will the changed state matter next turn?",
+          "bodyMarkdown": "**General chatbot:** Keeps important details as conversational context.\n\n**AI game master:** Carries party condition, inventory, resolved actions, and journey history into continuing play."
+        },
+        {
+          "label": "04 / NEXT CHOICE",
+          "title": "Does the response return control?",
+          "bodyMarkdown": "**General chatbot:** May end with an explanation or broad question.\n\n**AI game master:** Reveals a specific choice, risk, or opportunity the player can act on."
+        }
+      ]
+    },
+    "internalLinks": [],
+    "assetBriefs": [
+      "Render the Campaign Loop Test as an accessible action-outcome-state-next-choice route with original generic tabletop language and no third-party artwork.",
+      "Use an original dark-fantasy campaign keeper as the semantic hero image inside an abyss-navy-to-lampblack campaign-control-room treatment; keep hero copy in the left safe area and move the Campaign Loop Test below the image so no text or interface panel obscures the character; do not use decorative dice, copied game interfaces, or licensed fantasy imagery."
+    ],
+    "quality": {
+      "passed": true,
+      "wordCount": 943,
+      "checks": [
+        {
+          "id": "distinct-intent",
+          "label": "Answers a product-format campaign decision",
+          "passed": true,
+          "detail": "The page compares a general chatbot with a campaign-state system through one explicit four-part test."
+        },
+        {
+          "id": "no-third-party-ip",
+          "label": "Uses original generic tabletop fantasy",
+          "passed": true,
+          "detail": "The chapel scene is original and the D&D reference is limited to adult audience identification."
+        },
+        {
+          "id": "no-invented-claims",
+          "label": "Uses only approved Playworlds facts",
+          "passed": true,
+          "detail": "The copy avoids availability, price, privacy, latency, multiplayer, affiliation, and compatibility claims."
+        },
+        {
+          "id": "approved-facts",
+          "label": "Uses approved product facts",
+          "passed": true,
+          "detail": "7 approved fact IDs"
+        },
+        {
+          "id": "content-structure",
+          "label": "Has required sections and FAQs",
+          "passed": true,
+          "detail": "5 sections; 4 FAQs"
+        },
+        {
+          "id": "conversion-path",
+          "label": "Has a concrete CTA",
+          "passed": true,
+          "detail": "Check Playworlds against the Campaign Loop Test"
+        },
+        {
+          "id": "cta-specificity",
+          "label": "CTA names the page-specific outcome",
+          "passed": true,
+          "detail": "Check Playworlds against the Campaign Loop Test"
+        },
+        {
+          "id": "markdown-renderability",
+          "label": "Copy uses only production-supported Markdown",
+          "passed": true,
+          "detail": "Plain fields and rich text match the renderer subset; list formats use explicit markers"
+        },
+        {
+          "id": "minimum-depth",
+          "label": "600-1000 English words",
+          "passed": true,
+          "detail": "943 words"
+        },
+        {
+          "id": "content-contract",
+          "label": "Content layers match the reviewed architecture",
+          "passed": true,
+          "detail": "comparison; 5 mapped sections"
+        },
+        {
+          "id": "content-distinctness",
+          "label": "Content is distinct from published pages",
+          "passed": true,
+          "detail": "0 published comparisons; no text or structure violations"
+        },
+        {
+          "id": "presentation-distinctness",
+          "label": "Presentation recipe passed its reuse policy",
+          "passed": true,
+          "detail": "campaign-state-comparison-v1"
+        },
+        {
+          "id": "optional-decoration",
+          "label": "Gallery and companion are explicit",
+          "passed": true,
+          "detail": "gallery=none; companion=none"
+        }
+      ],
+      "novelty": {
+        "schemaVersion": 1,
+        "passed": true,
+        "corpusDigest": "93fa79d9b6e13c850d7b6c328d91fd622ef26f19da00f8d1bd91d78b563a1662",
+        "nearest": [],
+        "internal": {
+          "maxSectionPairCosine": 0.5289141924879356,
+          "maxFaqPairCosine": 0.3035883703594581,
+          "repeatedSentenceCount": 0
+        },
+        "violations": []
+      }
+    },
+    "status": "ready_for_review"
+  },
+  "drafts": [
+    {
+      "schemaVersion": 2,
+      "slot": "manual",
+      "keyword": "ai game master vs chatbot for tabletop campaign",
+      "slug": "/ai-game-master-vs-chatbot-for-tabletop-campaign",
+      "language": "en",
+      "model": "codex",
+      "generatedAt": "2026-08-26T11:40:00+08:00",
+      "reviewRequired": true,
+      "factIdsUsed": [
+        "playworlds-current-product",
+        "dnd-content-direction",
+        "dnd-primary-audience",
+        "playworlds-voice-text-single-player-rpg",
+        "playworlds-ai-game-master",
+        "playworlds-persistent-campaigns",
+        "playworlds-rpg-state"
+      ],
+      "title": "AI Game Master vs Chatbot: 4 Differences for D&D Players",
+      "metaDescription": "Use the Campaign Loop Test to compare action resolution, consequences, persistent state, and next choices—then decide what fits your solo campaign.",
+      "h1": "AI Game Master vs Chatbot: Which One Fits a D&D Campaign?",
+      "heroMarkdown": "Choose an AI game master when actions must change campaign state and produce consequential choices. Choose a chatbot for conversation or brainstorming without that loop.",
+      "primaryCta": "Check Playworlds against the Campaign Loop Test",
+      "ipBoundary": {
+        "schemaVersion": 1,
+        "contentBasis": "original_tabletop_fantasy",
+        "dndReferenceScope": "audience_reference_only",
+        "srdMaterialUsed": false,
+        "thirdPartyNames": []
+      },
+      "sections": [
+        {
+          "id": "practical-difference",
+          "role": "direct_answer",
+          "format": "comparison",
+          "heading": "What is the practical difference between an AI game master and a chatbot for D&D players?",
+          "bodyMarkdown": "For D&D play, an AI game master and a chatbot do different jobs after the player acts.\n\n- **General chatbot:** Supports brainstorming or dialogue without resolving campaign state.\n- **AI game master:** Interprets the attempt, resolves its outcome, preserves state, and presents the next consequential choice.\n\nChoose a chatbot for conversation. Choose an AI game master when one decision must become the next scene's starting state."
+        },
+        {
+          "id": "eloquent-but-unplayable",
+          "role": "failure_analysis",
+          "format": "prose",
+          "heading": "Why can an eloquent chatbot still feel weak during a tabletop campaign?",
+          "bodyMarkdown": "An eloquent chatbot can fail a tabletop campaign because polished prose is not persistent state. It may leave the player's action unresolved.\n\nIf the player must restate danger, inventory, and the last outcome, the tool is writing around the campaign. An AI game master preserves consequence and returns a specific decision."
+        },
+        {
+          "id": "campaign-loop-test",
+          "role": "framework",
+          "format": "steps",
+          "heading": "How can you test an AI tool before trusting it with a D&D campaign?",
+          "bodyMarkdown": "For D&D campaign play, the Campaign Loop Test separates an AI game master from a chatbot with four checkpoints.\n\n1. **Action:** Name the attempt, intent, and risk.\n2. **Outcome:** Confirm what happened and what pressure, opportunity, or cost followed.\n3. **State:** Identify what persists into the next turn.\n4. **Next choice:** Require a concrete decision that returns agency.\n\nEach works alone; together they reveal a coherent campaign loop."
+        },
+        {
+          "id": "locked-chapel-example",
+          "role": "worked_example",
+          "format": "examples",
+          "heading": "What does the Campaign Loop Test look like in an original fantasy scene?",
+          "bodyMarkdown": "Compare an AI chatbot and an AI game master with one original tabletop-fantasy scene.\n\n- **Scene:** In a storm, a medicine courier reaches a locked chapel. The caretaker refuses entry after its bell rang alone.\n- **Chat-shaped response:** Describes the rain without deciding what changed.\n- **Campaign-shaped response:** The caretaker trusts the medicine, recognizes the courier's seal, says the tunnel is flooded, and demands collateral. Persistent state: surrendered resource, blocked route, exposed identity. Next choice: explain the seal or seek another road.\n\nThis original example contains no D&D rules or setting content."
+        },
+        {
+          "id": "choose-the-right-tool",
+          "role": "next_step",
+          "format": "checklist",
+          "heading": "When should a D&D player choose a chatbot, and when should they choose an AI game master?",
+          "bodyMarkdown": "For a D&D player, choose by what must persist after the reply.\n\n- **Choose conversation** when names or dialogue matter more than continuity.\n- **Choose a campaign loop** when inventory, party condition, actions, and history must stay connected.\n- **Check the next turn:** The reply should state what changed and what decision follows.\n\nPlayworlds' public listing describes voice or text actions, an AI game master, saved campaigns, and tracked RPG state in a single-player AI adventure RPG. D&D identifies this independent guide's adult audience; it does not imply affiliation or rules compatibility."
+        }
+      ],
+      "faqs": [
+        {
+          "id": "faq-definition",
+          "job": "definition",
+          "question": "Is every fantasy AI chatbot an AI game master?",
+          "answerMarkdown": "A fantasy chatbot is not automatically an AI game master. Fantasy tone alone cannot resolve action, preserve state, and return a specific choice."
+        },
+        {
+          "id": "faq-replacement",
+          "job": "constraint",
+          "question": "Does an AI game master replace a human Dungeon Master?",
+          "answerMarkdown": "An AI game master does not universally replace a human Dungeon Master. Playworlds is described for solo play, which is the scope of this comparison."
+        },
+        {
+          "id": "faq-input",
+          "job": "setup",
+          "question": "Does Playworlds require voice input?",
+          "answerMarkdown": "Playworlds does not require voice input. Its official listing describes voice or keyboard input and says a microphone is optional."
+        },
+        {
+          "id": "faq-ip",
+          "job": "constraint",
+          "question": "What does the D&D reference mean on this page?",
+          "answerMarkdown": "Here, D&D identifies the adult audience. The original example contains no D&D rules or setting content, and the page claims no compatibility or affiliation."
+        }
+      ],
+      "architecture": {
+        "schemaVersion": 1,
+        "intent": {
+          "searcherJob": "Compare a general AI chatbot with a dedicated AI game master before choosing a tool for an adult D&D campaign.",
+          "painPointId": "campaign_prep_overload",
+          "decisionToEnable": "Decide whether the reader needs flexible conversation or a persistent action-outcome-state-choice loop for campaign play.",
+          "oneSentenceAnswer": "A chatbot discusses campaigns; an AI game master resolves actions, preserves state, and presents the next decision.",
+          "nonGoals": [
+            "D&D identifies the intended audience only; product-relationship and edition-compatibility claims are outside this page.",
+            "Do not reproduce D&D rules, settings, characters, monsters, artwork, maps, or adventure text."
+          ]
+        },
+        "content": {
+          "archetype": "comparison",
+          "thesis": "The difference is not prettier prose; it is whether each response completes a playable campaign loop.",
+          "originalContribution": "The Campaign Loop Test compares action interpretation, outcome, persistent state, and the next choice through one original tabletop-fantasy scene.",
+          "tone": "Adult tabletop field analysis with a midnight-blue campaign-control-room presentation and concise, answer-first passages that remain understandable in isolation.",
+          "openingMove": "direct_answer",
+          "avoidPhrases": [
+            "endless possibilities",
+            "epic adventure awaits",
+            "bring your imagination to life"
+          ],
+          "sections": [
+            {
+              "id": "practical-difference",
+              "role": "direct_answer",
+              "format": "comparison",
+              "readerQuestion": "The decision in one minute",
+              "uniqueTakeaway": "The dividing line is a maintained campaign loop, not whether both tools can produce fantasy prose."
+            },
+            {
+              "id": "eloquent-but-unplayable",
+              "role": "failure_analysis",
+              "format": "prose",
+              "readerQuestion": "Why good writing can still fail at the table",
+              "uniqueTakeaway": "A polished reply is not playable when it fails to resolve the action, preserve the new state, or create a next decision."
+            },
+            {
+              "id": "campaign-loop-test",
+              "role": "framework",
+              "format": "steps",
+              "readerQuestion": "A four-part test for any AI tool",
+              "uniqueTakeaway": "Action, outcome, state, and next choice expose whether a system is chatting about a campaign or running a coherent scene loop."
+            },
+            {
+              "id": "locked-chapel-example",
+              "role": "worked_example",
+              "format": "examples",
+              "readerQuestion": "One original scene, two different responses",
+              "uniqueTakeaway": "The worked example shows how state continuity changes the next playable choice without borrowing D&D rules or setting content."
+            },
+            {
+              "id": "choose-the-right-tool",
+              "role": "next_step",
+              "format": "checklist",
+              "readerQuestion": "Choose by the experience you actually want",
+              "uniqueTakeaway": "Use a chatbot for open-ended ideation and a dedicated AI game master when campaign state and consequential play are the priority."
+            }
+          ],
+          "faqs": [
+            {
+              "id": "faq-definition",
+              "job": "definition",
+              "readerObstacle": "The reader assumes every fantasy chatbot is already an AI game master.",
+              "answerBoundary": "Define the category through the campaign loop rather than unsupported marketing claims."
+            },
+            {
+              "id": "faq-replacement",
+              "job": "constraint",
+              "readerObstacle": "The reader may expect an AI tool to replace a human Dungeon Master in every group.",
+              "answerBoundary": "Explain the single-player Playworlds context without making a universal replacement claim."
+            },
+            {
+              "id": "faq-input",
+              "job": "setup",
+              "readerObstacle": "The reader may assume voice-first means a microphone is mandatory.",
+              "answerBoundary": "Use the approved voice-or-text and optional-microphone facts only."
+            },
+            {
+              "id": "faq-ip",
+              "job": "constraint",
+              "readerObstacle": "The audience reference could be mistaken for a product relationship.",
+              "answerBoundary": "State the original-only, independent audience boundary clearly."
+            }
+          ],
+          "signature": {
+            "id": "campaign-loop-test",
+            "type": "comparison",
+            "readerAction": "Run the Campaign Loop Test",
+            "afterSectionId": "campaign-loop-test"
+          }
+        },
+        "differentiation": {
+          "against": []
+        },
+        "presentation": {
+          "recipeId": "campaign-state-comparison-v1",
+          "rendererId": "campaign_state_comparison",
+          "visualSystemId": "campaign-state-console",
+          "layoutId": "split-turn-trace",
+          "paletteId": "lampblack-ember",
+          "typographyId": "campaign-serif-ledger",
+          "motifId": "action-outcome-state-choice",
+          "companion": "none",
+          "gallery": "none",
+          "surfaceCopy": {
+            "eyebrow": "Playworlds / Campaign decision field guide",
+            "shortAnswerLabel": "Chat about the world, or keep the world moving?",
+            "contentsLabel": "Campaign control / Decision routes",
+            "sectionLabel": "Independent field note",
+            "faqEyebrow": "Table ruling / FAQ",
+            "faqHeading": "AI game master vs chatbot FAQ",
+            "relatedHeading": "More Playworlds field guides",
+            "finalCtaEyebrow": "Product boundary / Current public listing",
+            "finalCtaHeading": "See the AI game master loop described for Playworlds.",
+            "finalCtaBody": "Playworlds is described as a single-player AI adventure RPG with voice or text, an AI game master, saved campaigns, and tracked RPG state.",
+            "backToTop": "Return to campaign control"
+          }
+        }
+      },
+      "signatureModule": {
+        "id": "campaign-loop-test",
+        "type": "comparison",
+        "title": "The Campaign Loop Test",
+        "intro": "Read each checkpoint alone. A campaign system connects all four; polished prose cannot repair missing state.",
+        "items": [
+          {
+            "label": "01 / ACTION",
+            "title": "Does the system understand the player's attempt?",
+            "bodyMarkdown": "**General chatbot:** Paraphrases the request or continues the conversation.\n\n**AI game master:** Interprets the attempt inside the current scene, including intent and risk."
+          },
+          {
+            "label": "02 / OUTCOME",
+            "title": "Does the answer create a consequence?",
+            "bodyMarkdown": "**General chatbot:** May write vivid prose without deciding what changed.\n\n**AI game master:** Resolves an uncertainty and creates a pressure, opportunity, or cost."
+          },
+          {
+            "label": "03 / STATE",
+            "title": "Will the changed state matter next turn?",
+            "bodyMarkdown": "**General chatbot:** Keeps important details as conversational context.\n\n**AI game master:** Carries party condition, inventory, resolved actions, and journey history into continuing play."
+          },
+          {
+            "label": "04 / NEXT CHOICE",
+            "title": "Does the response return control?",
+            "bodyMarkdown": "**General chatbot:** May end with an explanation or broad question.\n\n**AI game master:** Reveals a specific choice, risk, or opportunity the player can act on."
+          }
+        ]
+      },
+      "internalLinks": [],
+      "assetBriefs": [
+        "Render the Campaign Loop Test as an accessible action-outcome-state-next-choice route with original generic tabletop language and no third-party artwork.",
+        "Use an original dark-fantasy campaign keeper as the semantic hero image inside an abyss-navy-to-lampblack campaign-control-room treatment; keep hero copy in the left safe area and move the Campaign Loop Test below the image so no text or interface panel obscures the character; do not use decorative dice, copied game interfaces, or licensed fantasy imagery."
+      ],
+      "quality": {
+        "passed": true,
+        "wordCount": 943,
+        "checks": [
+          {
+            "id": "distinct-intent",
+            "label": "Answers a product-format campaign decision",
+            "passed": true,
+            "detail": "The page compares a general chatbot with a campaign-state system through one explicit four-part test."
+          },
+          {
+            "id": "no-third-party-ip",
+            "label": "Uses original generic tabletop fantasy",
+            "passed": true,
+            "detail": "The chapel scene is original and the D&D reference is limited to adult audience identification."
+          },
+          {
+            "id": "no-invented-claims",
+            "label": "Uses only approved Playworlds facts",
+            "passed": true,
+            "detail": "The copy avoids availability, price, privacy, latency, multiplayer, affiliation, and compatibility claims."
+          },
+          {
+            "id": "approved-facts",
+            "label": "Uses approved product facts",
+            "passed": true,
+            "detail": "7 approved fact IDs"
+          },
+          {
+            "id": "content-structure",
+            "label": "Has required sections and FAQs",
+            "passed": true,
+            "detail": "5 sections; 4 FAQs"
+          },
+          {
+            "id": "conversion-path",
+            "label": "Has a concrete CTA",
+            "passed": true,
+            "detail": "Check Playworlds against the Campaign Loop Test"
+          },
+          {
+            "id": "cta-specificity",
+            "label": "CTA names the page-specific outcome",
+            "passed": true,
+            "detail": "Check Playworlds against the Campaign Loop Test"
+          },
+          {
+            "id": "markdown-renderability",
+            "label": "Copy uses only production-supported Markdown",
+            "passed": true,
+            "detail": "Plain fields and rich text match the renderer subset; list formats use explicit markers"
+          },
+          {
+            "id": "minimum-depth",
+            "label": "600-1000 English words",
+            "passed": true,
+            "detail": "943 words"
+          },
+          {
+            "id": "content-contract",
+            "label": "Content layers match the reviewed architecture",
+            "passed": true,
+            "detail": "comparison; 5 mapped sections"
+          },
+          {
+            "id": "content-distinctness",
+            "label": "Content is distinct from published pages",
+            "passed": true,
+            "detail": "0 published comparisons; no text or structure violations"
+          },
+          {
+            "id": "presentation-distinctness",
+            "label": "Presentation recipe passed its reuse policy",
+            "passed": true,
+            "detail": "campaign-state-comparison-v1"
+          },
+          {
+            "id": "optional-decoration",
+            "label": "Gallery and companion are explicit",
+            "passed": true,
+            "detail": "gallery=none; companion=none"
+          }
+        ],
+        "novelty": {
+          "schemaVersion": 1,
+          "passed": true,
+          "corpusDigest": "93fa79d9b6e13c850d7b6c328d91fd622ef26f19da00f8d1bd91d78b563a1662",
+          "nearest": [],
+          "internal": {
+            "maxSectionPairCosine": 0.5289141924879356,
+            "maxFaqPairCosine": 0.3035883703594581,
+            "repeatedSentenceCount": 0
+          },
+          "violations": []
+        }
+      },
+      "status": "ready_for_review"
+    }
+  ],
+  "contentStrategy": {
+    "schemaVersion": 2,
+    "searcherJob": "Compare a general AI chatbot with a dedicated AI game master before choosing a tool for an adult D&D campaign.",
+    "painPointId": "campaign_prep_overload",
+    "readerStateBefore": "The reader wants a solo tabletop campaign but cannot tell whether a dedicated AI game master offers more playable structure than a general chatbot.",
+    "readerOutcome": "The reader can compare action resolution, persistent campaign state, and voice-or-text play without relying on unsupported feature promises.",
+    "primaryPainPoint": "Generic AI roleplay pages blur the difference between prose conversation and a campaign system that interprets actions and retains RPG state.",
+    "oneSentenceAnswer": "A chatbot discusses campaigns; an AI game master resolves actions, preserves state, and presents the next decision.",
+    "originalContribution": "The Campaign Loop Test compares action interpretation, outcome, persistent state, and the next choice through one original tabletop-fantasy scene.",
+    "pagePattern": "decision_page",
+    "productBridge": "Approved Playworlds facts describe a single-player voice-or-text AI adventure RPG with an AI game master, persistent campaigns, and tracked RPG state.",
+    "contextualNextStep": "After the comparison resolves the decision barrier, offer one attributed visit to the official Playworlds Steam listing for current product details.",
+    "evidenceBoundary": "Public competitor, research, and user-demand sources establish the search task; only the approved Playworlds fact catalog may establish Playworlds capabilities.",
+    "conversionHypothesis": "A concrete AI-game-master-versus-chatbot decision page should produce qualified Playworlds outbound visits from readers who need campaign continuity rather than broad category information.",
+    "primaryConversion": "qualified_outbound_click",
+    "measurementPlan": "Measure LoreLens Search Console impressions, clicks, CTR, and average position as primary signals, with first-party landing and destination-platform outbound clicks as supporting signals; downstream revenue remains optional at this stage."
+  },
+  "integrations": [
+    {
+      "id": "semrush",
+      "name": "SEO Research Tools",
+      "state": "configured",
+      "detail": "The shared GURU/PRO account is used for human-assisted keyword and competitor research; provider metrics must be labelled as observed when copied into evidence."
+    },
+    {
+      "id": "codex_research",
+      "name": "Codex Research",
+      "state": "connected",
+      "detail": "12 public evidence links support 8 candidates.",
+      "lastCheckedAt": "2026-08-26T03:46:13.450Z"
+    },
+    {
+      "id": "google_trends",
+      "name": "Google Trends",
+      "state": "connected",
+      "detail": "Official US DMA Top/Rising feed collected for 2026-08-23; 0 exact rising candidate match(es).",
+      "lastCheckedAt": "2026-08-26T03:44:24.828Z",
+      "href": "https://support.google.com/trends/answer/12764470?hl=en",
+      "actionLabel": "Open Google Trends dataset guide"
+    },
+    {
+      "id": "search_console",
+      "name": "Google Search Console",
+      "state": "missing",
+      "detail": "No visible Search Console rows were available; no metrics were inferred.",
+      "href": "https://search.google.com/search-console",
+      "actionLabel": "Open Search Console"
+    },
+    {
+      "id": "ai_gateway",
+      "name": "Codex Content",
+      "state": "connected",
+      "detail": "A fact-constrained draft is ready for a separate editorial review."
+    },
+    {
+      "id": "github",
+      "name": "GitHub Reports",
+      "state": "configured",
+      "detail": "Daily reports and approved pages are committed only after verification.",
+      "href": "https://github.com/lium53492-rgb/seo/tree/main/data/reports",
+      "actionLabel": "Open report history"
+    },
+    {
+      "id": "product_analytics",
+      "name": "Optional Downstream Attribution",
+      "state": "missing",
+      "detail": "Downstream callbacks and revenue attribution are optional during early traffic validation and do not block research or publication.",
+      "href": "https://vercel.com/elser1/seo/analytics",
+      "actionLabel": "Open analytics"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "aeveth-not-chatbot",
+      "title": "Aeveth AI Game Master for Complete Solo Campaigns",
+      "url": "https://www.aeveth.com/",
+      "source": "Aeveth",
+      "collectedAt": "2026-08-26T11:39:00+08:00",
+      "supports": [
+        "ai game master vs chatbot for tabletop campaign",
+        "ai game master vs human game master for solo tabletop play"
+      ]
+    },
+    {
+      "id": "agentic-gm-solo-study",
+      "title": "Static Vs. Agentic Game Master AI for Solo Role-Playing Games",
+      "url": "https://arxiv.org/abs/2502.19519",
+      "source": "arXiv",
+      "collectedAt": "2026-08-26T11:39:00+08:00",
+      "supports": [
+        "ai game master vs chatbot for tabletop campaign",
+        "ai game master vs human game master for solo tabletop play"
+      ]
+    },
+    {
+      "id": "trismeria-table-state",
+      "title": "Trismeria Table State, Dice, Character Sheets, and Campaign Outcomes",
+      "url": "https://trismeria.com/how-it-works",
+      "source": "Trismeria",
+      "collectedAt": "2026-08-26T11:39:00+08:00",
+      "supports": [
+        "ai game master vs chatbot for tabletop campaign"
+      ]
+    },
+    {
+      "id": "reddit-solo-gm-continuity",
+      "title": "What Is the Best AI for Running a Solo RPG Without Losing Continuity?",
+      "url": "https://www.reddit.com/r/Solo_Roleplaying/comments/1vus9ic/what_is_the_best_ai_for_running_a_solo_rpg_as_the/",
+      "source": "Reddit / Solo Roleplaying",
+      "collectedAt": "2026-08-26T11:39:00+08:00",
+      "supports": [
+        "ai game master vs chatbot for tabletop campaign"
+      ],
+      "kind": "breakout_page",
+      "signal": {
+        "type": "publishing_velocity",
+        "value": 1,
+        "unit": "near-exact demand post in sampled 4-day window",
+        "basis": "Manual public-page check of the visible three-day publication timestamp on 2026-08-26.",
+        "detail": "The recent post explicitly contrasts good prose with a consistent game master that preserves NPC, inventory, clue, world, and consequence state."
+      }
+    },
+    {
+      "id": "wyrdlyre-voice-gm",
+      "title": "Wyrdlyre Voice-Driven AI Game Master",
+      "url": "https://www.wyrdlyre.app/",
+      "source": "Wyrdlyre",
+      "collectedAt": "2026-08-26T11:39:00+08:00",
+      "supports": [
+        "voice ai game master vs text roleplay chatbot for solo play",
+        "ai companion chatbot vs ai game master for a solo campaign",
+        "best d&d 5e ai dungeon master for a campaign",
+        "ai game master for a multiplayer tabletop group"
+      ]
+    },
+    {
+      "id": "character-ai-quickstart",
+      "title": "Creating a Character Quickstart Guide",
+      "url": "https://support.character.ai/hc/en-us/articles/50608869548699-2-Creating-a-Character-Quickstart-Guide-%CF%89",
+      "source": "Character.AI",
+      "collectedAt": "2026-08-26T11:39:00+08:00",
+      "supports": [
+        "voice ai game master vs text roleplay chatbot for solo play",
+        "ai companion chatbot vs ai game master for a solo campaign"
+      ]
+    },
+    {
+      "id": "questportal-gm-assistant",
+      "title": "Quest Portal AI Game Master Assistant",
+      "url": "https://www.questportal.com/assistant",
+      "source": "Quest Portal",
+      "collectedAt": "2026-08-26T11:39:00+08:00",
+      "supports": [
+        "autonomous ai game master vs gm assistant for tabletop sessions"
+      ]
+    },
+    {
+      "id": "calypso-gm-assistant-study",
+      "title": "CALYPSO: LLMs as Dungeon Master Assistants",
+      "url": "https://arxiv.org/abs/2308.07540",
+      "source": "arXiv",
+      "collectedAt": "2026-08-26T11:39:00+08:00",
+      "supports": [
+        "autonomous ai game master vs gm assistant for tabletop sessions"
+      ]
+    },
+    {
+      "id": "auferet-solo-ai-gm",
+      "title": "Solo TTRPG AI Game Master Comparison",
+      "url": "https://auferet.com/solo-ttrpg-ai-game-master",
+      "source": "Auferet",
+      "collectedAt": "2026-08-26T11:39:00+08:00",
+      "supports": [
+        "ai game master vs human game master for solo tabletop play",
+        "ai game master vs gm emulator oracle for solo tabletop campaign"
+      ]
+    },
+    {
+      "id": "mythic-gme-official",
+      "title": "Mythic Game Master Emulator",
+      "url": "https://www.wordmillgames.com/page/mythic-gme.html",
+      "source": "Word Mill Games",
+      "collectedAt": "2026-08-26T11:39:00+08:00",
+      "supports": [
+        "ai game master vs gm emulator oracle for solo tabletop campaign"
+      ]
+    },
+    {
+      "id": "neural-initiative-about",
+      "title": "Neural Initiative Persistent AI Game Master",
+      "url": "https://neuralinitiative.ai/about",
+      "source": "Neural Initiative",
+      "collectedAt": "2026-08-26T11:39:00+08:00",
+      "supports": [
+        "ai game master vs human game master for solo tabletop play",
+        "best d&d 5e ai dungeon master for a campaign",
+        "ai game master for a multiplayer tabletop group"
+      ]
+    },
+    {
+      "id": "playworlds-steam-current",
+      "title": "Playworlds on Steam",
+      "url": "https://store.steampowered.com/app/4911480/Playworlds/",
+      "source": "Steam",
+      "collectedAt": "2026-08-26T11:39:00+08:00",
+      "supports": [
+        "ai game master vs chatbot for tabletop campaign",
+        "voice ai game master vs text roleplay chatbot for solo play",
+        "autonomous ai game master vs gm assistant for tabletop sessions",
+        "ai companion chatbot vs ai game master for a solo campaign",
+        "ai game master vs human game master for solo tabletop play",
+        "ai game master vs gm emulator oracle for solo tabletop campaign"
+      ]
+    }
+  ],
+  "caveats": [
+    "Product fit, trial intent, revenue intent, specificity, originality, IP risk, and cannibalization risk are derived from policy-versioned evidence signals rather than AI-supplied scores.",
+    "Demand and difficulty remain transparent 0-100 research proxies and require candidate-level rationales and evidence references unless an evidence record explicitly names an observed provider metric.",
+    "Google Trends Explore relative interest is a normalized 0-100 signal, not search volume. BigQuery Top/Rising observations preserve DMA provenance and never infer a nationwide relative-interest score; an exact miss is not zero demand.",
+    "Every locally unconsumed editorial instruction is preserved verbatim with an adopted or rejected decision before it may be marked consumed.",
+    "Missing Search Console, UV, outbound, trial, payment, or revenue data stays unavailable rather than being converted to zero. Only exact-page Search Console evidence is a measurement publication gate during early traffic validation.",
+    "The report builder never publishes a page; scripts/publish-reviewed-page.mjs requires a separate approval record.",
+    "Publication required a separate editorial approval artifact."
+  ]
+}
