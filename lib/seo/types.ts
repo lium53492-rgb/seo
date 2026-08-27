@@ -617,7 +617,7 @@ export type ReportPublication = {
   status: "published" | "ready_for_review" | "blocked" | "not_requested";
   path?: string;
   slug?: string;
-  slot?: "morning" | "afternoon";
+  slot?: "manual" | "morning" | "afternoon";
   reason: string;
   publishedAt?: string;
   draftDigest?: string;

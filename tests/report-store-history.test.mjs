@@ -49,3 +49,19 @@ test("reports on or after the architecture cutoff cannot omit schema 2", async (
   future.generatedAt = "2026-08-07T09:15:00+08:00";
   assert.throws(() => parseReport(JSON.stringify(future), "future-without-architecture.json"), /Invalid SEO report shape/);
 });
+
+test("manual publication slots remain readable after unattended publishing is retired", async () => {
+  const { parseReport } = await import("../lib/seo/report-store.ts");
+  const legacyRaw = await readFile(join(projectRoot, "data", "reports", "2026-08-06.json"), "utf8");
+  const manual = JSON.parse(legacyRaw);
+  manual.publication.slot = "manual";
+  manual.publications[0].slot = "manual";
+
+  assert.doesNotThrow(() => parseReport(JSON.stringify(manual), "manual-publication.json"));
+
+  manual.publication.slot = "overnight";
+  assert.throws(
+    () => parseReport(JSON.stringify(manual), "unknown-publication-slot.json"),
+    /Invalid SEO report shape/,
+  );
+});

@@ -36,6 +36,7 @@ const reportModes = new Set(["disconnected", "live", "partial"]);
 const intents = new Set(["commercial", "informational", "navigational", "transactional", "mixed"]);
 const recommendedActions = new Set(["create_page", "improve_page", "consolidate", "observe"]);
 const priorities = new Set(["P0", "P1", "P2"]);
+const publicationSlots = new Set(["manual", "morning", "afternoon"]);
 const integrationStates = new Set(["connected", "configured", "replaced", "missing", "error"]);
 const metricSources = new Set(["search_console", "vercel_analytics", "first_party_analytics", "seo_redirect", "product_analytics", "payments"]);
 const landingUvSources = new Set(["vercel_analytics", "first_party_analytics"]);
@@ -522,7 +523,7 @@ function isPublication(value: unknown) {
     !isString(value.reason)) return false;
   return (value.path === undefined || (isString(value.path) && value.path.startsWith("/"))) &&
     (value.slug === undefined || (isString(value.slug) && safeSlug.test(value.slug))) &&
-    (value.slot === undefined || value.slot === "morning" || value.slot === "afternoon") &&
+    (value.slot === undefined || publicationSlots.has(String(value.slot))) &&
     (value.publishedAt === undefined ||
       (isString(value.publishedAt) && Number.isFinite(Date.parse(value.publishedAt)))) &&
     (value.draftDigest === undefined ||

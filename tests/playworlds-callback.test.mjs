@@ -291,8 +291,21 @@ test("signed handshake becomes recent readiness without fabricating a conversion
     assert.equal(body.sources.conversionCallback.handshake.recent, true);
     assert.equal(body.readyFor.outboundToRevenue, true);
     assert.equal(body.readyFor.fullLoop, false, "a handshake alone is not a full search-to-revenue loop");
-    assert.deepEqual(commands.map((command) => command[0]), ["SET", "GET", "HGETALL"]);
-    assert.ok(commands.every((command) => !command.join(" ").includes("cohort:")));
+    const readinessCommands = commands.flatMap((command) =>
+      Array.isArray(command[0]) ? command : [command]
+    );
+    assert.deepEqual(
+      readinessCommands.map((command) => command[0]),
+      ["SET", "GET", "HGETALL", "GET", "HGETALL"],
+    );
+    assert.equal(
+      readinessCommands.filter((command) => command[0] === "SET").length,
+      1,
+      "the handshake write is the only write; the active-page cohort probe is read-only",
+    );
+    assert.ok(
+      readinessCommands.every((command) => ["SET", "GET", "HGETALL"].includes(command[0])),
+    );
 
     orphanCallbacks = 1;
     const orphanReadiness = await readinessRoute.GET(new Request(
